@@ -1,0 +1,230 @@
+services:
+  # PostgreSQL для Auth Service
+  auth-db:
+    image: postgres:15-alpine
+    container_name: pizza-auth-db
+    environment:
+      POSTGRES_USER: auth_user
+      POSTGRES_PASSWORD: auth_password
+      POSTGRES_DB: auth_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - auth_db_data:/var/lib/postgresql/data
+    networks:
+      - pizza-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U auth_user"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # PostgreSQL для User Service
+  user-db:
+    image: postgres:15-alpine
+    container_name: pizza-user-db
+    environment:
+      POSTGRES_USER: user_user
+      POSTGRES_PASSWORD: user_password
+      POSTGRES_DB: user_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - user_db_data:/var/lib/postgresql/data
+    networks:
+      - pizza-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user_user"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # PostgreSQL для Product Service
+  product-db:
+    image: postgres:15-alpine
+    container_name: pizza-product-db
+    environment:
+      POSTGRES_USER: product_user
+      POSTGRES_PASSWORD: product_password
+      POSTGRES_DB: product_db
+    ports:
+      - "5434:5432"
+    volumes:
+      - product_db_data:/var/lib/postgresql/data
+    networks:
+      - pizza-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U product_user"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # PostgreSQL для Order Service
+  order-db:
+    image: postgres:15-alpine
+    container_name: pizza-order-db
+    environment:
+      POSTGRES_USER: order_user
+      POSTGRES_PASSWORD: order_password
+      POSTGRES_DB: order_db
+    ports:
+      - "5435:5432"
+    volumes:
+      - order_db_data:/var/lib/postgresql/data
+    networks:
+      - pizza-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U order_user"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Auth Service
+  auth-service:
+    build:
+      context: ./services/auth-service
+      dockerfile: Dockerfile
+    container_name: pizza-auth-service
+    environment:
+      NODE_ENV: development
+      PORT: 3001
+      DB_HOST: auth-db
+      DB_PORT: 5432
+      DB_NAME: auth_db
+      DB_USER: auth_user
+      DB_PASSWORD: auth_password
+      JWT_SECRET: your-super-secret-jwt-key-change-in-production
+      JWT_REFRESH_SECRET: your-super-secret-refresh-key-change-in-production
+    ports:
+      - "3001:3001"
+    depends_on:
+      auth-db:
+        condition: service_healthy
+    networks:
+      - pizza-network
+    volumes:
+      - ./services/auth-service:/app
+      - /app/node_modules
+
+  # User Service
+  user-service:
+    build:
+      context: ./services/user-service
+      dockerfile: Dockerfile
+    container_name: pizza-user-service
+    environment:
+      NODE_ENV: development
+      PORT: 3002
+      DB_HOST: user-db
+      DB_PORT: 5432
+      DB_NAME: user_db
+      DB_USER: user_user
+      DB_PASSWORD: user_password
+      AUTH_SERVICE_URL: http://auth-service:3001
+    ports:
+      - "3002:3002"
+    depends_on:
+      user-db:
+        condition: service_healthy
+      auth-service:
+        condition: service_started
+    networks:
+      - pizza-network
+    volumes:
+      - ./services/user-service:/app
+      - /app/node_modules
+
+  # Product Service
+  product-service:
+    build:
+      context: ./services/product-service
+      dockerfile: Dockerfile
+    container_name: pizza-product-service
+    environment:
+      NODE_ENV: development
+      PORT: 3003
+      DB_HOST: product-db
+      DB_PORT: 5432
+      DB_NAME: product_db
+      DB_USER: product_user
+      DB_PASSWORD: product_password
+    ports:
+      - "3003:3003"
+    depends_on:
+      product-db:
+        condition: service_healthy
+    networks:
+      - pizza-network
+    volumes:
+      - ./services/product-service:/app
+      - /app/node_modules
+
+  # Order Service
+  order-service:
+    build:
+      context: ./services/order-service
+      dockerfile: Dockerfile
+    container_name: pizza-order-service
+    environment:
+      NODE_ENV: development
+      PORT: 3004
+      DB_HOST: order-db
+      DB_PORT: 5432
+      DB_NAME: order_db
+      DB_USER: order_user
+      DB_PASSWORD: order_password
+      AUTH_SERVICE_URL: http://auth-service:3001
+      USER_SERVICE_URL: http://user-service:3002
+      PRODUCT_SERVICE_URL: http://product-service:3003
+    ports:
+      - "3004:3004"
+    depends_on:
+      order-db:
+        condition: service_healthy
+      user-service:
+        condition: service_started
+      product-service:
+        condition: service_started
+    networks:
+      - pizza-network
+    volumes:
+      - ./services/order-service:/app
+      - /app/node_modules
+
+  # Frontend (Next.js)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: pizza-frontend
+    environment:
+      NODE_ENV: development
+      NEXT_PUBLIC_API_URL: http://localhost:3000
+      AUTH_SERVICE_URL: http://auth-service:3001
+      USER_SERVICE_URL: http://user-service:3002
+      PRODUCT_SERVICE_URL: http://product-service:3003
+      ORDER_SERVICE_URL: http://order-service:3004
+    ports:
+      - "3000:3000"
+    depends_on:
+      - auth-service
+      - user-service
+      - product-service
+      - order-service
+    networks:
+      - pizza-network
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+
+volumes:
+  auth_db_data:
+  user_db_data:
+  product_db_data:
+  order_db_data:
+
+networks:
+  pizza-network:
+    driver: bridge
+

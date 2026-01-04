@@ -1,5 +1,5 @@
 {
-  "name": "pizza-frontend",
+  "name": "tariff-frontend",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -23,4 +23,6 @@
     "eslint-config-next": "14.0.4"
   }
 }
+
+
 

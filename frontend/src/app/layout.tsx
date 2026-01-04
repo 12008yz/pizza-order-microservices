@@ -2,8 +2,8 @@ import type { Metadata } from 'next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'Pizza Order App',
-  description: 'Order your favorite pizza',
+  title: 'Агрегатор интернет-провайдеров',
+  description: 'Проверьте доступность интернета по вашему адресу и сравните тарифы провайдеров',
 }
 
 export default function RootLayout({
@@ -17,4 +17,6 @@ export default function RootLayout({
     </html>
   )
 }
+
+
 

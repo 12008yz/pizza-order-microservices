@@ -14,3 +14,5 @@ Write-Host ""
 Write-Host "Логи Auth Service (последние 20 строк):" -ForegroundColor Green
 docker-compose logs auth-service --tail 20
 
+
+

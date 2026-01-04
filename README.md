@@ -1,6 +1,15 @@
-# Pizza Order Microservices Application
+# Tariff Aggregator Microservices Application
 
-Fullstack микросервисное приложение для заказа пицц на Next.js, PostgreSQL и Sequelize.
+Fullstack микросервисное приложение-агрегатор интернет-провайдеров и тарифов на Next.js, PostgreSQL и Sequelize.
+
+## Описание
+
+Сайт-агрегатор, где пользователи могут:
+
+- Проверить доступность интернет-провайдеров по своему адресу
+- Сравнить тарифы по цене, скорости, дополнительным услугам
+- Оставить заявку на подключение к выбранному провайдеру
+- Читать отзывы о провайдерах
 
 ## Архитектура
 
@@ -16,15 +25,18 @@ Fullstack микросервисное приложение для заказа 
   - База данных: `user_db`
   - Endpoints: `/api/users/profile` (GET, PUT)
 
-- **Product Service** (порт 3003) - Меню пицц и продуктов
+- **Provider Service** (порт 3003) - Управление провайдерами, тарифами и покрытием
 
-  - База данных: `product_db`
-  - Endpoints: `/api/products` (GET, POST), `/api/products/:id` (GET, PUT, DELETE)
+  - База данных: `provider_db`
+  - Endpoints:
+    - `/api/providers` (GET, POST), `/api/providers/:id` (GET, PUT)
+    - `/api/tariffs` (GET, POST), `/api/tariffs/:id` (GET, PUT, DELETE), `/api/tariffs/by-address` (GET)
+    - `/api/coverage/check` (GET), `/api/coverage/cities` (GET), `/api/coverage/streets` (GET)
 
-- **Order Service** (порт 3004) - Обработка заказов
+- **Application Service** (порт 3004) - Обработка заявок на подключение
 
-  - База данных: `order_db`
-  - Endpoints: `/api/orders` (GET, POST), `/api/orders/:id` (GET), `/api/orders/:id/status` (PATCH)
+  - База данных: `application_db`
+  - Endpoints: `/api/applications` (GET, POST), `/api/applications/my` (GET), `/api/applications/:id` (GET), `/api/applications/:id/status` (PUT), `/api/applications/:id/assign` (PUT)
 
 - **Frontend** (порт 3000) - Next.js приложение (API Gateway)
   - Проксирует запросы к микросервисам через API routes
@@ -37,19 +49,9 @@ Fullstack микросервисное приложение для заказа 
 .
 ├── services/
 │   ├── auth-service/          # Сервис аутентификации
-│   │   ├── src/
-│   │   │   ├── config/        # Конфигурация БД
-│   │   │   ├── controllers/   # Контроллеры
-│   │   │   ├── middleware/    # Middleware
-│   │   │   ├── models/        # Sequelize модели
-│   │   │   ├── routes/        # Маршруты
-│   │   │   ├── services/      # Бизнес-логика
-│   │   │   └── utils/          # Утилиты
-│   │   ├── Dockerfile
-│   │   └── package.json
 │   ├── user-service/          # Сервис пользователей
-│   ├── product-service/       # Сервис продуктов
-│   └── order-service/         # Сервис заказов
+│   ├── provider-service/       # Сервис провайдеров и тарифов
+│   └── application-service/   # Сервис заявок на подключение
 ├── frontend/                   # Next.js приложение
 │   ├── src/
 │   │   ├── app/
@@ -105,7 +107,7 @@ docker-compose down
 docker-compose down -v
 
 # Пересборка конкретного сервиса
-docker-compose build auth-service && docker-compose up -d auth-service
+docker-compose build provider-service && docker-compose up -d provider-service
 ```
 
 ### Локальная разработка
@@ -128,13 +130,14 @@ cd services/user-service
 npm install
 npm run dev
 
-# Product Service
-cd services/product-service
+# Provider Service
+cd services/provider-service
 npm install
 npm run dev
+npm run seed  # Заполнить тестовыми данными
 
-# Order Service
-cd services/order-service
+# Application Service
+cd services/application-service
 npm install
 npm run dev
 
@@ -149,8 +152,8 @@ npm run dev
 - **Frontend**: http://localhost:3000
 - **Auth Service**: http://localhost:3001
 - **User Service**: http://localhost:3002
-- **Product Service**: http://localhost:3003
-- **Order Service**: http://localhost:3004
+- **Provider Service**: http://localhost:3003
+- **Application Service**: http://localhost:3004
 
 ## Базы данных
 
@@ -158,8 +161,8 @@ npm run dev
 
 - `auth_db` (порт 5432)
 - `user_db` (порт 5433)
-- `product_db` (порт 5434)
-- `order_db` (порт 5435)
+- `provider_db` (порт 5434)
+- `application_db` (порт 5435)
 
 ## Технологии
 
@@ -199,6 +202,14 @@ npm run dev
 # В каждом сервисе
 npm run migrate        # Применить миграции
 npm run migrate:undo   # Откатить последнюю миграцию
+```
+
+### Сидеры
+
+```bash
+# Заполнение тестовыми данными (Provider Service)
+cd services/provider-service
+npm run seed
 ```
 
 ## Лицензия

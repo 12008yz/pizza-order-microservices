@@ -8,6 +8,13 @@ export interface UserProfileAttributes {
   address?: string;
   city?: string;
   postalCode?: string;
+  street?: string | null;
+  house?: string | null;
+  building?: string | null;
+  apartment?: string | null;
+  currentProviderId?: number | null;
+  currentTariffName?: string | null;
+  savedAddresses?: any | null; // JSON
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -25,6 +32,13 @@ export class UserProfile
   public address?: string;
   public city?: string;
   public postalCode?: string;
+  public street?: string | null;
+  public house?: string | null;
+  public building?: string | null;
+  public apartment?: string | null;
+  public currentProviderId?: number | null;
+  public currentTariffName?: string | null;
+  public savedAddresses?: any | null;
 
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
@@ -58,6 +72,34 @@ UserProfile.init(
       type: DataTypes.STRING,
       allowNull: true,
     },
+    street: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    house: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    building: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    apartment: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    currentProviderId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    currentTariffName: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    savedAddresses: {
+      type: DataTypes.JSONB,
+      allowNull: true,
+    },
   },
   {
     sequelize,
@@ -65,4 +107,6 @@ UserProfile.init(
     timestamps: true,
   }
 );
+
+
 

@@ -2,10 +2,10 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-# Копируем package files
+# Копируем package files для кеширования слоя зависимостей
 COPY package*.json ./
 
-# Устанавливаем зависимости
+# Устанавливаем зависимости (кеш будет использован, если package.json не изменился)
 RUN npm install
 
 # Копируем исходный код

@@ -62,3 +62,5 @@ docker-compose down -v
 
 См. подробную инструкцию: [GETTING_STARTED.md](./GETTING_STARTED.md)
 
+
+

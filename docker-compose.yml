@@ -2,7 +2,7 @@ services:
   # PostgreSQL для Auth Service
   auth-db:
     image: postgres:15-alpine
-    container_name: pizza-auth-db
+    container_name: tariff-auth-db
     environment:
       POSTGRES_USER: auth_user
       POSTGRES_PASSWORD: auth_password
@@ -12,9 +12,9 @@ services:
     volumes:
       - auth_db_data:/var/lib/postgresql/data
     networks:
-      - pizza-network
+      - tariff-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U auth_user"]
+      test: ["CMD-SHELL", "pg_isready -U auth_user -d auth_db"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -22,7 +22,7 @@ services:
   # PostgreSQL для User Service
   user-db:
     image: postgres:15-alpine
-    container_name: pizza-user-db
+    container_name: tariff-user-db
     environment:
       POSTGRES_USER: user_user
       POSTGRES_PASSWORD: user_password
@@ -32,49 +32,49 @@ services:
     volumes:
       - user_db_data:/var/lib/postgresql/data
     networks:
-      - pizza-network
+      - tariff-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U user_user"]
+      test: ["CMD-SHELL", "pg_isready -U user_user -d user_db"]
       interval: 10s
       timeout: 5s
       retries: 5
 
-  # PostgreSQL для Product Service
-  product-db:
+  # PostgreSQL для Provider Service
+  provider-db:
     image: postgres:15-alpine
-    container_name: pizza-product-db
+    container_name: tariff-provider-db
     environment:
-      POSTGRES_USER: product_user
-      POSTGRES_PASSWORD: product_password
-      POSTGRES_DB: product_db
+      POSTGRES_USER: provider_user
+      POSTGRES_PASSWORD: provider_password
+      POSTGRES_DB: provider_db
     ports:
       - "5434:5432"
     volumes:
-      - product_db_data:/var/lib/postgresql/data
+      - provider_db_data:/var/lib/postgresql/data
     networks:
-      - pizza-network
+      - tariff-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U product_user"]
+      test: ["CMD-SHELL", "pg_isready -U provider_user -d provider_db"]
       interval: 10s
       timeout: 5s
       retries: 5
 
-  # PostgreSQL для Order Service
-  order-db:
+  # PostgreSQL для Application Service
+  application-db:
     image: postgres:15-alpine
-    container_name: pizza-order-db
+    container_name: tariff-application-db
     environment:
-      POSTGRES_USER: order_user
-      POSTGRES_PASSWORD: order_password
-      POSTGRES_DB: order_db
+      POSTGRES_USER: application_user
+      POSTGRES_PASSWORD: application_password
+      POSTGRES_DB: application_db
     ports:
       - "5435:5432"
     volumes:
-      - order_db_data:/var/lib/postgresql/data
+      - application_db_data:/var/lib/postgresql/data
     networks:
-      - pizza-network
+      - tariff-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U order_user"]
+      test: ["CMD-SHELL", "pg_isready -U application_user -d application_db"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -84,7 +84,7 @@ services:
     build:
       context: ./services/auth-service
       dockerfile: Dockerfile
-    container_name: pizza-auth-service
+    container_name: tariff-auth-service
     environment:
       NODE_ENV: development
       PORT: 3001
@@ -101,7 +101,7 @@ services:
       auth-db:
         condition: service_healthy
     networks:
-      - pizza-network
+      - tariff-network
     volumes:
       - ./services/auth-service:/app
       - /app/node_modules
@@ -111,7 +111,7 @@ services:
     build:
       context: ./services/user-service
       dockerfile: Dockerfile
-    container_name: pizza-user-service
+    container_name: tariff-user-service
     environment:
       NODE_ENV: development
       PORT: 3002
@@ -129,66 +129,66 @@ services:
       auth-service:
         condition: service_started
     networks:
-      - pizza-network
+      - tariff-network
     volumes:
       - ./services/user-service:/app
       - /app/node_modules
 
-  # Product Service
-  product-service:
+  # Provider Service
+  provider-service:
     build:
-      context: ./services/product-service
+      context: ./services/provider-service
       dockerfile: Dockerfile
-    container_name: pizza-product-service
+    container_name: tariff-provider-service
     environment:
       NODE_ENV: development
       PORT: 3003
-      DB_HOST: product-db
+      DB_HOST: provider-db
       DB_PORT: 5432
-      DB_NAME: product_db
-      DB_USER: product_user
-      DB_PASSWORD: product_password
+      DB_NAME: provider_db
+      DB_USER: provider_user
+      DB_PASSWORD: provider_password
     ports:
       - "3003:3003"
     depends_on:
-      product-db:
+      provider-db:
         condition: service_healthy
     networks:
-      - pizza-network
+      - tariff-network
     volumes:
-      - ./services/product-service:/app
+      - ./services/provider-service:/app
       - /app/node_modules
 
-  # Order Service
-  order-service:
+  # Application Service
+  application-service:
     build:
-      context: ./services/order-service
+      context: ./services/application-service
       dockerfile: Dockerfile
-    container_name: pizza-order-service
+    container_name: tariff-application-service
     environment:
       NODE_ENV: development
       PORT: 3004
-      DB_HOST: order-db
+      DB_HOST: application-db
       DB_PORT: 5432
-      DB_NAME: order_db
-      DB_USER: order_user
-      DB_PASSWORD: order_password
+      DB_NAME: application_db
+      DB_USER: application_user
+      DB_PASSWORD: application_password
       AUTH_SERVICE_URL: http://auth-service:3001
       USER_SERVICE_URL: http://user-service:3002
-      PRODUCT_SERVICE_URL: http://product-service:3003
+      PROVIDER_SERVICE_URL: http://provider-service:3003
     ports:
       - "3004:3004"
     depends_on:
-      order-db:
+      application-db:
         condition: service_healthy
       user-service:
         condition: service_started
-      product-service:
+      provider-service:
         condition: service_started
     networks:
-      - pizza-network
+      - tariff-network
     volumes:
-      - ./services/order-service:/app
+      - ./services/application-service:/app
       - /app/node_modules
 
   # Frontend (Next.js)
@@ -196,23 +196,23 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    container_name: pizza-frontend
+    container_name: tariff-frontend
     environment:
       NODE_ENV: development
       NEXT_PUBLIC_API_URL: http://localhost:3000
       AUTH_SERVICE_URL: http://auth-service:3001
       USER_SERVICE_URL: http://user-service:3002
-      PRODUCT_SERVICE_URL: http://product-service:3003
-      ORDER_SERVICE_URL: http://order-service:3004
+      PROVIDER_SERVICE_URL: http://provider-service:3003
+      APPLICATION_SERVICE_URL: http://application-service:3004
     ports:
       - "3000:3000"
     depends_on:
       - auth-service
       - user-service
-      - product-service
-      - order-service
+      - provider-service
+      - application-service
     networks:
-      - pizza-network
+      - tariff-network
     volumes:
       - ./frontend:/app
       - /app/node_modules
@@ -221,10 +221,10 @@ services:
 volumes:
   auth_db_data:
   user_db_data:
-  product_db_data:
-  order_db_data:
+  provider_db_data:
+  application_db_data:
 
 networks:
-  pizza-network:
+  tariff-network:
     driver: bridge
 

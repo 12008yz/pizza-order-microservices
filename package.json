@@ -1,7 +1,7 @@
 {
-  "name": "pizza-order-monorepo",
+  "name": "tariff-aggregator-monorepo",
   "version": "1.0.0",
-  "description": "Microservices pizza ordering application",
+  "description": "Microservices internet provider and tariff aggregator application",
   "private": true,
   "workspaces": [
     "services/*",
@@ -17,9 +17,14 @@
     "microservices",
     "nextjs",
     "postgresql",
-    "sequelize"
+    "sequelize",
+    "tariff",
+    "provider",
+    "aggregator"
   ],
   "author": "",
   "license": "ISC"
 }
+
+
 

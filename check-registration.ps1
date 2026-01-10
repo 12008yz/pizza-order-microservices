@@ -16,3 +16,4 @@ docker-compose logs auth-service --tail 20
 
 
 
+

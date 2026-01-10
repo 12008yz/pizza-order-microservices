@@ -11,3 +11,4 @@ Provider.hasMany(Coverage, { foreignKey: 'providerId', as: 'coverage' });
 
 export { Provider, Tariff, Coverage };
 
+

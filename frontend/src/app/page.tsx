@@ -1,369 +1,119 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import axios from 'axios';
-import Link from 'next/link';
-
-// Отключаем статическую генерацию для этой страницы
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
-
-// Используем API Gateway через Next.js API routes
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
-
-interface Tariff {
-  id: number;
-  name: string;
-  description: string;
-  speed: number;
-  price: number;
-  connectionPrice: number;
-  technology: string;
-  hasTV: boolean;
-  tvChannels?: number;
-  hasMobile: boolean;
-  provider?: {
-    id: number;
-    name: string;
-    logo: string;
-    rating: number;
-  };
-}
-
-interface Provider {
-  id: number;
-  name: string;
-  slug: string;
-  logo: string;
-  rating: number;
-  reviewsCount: number;
-}
 
 export default function Home() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [tariffs, setTariffs] = useState<Tariff[]>([]);
-  const [providers, setProviders] = useState<Provider[]>([]);
-  const [city, setCity] = useState('');
-  const [street, setStreet] = useState('');
-  const [house, setHouse] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
-  const [isLogin, setIsLogin] = useState(true);
-  const [token, setToken] = useState<string | null>(null);
-  const [showAuth, setShowAuth] = useState(false);
+  const [cookieCountdown, setCookieCountdown] = useState(7);
+  const [privacyChecked, setPrivacyChecked] = useState(false);
 
+  // Cookie countdown timer
   useEffect(() => {
-    const storedToken = localStorage.getItem('token');
-    if (storedToken) {
-      setToken(storedToken);
-      setIsAuthenticated(true);
-    }
-    loadProviders();
+    const interval = setInterval(() => {
+      setCookieCountdown((prev) => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+    return () => clearInterval(interval);
   }, []);
 
-  const loadProviders = async () => {
-    try {
-      const response = await axios.get(`${API_URL}/api/providers`);
-      if (response.data.success) {
-        setProviders(response.data.data);
-      }
-    } catch (error) {
-      console.error('Error loading providers:', error);
-    }
-  };
-
-  const loadTariffs = async () => {
-    try {
-      const params = new URLSearchParams();
-      if (city) params.append('city', city);
-      if (street) params.append('street', street);
-      if (house) params.append('house', house);
-
-      const response = await axios.get(`${API_URL}/api/tariffs?${params.toString()}`);
-      if (response.data.success) {
-        setTariffs(response.data.data);
-      }
-    } catch (error) {
-      console.error('Error loading tariffs:', error);
-      alert('Ошибка загрузки тарифов');
-    }
-  };
-
-  const handleCheckAddress = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!city) {
-      alert('Введите город');
-      return;
-    }
-    await loadTariffs();
-  };
-
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      const response = await axios.post(`${API_URL}/api/auth/login`, {
-        email,
-        password,
-      });
-      if (response.data.success) {
-        const accessToken = response.data.data.accessToken;
-        localStorage.setItem('token', accessToken);
-        setToken(accessToken);
-        setIsAuthenticated(true);
-        setShowAuth(false);
-      }
-    } catch (error) {
-      console.error('Login error:', error);
-      alert('Ошибка входа');
-    }
-  };
-
-  const handleRegister = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      const response = await axios.post(`${API_URL}/api/auth/register`, {
-        email,
-        password,
-        name,
-      });
-      if (response.data.success) {
-        const accessToken = response.data.data.accessToken;
-        localStorage.setItem('token', accessToken);
-        setToken(accessToken);
-        setIsAuthenticated(true);
-        setShowAuth(false);
-      }
-    } catch (error) {
-      console.error('Register error:', error);
-      alert('Ошибка регистрации');
-    }
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    setToken(null);
-    setIsAuthenticated(false);
-  };
-
   return (
-    <div style={{ padding: '2rem', maxWidth: '1200px', margin: '0 auto' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-        <h1>Агрегатор интернет-провайдеров</h1>
-        <div>
-          {isAuthenticated ? (
-            <>
-              <Link href="/my-applications" style={{ marginRight: '1rem', textDecoration: 'none' }}>
-                Мои заявки
-              </Link>
-              <button onClick={handleLogout} style={{ padding: '0.5rem 1rem' }}>
-                Выйти
-              </button>
-            </>
-          ) : (
-            <button onClick={() => setShowAuth(!showAuth)} style={{ padding: '0.5rem 1rem' }}>
-              Войти / Регистрация
-            </button>
-          )}
+    <div className="relative w-[400px] h-[870px] bg-white mx-auto">
+      {/* Cookie Consent Banner - Group 7476 / Rectangle 67 */}
+      <div className="absolute w-[360px] h-[115px] left-[20px] top-[75px] bg-white border border-[rgba(5,5,5,0.15)] backdrop-blur-[7.5px] rounded-[20px]">
+        {/* Timer text - Автоматически закроется через 7 */}
+        <div className="absolute w-[330px] h-[15px] left-[15px] top-[15px] font-['TT_Firs_Neue'] font-normal text-[13px] leading-[115%] text-[rgba(16,16,16,0.5)] tracking-[0.01em]">
+          Автоматически закроется через {cookieCountdown}
+        </div>
+        {/* Consent message */}
+        <div className="absolute w-[330px] h-[60px] left-[15px] top-[40px] font-['TT_Firs_Neue'] font-normal text-[15px] leading-[100%] text-[#101010] tracking-[0.01em]">
+          Если продолжаете использовать этот портал, вы выражаете согласие на использование файлов куки в соответствии с условиями{' '}
+          <a href="#" className="text-blue-600 underline">политики приватности</a> этого портала
         </div>
       </div>
 
-      {showAuth && !isAuthenticated && (
-        <div style={{ marginBottom: '2rem', padding: '1rem', border: '1px solid #ccc', borderRadius: '8px' }}>
-          <div style={{ marginBottom: '1rem' }}>
-            <button
-              onClick={() => setIsLogin(true)}
-              style={{ marginRight: '1rem', padding: '0.5rem 1rem' }}
-            >
-              Вход
-            </button>
-            <button
-              onClick={() => setIsLogin(false)}
-              style={{ padding: '0.5rem 1rem' }}
-            >
-              Регистрация
-            </button>
-          </div>
-          <form onSubmit={isLogin ? handleLogin : handleRegister}>
-            {!isLogin && (
-              <div style={{ marginBottom: '1rem' }}>
-                <input
-                  type="text"
-                  placeholder="Имя"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  required
-                  style={{ width: '100%', padding: '0.5rem' }}
-                />
-              </div>
-            )}
-            <div style={{ marginBottom: '1rem' }}>
-              <input
-                type="email"
-                placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                style={{ width: '100%', padding: '0.5rem' }}
-              />
-            </div>
-            <div style={{ marginBottom: '1rem' }}>
-              <input
-                type="password"
-                placeholder="Пароль"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                style={{ width: '100%', padding: '0.5rem' }}
-              />
-            </div>
-            <button
-              type="submit"
-              style={{ width: '100%', padding: '0.5rem', marginTop: '1rem' }}
-            >
-              {isLogin ? 'Войти' : 'Зарегистрироваться'}
-            </button>
-          </form>
-        </div>
-      )}
+      {/* Main Content Card - Rectangle 30 */}
+      <div className="absolute left-[5%] right-[5%] top-[32.76%] bottom-[16.67%] bg-white border border-[rgba(5,5,5,0.15)] backdrop-blur-[7.5px] rounded-[20px]"></div>
 
-      {/* Hero-секция с формой проверки адреса */}
-      <div style={{ marginBottom: '3rem', padding: '2rem', background: '#f5f5f5', borderRadius: '8px' }}>
-        <h2 style={{ marginBottom: '1rem' }}>Проверьте доступность интернета по вашему адресу</h2>
-        <form onSubmit={handleCheckAddress}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr auto', gap: '1rem', alignItems: 'end' }}>
-            <div>
-              <label style={{ display: 'block', marginBottom: '0.5rem' }}>Город *</label>
-              <input
-                type="text"
-                placeholder="Москва"
-                value={city}
-                onChange={(e) => setCity(e.target.value)}
-                required
-                style={{ width: '100%', padding: '0.5rem' }}
-              />
-            </div>
-            <div>
-              <label style={{ display: 'block', marginBottom: '0.5rem' }}>Улица</label>
-              <input
-                type="text"
-                placeholder="Тверская"
-                value={street}
-                onChange={(e) => setStreet(e.target.value)}
-                style={{ width: '100%', padding: '0.5rem' }}
-              />
-            </div>
-            <div>
-              <label style={{ display: 'block', marginBottom: '0.5rem' }}>Дом</label>
-              <input
-                type="text"
-                placeholder="10"
-                value={house}
-                onChange={(e) => setHouse(e.target.value)}
-                style={{ width: '100%', padding: '0.5rem' }}
-              />
-            </div>
-            <button
-              type="submit"
-              style={{ padding: '0.5rem 2rem', height: 'fit-content' }}
-            >
-              Проверить
-            </button>
-          </div>
-        </form>
+      {/* Main Heading - Подключение интернета. Проверьте с нами, это легко */}
+      <div className="absolute left-[8.75%] right-[8.75%] top-[34.48%] bottom-[59.77%] font-['TT_Firs_Neue'] font-normal text-[22px] leading-[115%] text-[#101010] tracking-[0.02em]">
+        Подключение интернета. Проверьте с нами, это легко
       </div>
 
-      {/* Список тарифов */}
-      {tariffs.length > 0 && (
-        <div>
-          <h2 style={{ marginBottom: '1rem' }}>Доступные тарифы</h2>
-          <div style={{ display: 'grid', gap: '1rem' }}>
-            {tariffs.map((tariff) => (
-              <div
-                key={tariff.id}
-                style={{
-                  border: '1px solid #ccc',
-                  padding: '1.5rem',
-                  borderRadius: '8px',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                }}
-              >
-                <div style={{ flex: 1 }}>
-                  <h3>{tariff.name}</h3>
-                  <p>{tariff.description}</p>
-                  <div style={{ marginTop: '0.5rem', display: 'flex', gap: '1rem', fontSize: '0.9rem' }}>
-                    <span>Скорость: {tariff.speed} Мбит/с</span>
-                    <span>Технология: {tariff.technology}</span>
-                    {tariff.hasTV && <span>ТВ: {tariff.tvChannels} каналов</span>}
-                    {tariff.hasMobile && <span>Мобильная связь</span>}
-                  </div>
-                  {tariff.provider && (
-                    <div style={{ marginTop: '0.5rem', fontSize: '0.9rem' }}>
-                      Провайдер: {tariff.provider.name} (⭐ {tariff.provider.rating})
-                    </div>
-                  )}
-                </div>
-                <div style={{ textAlign: 'right', marginLeft: '2rem' }}>
-                  <div style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>
-                    {tariff.price} ₽/мес
-                  </div>
-                  {tariff.promoPrice && (
-                    <div style={{ fontSize: '0.9rem', color: 'green' }}>
-                      Акция: {tariff.promoPrice} ₽/мес
-                    </div>
-                  )}
-                  {tariff.connectionPrice === 0 && (
-                    <div style={{ fontSize: '0.9rem', color: 'green' }}>Бесплатное подключение</div>
-                  )}
-                  <Link
-                    href={`/application?tariffId=${tariff.id}`}
-                    style={{
-                      display: 'inline-block',
-                      marginTop: '0.5rem',
-                      padding: '0.5rem 1rem',
-                      background: '#0070f3',
-                      color: 'white',
-                      textDecoration: 'none',
-                      borderRadius: '4px',
-                    }}
-                  >
-                    Подключить
-                  </Link>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+      {/* Connection Input Field - Group 7432 / Rectangle 31 */}
+      <div className="absolute left-[8.75%] right-[8.75%] top-[42.53%] bottom-[51.72%] border border-[#101010] rounded-[10px]"></div>
+      {/* Connection Text */}
+      <div className="absolute left-[12.5%] right-[20%] top-[44.25%] bottom-[53.45%] flex items-center font-['TT_Firs_Neue'] font-normal text-[15px] leading-[135%] text-[rgba(16,16,16,0.5)] tracking-[0.01em]">
+        Подключение
+      </div>
+      {/* Connection Button - кружочек со стрелочкой */}
+      <div className="absolute w-[16px] h-[16px] left-[335px] top-[387px] rounded-full bg-[#101010] flex items-center justify-center">
+        <svg width="8" height="8" viewBox="0 0 8 8" fill="none" className="text-white">
+          <path d="M2 1L6 4L2 7" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+        </svg>
+      </div>
 
-      {/* Список провайдеров */}
-      {providers.length > 0 && tariffs.length === 0 && (
-        <div>
-          <h2 style={{ marginBottom: '1rem' }}>Провайдеры</h2>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '1rem' }}>
-            {providers.map((provider) => (
-              <Link
-                key={provider.id}
-                href={`/provider/${provider.id}`}
-                style={{
-                  border: '1px solid #ccc',
-                  padding: '1rem',
-                  borderRadius: '8px',
-                  textDecoration: 'none',
-                  color: 'inherit',
-                }}
-              >
-                <h3>{provider.name}</h3>
-                <div style={{ marginTop: '0.5rem' }}>
-                  ⭐ {provider.rating} ({provider.reviewsCount} отзывов)
-                </div>
-              </Link>
-            ))}
-          </div>
+      {/* Locality Name Input Field - Group 7514 / Rectangle 31 */}
+      <div className="absolute left-[8.75%] right-[8.75%] top-[48.85%] bottom-[45.4%] border border-[rgba(16,16,16,0.25)] rounded-[10px] opacity-50"></div>
+      {/* Locality Name Text */}
+      <div className="absolute left-[12.5%] right-[20%] top-[50.57%] bottom-[47.13%] flex items-center font-['TT_Firs_Neue'] font-normal text-[15px] leading-[135%] text-[rgba(16,16,16,0.25)] opacity-50 tracking-[0.01em]">
+        Название населённого пункта
+      </div>
+      {/* Locality Name Button - кружочек со стрелочкой */}
+      <div className="absolute w-[16px] h-[16px] left-[335px] top-[442px] rounded-full border border-[rgba(16,16,16,0.25)] flex items-center justify-center opacity-50">
+        <svg width="8" height="8" viewBox="0 0 8 8" fill="none">
+          <path d="M2 1L6 4L2 7" stroke="rgba(16,16,16,0.25)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+        </svg>
+      </div>
+
+      {/* Street Input Field - Group 7437 / Rectangle 31 */}
+      <div className="absolute left-[8.75%] right-[8.75%] top-[55.17%] bottom-[39.08%] border border-[rgba(16,16,16,0.25)] rounded-[10px] opacity-50"></div>
+      {/* Street Text */}
+      <div className="absolute left-[12.5%] right-[20%] top-[56.9%] bottom-[40.8%] flex items-center font-['TT_Firs_Neue'] font-normal text-[15px] leading-[135%] text-[rgba(16,16,16,0.25)] opacity-50 tracking-[0.01em]">
+        Улица
+      </div>
+      {/* Street Button - кружочек со стрелочкой */}
+      <div className="absolute w-[16px] h-[16px] left-[335px] top-[497px] rounded-full border border-[rgba(16,16,16,0.25)] flex items-center justify-center opacity-50">
+        <svg width="8" height="8" viewBox="0 0 8 8" fill="none">
+          <path d="M2 1L6 4L2 7" stroke="rgba(16,16,16,0.25)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+        </svg>
+      </div>
+
+      {/* House Number Input Field - Group 7438 / Rectangle 31 */}
+      <div className="absolute left-[8.75%] right-[8.75%] top-[61.49%] bottom-[32.76%] border border-[rgba(16,16,16,0.25)] rounded-[10px] opacity-50"></div>
+      {/* House Number Text */}
+      <div className="absolute left-[12.5%] right-[20%] top-[63.22%] bottom-[34.48%] flex items-center font-['TT_Firs_Neue'] font-normal text-[15px] leading-[135%] text-[rgba(16,16,16,0.25)] opacity-50 tracking-[0.01em]">
+        Номер дома
+      </div>
+      {/* House Number Button - кружочек со стрелочкой */}
+      <div className="absolute w-[16px] h-[16px] left-[335px] top-[552px] rounded-full border border-[rgba(16,16,16,0.25)] flex items-center justify-center opacity-50">
+        <svg width="8" height="8" viewBox="0 0 8 8" fill="none">
+          <path d="M2 1L6 4L2 7" stroke="rgba(16,16,16,0.25)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+        </svg>
+      </div>
+
+      {/* Privacy Policy Checkbox - Group 7372 / Rectangle 30 */}
+      <div className="absolute left-[8.75%] right-[8.75%] top-[67.82%] bottom-[26.44%] border border-[rgba(16,16,16,0.25)] rounded-[10px]"></div>
+      {/* Checkbox - круглый: left: calc(50% - 8px - 142px) = 200 - 8 - 142 = 50px, top: calc(50% - 8px + 180px) = 435 - 8 + 180 = 607px */}
+      <div 
+        className="absolute w-[16px] h-[16px] left-[50px] top-[607px] rounded-full border border-[rgba(16,16,16,0.5)] cursor-pointer flex items-center justify-center"
+        onClick={() => setPrivacyChecked(!privacyChecked)}
+      >
+        {privacyChecked && (
+          <div className="w-[10px] h-[10px] rounded-full bg-[#101010]"></div>
+        )}
+      </div>
+      {/* Privacy Policy Text */}
+      <div className="absolute left-[19%] right-[11%] top-[68.97%] bottom-[27.59%] font-['TT_Firs_Neue'] font-normal text-[14px] leading-[110%] text-[#101010] tracking-[0.01em]">
+        Нажмите, чтобы выразить своё согласие
+        <br />
+        с условиями{' '}
+        <a href="#" className="text-blue-600 underline">политики приватности</a>
+      </div>
+
+      {/* Show Operators Button - Group 7377 / Rectangle 30 */}
+      <div className="absolute left-[8.75%] right-[8.75%] top-[75.86%] bottom-[18.39%] bg-[#101010] border border-[rgba(16,16,16,0.25)] rounded-[10px] flex items-center justify-center">
+        <div className="font-['TT_Firs_Neue'] font-normal text-[15px] leading-[335%] text-white text-center tracking-[0.05em]">
+          Демонстрирование операторов
         </div>
-      )}
+      </div>
     </div>
   );
 }

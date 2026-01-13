@@ -33,10 +33,10 @@ Fullstack микросервисное приложение-агрегатор �
     - `/api/tariffs` (GET, POST), `/api/tariffs/:id` (GET, PUT, DELETE), `/api/tariffs/by-address` (GET)
     - `/api/coverage/check` (GET), `/api/coverage/cities` (GET), `/api/coverage/streets` (GET)
 
-- **Application Service** (порт 3004) - Обработка заявок на подключение
+- **Order Service** (порт 3004) - Обработка заявок на подключение
 
-  - База данных: `application_db`
-  - Endpoints: `/api/applications` (GET, POST), `/api/applications/my` (GET), `/api/applications/:id` (GET), `/api/applications/:id/status` (PUT), `/api/applications/:id/assign` (PUT)
+  - База данных: `orders_db`
+  - Endpoints: `/api/orders` (GET, POST), `/api/orders/my` (GET), `/api/orders/:id` (GET), `/api/orders/:id/status` (PUT), `/api/orders/:id/assign` (PUT)
 
 - **Frontend** (порт 3000) - Next.js приложение (API Gateway)
   - Проксирует запросы к микросервисам через API routes
@@ -51,7 +51,7 @@ Fullstack микросервисное приложение-агрегатор �
 │   ├── auth-service/          # Сервис аутентификации
 │   ├── user-service/          # Сервис пользователей
 │   ├── provider-service/       # Сервис провайдеров и тарифов
-│   └── application-service/   # Сервис заявок на подключение
+│   └── order-service/          # Сервис заявок на подключение
 ├── frontend/                   # Next.js приложение
 │   ├── src/
 │   │   ├── app/
@@ -136,8 +136,8 @@ npm install
 npm run dev
 npm run seed  # Заполнить тестовыми данными
 
-# Application Service
-cd services/application-service
+# Order Service
+cd services/order-service
 npm install
 npm run dev
 
@@ -153,7 +153,7 @@ npm run dev
 - **Auth Service**: http://localhost:3001
 - **User Service**: http://localhost:3002
 - **Provider Service**: http://localhost:3003
-- **Application Service**: http://localhost:3004
+- **Order Service**: http://localhost:3004
 
 ## Базы данных
 
@@ -162,7 +162,7 @@ npm run dev
 - `auth_db` (порт 5432)
 - `user_db` (порт 5433)
 - `provider_db` (порт 5434)
-- `application_db` (порт 5435)
+- `orders_db` (порт 5435)
 
 ## Технологии
 

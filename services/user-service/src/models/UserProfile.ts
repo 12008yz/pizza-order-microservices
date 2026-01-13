@@ -12,6 +12,10 @@ export interface UserProfileAttributes {
   house?: string | null;
   building?: string | null;
   apartment?: string | null;
+  entrance?: string | null; // подъезд
+  floor?: number | null; // этаж
+  intercomCode?: string | null; // код домофона
+  addressComment?: string | null; // комментарий к адресу (например, "может пользователь сам встретит", "ключи спрятаны под ковриком" и т.д.)
   currentProviderId?: number | null;
   currentTariffName?: string | null;
   savedAddresses?: any | null; // JSON
@@ -36,6 +40,10 @@ export class UserProfile
   public house?: string | null;
   public building?: string | null;
   public apartment?: string | null;
+  public entrance?: string | null;
+  public floor?: number | null;
+  public intercomCode?: string | null;
+  public addressComment?: string | null;
   public currentProviderId?: number | null;
   public currentTariffName?: string | null;
   public savedAddresses?: any | null;
@@ -87,6 +95,26 @@ UserProfile.init(
     apartment: {
       type: DataTypes.STRING,
       allowNull: true,
+    },
+    entrance: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      comment: 'Подъезд',
+    },
+    floor: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      comment: 'Этаж',
+    },
+    intercomCode: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      comment: 'Код домофона',
+    },
+    addressComment: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      comment: 'Комментарий к адресу (например, "может пользователь сам встретит", "ключи спрятаны" и т.д.)',
     },
     currentProviderId: {
       type: DataTypes.INTEGER,

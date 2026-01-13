@@ -59,22 +59,102 @@ services:
       timeout: 5s
       retries: 5
 
-  # PostgreSQL для Application Service
-  application-db:
+  # PostgreSQL для Order Service
+  orders-db:
     image: postgres:15-alpine
-    container_name: tariff-application-db
+    container_name: tariff-orders-db
     environment:
-      POSTGRES_USER: application_user
-      POSTGRES_PASSWORD: application_password
-      POSTGRES_DB: application_db
+      POSTGRES_USER: orders_user
+      POSTGRES_PASSWORD: orders_password
+      POSTGRES_DB: orders_db
     ports:
       - "5435:5432"
     volumes:
-      - application_db_data:/var/lib/postgresql/data
+      - orders_db_data:/var/lib/postgresql/data
     networks:
       - tariff-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U application_user -d application_db"]
+      test: ["CMD-SHELL", "pg_isready -U orders_user -d orders_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # PostgreSQL для Location Service
+  locations-db:
+    image: postgres:15-alpine
+    container_name: tariff-locations-db
+    environment:
+      POSTGRES_USER: locations_user
+      POSTGRES_PASSWORD: locations_password
+      POSTGRES_DB: locations_db
+    ports:
+      - "5436:5432"
+    volumes:
+      - locations_db_data:/var/lib/postgresql/data
+    networks:
+      - tariff-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U locations_user -d locations_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # PostgreSQL для Availability Service
+  availability-db:
+    image: postgres:15-alpine
+    container_name: tariff-availability-db
+    environment:
+      POSTGRES_USER: availability_user
+      POSTGRES_PASSWORD: availability_password
+      POSTGRES_DB: availability_db
+    ports:
+      - "5437:5432"
+    volumes:
+      - availability_db_data:/var/lib/postgresql/data
+    networks:
+      - tariff-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U availability_user -d availability_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # PostgreSQL для Equipment Service
+  equipment-db:
+    image: postgres:15-alpine
+    container_name: tariff-equipment-db
+    environment:
+      POSTGRES_USER: equipment_user
+      POSTGRES_PASSWORD: equipment_password
+      POSTGRES_DB: equipment_db
+    ports:
+      - "5438:5432"
+    volumes:
+      - equipment_db_data:/var/lib/postgresql/data
+    networks:
+      - tariff-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U equipment_user -d equipment_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # PostgreSQL для Notification Service (опционально)
+  notifications-db:
+    image: postgres:15-alpine
+    container_name: tariff-notifications-db
+    environment:
+      POSTGRES_USER: notifications_user
+      POSTGRES_PASSWORD: notifications_password
+      POSTGRES_DB: notifications_db
+    ports:
+      - "5439:5432"
+    volumes:
+      - notifications_db_data:/var/lib/postgresql/data
+    networks:
+      - tariff-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U notifications_user -d notifications_db"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -159,36 +239,157 @@ services:
       - ./services/provider-service:/app
       - /app/node_modules
 
-  # Application Service
-  application-service:
+  # Order Service
+  order-service:
     build:
-      context: ./services/application-service
+      context: ./services/order-service
       dockerfile: Dockerfile
-    container_name: tariff-application-service
+    container_name: tariff-order-service
     environment:
       NODE_ENV: development
       PORT: 3004
-      DB_HOST: application-db
+      DB_HOST: orders-db
       DB_PORT: 5432
-      DB_NAME: application_db
-      DB_USER: application_user
-      DB_PASSWORD: application_password
+      DB_NAME: orders_db
+      DB_USER: orders_user
+      DB_PASSWORD: orders_password
       AUTH_SERVICE_URL: http://auth-service:3001
       USER_SERVICE_URL: http://user-service:3002
       PROVIDER_SERVICE_URL: http://provider-service:3003
+      LOCATION_SERVICE_URL: http://location-service:3005
+      AVAILABILITY_SERVICE_URL: http://availability-service:3006
+      EQUIPMENT_SERVICE_URL: http://equipment-service:3007
     ports:
       - "3004:3004"
     depends_on:
-      application-db:
+      orders-db:
         condition: service_healthy
       user-service:
+        condition: service_started
+      provider-service:
+        condition: service_started
+      location-service:
+        condition: service_started
+      availability-service:
+        condition: service_started
+      equipment-service:
+        condition: service_started
+    networks:
+      - tariff-network
+    volumes:
+      - ./services/order-service:/app
+      - /app/node_modules
+
+  # Location Service
+  location-service:
+    build:
+      context: ./services/location-service
+      dockerfile: Dockerfile
+    container_name: tariff-location-service
+    environment:
+      NODE_ENV: development
+      PORT: 3005
+      DB_HOST: locations-db
+      DB_PORT: 5432
+      DB_NAME: locations_db
+      DB_USER: locations_user
+      DB_PASSWORD: locations_password
+    ports:
+      - "3005:3005"
+    depends_on:
+      locations-db:
+        condition: service_healthy
+    networks:
+      - tariff-network
+    volumes:
+      - ./services/location-service:/app
+      - /app/node_modules
+
+  # Availability Service
+  availability-service:
+    build:
+      context: ./services/availability-service
+      dockerfile: Dockerfile
+    container_name: tariff-availability-service
+    environment:
+      NODE_ENV: development
+      PORT: 3006
+      DB_HOST: availability-db
+      DB_PORT: 5432
+      DB_NAME: availability_db
+      DB_USER: availability_user
+      DB_PASSWORD: availability_password
+      LOCATION_SERVICE_URL: http://location-service:3005
+      PROVIDER_SERVICE_URL: http://provider-service:3003
+    ports:
+      - "3006:3006"
+    depends_on:
+      availability-db:
+        condition: service_healthy
+      location-service:
         condition: service_started
       provider-service:
         condition: service_started
     networks:
       - tariff-network
     volumes:
-      - ./services/application-service:/app
+      - ./services/availability-service:/app
+      - /app/node_modules
+
+  # Equipment Service
+  equipment-service:
+    build:
+      context: ./services/equipment-service
+      dockerfile: Dockerfile
+    container_name: tariff-equipment-service
+    environment:
+      NODE_ENV: development
+      PORT: 3007
+      DB_HOST: equipment-db
+      DB_PORT: 5432
+      DB_NAME: equipment_db
+      DB_USER: equipment_user
+      DB_PASSWORD: equipment_password
+      PROVIDER_SERVICE_URL: http://provider-service:3003
+    ports:
+      - "3007:3007"
+    depends_on:
+      equipment-db:
+        condition: service_healthy
+      provider-service:
+        condition: service_started
+    networks:
+      - tariff-network
+    volumes:
+      - ./services/equipment-service:/app
+      - /app/node_modules
+
+  # Notification Service
+  notification-service:
+    build:
+      context: ./services/notification-service
+      dockerfile: Dockerfile
+    container_name: tariff-notification-service
+    environment:
+      NODE_ENV: development
+      PORT: 3008
+      DB_HOST: notifications-db
+      DB_PORT: 5432
+      DB_NAME: notifications_db
+      DB_USER: notifications_user
+      DB_PASSWORD: notifications_password
+      ORDER_SERVICE_URL: http://order-service:3004
+    ports:
+      - "3008:3008"
+    depends_on:
+      notifications-db:
+        condition: service_healthy
+      order-service:
+        condition: service_started
+    networks:
+      - tariff-network
+    volumes:
+      - ./services/notification-service:/app
       - /app/node_modules
 
   # Frontend (Next.js)
@@ -203,14 +404,22 @@ services:
       AUTH_SERVICE_URL: http://auth-service:3001
       USER_SERVICE_URL: http://user-service:3002
       PROVIDER_SERVICE_URL: http://provider-service:3003
-      APPLICATION_SERVICE_URL: http://application-service:3004
+      ORDER_SERVICE_URL: http://order-service:3004
+      LOCATION_SERVICE_URL: http://location-service:3005
+      AVAILABILITY_SERVICE_URL: http://availability-service:3006
+      EQUIPMENT_SERVICE_URL: http://equipment-service:3007
+      NOTIFICATION_SERVICE_URL: http://notification-service:3008
     ports:
       - "3000:3000"
     depends_on:
       - auth-service
       - user-service
       - provider-service
-      - application-service
+      - order-service
+      - location-service
+      - availability-service
+      - equipment-service
+      - notification-service
     networks:
       - tariff-network
     volumes:
@@ -222,7 +431,11 @@ volumes:
   auth_db_data:
   user_db_data:
   provider_db_data:
-  application_db_data:
+  orders_db_data:
+  locations_db_data:
+  availability_db_data:
+  equipment_db_data:
+  notifications_db_data:
 
 networks:
   tariff-network:

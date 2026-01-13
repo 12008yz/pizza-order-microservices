@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import axios from 'axios';
 
-const APPLICATION_SERVICE_URL = process.env.APPLICATION_SERVICE_URL || 'http://application-service:3004';
+const ORDER_SERVICE_URL = process.env.ORDER_SERVICE_URL || 'http://order-service:3004';
 
 export async function POST(req: NextRequest) {
   try {
@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
       headers.Authorization = authHeader;
     }
 
-    const response = await axios.post(`${APPLICATION_SERVICE_URL}/api/applications`, body, {
+    const response = await axios.post(`${ORDER_SERVICE_URL}/api/orders`, body, {
       headers,
     });
 
@@ -41,8 +41,8 @@ export async function GET(req: NextRequest) {
     const searchParams = req.nextUrl.searchParams;
     const queryString = searchParams.toString();
     const url = queryString
-      ? `${APPLICATION_SERVICE_URL}/api/applications?${queryString}`
-      : `${APPLICATION_SERVICE_URL}/api/applications`;
+      ? `${ORDER_SERVICE_URL}/api/orders?${queryString}`
+      : `${ORDER_SERVICE_URL}/api/orders`;
 
     const response = await axios.get(url, {
       headers: {
@@ -58,5 +58,3 @@ export async function GET(req: NextRequest) {
     );
   }
 }
-
-

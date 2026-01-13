@@ -60,6 +60,49 @@ export const getMyOrders = async (
   }
 };
 
+/**
+ * Получить заказы по номеру телефона (без авторизации)
+ * GET /api/orders/by-phone?phone=...
+ */
+export const getOrdersByPhone = async (
+  req: any,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    let { phone } = req.query;
+
+    // Декодируем phone из URL, если он закодирован
+    if (phone && typeof phone === 'string') {
+      phone = decodeURIComponent(phone);
+    }
+
+    if (!phone || typeof phone !== 'string' || phone.trim() === '') {
+      return res.status(400).json({
+        success: false,
+        error: 'Phone number is required',
+      });
+    }
+
+    // Базовая валидация формата телефона
+    const phoneRegex = /^[\d\s\-\+\(\)]+$/;
+    if (!phoneRegex.test(phone) || phone.replace(/\D/g, '').length < 10) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid phone number format',
+      });
+    }
+
+    const orders = await orderService.getOrdersByPhone(phone.trim());
+    res.status(200).json({
+      success: true,
+      data: orders,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const getAllOrders = async (
   req: AuthRequest | any,
   res: Response,

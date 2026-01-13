@@ -3,8 +3,8 @@ import { sequelize } from '../config/database';
 
 export interface UserProfileAttributes {
   id: number;
-  userId: number;
-  phone?: string;
+  userId: number | null; // Null для обычных пользователей, используется только для админов/менеджеров
+  phone: string; // Основной идентификатор пользователя (обязательный, unique)
   address?: string;
   city?: string;
   postalCode?: string;
@@ -24,15 +24,15 @@ export interface UserProfileAttributes {
 }
 
 export interface UserProfileCreationAttributes
-  extends Optional<UserProfileAttributes, 'id'> {}
+  extends Optional<UserProfileAttributes, 'id' | 'userId' | 'address' | 'city' | 'postalCode' | 'street' | 'house' | 'building' | 'apartment' | 'entrance' | 'floor' | 'intercomCode' | 'addressComment' | 'currentProviderId' | 'currentTariffName' | 'savedAddresses'> {}
 
 export class UserProfile
   extends Model<UserProfileAttributes, UserProfileCreationAttributes>
   implements UserProfileAttributes
 {
   public id!: number;
-  public userId!: number;
-  public phone?: string;
+  public userId!: number | null;
+  public phone!: string;
   public address?: string;
   public city?: string;
   public postalCode?: string;
@@ -61,12 +61,14 @@ UserProfile.init(
     },
     userId: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true, // Null для обычных пользователей, используется только для админов
       unique: true,
     },
     phone: {
       type: DataTypes.STRING,
-      allowNull: true,
+      allowNull: false, // Обязательный, основной идентификатор
+      unique: true,
+      comment: 'Основной идентификатор пользователя. Запись создаётся при вводе телефона.',
     },
     address: {
       type: DataTypes.STRING,

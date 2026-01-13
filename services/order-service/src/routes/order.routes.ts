@@ -6,6 +6,7 @@ import {
   getAllOrders,
   updateOrderStatus,
   assignOrder,
+  getOrdersByPhone,
 } from '../controllers/order.controller';
 import { authenticateToken } from '../middleware/auth';
 
@@ -17,8 +18,12 @@ router.post('/', createOrder);
 // Получение всех заявок (для админов) - требует авторизации
 router.get('/', authenticateToken, getAllOrders);
 
-// Мои заявки (требует авторизации)
+// Мои заявки (требует авторизации) - для админов/менеджеров по userId
 router.get('/my', authenticateToken, getMyOrders);
+
+// Получение заказов по телефону (без авторизации) - для обычных пользователей
+// ВАЖНО: Должен быть ПЕРЕД /:id, иначе /by-phone будет интерпретироваться как /:id
+router.get('/by-phone', getOrdersByPhone);
 
 // Детали заявки - без авторизации (можно добавить проверку прав)
 router.get('/:id', getOrderById);

@@ -88,6 +88,16 @@ export class OrderService {
     });
   }
 
+  /**
+   * Получить заказы по номеру телефона (для обычных пользователей без userId)
+   */
+  async getOrdersByPhone(phone: string) {
+    return await Order.findAll({
+      where: { phone },
+      order: [['createdAt', 'DESC']],
+    });
+  }
+
   async getAllOrders(filters: {
     status?: string;
     providerId?: number;

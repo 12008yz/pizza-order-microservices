@@ -7,13 +7,8 @@ import { logger } from './utils/logger';
 import { errorHandler } from './middleware/errorHandler';
 import locationRoutes from './routes/location.routes';
 
-// Инициализация моделей
-import './models/Region';
-import './models/City';
-import './models/StreetType';
-import './models/Street';
-import './models/Building';
-import './models/Apartment';
+// Инициализация моделей и ассоциаций
+import './models/index';
 
 dotenv.config();
 

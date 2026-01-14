@@ -2,19 +2,45 @@ import { Coverage } from '../models/Coverage';
 import { Provider } from '../models/Provider';
 import { AppError } from '../middleware/errorHandler';
 import { Op } from 'sequelize';
+import { normalizeCity, normalizeStreet, normalizeDistrict } from '../utils/addressNormalizer';
 
 export class CoverageService {
+  /**
+   * Проверяет покрытие для адреса
+   * Использует нормализацию для корректного поиска независимо от формата ввода
+   */
   async checkAddress(city: string, street?: string, house?: number) {
+    // Нормализуем входящие данные
+    const normalizedCity = normalizeCity(city);
+    const normalizedStreet = street ? normalizeStreet(street) : null;
+
+    // Ищем по нормализованным значениям
+    // Используем LIKE для частичного совпадения (на случай небольших различий)
     const where: any = {
-      city,
+      [Op.or]: [
+        { city: normalizedCity },
+        { city: { [Op.like]: `%${normalizedCity}%` } }, // частичное совпадение
+      ],
     };
 
-    if (street) {
-      where.street = street;
+    if (normalizedStreet) {
+      if (!where[Op.and]) {
+        where[Op.and] = [];
+      }
+      where[Op.and].push({
+        [Op.or]: [
+          { street: normalizedStreet },
+          { street: { [Op.like]: `%${normalizedStreet}%` } },
+          { street: null }, // если улица не указана в coverage, значит покрывается весь город
+        ],
+      });
     }
 
     if (house !== undefined) {
-      where[Op.and] = [
+      if (!where[Op.and]) {
+        where[Op.and] = [];
+      }
+      where[Op.and].push(
         {
           [Op.or]: [
             { houseFrom: null },
@@ -26,8 +52,8 @@ export class CoverageService {
             { houseTo: null },
             { houseTo: { [Op.gte]: house } },
           ],
-        },
-      ];
+        }
+      );
     }
 
     const coverage = await Coverage.findAll({
@@ -74,8 +100,15 @@ export class CoverageService {
   }
 
   async getStreets(city: string) {
+    const normalizedCity = normalizeCity(city);
+    
     const streets = await Coverage.findAll({
-      where: { city },
+      where: {
+        [Op.or]: [
+          { city: normalizedCity },
+          { city: { [Op.like]: `%${normalizedCity}%` } },
+        ],
+      },
       attributes: ['street'],
       group: ['street'],
       raw: true,
@@ -86,6 +119,10 @@ export class CoverageService {
       .filter(s => s !== null);
   }
 
+  /**
+   * Создает запись о покрытии
+   * Автоматически нормализует адресные данные перед сохранением
+   */
   async createCoverage(data: {
     providerId: number;
     city: string;
@@ -94,9 +131,21 @@ export class CoverageService {
     houseFrom?: number;
     houseTo?: number;
   }) {
-    return await Coverage.create(data);
+    // Нормализуем данные перед сохранением
+    const normalizedData = {
+      ...data,
+      city: normalizeCity(data.city),
+      district: normalizeDistrict(data.district),
+      street: normalizeStreet(data.street),
+    };
+    
+    return await Coverage.create(normalizedData);
   }
 
+  /**
+   * Обновляет запись о покрытии
+   * Нормализует адресные данные при обновлении
+   */
   async updateCoverage(id: number, data: Partial<Coverage>) {
     const coverage = await Coverage.findByPk(id);
     if (!coverage) {
@@ -104,7 +153,14 @@ export class CoverageService {
       error.statusCode = 404;
       throw error;
     }
-    await coverage.update(data);
+    
+    // Нормализуем данные перед обновлением
+    const normalizedData: any = { ...data };
+    if (data.city) normalizedData.city = normalizeCity(data.city);
+    if (data.district !== undefined) normalizedData.district = normalizeDistrict(data.district);
+    if (data.street !== undefined) normalizedData.street = normalizeStreet(data.street);
+    
+    await coverage.update(normalizedData);
     return coverage;
   }
 

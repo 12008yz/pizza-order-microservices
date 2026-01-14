@@ -1,0 +1,176 @@
+{
+  "info": {
+    "name": "ГИГАПОИСК - Фаза 1: Health Checks",
+    "description": "Коллекция для проверки всех сервисов после завершения Фазы 1",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Auth Service",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3001/health",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3001",
+              "path": ["health"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "User Service",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3002/health",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3002",
+              "path": ["health"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Provider Service",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3003/health",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3003",
+              "path": ["health"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Order Service",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3004/health",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3004",
+              "path": ["health"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Location Service (NEW)",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3005/health",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3005",
+              "path": ["health"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Availability Service (NEW)",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3006/health",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3006",
+              "path": ["health"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Equipment Service (NEW)",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3007/health",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3007",
+              "path": ["health"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Notification Service (NEW)",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3008/health",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3008",
+              "path": ["health"]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost",
+      "type": "string"
+    }
+  ]
+}

@@ -8,6 +8,12 @@ import userRoutes from './routes/user.routes';
 import { errorHandler } from './middleware/errorHandler';
 import { authenticateToken } from './middleware/auth';
 
+// Инициализация моделей
+import './models/UserProfile';
+import './models/FavoriteTariff';
+import './models/UserPreference';
+import './models/UserActivity';
+
 dotenv.config();
 
 const app = express();

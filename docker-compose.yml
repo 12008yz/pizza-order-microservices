@@ -294,6 +294,7 @@ services:
       DB_NAME: locations_db
       DB_USER: locations_user
       DB_PASSWORD: locations_password
+      YANDEX_GEOCODER_API_KEY: d2ef2e3e-5fce-41ce-bd80-308c479792c1
     ports:
       - "3005:3005"
     depends_on:

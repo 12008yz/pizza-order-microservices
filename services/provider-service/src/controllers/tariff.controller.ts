@@ -16,9 +16,13 @@ export const getAllTariffs = async (
       maxPrice,
       technology,
       hasTV,
+      hasMobile,
+      serviceType, // 'internet' | 'tv' | 'mobile' | 'all'
       city,
       street,
       house,
+      sortBy, // 'price' | 'speed' | 'popularity'
+      sortOrder, // 'asc' | 'desc'
     } = req.query;
 
     const filters: any = {};
@@ -28,9 +32,13 @@ export const getAllTariffs = async (
     if (maxPrice) filters.maxPrice = parseFloat(maxPrice as string);
     if (technology) filters.technology = technology as string;
     if (hasTV !== undefined) filters.hasTV = hasTV === 'true';
+    if (hasMobile !== undefined) filters.hasMobile = hasMobile === 'true';
+    if (serviceType) filters.serviceType = serviceType as 'internet' | 'tv' | 'mobile' | 'all';
     if (city) filters.city = city as string;
     if (street) filters.street = street as string;
     if (house) filters.house = parseInt(house as string);
+    if (sortBy) filters.sortBy = sortBy as 'price' | 'speed' | 'popularity';
+    if (sortOrder) filters.sortOrder = sortOrder as 'asc' | 'desc';
 
     const tariffs = await tariffService.getAllTariffs(filters);
     res.status(200).json({

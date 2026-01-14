@@ -5,6 +5,8 @@ import { Op } from 'sequelize';
 import axios from 'axios';
 
 const PROVIDER_SERVICE_URL = process.env.PROVIDER_SERVICE_URL || 'http://localhost:3003';
+const LOCATION_SERVICE_URL = process.env.LOCATION_SERVICE_URL || 'http://localhost:3005';
+const AVAILABILITY_SERVICE_URL = process.env.AVAILABILITY_SERVICE_URL || 'http://localhost:3006';
 
 export class OrderService {
   async createOrder(data: {
@@ -14,11 +16,13 @@ export class OrderService {
     fullName: string;
     phone: string;
     email?: string | null;
-    city: string;
-    street: string;
-    house: string;
-    building?: string | null;
-    apartment?: string | null;
+    // Адрес через ID из Location Service
+    regionId?: number | null;
+    cityId?: number | null;
+    streetId?: number | null;
+    buildingId?: number | null;
+    apartmentId?: number | null;
+    addressString?: string | null; // Полный адрес строкой для отображения
     entrance?: string | null;
     floor?: string | null;
     intercom?: string | null;
@@ -51,6 +55,32 @@ export class OrderService {
         throw appError;
       }
       throw error;
+    }
+
+    // Проверяем доступность провайдера по адресу (если указан buildingId)
+    if (data.buildingId) {
+      try {
+        const availabilityResponse = await axios.post(
+          `${AVAILABILITY_SERVICE_URL}/api/availability/check`,
+          {
+            buildingId: data.buildingId,
+            apartmentId: data.apartmentId,
+            providerId: data.providerId,
+          }
+        );
+
+        if (!availabilityResponse.data.success || !availabilityResponse.data.data?.isAvailable) {
+          const error = new Error('Provider is not available at this address') as AppError;
+          error.statusCode = 400;
+          throw error;
+        }
+      } catch (error: any) {
+        if (error.response?.status === 400 || error.response?.status === 404) {
+          throw error;
+        }
+        // Если Availability Service недоступен, логируем предупреждение, но не блокируем создание заявки
+        logger.warn(`Availability check failed for order: ${error.message}`);
+      }
     }
 
     const order = await Order.create({

@@ -5,6 +5,12 @@ import dotenv from 'dotenv';
 import { sequelize } from './config/database';
 import { logger } from './utils/logger';
 import { errorHandler } from './middleware/errorHandler';
+import equipmentRoutes from './routes/equipment.routes';
+
+// Инициализация моделей и ассоциаций
+import './models/EquipmentType';
+import './models/Equipment';
+import './models'; // Импортируем ассоциации
 
 dotenv.config();
 
@@ -16,8 +22,8 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Routes will be added here
-// app.use('/api/equipment', equipmentRoutes);
+// Routes
+app.use('/api/equipment', equipmentRoutes);
 
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'ok', service: 'equipment-service' });

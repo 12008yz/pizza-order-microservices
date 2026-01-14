@@ -5,6 +5,15 @@ import dotenv from 'dotenv';
 import { sequelize } from './config/database';
 import { logger } from './utils/logger';
 import { errorHandler } from './middleware/errorHandler';
+import locationRoutes from './routes/location.routes';
+
+// Инициализация моделей
+import './models/Region';
+import './models/City';
+import './models/StreetType';
+import './models/Street';
+import './models/Building';
+import './models/Apartment';
 
 dotenv.config();
 
@@ -16,8 +25,8 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Routes will be added here
-// app.use('/api/locations', locationRoutes);
+// Routes
+app.use('/api/locations', locationRoutes);
 
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'ok', service: 'location-service' });

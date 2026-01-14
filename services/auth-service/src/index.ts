@@ -7,6 +7,12 @@ import { logger } from './utils/logger';
 import authRoutes from './routes/auth.routes';
 import { errorHandler } from './middleware/errorHandler';
 
+// Инициализация моделей
+import './models/User';
+import './models/RefreshToken';
+import './models/VerificationCode';
+import './models/UserSession';
+
 dotenv.config();
 
 const app = express();

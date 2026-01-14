@@ -17,13 +17,16 @@ export interface OrderAttributes {
   phone: string;                   // Телефон (обязательно)
   email: string | null;            // Email
 
-  // Адрес подключения
-  city: string;
-  street: string;
-  house: string;
-  building: string | null;         // Корпус/строение
-  apartment: string | null;        // Квартира
-  entrance: string | null;         // Подъезд
+  // Адрес подключения (ID из Location Service)
+  regionId: number | null;         // ID региона (связь через внешний API Location Service)
+  cityId: number | null;            // ID города (связь через внешний API Location Service)
+  streetId: number | null;         // ID улицы (связь через внешний API Location Service)
+  buildingId: number | null;        // ID дома (связь через внешний API Location Service)
+  apartmentId: number | null;      // ID квартиры (связь через внешний API Location Service)
+  
+  // Дополнительные детали адреса (для удобства и отображения)
+  addressString: string | null;    // Полный адрес строкой (для отображения)
+  entrance: string | null;          // Подъезд
   floor: string | null;            // Этаж
   intercom: string | null;         // Домофон
 
@@ -50,7 +53,7 @@ export interface OrderAttributes {
 }
 
 export interface OrderCreationAttributes
-  extends Optional<OrderAttributes, 'id' | 'userId' | 'email' | 'status' | 'building' | 'apartment' | 'entrance' | 'floor' | 'intercom' | 'preferredDate' | 'preferredTimeFrom' | 'preferredTimeTo' | 'comment' | 'source' | 'utmSource' | 'utmMedium' | 'utmCampaign' | 'utmContent' | 'utmTerm' | 'assignedTo' | 'internalComment'> {}
+  extends Optional<OrderAttributes, 'id' | 'userId' | 'email' | 'status' | 'regionId' | 'cityId' | 'streetId' | 'buildingId' | 'apartmentId' | 'addressString' | 'entrance' | 'floor' | 'intercom' | 'preferredDate' | 'preferredTimeFrom' | 'preferredTimeTo' | 'comment' | 'source' | 'utmSource' | 'utmMedium' | 'utmCampaign' | 'utmContent' | 'utmTerm' | 'assignedTo' | 'internalComment'> {}
 
 export class Order
   extends Model<OrderAttributes, OrderCreationAttributes>
@@ -64,11 +67,12 @@ export class Order
   public fullName!: string;
   public phone!: string;
   public email!: string | null;
-  public city!: string;
-  public street!: string;
-  public house!: string;
-  public building!: string | null;
-  public apartment!: string | null;
+  public regionId!: number | null;
+  public cityId!: number | null;
+  public streetId!: number | null;
+  public buildingId!: number | null;
+  public apartmentId!: number | null;
+  public addressString!: string | null;
   public entrance!: string | null;
   public floor!: string | null;
   public intercom!: string | null;
@@ -127,25 +131,35 @@ Order.init(
         isEmail: true,
       },
     },
-    city: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    street: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    house: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    building: {
-      type: DataTypes.STRING,
+    regionId: {
+      type: DataTypes.INTEGER,
       allowNull: true,
+      comment: 'ID региона (связь через внешний API Location Service)',
     },
-    apartment: {
-      type: DataTypes.STRING,
+    cityId: {
+      type: DataTypes.INTEGER,
       allowNull: true,
+      comment: 'ID города (связь через внешний API Location Service)',
+    },
+    streetId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      comment: 'ID улицы (связь через внешний API Location Service)',
+    },
+    buildingId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      comment: 'ID дома (связь через внешний API Location Service)',
+    },
+    apartmentId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      comment: 'ID квартиры (связь через внешний API Location Service)',
+    },
+    addressString: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      comment: 'Полный адрес строкой (для отображения)',
     },
     entrance: {
       type: DataTypes.STRING,

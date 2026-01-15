@@ -4,8 +4,29 @@ import { logger } from '../utils/logger';
 
 export class UserService {
   /**
-   * Получить или создать профиль по номеру телефона
-   * Профиль создаётся автоматически при первом вводе телефона
+   * Получить профиль оператора по userId
+   * Используется для получения профиля текущего оператора
+   * UserProfile используется только для операторов/админов (userId не null)
+   */
+  async getProfileByUserId(userId: number) {
+    const profile = await UserProfile.findOne({ where: { userId } });
+    return profile;
+  }
+
+  /**
+   * Получить профиль оператора по номеру телефона
+   * Используется только админами для управления профилями операторов
+   * @deprecated - может использоваться только админами, не для обычных пользователей
+   */
+  async getProfileByPhoneOnly(phone: string) {
+    const profile = await UserProfile.findOne({ where: { phone } });
+    return profile;
+  }
+
+  /**
+   * Получить или создать профиль оператора по номеру телефона
+   * Используется только админами для управления профилями операторов
+   * @deprecated - может использоваться только админами, не для обычных пользователей
    */
   async getProfileByPhone(phone: string) {
     let profile = await UserProfile.findOne({ where: { phone } });
@@ -19,7 +40,9 @@ export class UserService {
   }
 
   /**
-   * Обновить профиль по номеру телефона
+   * Обновить профиль оператора по номеру телефона
+   * Используется только админами для управления профилями операторов
+   * @deprecated - может использоваться только админами, не для обычных пользователей
    */
   async updateProfileByPhone(phone: string, data: Partial<UserProfile>) {
     let profile = await UserProfile.findOne({ where: { phone } });
@@ -32,22 +55,6 @@ export class UserService {
       logger.info(`Updated profile for phone: ${phone}`);
     }
 
-    return profile;
-  }
-
-  /**
-   * Получить профиль по номеру телефона
-   */
-  async getProfileByPhoneOnly(phone: string) {
-    const profile = await UserProfile.findOne({ where: { phone } });
-    return profile;
-  }
-
-  /**
-   * Для админов/менеджеров - получить профиль по userId
-   */
-  async getProfileByUserId(userId: number) {
-    const profile = await UserProfile.findOne({ where: { userId } });
     return profile;
   }
 }

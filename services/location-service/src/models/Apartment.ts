@@ -64,5 +64,4 @@ Apartment.init(
   }
 );
 
-// Association
-Apartment.belongsTo(Building, { foreignKey: 'buildingId', as: 'building' });
+// Association is defined in models/index.ts

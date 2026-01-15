@@ -85,5 +85,4 @@ Building.init(
   }
 );
 
-// Association
-Building.belongsTo(Street, { foreignKey: 'streetId', as: 'street' });
+// Association is defined in models/index.ts

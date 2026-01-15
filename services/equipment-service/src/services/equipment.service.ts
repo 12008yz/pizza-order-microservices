@@ -4,7 +4,7 @@ import { AppError } from '../middleware/errorHandler';
 import { Op } from 'sequelize';
 import axios from 'axios';
 
-const PROVIDER_SERVICE_URL = process.env.PROVIDER_SERVICE_URL || 'http://provider-service:3003';
+const PROVIDER_SERVICE_URL = process.env.PROVIDER_SERVICE_URL || 'http://localhost:3003';
 
 export class EquipmentService {
   /**
@@ -91,14 +91,14 @@ export class EquipmentService {
       const providerResponse = await axios.get(
         `${PROVIDER_SERVICE_URL}/api/providers/${equipment.providerId}`
       );
-      return {
-        ...equipment.toJSON(),
-        provider: providerResponse.data.data || providerResponse.data,
-      };
+      // Добавляем provider как свойство к модели Equipment
+      (equipment as any).provider = providerResponse.data.data || providerResponse.data;
     } catch (error) {
       // Если провайдер не найден, возвращаем оборудование без информации о провайдере
-      return equipment;
+      // Игнорируем ошибку
     }
+
+    return equipment;
   }
 
   /**

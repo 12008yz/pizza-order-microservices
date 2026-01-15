@@ -86,5 +86,4 @@ City.init(
   }
 );
 
-// Association
-City.belongsTo(Region, { foreignKey: 'regionId', as: 'region' });
+// Association is defined in models/index.ts

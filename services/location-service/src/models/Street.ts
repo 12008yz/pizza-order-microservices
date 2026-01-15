@@ -95,6 +95,4 @@ Street.init(
   }
 );
 
-// Associations
-Street.belongsTo(City, { foreignKey: 'cityId', as: 'city' });
-Street.belongsTo(StreetType, { foreignKey: 'streetTypeId', as: 'streetType' });
+// Associations are defined in models/index.ts

@@ -15,6 +15,44 @@ jest.mock('../config/database', () => {
   };
 });
 
+// Мокируем модели Sequelize чтобы они не пытались инициализироваться
+jest.mock('../models/Provider', () => ({
+  Provider: {
+    findAll: jest.fn(),
+    findByPk: jest.fn(),
+    findOne: jest.fn(),
+    create: jest.fn(),
+  },
+}));
+
+jest.mock('../models/Tariff', () => ({
+  Tariff: {
+    findAll: jest.fn(),
+    findByPk: jest.fn(),
+    findOne: jest.fn(),
+    create: jest.fn(),
+  },
+}));
+
+jest.mock('../models/Coverage', () => ({
+  Coverage: {
+    findAll: jest.fn(),
+    findByPk: jest.fn(),
+    findOne: jest.fn(),
+    create: jest.fn(),
+  },
+}));
+
+// Мокируем logger
+jest.mock('../utils/logger', () => ({
+  logger: {
+    info: jest.fn(),
+    error: jest.fn(),
+    warn: jest.fn(),
+    debug: jest.fn(),
+  },
+}));
+
 beforeAll(async () => {
   if (process.env.NODE_ENV !== 'test') {
     process.env.NODE_ENV = 'test';
@@ -29,4 +67,9 @@ beforeAll(async () => {
 
 afterAll(async () => {
   // Ничего не делаем, так как sequelize замокан
+});
+
+beforeEach(() => {
+  // Очистка моков перед каждым тестом
+  jest.clearAllMocks();
 });

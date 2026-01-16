@@ -91,7 +91,8 @@ describe('Auth API Integration Tests', () => {
       expect(mockRegister).toHaveBeenCalledWith(
         userData.email,
         userData.password,
-        userData.name
+        userData.name,
+        'admin'
       );
     });
 

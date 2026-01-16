@@ -11,13 +11,32 @@ jest.mock('../config/database', () => ({
   },
 }));
 
-// Мокируем модели Sequelize чтобы они не пытались инициализироваться
+// Мокируем models/index.ts чтобы избежать установки ассоциаций
+jest.mock('../models', () => ({
+  Equipment: {
+    findAll: jest.fn(),
+    findByPk: jest.fn(),
+    findOne: jest.fn(),
+    create: jest.fn(),
+    init: jest.fn(),
+  },
+  EquipmentType: {
+    findAll: jest.fn(),
+    findByPk: jest.fn(),
+    findOne: jest.fn(),
+    create: jest.fn(),
+    init: jest.fn(),
+  },
+}));
+
+// Мокируем отдельные модели тоже (на случай прямого импорта)
 jest.mock('../models/Equipment', () => ({
   Equipment: {
     findAll: jest.fn(),
     findByPk: jest.fn(),
     findOne: jest.fn(),
     create: jest.fn(),
+    init: jest.fn(),
   },
 }));
 
@@ -27,6 +46,7 @@ jest.mock('../models/EquipmentType', () => ({
     findByPk: jest.fn(),
     findOne: jest.fn(),
     create: jest.fn(),
+    init: jest.fn(),
   },
 }));
 

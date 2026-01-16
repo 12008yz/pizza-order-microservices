@@ -82,7 +82,8 @@ describe('AuthController', () => {
       expect(mockRegister).toHaveBeenCalledWith(
         mockUserData.email,
         mockUserData.password,
-        mockUserData.name
+        mockUserData.name,
+        'admin'
       );
       expect(mockResponse.status).toHaveBeenCalledWith(201);
       expect(mockResponse.json).toHaveBeenCalledWith({

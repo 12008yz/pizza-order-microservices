@@ -42,6 +42,7 @@ describe('TariffService', () => {
 
       const result = await tariffService.getAllTariffs();
 
+      expect(result).toBeDefined();
       expect(result).toEqual(mockTariffs);
       expect(Tariff.findAll).toHaveBeenCalledWith(
         expect.objectContaining({

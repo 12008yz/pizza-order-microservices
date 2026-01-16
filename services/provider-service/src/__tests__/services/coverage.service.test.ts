@@ -1,17 +1,58 @@
 import { AppError } from '../../middleware/errorHandler';
 import { Op } from 'sequelize';
 
-// Database config уже замокан в setup.ts
-// Мокаем модели ДО импорта сервиса
-jest.mock('../../models', () => ({
+// Мокируем models/index.ts ПЕРЕД импортом, чтобы избежать ошибки belongsTo
+const mockBelongsTo = jest.fn();
+const mockHasMany = jest.fn();
+
+jest.mock('../../models/index', () => ({
+  Provider: {
+    findAll: jest.fn(),
+    findByPk: jest.fn(),
+    belongsTo: mockBelongsTo,
+    hasMany: mockHasMany,
+  },
+  Tariff: {
+    findAll: jest.fn(),
+    findByPk: jest.fn(),
+    belongsTo: mockBelongsTo,
+    hasMany: mockHasMany,
+  },
   Coverage: {
     findAll: jest.fn(),
     findByPk: jest.fn(),
     create: jest.fn(),
+    belongsTo: mockBelongsTo,
+    hasMany: mockHasMany,
   },
+}));
+
+// Мокируем отдельные модели
+jest.mock('../../models/Coverage', () => ({
+  Coverage: {
+    findAll: jest.fn(),
+    findByPk: jest.fn(),
+    create: jest.fn(),
+    belongsTo: jest.fn(),
+    hasMany: jest.fn(),
+  },
+}));
+
+jest.mock('../../models/Provider', () => ({
   Provider: {
     findAll: jest.fn(),
     findByPk: jest.fn(),
+    belongsTo: jest.fn(),
+    hasMany: jest.fn(),
+  },
+}));
+
+jest.mock('../../models/Tariff', () => ({
+  Tariff: {
+    findAll: jest.fn(),
+    findByPk: jest.fn(),
+    belongsTo: jest.fn(),
+    hasMany: jest.fn(),
   },
 }));
 
@@ -47,6 +88,9 @@ describe('CoverageService', () => {
       (Coverage.findAll as jest.Mock).mockResolvedValue(mockCoverage);
 
       const result = await coverageService.checkAddress('Москва');
+
+      expect(result).toBeDefined();
+      expect(Array.isArray(result)).toBe(true);
 
       expect(result).toEqual([1]);
       expect(Coverage.findAll).toHaveBeenCalledWith(

@@ -59,7 +59,7 @@ describe('AuthService', () => {
         email: mockUserData.email,
         password: 'hashedPassword',
         name: mockUserData.name,
-        role: 'user',
+        role: 'admin',
       });
     });
 

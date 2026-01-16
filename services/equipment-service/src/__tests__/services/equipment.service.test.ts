@@ -1,9 +1,47 @@
-import { EquipmentService } from '../../services/equipment.service';
-import { Equipment, EquipmentType } from '../../models';
-import axios from 'axios';
+// Мокируем модели ДО импорта сервиса (сервис импортирует напрямую из файлов)
+const mockEquipmentFindAll = jest.fn();
+const mockEquipmentFindByPk = jest.fn();
+const mockEquipmentCreate = jest.fn();
+const mockEquipmentTypeFindAll = jest.fn();
+const mockEquipmentTypeFindByPk = jest.fn();
+const mockEquipmentTypeCreate = jest.fn();
 
-jest.mock('../../models');
-jest.mock('axios');
+jest.mock('../../models/Equipment', () => ({
+  Equipment: {
+    findAll: mockEquipmentFindAll,
+    findByPk: mockEquipmentFindByPk,
+    create: mockEquipmentCreate,
+  },
+}));
+
+jest.mock('../../models/EquipmentType', () => ({
+  EquipmentType: {
+    findAll: mockEquipmentTypeFindAll,
+    findByPk: mockEquipmentTypeFindByPk,
+    create: mockEquipmentTypeCreate,
+  },
+}));
+
+// axios уже замокан в setup.ts, но нужно правильно его использовать
+const mockAxiosGet = jest.fn();
+const mockAxiosPost = jest.fn();
+const mockAxiosPut = jest.fn();
+const mockAxiosDelete = jest.fn();
+
+jest.mock('axios', () => ({
+  __esModule: true,
+  default: {
+    get: mockAxiosGet,
+    post: mockAxiosPost,
+    put: mockAxiosPut,
+    delete: mockAxiosDelete,
+  },
+}));
+
+import { EquipmentService } from '../../services/equipment.service';
+import { Equipment } from '../../models/Equipment';
+import { EquipmentType } from '../../models/EquipmentType';
+import axios from 'axios';
 
 describe('EquipmentService', () => {
   let equipmentService: EquipmentService;
@@ -11,6 +49,17 @@ describe('EquipmentService', () => {
   beforeEach(() => {
     equipmentService = new EquipmentService();
     jest.clearAllMocks();
+    // Сбрасываем моки
+    mockEquipmentFindAll.mockClear();
+    mockEquipmentFindByPk.mockClear();
+    mockEquipmentCreate.mockClear();
+    mockEquipmentTypeFindAll.mockClear();
+    mockEquipmentTypeFindByPk.mockClear();
+    mockEquipmentTypeCreate.mockClear();
+    mockAxiosGet.mockClear();
+    mockAxiosPost.mockClear();
+    mockAxiosPut.mockClear();
+    mockAxiosDelete.mockClear();
   });
 
   describe('getAllEquipmentTypes', () => {
@@ -20,12 +69,12 @@ describe('EquipmentService', () => {
         { id: 2, name: 'ТВ-приставка', slug: 'tv-set-top' },
       ];
 
-      (EquipmentType.findAll as jest.Mock).mockResolvedValue(mockTypes);
+      mockEquipmentTypeFindAll.mockResolvedValue(mockTypes);
 
       const result = await equipmentService.getAllEquipmentTypes();
 
       expect(result).toEqual(mockTypes);
-      expect(EquipmentType.findAll).toHaveBeenCalledWith({
+      expect(mockEquipmentTypeFindAll).toHaveBeenCalledWith({
         order: [['name', 'ASC']],
       });
     });
@@ -42,19 +91,17 @@ describe('EquipmentService', () => {
         },
       ];
 
-      (Equipment.findAll as jest.Mock).mockResolvedValue(mockEquipment);
+      // getEquipmentByProvider использует getAllEquipment с фильтром providerId
+      mockEquipmentFindAll.mockResolvedValue(mockEquipment);
 
       const result = await equipmentService.getEquipmentByProvider(1);
 
       expect(result).toEqual(mockEquipment);
-      expect(Equipment.findAll).toHaveBeenCalledWith(
-        expect.objectContaining({
-          where: expect.objectContaining({
-            providerId: 1,
-            isActive: true,
-          }),
-        })
-      );
+      // Проверяем, что был вызван findAll с правильными параметрами
+      expect(mockEquipmentFindAll).toHaveBeenCalled();
+      const callArgs = mockEquipmentFindAll.mock.calls[0][0];
+      expect(callArgs.where.providerId).toBe(1);
+      expect(callArgs.where.isActive).toBe(true);
     });
   });
 
@@ -67,9 +114,9 @@ describe('EquipmentService', () => {
         equipmentTypeId: 1,
       };
 
-      (EquipmentType.findByPk as jest.Mock).mockResolvedValue({ id: 1, name: 'Роутер' });
-      (axios.get as jest.Mock).mockResolvedValue({ data: { success: true } });
-      (Equipment.create as jest.Mock).mockResolvedValue(mockEquipment);
+      mockEquipmentTypeFindByPk.mockResolvedValue({ id: 1, name: 'Роутер' });
+      mockAxiosGet.mockResolvedValue({ data: { success: true } });
+      mockEquipmentCreate.mockResolvedValue(mockEquipment);
 
       const result = await equipmentService.createEquipment({
         name: 'Роутер Wi-Fi 6',
@@ -79,14 +126,14 @@ describe('EquipmentService', () => {
       });
 
       expect(result).toEqual(mockEquipment);
-      expect(EquipmentType.findByPk).toHaveBeenCalledWith(1);
-      expect(axios.get).toHaveBeenCalled();
-      expect(Equipment.create).toHaveBeenCalled();
+      expect(mockEquipmentTypeFindByPk).toHaveBeenCalledWith(1);
+      expect(mockAxiosGet).toHaveBeenCalled();
+      expect(mockEquipmentCreate).toHaveBeenCalled();
     });
 
     it('should throw error if provider not found', async () => {
-      (EquipmentType.findByPk as jest.Mock).mockResolvedValue({ id: 1, name: 'Роутер' });
-      (axios.get as jest.Mock).mockRejectedValue({ response: { status: 404 } });
+      mockEquipmentTypeFindByPk.mockResolvedValue({ id: 1, name: 'Роутер' });
+      mockAxiosGet.mockRejectedValue({ response: { status: 404 } });
 
       await expect(
         equipmentService.createEquipment({

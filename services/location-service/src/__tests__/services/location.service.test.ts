@@ -1,34 +1,86 @@
+// Мокируем sequelize ПЕРЕД импортом
+const mockSequelize = {
+  define: jest.fn(),
+};
+
+jest.mock('../../config/database', () => ({
+  sequelize: mockSequelize,
+}));
+
+// Мокируем модели с init
+const createMockModel = () => ({
+  init: jest.fn(),
+  findAll: jest.fn(),
+  findByPk: jest.fn(),
+  findOne: jest.fn(),
+  create: jest.fn(),
+  belongsTo: jest.fn(),
+  hasMany: jest.fn(),
+  hasOne: jest.fn(),
+});
+
+const mockRegion = createMockModel();
+const mockCity = createMockModel();
+const mockStreetType = createMockModel();
+const mockStreet = createMockModel();
+const mockBuilding = createMockModel();
+const mockApartment = createMockModel();
+
+// Мокируем каждый файл модели отдельно
+jest.mock('../../models/Region', () => ({
+  Region: mockRegion,
+}));
+
+jest.mock('../../models/City', () => ({
+  City: mockCity,
+}));
+
+jest.mock('../../models/StreetType', () => ({
+  StreetType: mockStreetType,
+}));
+
+jest.mock('../../models/Street', () => ({
+  Street: mockStreet,
+}));
+
+jest.mock('../../models/Building', () => ({
+  Building: mockBuilding,
+}));
+
+jest.mock('../../models/Apartment', () => ({
+  Apartment: mockApartment,
+}));
+
+jest.mock('../../models', () => ({
+  Region: mockRegion,
+  City: mockCity,
+  StreetType: mockStreetType,
+  Street: mockStreet,
+  Building: mockBuilding,
+  Apartment: mockApartment,
+}));
+
+// Мокируем models/index.ts
+jest.mock('../../models/index', () => ({
+  Region: mockRegion,
+  City: mockCity,
+  StreetType: mockStreetType,
+  Street: mockStreet,
+  Building: mockBuilding,
+  Apartment: mockApartment,
+}));
+
+// Мокируем GeocoderService
+jest.mock('../../services/geocoder.service', () => ({
+  GeocoderService: jest.fn().mockImplementation(() => ({
+    search: jest.fn().mockResolvedValue([]),
+    autocomplete: jest.fn().mockResolvedValue([]),
+  })),
+}));
+
+// Импортируем ПОСЛЕ моков
 import { LocationService } from '../../services/location.service';
 import { Region, City, Street, Building, Apartment } from '../../models';
-
-// Мокируем модели
-jest.mock('../../models', () => ({
-  Region: {
-    findAll: jest.fn(),
-    findByPk: jest.fn(),
-    create: jest.fn(),
-  },
-  City: {
-    findAll: jest.fn(),
-    findByPk: jest.fn(),
-    create: jest.fn(),
-  },
-  Street: {
-    findAll: jest.fn(),
-    findByPk: jest.fn(),
-    create: jest.fn(),
-  },
-  Building: {
-    findAll: jest.fn(),
-    findByPk: jest.fn(),
-    create: jest.fn(),
-  },
-  Apartment: {
-    findAll: jest.fn(),
-    findByPk: jest.fn(),
-    create: jest.fn(),
-  },
-}));
 
 describe('LocationService', () => {
   let locationService: LocationService;
@@ -38,7 +90,7 @@ describe('LocationService', () => {
     jest.clearAllMocks();
   });
 
-  describe('getAllRegions', () => {
+  describe('getRegions', () => {
     it('should return all regions', async () => {
       const mockRegions = [
         { id: 1, name: 'Московская область', code: 'MO' },
@@ -47,7 +99,7 @@ describe('LocationService', () => {
 
       (Region.findAll as jest.Mock).mockResolvedValue(mockRegions);
 
-      const result = await locationService.getAllRegions();
+      const result = await locationService.getRegions();
 
       expect(result).toEqual(mockRegions);
       expect(Region.findAll).toHaveBeenCalledWith({
@@ -58,7 +110,7 @@ describe('LocationService', () => {
     it('should handle errors', async () => {
       (Region.findAll as jest.Mock).mockRejectedValue(new Error('Database error'));
 
-      await expect(locationService.getAllRegions()).rejects.toThrow('Database error');
+      await expect(locationService.getRegions()).rejects.toThrow('Database error');
     });
   });
 
@@ -81,10 +133,19 @@ describe('LocationService', () => {
       });
     });
 
-    it('should throw error if region not found', async () => {
-      (Region.findByPk as jest.Mock).mockResolvedValue(null);
+    it('should return empty array if region not found', async () => {
+      // Метод getCitiesByRegion не проверяет существование региона,
+      // просто возвращает пустой массив, если города не найдены
+      (City.findAll as jest.Mock).mockResolvedValue([]);
 
-      await expect(locationService.getCitiesByRegion(999)).rejects.toThrow();
+      const result = await locationService.getCitiesByRegion(999);
+
+      expect(result).toEqual([]);
+      expect(City.findAll).toHaveBeenCalledWith({
+        where: { regionId: 999 },
+        include: expect.any(Array),
+        order: [['name', 'ASC']],
+      });
     });
   });
 

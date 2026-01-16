@@ -11,7 +11,14 @@ const JWT_EXPIRES_IN = '15m';
 const REFRESH_TOKEN_EXPIRES_IN = '7d';
 
 export class AuthService {
-  async register(email: string, password: string, name: string) {
+  async register(email: string, password: string, name: string, role: 'admin' | 'user' = 'admin') {
+    // Валидация обязательных полей при регистрации
+    if (!email || !password || !name) {
+      const error = new Error('Email, password and name are required for registration') as AppError;
+      error.statusCode = 400;
+      throw error;
+    }
+
     // Проверяем, существует ли пользователь
     const existingUser = await User.findOne({ where: { email } });
     if (existingUser) {
@@ -23,16 +30,24 @@ export class AuthService {
     // Хешируем пароль
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Создаем пользователя
+    // Регистрация доступна только для админов и операторов
+    // Обычные пользователи создаются автоматически при создании заказа с телефоном
+    if (role !== 'admin') {
+      const error = new Error('Registration is only available for admins and operators') as AppError;
+      error.statusCode = 403;
+      throw error;
+    }
+
+    // Создаем пользователя (админа или оператора)
     const user = await User.create({
       email,
       password: hashedPassword,
       name,
-      role: 'user',
+      role: role,
     });
 
     // Генерируем токены
-    const tokens = this.generateTokens(user.id, user.email, user.role);
+    const tokens = this.generateTokens(user.id, user.email || '', user.role);
 
     // Сохраняем refresh token
     await this.saveRefreshToken(user.id, tokens.refreshToken);
@@ -51,9 +66,16 @@ export class AuthService {
   }
 
   async login(email: string, password: string) {
+    // Валидация обязательных полей
+    if (!email || !password) {
+      const error = new Error('Email and password are required') as AppError;
+      error.statusCode = 400;
+      throw error;
+    }
+
     // Находим пользователя
     const user = await User.findOne({ where: { email } });
-    if (!user) {
+    if (!user || !user.password) {
       const error = new Error('Invalid email or password') as AppError;
       error.statusCode = 401;
       throw error;
@@ -68,7 +90,7 @@ export class AuthService {
     }
 
     // Генерируем токены
-    const tokens = this.generateTokens(user.id, user.email, user.role);
+    const tokens = this.generateTokens(user.id, user.email || '', user.role);
 
     // Сохраняем refresh token
     await this.saveRefreshToken(user.id, tokens.refreshToken);
@@ -115,7 +137,7 @@ export class AuthService {
       }
 
       // Генерируем новые токены
-      const tokens = this.generateTokens(user.id, user.email, user.role);
+      const tokens = this.generateTokens(user.id, user.email || '', user.role);
 
       // Удаляем старый refresh token и сохраняем новый
       await RefreshToken.destroy({ where: { token } });
@@ -155,6 +177,60 @@ export class AuthService {
       token,
       expiresAt,
     });
+  }
+
+  /**
+   * Создать или обновить пользователя по телефону
+   * Используется при создании заказа без авторизации
+   */
+  async createOrUpdateUserByPhone(phone: string, fullName?: string, email?: string | null) {
+    if (!phone) {
+      const error = new Error('Phone number is required') as AppError;
+      error.statusCode = 400;
+      throw error;
+    }
+
+    // Нормализуем телефон (убираем пробелы, дефисы и т.д.)
+    const normalizedPhone = phone.replace(/\D/g, '');
+
+    // Ищем пользователя по телефону
+    let user = await User.findOne({ where: { phone: normalizedPhone } });
+
+    if (user) {
+      // Обновляем существующего пользователя (только если переданы новые данные)
+      const updateData: any = {};
+      if (fullName && !user.fullName) {
+        updateData.fullName = fullName;
+        updateData.name = fullName; // Обновляем также name для совместимости
+      } else if (fullName && user.fullName !== fullName) {
+        // Обновляем только если передано новое значение
+        updateData.fullName = fullName;
+        updateData.name = fullName;
+      }
+      if (email && !user.email) {
+        updateData.email = email;
+      } else if (email && user.email !== email) {
+        updateData.email = email;
+      }
+      
+      if (Object.keys(updateData).length > 0) {
+        await user.update(updateData);
+        logger.info(`User updated by phone: ${normalizedPhone}`);
+      }
+    } else {
+      // Создаем нового пользователя
+      user = await User.create({
+        phone: normalizedPhone,
+        fullName: fullName || null,
+        email: email || null,
+        password: null,
+        name: fullName || null,
+        role: 'user',
+      });
+      logger.info(`User created by phone: ${normalizedPhone}`);
+    }
+
+    return user;
   }
 }
 

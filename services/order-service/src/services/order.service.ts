@@ -7,6 +7,7 @@ import axios from 'axios';
 const PROVIDER_SERVICE_URL = process.env.PROVIDER_SERVICE_URL || 'http://localhost:3003';
 const LOCATION_SERVICE_URL = process.env.LOCATION_SERVICE_URL || 'http://localhost:3005';
 const AVAILABILITY_SERVICE_URL = process.env.AVAILABILITY_SERVICE_URL || 'http://localhost:3006';
+const AUTH_SERVICE_URL = process.env.AUTH_SERVICE_URL || 'http://localhost:3001';
 
 export class OrderService {
   async createOrder(data: {
@@ -37,6 +38,52 @@ export class OrderService {
     utmContent?: string | null;
     utmTerm?: string | null;
   }) {
+    // Проверяем наличие телефона (обязательное поле)
+    if (!data.phone || typeof data.phone !== 'string' || data.phone.trim() === '') {
+      const error = new Error('Phone number is required') as AppError;
+      error.statusCode = 400;
+      throw error;
+    }
+
+    // Базовая валидация формата телефона
+    const phoneRegex = /^[\d\s\-\+\(\)]+$/;
+    const normalizedPhone = data.phone.replace(/\D/g, '');
+    if (!phoneRegex.test(data.phone) || normalizedPhone.length < 10) {
+      const error = new Error('Invalid phone number format') as AppError;
+      error.statusCode = 400;
+      throw error;
+    }
+
+    // Создаем или обновляем пользователя в User таблице по телефону
+    // Пользователь создается ТОЛЬКО когда введен телефон (это обязательное поле)
+    let userId = data.userId;
+    if (!userId) {
+      try {
+        const userResponse = await axios.post(
+          `${AUTH_SERVICE_URL}/api/auth/internal/user-by-phone`,
+          {
+            phone: normalizedPhone,
+            fullName: data.fullName,
+            email: data.email,
+          }
+        );
+
+        if (userResponse.data.success && userResponse.data.data) {
+          userId = userResponse.data.data.id;
+          logger.info(`User created/updated by phone: ${normalizedPhone}, userId: ${userId}`);
+        } else {
+          logger.warn(`Failed to create user: invalid response from auth service`);
+        }
+      } catch (error: any) {
+        // Если не удалось создать пользователя, это критическая ошибка
+        // так как телефон обязателен и пользователь должен быть создан
+        logger.error(`Failed to create/update user by phone: ${error.message}`);
+        const appError = new Error('Failed to create user. Please try again.') as AppError;
+        appError.statusCode = 500;
+        throw appError;
+      }
+    }
+
     // Проверяем тариф через Provider Service
     try {
       const tariffResponse = await axios.get(
@@ -85,10 +132,11 @@ export class OrderService {
 
     const order = await Order.create({
       ...data,
+      userId: userId || null,
       status: 'new',
     });
 
-    logger.info(`Order created: ${order.id} for user ${data.userId || 'anonymous'}`);
+    logger.info(`Order created: ${order.id} for user ${userId || 'anonymous'}`);
 
     return order;
   }

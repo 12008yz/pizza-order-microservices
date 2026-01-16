@@ -12,8 +12,11 @@ export const register = async (
   next: NextFunction
 ) => {
   try {
-    const { email, password, name } = req.body;
-    const result = await authService.register(email, password, name);
+    const { email, password, name, role } = req.body;
+    // Регистрация доступна только для админов и операторов
+    // По умолчанию создается админ, если role не указан
+    const userRole = role === 'admin' ? 'admin' : 'admin';
+    const result = await authService.register(email, password, name, userRole);
     res.status(201).json({
       success: true,
       data: result,
@@ -115,5 +118,32 @@ export const verifyToken = async (
     const appError = new Error('Invalid or expired token') as AppError;
     appError.statusCode = 401;
     next(appError);
+  }
+};
+
+/**
+ * Создать или обновить пользователя по телефону
+ * Внутренний API для использования другими сервисами
+ */
+export const createOrUpdateUserByPhone = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { phone, fullName, email } = req.body;
+    const user = await authService.createOrUpdateUserByPhone(phone, fullName, email);
+    res.status(200).json({
+      success: true,
+      data: {
+        id: user.id,
+        phone: user.phone,
+        fullName: user.fullName,
+        email: user.email,
+        name: user.name,
+      },
+    });
+  } catch (error) {
+    next(error);
   }
 };

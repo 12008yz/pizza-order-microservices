@@ -1,13 +1,17 @@
 import { Op } from 'sequelize';
 
 // Мокаем модели ДО импорта сервиса (database уже замокан в setup.ts)
-jest.mock('../../models', () => ({
+// Сервис импортирует модели напрямую из файлов, поэтому мокируем их отдельно
+jest.mock('../../models/Tariff', () => ({
   Tariff: {
     findAll: jest.fn(),
     findByPk: jest.fn(),
     create: jest.fn(),
     init: jest.fn(),
   },
+}));
+
+jest.mock('../../models/Provider', () => ({
   Provider: {
     findAll: jest.fn(),
     findByPk: jest.fn(),
@@ -16,7 +20,8 @@ jest.mock('../../models', () => ({
 }));
 
 import { TariffService } from '../../services/tariff.service';
-import { Tariff, Provider } from '../../models';
+import { Tariff } from '../../models/Tariff';
+import { Provider } from '../../models/Provider';
 
 describe('TariffService', () => {
   let tariffService: TariffService;

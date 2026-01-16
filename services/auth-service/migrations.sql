@@ -35,18 +35,44 @@ WHERE role::text = 'admin'
 
 -- Миграция 3: Обновление ENUM role в users (удаление 'admin')
 -- Сначала обновляем все записи с role='admin' на role='user'
-UPDATE users SET role = 'user'::enum_users_role WHERE role::text = 'admin';
-
--- Затем обновляем ENUM тип (если нужно)
--- Проверяем текущий тип ENUM
+-- Используем текущий тип (может быть enum_users_role или users_role)
 DO $$ 
 BEGIN
-    -- Если тип enum_users_role содержит 'admin', нужно его обновить
-    -- Но так как мы уже обновили все записи, просто проверяем что все хорошо
-    IF EXISTS (SELECT 1 FROM users WHERE role::text = 'admin') THEN
-        RAISE NOTICE 'Есть записи с role=admin, обновляем на user';
-        UPDATE users SET role = 'user'::enum_users_role WHERE role::text = 'admin';
+    -- Обновляем все записи с role='admin' на role='user'
+    UPDATE users SET role = 'user'::text::enum_users_role WHERE role::text = 'admin';
+    
+    -- Если тип enum_users_role не найден, пробуем users_role
+    EXCEPTION WHEN OTHERS THEN
+        UPDATE users SET role = 'user'::text::users_role WHERE role::text = 'admin';
+END $$;
+
+-- Затем обновляем ENUM тип
+DO $$ 
+BEGIN
+    -- Удаляем DEFAULT значение
+    ALTER TABLE users ALTER COLUMN role DROP DEFAULT;
+    
+    -- Создаем новый тип ENUM только с 'user'
+    IF EXISTS (SELECT 1 FROM pg_type WHERE typname = 'users_role_new') THEN
+        DROP TYPE users_role_new CASCADE;
     END IF;
+    
+    CREATE TYPE users_role_new AS ENUM ('user');
+    
+    -- Изменяем колонку role на новый тип
+    ALTER TABLE users 
+        ALTER COLUMN role TYPE users_role_new 
+        USING (role::text::users_role_new);
+    
+    -- Возвращаем DEFAULT значение
+    ALTER TABLE users ALTER COLUMN role SET DEFAULT 'user'::users_role_new;
+    
+    -- Удаляем старый тип (может быть enum_users_role или users_role)
+    DROP TYPE IF EXISTS enum_users_role CASCADE;
+    DROP TYPE IF EXISTS users_role CASCADE;
+    
+    -- Переименовываем новый тип в старое имя
+    ALTER TYPE users_role_new RENAME TO users_role;
 END $$;
 
 -- Добавляем запись в SequelizeMeta для отслеживания миграций

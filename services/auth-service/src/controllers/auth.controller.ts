@@ -38,15 +38,23 @@ export const register = async (
   next: NextFunction
 ) => {
   try {
-    const { email, password, name, role } = req.body;
+    const { email, password, name, role, department } = req.body;
     // Регистрация доступна только для админов и операторов
-    // По умолчанию создается админ, если role не указан
-    const userRole = role === 'admin' ? 'admin' : 'admin';
-    const result = await authService.register(email, password, name, userRole);
-    res.status(201).json({
-      success: true,
-      data: result,
-    });
+    // Если role === 'operator', используем registerAdmin напрямую
+    if (role === 'operator') {
+      const result = await authService.registerAdmin(email, password, name, 'operator', department);
+      res.status(201).json({
+        success: true,
+        data: result,
+      });
+    } else {
+      // Для 'admin' или по умолчанию используем старый метод (который перенаправляет на registerAdmin)
+      const result = await authService.register(email, password, name, 'admin');
+      res.status(201).json({
+        success: true,
+        data: result,
+      });
+    }
   } catch (error) {
     next(error);
   }

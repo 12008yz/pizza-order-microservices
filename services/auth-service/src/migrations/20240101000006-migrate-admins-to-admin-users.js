@@ -15,7 +15,7 @@ module.exports = {
         "createdAt",
         "updatedAt"
       FROM users
-      WHERE role = 'admin' 
+      WHERE role::text = 'admin' 
         AND email IS NOT NULL 
         AND password IS NOT NULL
         AND NOT EXISTS (

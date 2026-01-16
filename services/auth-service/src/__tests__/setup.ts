@@ -20,6 +20,14 @@ jest.mock('../models/User', () => ({
   },
 }));
 
+jest.mock('../models/AdminUser', () => ({
+  AdminUser: {
+    findOne: jest.fn(),
+    findByPk: jest.fn(),
+    create: jest.fn(),
+  },
+}));
+
 jest.mock('../models/RefreshToken', () => ({
   RefreshToken: {
     findOne: jest.fn(),

@@ -8,6 +8,7 @@ jest.mock('jsonwebtoken');
 // Импортируем после мокирования
 import { AuthService } from '../../services/auth.service';
 import { User } from '../../models/User';
+import { AdminUser } from '../../models/AdminUser';
 import { RefreshToken } from '../../models/RefreshToken';
 
 describe('AuthService', () => {
@@ -25,18 +26,20 @@ describe('AuthService', () => {
       name: 'Test User',
     };
 
-    it('should successfully register a new user', async () => {
-      const mockUser = {
+    it('should successfully register a new admin', async () => {
+      const mockAdmin = {
         id: 1,
         email: mockUserData.email,
         name: mockUserData.name,
-        role: 'user',
+        role: 'admin',
         password: 'hashedPassword',
+        department: null,
+        isActive: true,
       };
 
-      (User.findOne as jest.Mock).mockResolvedValue(null);
+      (AdminUser.findOne as jest.Mock).mockResolvedValue(null);
       (bcrypt.hash as jest.Mock).mockResolvedValue('hashedPassword');
-      (User.create as jest.Mock).mockResolvedValue(mockUser);
+      (AdminUser.create as jest.Mock).mockResolvedValue(mockAdmin);
       (jwt.sign as jest.Mock)
         .mockReturnValueOnce('accessToken')
         .mockReturnValueOnce('refreshToken');
@@ -53,45 +56,50 @@ describe('AuthService', () => {
       expect(result).toHaveProperty('refreshToken');
       expect(result.user.email).toBe(mockUserData.email);
       expect(result.user.name).toBe(mockUserData.name);
-      expect(User.findOne).toHaveBeenCalledWith({ where: { email: mockUserData.email } });
+      expect(AdminUser.findOne).toHaveBeenCalledWith({ where: { email: mockUserData.email } });
       expect(bcrypt.hash).toHaveBeenCalledWith(mockUserData.password, 10);
-      expect(User.create).toHaveBeenCalledWith({
+      expect(AdminUser.create).toHaveBeenCalledWith({
         email: mockUserData.email,
         password: 'hashedPassword',
         name: mockUserData.name,
         role: 'admin',
+        department: null,
+        isActive: true,
       });
     });
 
-    it('should throw error if user already exists', async () => {
-      const existingUser = {
+    it('should throw error if admin already exists', async () => {
+      const existingAdmin = {
         id: 1,
         email: mockUserData.email,
-        name: 'Existing User',
+        name: 'Existing Admin',
+        role: 'admin',
       };
 
-      (User.findOne as jest.Mock).mockResolvedValue(existingUser);
+      (AdminUser.findOne as jest.Mock).mockResolvedValue(existingAdmin);
 
       await expect(
         authService.register(mockUserData.email, mockUserData.password, mockUserData.name)
-      ).rejects.toThrow('User with this email already exists');
+      ).rejects.toThrow('Admin with this email already exists');
 
-      expect(User.findOne).toHaveBeenCalledWith({ where: { email: mockUserData.email } });
-      expect(User.create).not.toHaveBeenCalled();
+      expect(AdminUser.findOne).toHaveBeenCalledWith({ where: { email: mockUserData.email } });
+      expect(AdminUser.create).not.toHaveBeenCalled();
     });
 
     it('should hash password before saving', async () => {
-      const mockUser = {
+      const mockAdmin = {
         id: 1,
         email: mockUserData.email,
         name: mockUserData.name,
-        role: 'user',
+        role: 'admin',
         password: 'hashedPassword',
+        department: null,
+        isActive: true,
       };
 
-      (User.findOne as jest.Mock).mockResolvedValue(null);
+      (AdminUser.findOne as jest.Mock).mockResolvedValue(null);
       (bcrypt.hash as jest.Mock).mockResolvedValue('hashedPassword');
-      (User.create as jest.Mock).mockResolvedValue(mockUser);
+      (AdminUser.create as jest.Mock).mockResolvedValue(mockAdmin);
       (jwt.sign as jest.Mock)
         .mockReturnValueOnce('accessToken')
         .mockReturnValueOnce('refreshToken');
@@ -104,7 +112,7 @@ describe('AuthService', () => {
       );
 
       expect(bcrypt.hash).toHaveBeenCalledWith(mockUserData.password, 10);
-      expect(User.create).toHaveBeenCalledWith(
+      expect(AdminUser.create).toHaveBeenCalledWith(
         expect.objectContaining({
           password: 'hashedPassword',
         })
@@ -181,6 +189,7 @@ describe('AuthService', () => {
       userId: 1,
       email: 'test@example.com',
       role: 'user',
+      userType: 'client',
     };
 
     it('should successfully refresh token with valid refresh token', async () => {
@@ -209,8 +218,10 @@ describe('AuthService', () => {
 
       const result = await authService.refreshToken(mockRefreshToken);
 
-      expect(result).toHaveProperty('accessToken', 'newAccessToken');
-      expect(result).toHaveProperty('refreshToken', 'newRefreshToken');
+      expect(result).toHaveProperty('accessToken');
+      expect(result).toHaveProperty('refreshToken');
+      expect(result.accessToken).toBe('newAccessToken');
+      expect(result.refreshToken).toBe('newRefreshToken');
       expect(jwt.verify).toHaveBeenCalledWith(
         mockRefreshToken,
         expect.any(String) // Проверяем что передается строка (секрет)

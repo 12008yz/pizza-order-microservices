@@ -1,4 +1,5 @@
 import { User } from './User';
+import { AdminUser } from './AdminUser';
 import { RefreshToken } from './RefreshToken';
 import { UserSession } from './UserSession';
 import { VerificationCode } from './VerificationCode';
@@ -16,4 +17,8 @@ User.hasMany(UserSession, { foreignKey: 'userId', as: 'sessions' });
 VerificationCode.belongsTo(User, { foreignKey: 'userId', as: 'user' });
 User.hasMany(VerificationCode, { foreignKey: 'userId', as: 'verificationCodes' });
 
-export { User, RefreshToken, UserSession, VerificationCode };
+// AdminUser -> RefreshToken (один ко многим) - можно добавить позже если нужно
+// RefreshToken.belongsTo(AdminUser, { foreignKey: 'userId', as: 'adminUser' });
+// AdminUser.hasMany(RefreshToken, { foreignKey: 'userId', as: 'refreshTokens' });
+
+export { User, AdminUser, RefreshToken, UserSession, VerificationCode };

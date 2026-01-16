@@ -6,6 +6,32 @@ import jwt from 'jsonwebtoken';
 const authService = new AuthService();
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
+/**
+ * Регистрация админа или оператора
+ * Используется только для CRM панели
+ */
+export const registerAdmin = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { email, password, name, role, department } = req.body;
+    const adminRole = role === 'operator' ? 'operator' : 'admin';
+    const result = await authService.registerAdmin(email, password, name, adminRole, department);
+    res.status(201).json({
+      success: true,
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * Старый метод register - оставлен для обратной совместимости
+ * @deprecated Используйте registerAdmin
+ */
 export const register = async (
   req: Request,
   res: Response,
@@ -26,6 +52,31 @@ export const register = async (
   }
 };
 
+/**
+ * Логин админа или оператора
+ * Используется только для CRM панели
+ */
+export const loginAdmin = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { email, password } = req.body;
+    const result = await authService.loginAdmin(email, password);
+    res.status(200).json({
+      success: true,
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * Старый метод login - оставлен для обратной совместимости
+ * @deprecated Используйте loginAdmin для админов
+ */
 export const login = async (
   req: Request,
   res: Response,
@@ -104,6 +155,7 @@ export const verifyToken = async (
       userId: number;
       email: string;
       role: string;
+      userType?: 'client' | 'admin';
     };
 
     res.status(200).json({
@@ -112,6 +164,7 @@ export const verifyToken = async (
         userId: decoded.userId,
         email: decoded.email,
         role: decoded.role,
+        userType: decoded.userType || 'client',
       },
     });
   } catch (error) {

@@ -8,7 +8,7 @@ export interface UserAttributes {
   name: string | null;
   phone: string | null;
   fullName: string | null;
-  role: 'user' | 'admin';
+  role: 'user'; // Только 'user' для клиентов, админы/операторы в admin_users
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -22,7 +22,7 @@ export class User extends Model<UserAttributes, UserCreationAttributes> implemen
   declare name: string | null;
   declare phone: string | null;
   declare fullName: string | null;
-  declare role: 'user' | 'admin';
+  declare role: 'user';
 
   declare readonly createdAt: Date;
   declare readonly updatedAt: Date;
@@ -63,8 +63,9 @@ User.init(
       allowNull: true,
     },
     role: {
-      type: DataTypes.ENUM('user', 'admin'),
+      type: DataTypes.ENUM('user'),
       defaultValue: 'user',
+      comment: 'Всегда "user" для клиентов. Админы/операторы хранятся в таблице admin_users',
     },
   },
   {

@@ -261,6 +261,7 @@ describe('AuthController', () => {
         userId: 1,
         email: 'test@example.com',
         role: 'user',
+        userType: 'client',
       };
 
       mockRequest.headers = {
@@ -279,6 +280,7 @@ describe('AuthController', () => {
           userId: mockDecoded.userId,
           email: mockDecoded.email,
           role: mockDecoded.role,
+          userType: mockDecoded.userType,
         },
       });
       expect(mockNext).not.toHaveBeenCalled();

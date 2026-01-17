@@ -12,4 +12,4 @@ RUN npm install --legacy-peer-deps
 
 EXPOSE 3005
 
-CMD ["sh", "-c", "npx sequelize-cli db:migrate || true && npm run build && npm start"]
+CMD ["sh", "-c", "npx sequelize-cli db:migrate && npm run build && npm start"]

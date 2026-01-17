@@ -179,8 +179,9 @@ export class AuthService {
       };
 
       // Проверяем, существует ли токен в БД
+      const userType = decoded.userType || 'client';
       const refreshTokenRecord = await RefreshToken.findOne({
-        where: { token, userId: decoded.userId },
+        where: { token, userId: decoded.userId, userType },
       });
 
       if (!refreshTokenRecord || refreshTokenRecord.expiresAt < new Date()) {
@@ -189,7 +190,7 @@ export class AuthService {
         throw error;
       }
 
-      const userType = decoded.userType || 'client';
+      // userType уже получен выше при поиске refreshTokenRecord
 
       // Находим пользователя в зависимости от типа
       if (userType === 'admin') {
@@ -273,8 +274,8 @@ export class AuthService {
     await RefreshToken.create({
       userId,
       token,
+      userType,
       expiresAt,
-      // Можно добавить поле userType в RefreshToken модель для лучшей изоляции
     });
   }
 

@@ -4,6 +4,7 @@ import { sequelize } from '../config/database';
 export interface RefreshTokenAttributes {
   id: number;
   userId: number;
+  userType: 'client' | 'admin';
   token: string;
   expiresAt: Date;
   createdAt?: Date;
@@ -19,6 +20,7 @@ export class RefreshToken
 {
   public id!: number;
   public userId!: number;
+  public userType!: 'client' | 'admin';
   public token!: string;
   public expiresAt!: Date;
 
@@ -36,10 +38,13 @@ RefreshToken.init(
     userId: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      references: {
-        model: 'users',
-        key: 'id',
-      },
+      // Убрали Foreign Key constraint, так как userId может ссылаться на users или admin_users
+      // в зависимости от userType
+    },
+    userType: {
+      type: DataTypes.ENUM('client', 'admin'),
+      allowNull: false,
+      defaultValue: 'client',
     },
     token: {
       type: DataTypes.TEXT,

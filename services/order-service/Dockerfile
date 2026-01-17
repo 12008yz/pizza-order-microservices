@@ -10,4 +10,4 @@ COPY . .
 
 EXPOSE 3004
 
-CMD ["sh", "-c", "npx sequelize-cli db:migrate || true && npm run build && npm start"]
+CMD ["sh", "-c", "npx sequelize-cli db:migrate && npm run build && npm start"]

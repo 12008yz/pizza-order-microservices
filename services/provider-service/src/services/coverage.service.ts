@@ -1,5 +1,4 @@
-import { Coverage } from '../models/Coverage';
-import { Provider } from '../models/Provider';
+import { Coverage, Provider } from '../models';
 import { AppError } from '../middleware/errorHandler';
 import { Op } from 'sequelize';
 import { normalizeCity, normalizeStreet, normalizeDistrict } from '../utils/addressNormalizer';

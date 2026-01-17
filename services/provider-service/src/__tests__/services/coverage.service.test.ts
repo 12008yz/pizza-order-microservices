@@ -496,9 +496,9 @@ describe('CoverageService', () => {
 
       // Проверяем, что мок установлен правильно перед вызовом
       expect(mockCoverageFindAll).toBeDefined();
-      
+
       const result = await coverageService.getProvidersByAddress('Москва');
-      
+
       // Проверяем, что checkAddress был вызван
       expect(mockCoverageFindAll).toHaveBeenCalled();
       // Проверяем, что Provider.findAll был вызван (значит checkAddress вернул не пустой массив)
@@ -728,7 +728,7 @@ describe('CoverageService', () => {
         city: 'москва',
         street: 'тверская',
       };
-      
+
       const mockCoverage = {
         ...mockCoverageData,
         update: jest.fn().mockResolvedValue(mockCoverageData),

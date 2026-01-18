@@ -1,21 +1,24 @@
 import { Request, Response, NextFunction } from 'express';
+
+// Мокируем AvailabilityService ПЕРЕД импортом контроллера
+const mockCheckAvailability = jest.fn();
+const mockGetProvidersByAddressId = jest.fn();
+
+jest.mock('../../services/availability.service', () => {
+  return {
+    AvailabilityService: jest.fn().mockImplementation(() => ({
+      checkAvailability: mockCheckAvailability,
+      getProvidersByAddressId: mockGetProvidersByAddressId,
+    })),
+  };
+});
+
+// Импортируем контроллер ПОСЛЕ мока
 import {
   checkAvailability,
   getAvailabilityByAddressId,
   getProvidersByAddressId,
 } from '../../controllers/availability.controller';
-import { AvailabilityService } from '../../services/availability.service';
-
-// Мокируем AvailabilityService
-const mockCheckAvailability = jest.fn();
-const mockGetProvidersByAddressId = jest.fn();
-
-jest.mock('../../services/availability.service', () => ({
-  AvailabilityService: jest.fn().mockImplementation(() => ({
-    checkAvailability: mockCheckAvailability,
-    getProvidersByAddressId: mockGetProvidersByAddressId,
-  })),
-}));
 
 describe('AvailabilityController', () => {
   let mockRequest: Partial<Request>;
@@ -56,6 +59,10 @@ describe('AvailabilityController', () => {
 
       expect(mockCheckAvailability).toHaveBeenCalled();
       expect(mockResponse.status).toHaveBeenCalledWith(200);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        success: true,
+        data: [{ providerId: 1, providerName: 'Provider 1', isAvailable: true }],
+      });
     });
 
     it('should return 400 if city is missing', async () => {
@@ -92,8 +99,42 @@ describe('AvailabilityController', () => {
         mockNext
       );
 
-      expect(mockGetProvidersByAddressId).toHaveBeenCalled();
+      expect(mockGetProvidersByAddressId).toHaveBeenCalledWith(123, undefined);
       expect(mockResponse.status).toHaveBeenCalledWith(200);
+    });
+
+    it('should get availability by apartmentId', async () => {
+      mockRequest.params = { address_id: '456' };
+      mockRequest.query = { type: 'apartment' };
+
+      mockGetProvidersByAddressId.mockResolvedValue([
+        { providerId: 1, providerName: 'Provider 1', isAvailable: true },
+      ]);
+
+      await getAvailabilityByAddressId(
+        mockRequest as Request,
+        mockResponse as Response,
+        mockNext
+      );
+
+      expect(mockGetProvidersByAddressId).toHaveBeenCalledWith(undefined, 456);
+      expect(mockResponse.status).toHaveBeenCalledWith(200);
+    });
+
+    it('should return 400 if address_id is invalid', async () => {
+      mockRequest.params = { address_id: 'invalid' };
+
+      await getAvailabilityByAddressId(
+        mockRequest as Request,
+        mockResponse as Response,
+        mockNext
+      );
+
+      expect(mockNext).toHaveBeenCalledWith(
+        expect.objectContaining({
+          statusCode: 400,
+        })
+      );
     });
   });
 });

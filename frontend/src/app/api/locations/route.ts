@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-
-const LOCATION_SERVICE_URL =
-  process.env.LOCATION_SERVICE_URL || 'http://localhost:3005';
+import axios from 'axios';
 
 export async function GET(request: NextRequest) {
+  // Читаем переменную окружения внутри функции для правильной работы в runtime
+  const LOCATION_SERVICE_URL =
+    process.env.LOCATION_SERVICE_URL || 'http://localhost:3005';
+  
   try {
     const { searchParams } = new URL(request.url);
     const endpoint = searchParams.get('endpoint') || 'regions';
@@ -18,28 +20,21 @@ export async function GET(request: NextRequest) {
 
     const url = `${LOCATION_SERVICE_URL}/api/locations/${endpoint}?${queryParams.toString()}`;
 
-    const response = await fetch(url, {
-      method: 'GET',
+    const response = await axios.get(url, {
       headers: {
         'Content-Type': 'application/json',
       },
     });
 
-    if (!response.ok) {
-      const error = await response.json().catch(() => ({ error: 'Unknown error' }));
-      return NextResponse.json(
-        { success: false, error: error.error || 'Location service error' },
-        { status: response.status }
-      );
-    }
-
-    const data = await response.json();
-    return NextResponse.json(data);
+    return NextResponse.json(response.data);
   } catch (error: any) {
     console.error('Location API error:', error);
     return NextResponse.json(
-      { success: false, error: error.message || 'Internal server error' },
-      { status: 500 }
+      {
+        success: false,
+        error: error.response?.data?.error || error.message || 'Location service error',
+      },
+      { status: error.response?.status || 500 }
     );
   }
 }

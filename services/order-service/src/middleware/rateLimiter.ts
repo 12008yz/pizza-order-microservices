@@ -1,3 +1,4 @@
+// @ts-ignore - express-rate-limit types are included
 import rateLimit from 'express-rate-limit';
 import { Request, Response } from 'express';
 

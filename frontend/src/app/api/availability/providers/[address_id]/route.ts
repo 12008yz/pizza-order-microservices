@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import axios from 'axios';
 
 const AVAILABILITY_SERVICE_URL =
-  process.env.AVAILABILITY_SERVICE_URL || 'http://availability-service:3006';
+  process.env.AVAILABILITY_SERVICE_URL || 'http://localhost:3006';
 
 /**
  * GET /api/availability/providers/:address_id

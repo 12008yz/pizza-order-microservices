@@ -267,6 +267,51 @@ Order.init(
       type: DataTypes.TEXT,
       allowNull: true,
     },
+    routerOption: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      comment: 'Вариант роутера: purchase, rent, installment, none',
+    },
+    routerPrice: {
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: true,
+      comment: 'Цена роутера',
+    },
+    tvSettopOption: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      comment: 'Вариант ТВ-приставки: purchase, rent, none',
+    },
+    tvSettopPrice: {
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: true,
+      comment: 'Цена ТВ-приставки',
+    },
+    simCardOption: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      comment: 'Вариант SIM-карты: purchase, none',
+    },
+    simCardPrice: {
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: true,
+      comment: 'Цена SIM-карты',
+    },
+    totalMonthlyPrice: {
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: true,
+      comment: 'Общая месячная стоимость (тариф + оборудование)',
+    },
+    totalConnectionPrice: {
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: true,
+      comment: 'Стоимость подключения',
+    },
+    totalEquipmentPrice: {
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: true,
+      comment: 'Общая стоимость оборудования',
+    },
   },
   {
     sequelize,

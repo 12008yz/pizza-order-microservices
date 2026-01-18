@@ -41,9 +41,10 @@ const startServer = async () => {
       logger.info(`Location Service running on port ${PORT}`);
     });
   } catch (error) {
+    const err = error as Error;
     logger.error('Unable to start server', {
-      error: error?.message || String(error),
-      stack: error?.stack,
+      error: err?.message || String(error),
+      stack: err?.stack,
     });
     process.exit(1);
   }

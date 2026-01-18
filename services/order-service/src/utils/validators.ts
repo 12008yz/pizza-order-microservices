@@ -1,3 +1,4 @@
+// @ts-ignore - joi types are included
 import Joi from 'joi';
 import { Request, Response, NextFunction } from 'express';
 import { AppError } from '../middleware/errorHandler';
@@ -54,7 +55,7 @@ export const validateCreateOrder = (
   });
 
   if (error) {
-    const errorMessage = error.details.map((detail) => detail.message).join(', ');
+    const errorMessage = error.details.map((detail: Joi.ValidationErrorItem) => detail.message).join(', ');
     const appError = new Error(errorMessage) as AppError;
     appError.statusCode = 400;
     return next(appError);
@@ -89,7 +90,7 @@ export const validateUpdateOrderStatus = (
   });
 
   if (error) {
-    const errorMessage = error.details.map((detail) => detail.message).join(', ');
+    const errorMessage = error.details.map((detail: Joi.ValidationErrorItem) => detail.message).join(', ');
     const appError = new Error(errorMessage) as AppError;
     appError.statusCode = 400;
     return next(appError);

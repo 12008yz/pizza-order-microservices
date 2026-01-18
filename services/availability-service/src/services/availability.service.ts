@@ -1,5 +1,6 @@
 import axios, { AxiosInstance } from 'axios';
 import crypto from 'crypto';
+// @ts-ignore - node-cache has its own types
 import NodeCache from 'node-cache';
 import { AvailabilityCache, TechnicalAccess } from '../models';
 import { AppError } from '../middleware/errorHandler';
@@ -224,7 +225,7 @@ export class AvailabilityService {
       const cachedAll = providerCache.get<ProviderAvailability[]>('all_providers');
       if (cachedAll) {
         // Фильтруем только нужных провайдеров из кеша
-        const filtered = cachedAll.filter(p => providerIds.includes(p.providerId));
+        const filtered = cachedAll.filter((p: ProviderAvailability) => providerIds.includes(p.providerId));
         if (filtered.length === providerIds.length) {
           logger.debug('Providers found in cache', { count: filtered.length });
           return filtered;

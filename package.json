@@ -9,10 +9,13 @@
   ],
   "scripts": {
     "dev": "docker-compose up",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:services": "docker-compose up --scale frontend=0",
     "build": "docker-compose build",
     "down": "docker-compose down",
     "logs": "docker-compose logs -f",
-    "check-integration": "node scripts/check-services-integration.js"
+    "check-integration": "node scripts/check-services-integration.js",
+    "check-api": "node scripts/check-api-gateway.js"
   },
   "keywords": [
     "microservices",

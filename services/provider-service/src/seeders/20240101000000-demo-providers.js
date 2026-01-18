@@ -2,7 +2,14 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.bulkInsert('providers', [
+    // Проверяем, есть ли уже провайдеры в базе
+    const [existingProviders] = await queryInterface.sequelize.query(
+      "SELECT slug FROM providers WHERE slug IN ('rostelecom', 'mts', 'beeline', 'megafon', 'domru', 'ttk', 'akado', 'netbynet')"
+    );
+    
+    const existingSlugs = existingProviders.map((p: any) => p.slug);
+    
+    const providersToInsert = [
       {
         name: 'Ростелеком',
         slug: 'rostelecom',
@@ -115,7 +122,11 @@ module.exports = {
         createdAt: new Date(),
         updatedAt: new Date(),
       },
-    ]);
+    ].filter((provider) => !existingSlugs.includes(provider.slug));
+    
+    if (providersToInsert.length > 0) {
+      await queryInterface.bulkInsert('providers', providersToInsert);
+    }
   },
 
   down: async (queryInterface, Sequelize) => {

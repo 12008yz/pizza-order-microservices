@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import axios from 'axios';
 
 const NOTIFICATION_SERVICE_URL =
-  process.env.NOTIFICATION_SERVICE_URL || 'http://notification-service:3008';
+  process.env.NOTIFICATION_SERVICE_URL || 'http://localhost:3008';
 
 /**
  * PUT /api/notifications/:id/read

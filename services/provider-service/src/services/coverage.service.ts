@@ -73,7 +73,7 @@ export class CoverageService {
 
   async getProvidersByAddress(city: string, street?: string, house?: number) {
     const providerIds = await this.checkAddress(city, street, house);
-    
+
     if (providerIds.length === 0) {
       return [];
     }
@@ -100,7 +100,7 @@ export class CoverageService {
 
   async getStreets(city: string) {
     const normalizedCity = normalizeCity(city);
-    
+
     const streets = await Coverage.findAll({
       where: {
         [Op.or]: [
@@ -116,6 +116,109 @@ export class CoverageService {
     return streets
       .map(s => s.street)
       .filter(s => s !== null);
+  }
+
+  /**
+   * Автодополнение адресов из базы покрытия
+   * Возвращает подсказки адресов на основе запроса
+   */
+  async autocompleteAddress(query: string, limit: number = 10): Promise<Array<{
+    text: string;
+    formatted: string;
+    city: string;
+    street?: string;
+    district?: string;
+  }>> {
+    const searchTerm = `%${query.toLowerCase()}%`;
+    const normalizedQuery = normalizeCity(query);
+
+    // Поиск по городам
+    const cityRecords = await Coverage.findAll({
+      where: {
+        [Op.or]: [
+          { city: { [Op.iLike]: searchTerm } },
+          { city: normalizedQuery },
+        ],
+      },
+      attributes: ['city', 'district'],
+      limit: 50, // Получаем больше записей для фильтрации уникальных
+      raw: true,
+    }) as Array<{ city: string; district: string | null }>;
+
+    // Поиск по улицам
+    const streetRecords = await Coverage.findAll({
+      where: {
+        [Op.or]: [
+          { street: { [Op.iLike]: searchTerm } },
+          { street: normalizeStreet(query) },
+        ],
+        street: { [Op.ne]: null },
+      },
+      attributes: ['city', 'street', 'district'],
+      limit: 50, // Получаем больше записей для фильтрации уникальных
+      raw: true,
+    }) as Array<{ city: string; street: string; district: string | null }>;
+
+    const suggestions: Array<{
+      text: string;
+      formatted: string;
+      city: string;
+      street?: string;
+      district?: string;
+    }> = [];
+
+    // Добавляем уникальные города
+    const uniqueCities = new Map<string, { city: string; district?: string }>();
+    for (const record of cityRecords) {
+      const cityKey = record.city;
+      if (cityKey && !uniqueCities.has(cityKey)) {
+        uniqueCities.set(cityKey, {
+          city: cityKey,
+          district: record.district || undefined,
+        });
+      }
+    }
+
+    // Добавляем города в suggestions
+    for (const cityData of uniqueCities.values()) {
+      suggestions.push({
+        text: cityData.city,
+        formatted: cityData.city,
+        city: cityData.city,
+        district: cityData.district,
+      });
+    }
+
+    // Добавляем уникальные улицы
+    const uniqueStreets = new Map<string, { city: string; street: string; district?: string }>();
+    for (const record of streetRecords) {
+      const streetName = record.street || '';
+      const cityName = record.city || '';
+      if (streetName && cityName) {
+        const key = `${cityName}|${streetName}`;
+        if (!uniqueStreets.has(key)) {
+          uniqueStreets.set(key, {
+            city: cityName,
+            street: streetName,
+            district: record.district || undefined,
+          });
+        }
+      }
+    }
+
+    // Добавляем улицы в suggestions
+    for (const streetData of uniqueStreets.values()) {
+      const formatted = `${streetData.city}, ${streetData.street}`;
+      suggestions.push({
+        text: formatted,
+        formatted,
+        city: streetData.city,
+        street: streetData.street,
+        district: streetData.district,
+      });
+    }
+
+    return suggestions.slice(0, limit);
   }
 
   /**
@@ -137,7 +240,7 @@ export class CoverageService {
       district: normalizeDistrict(data.district),
       street: normalizeStreet(data.street),
     };
-    
+
     return await Coverage.create(normalizedData);
   }
 
@@ -152,13 +255,13 @@ export class CoverageService {
       error.statusCode = 404;
       throw error;
     }
-    
+
     // Нормализуем данные перед обновлением
     const normalizedData: any = { ...data };
     if (data.city) normalizedData.city = normalizeCity(data.city);
     if (data.district !== undefined) normalizedData.district = normalizeDistrict(data.district);
     if (data.street !== undefined) normalizedData.street = normalizeStreet(data.street);
-    
+
     await coverage.update(normalizedData);
     return coverage;
   }

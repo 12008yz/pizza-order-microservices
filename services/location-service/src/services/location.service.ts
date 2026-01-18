@@ -5,7 +5,7 @@ import { StreetType } from '../models/StreetType';
 import { Street } from '../models/Street';
 import { Building } from '../models/Building';
 import { Apartment } from '../models/Apartment';
-import { GeocoderService, AddressSuggestion } from './geocoder.service';
+import { CoverageAutocompleteService, AddressSuggestion } from './coverage-autocomplete.service';
 import { logger } from '../utils/logger';
 
 // Типы для результатов запросов с ассоциациями
@@ -19,10 +19,10 @@ type StreetWithAssociations = Street & {
 };
 
 export class LocationService {
-  private geocoderService: GeocoderService;
+  private coverageAutocompleteService: CoverageAutocompleteService;
 
   constructor() {
-    this.geocoderService = new GeocoderService();
+    this.coverageAutocompleteService = new CoverageAutocompleteService();
   }
 
   /**
@@ -132,11 +132,11 @@ export class LocationService {
   }
 
   /**
-   * Поиск адреса через Яндекс Геокодер
+   * Поиск адреса из базы данных покрытия
    */
   async searchAddress(query: string, limit: number = 10): Promise<AddressSuggestion[]> {
     try {
-      return await this.geocoderService.search(query, limit);
+      return await this.coverageAutocompleteService.search(query, limit);
     } catch (error: any) {
       logger.error('Address search error:', error);
       throw error;
@@ -144,11 +144,11 @@ export class LocationService {
   }
 
   /**
-   * Автодополнение адреса через Яндекс Геокодер
+   * Автодополнение адреса из базы данных покрытия
    */
   async autocompleteAddress(query: string, limit: number = 10): Promise<AddressSuggestion[]> {
     try {
-      return await this.geocoderService.autocomplete(query, limit);
+      return await this.coverageAutocompleteService.autocomplete(query, limit);
     } catch (error: any) {
       logger.error('Address autocomplete error:', error);
       throw error;

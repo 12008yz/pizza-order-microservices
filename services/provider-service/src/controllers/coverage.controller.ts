@@ -84,4 +84,30 @@ export const createCoverage = async (
   }
 };
 
+export const autocompleteAddress = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { q, limit } = req.query;
+    if (!q || typeof q !== 'string') {
+      return res.status(400).json({
+        success: false,
+        error: 'Query parameter "q" is required',
+      });
+    }
+
+    const limitNum = limit ? parseInt(limit as string, 10) : 10;
+    const suggestions = await coverageService.autocompleteAddress(q, limitNum);
+    
+    res.status(200).json({
+      success: true,
+      data: suggestions,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 

@@ -227,7 +227,7 @@ describe('AuthService', () => {
         expect.any(String) // Проверяем что передается строка (секрет)
       );
       expect(RefreshToken.findOne).toHaveBeenCalledWith({
-        where: { token: mockRefreshToken, userId: mockDecoded.userId },
+        where: { token: mockRefreshToken, userId: mockDecoded.userId, userType: 'client' },
       });
       expect(RefreshToken.destroy).toHaveBeenCalledWith({ where: { token: mockRefreshToken } });
     });

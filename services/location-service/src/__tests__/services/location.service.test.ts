@@ -70,9 +70,9 @@ jest.mock('../../models/index', () => ({
   Apartment: mockApartment,
 }));
 
-// Мокируем GeocoderService
-jest.mock('../../services/geocoder.service', () => ({
-  GeocoderService: jest.fn().mockImplementation(() => ({
+// Мокируем CoverageAutocompleteService
+jest.mock('../../services/coverage-autocomplete.service', () => ({
+  CoverageAutocompleteService: jest.fn().mockImplementation(() => ({
     search: jest.fn().mockResolvedValue([]),
     autocomplete: jest.fn().mockResolvedValue([]),
   })),

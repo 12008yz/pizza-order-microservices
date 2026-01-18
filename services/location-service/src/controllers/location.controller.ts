@@ -179,7 +179,7 @@ export const getApartments = async (
 
 /**
  * GET /api/locations/search?q={query}
- * Поиск адреса через Яндекс Геокодер
+ * Поиск адреса из базы данных покрытия
  */
 export const searchAddress = async (
   req: Request,
@@ -197,21 +197,21 @@ export const searchAddress = async (
     // Сначала пробуем поиск в локальной БД
     const localResults = await locationService.searchLocal(query.trim());
 
-    // Затем используем Яндекс Геокодер
-    let geocoderResults: any[] = [];
+    // Затем используем базу данных покрытия
+    let coverageResults: any[] = [];
     try {
       const results = await locationService.searchAddress(query.trim(), limit);
-      geocoderResults = results;
-    } catch (geocoderError) {
-      // Если Яндекс Геокодер недоступен, используем только локальные результаты
-      console.warn('Geocoder service unavailable, using local results only');
+      coverageResults = results;
+    } catch (coverageError) {
+      // Если сервис покрытия недоступен, используем только локальные результаты
+      console.warn('Coverage service unavailable, using local results only');
     }
 
     res.status(200).json({
       success: true,
       data: {
         local: localResults,
-        geocoder: geocoderResults,
+        coverage: coverageResults,
       },
     });
   } catch (error) {
@@ -221,7 +221,7 @@ export const searchAddress = async (
 
 /**
  * GET /api/locations/autocomplete?q={query}
- * Автодополнение адреса через Яндекс Геокодер
+ * Автодополнение адреса из базы данных покрытия
  */
 export const autocompleteAddress = async (
   req: Request,

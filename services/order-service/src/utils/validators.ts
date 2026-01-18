@@ -1,4 +1,3 @@
-// @ts-ignore - joi types are included
 import Joi from 'joi';
 import { Request, Response, NextFunction } from 'express';
 import { AppError } from '../middleware/errorHandler';

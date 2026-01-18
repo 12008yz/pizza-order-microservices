@@ -7,7 +7,7 @@ module.exports = {
       "SELECT slug FROM providers WHERE slug IN ('rostelecom', 'mts', 'beeline', 'megafon', 'domru', 'ttk', 'akado', 'netbynet')"
     );
     
-    const existingSlugs = existingProviders.map((p: any) => p.slug);
+    const existingSlugs = existingProviders.map((p) => p.slug);
     
     const providersToInsert = [
       {

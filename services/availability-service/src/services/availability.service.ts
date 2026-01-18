@@ -1,6 +1,5 @@
 import axios, { AxiosInstance } from 'axios';
 import crypto from 'crypto';
-// @ts-ignore - node-cache has its own types
 import NodeCache from 'node-cache';
 import { AvailabilityCache, TechnicalAccess } from '../models';
 import { AppError } from '../middleware/errorHandler';

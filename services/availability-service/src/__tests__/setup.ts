@@ -15,6 +15,29 @@ jest.mock('../config/database', () => ({
 // Мокируем axios для HTTP запросов
 jest.mock('axios');
 
+// Создаем мок axios instance ДО импорта сервиса
+const mockAxiosInstance = {
+  get: jest.fn(),
+  post: jest.fn(),
+  put: jest.fn(),
+  delete: jest.fn(),
+  interceptors: {
+    response: {
+      use: jest.fn(),
+    },
+    request: {
+      use: jest.fn(),
+    },
+  },
+};
+
+// Мокируем axios.create чтобы возвращал наш мок
+import axios from 'axios';
+(axios.create as jest.Mock) = jest.fn(() => mockAxiosInstance);
+
+// Экспортируем мок для использования в тестах
+export { mockAxiosInstance };
+
 // Мокируем модели перед их использованием
 const createMockModel = () => ({
   init: jest.fn(),

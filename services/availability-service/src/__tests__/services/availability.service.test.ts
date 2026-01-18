@@ -18,6 +18,9 @@ jest.mock('../../models', () => ({
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
+// Импортируем мок из setup
+import { mockAxiosInstance } from '../setup';
+
 // Импортируем после моков
 import { TechnicalAccess, AvailabilityCache } from '../../models';
 
@@ -27,6 +30,9 @@ describe('AvailabilityService', () => {
   beforeEach(() => {
     availabilityService = new AvailabilityService();
     jest.clearAllMocks();
+    // Очищаем моки axios instance
+    (mockAxiosInstance.get as jest.Mock).mockClear();
+    (mockAxiosInstance.post as jest.Mock).mockClear();
   });
 
   describe('checkAvailability', () => {
@@ -35,7 +41,7 @@ describe('AvailabilityService', () => {
         { providerId: 1, isAvailable: true },
       ]);
 
-      mockedAxios.get.mockResolvedValue({
+      mockAxiosInstance.get.mockResolvedValue({
         data: {
           success: true,
           data: [{ id: 1, name: 'Provider 1' }],
@@ -48,7 +54,7 @@ describe('AvailabilityService', () => {
       });
 
       expect(TechnicalAccess.findAll).toHaveBeenCalled();
-      expect(mockedAxios.get).toHaveBeenCalled();
+      expect(mockAxiosInstance.get).toHaveBeenCalled();
       expect(result.length).toBeGreaterThan(0);
     });
 
@@ -60,7 +66,7 @@ describe('AvailabilityService', () => {
       };
 
       (AvailabilityCache.findOne as jest.Mock).mockResolvedValue(mockCachedData);
-      mockedAxios.get.mockResolvedValue({
+      mockAxiosInstance.get.mockResolvedValue({
         data: {
           success: true,
           data: [
@@ -83,7 +89,7 @@ describe('AvailabilityService', () => {
       (AvailabilityCache.findOne as jest.Mock).mockResolvedValue(null);
       (AvailabilityCache.upsert as jest.Mock).mockResolvedValue({});
 
-      mockedAxios.get.mockResolvedValue({
+      mockAxiosInstance.get.mockResolvedValue({
         data: {
           success: true,
           data: [{ id: 1, name: 'Provider 1' }],
@@ -96,9 +102,15 @@ describe('AvailabilityService', () => {
         house: 10,
       });
 
-      expect(mockedAxios.get).toHaveBeenCalledWith(
-        expect.stringContaining('/api/coverage/check'),
-        expect.any(Object)
+      expect(mockAxiosInstance.get).toHaveBeenCalledWith(
+        '/api/coverage/check',
+        expect.objectContaining({
+          params: expect.objectContaining({
+            city: 'Москва',
+            street: 'Тверская',
+            house: 10,
+          }),
+        })
       );
       expect(AvailabilityCache.upsert).toHaveBeenCalled();
       expect(result.length).toBeGreaterThan(0);
@@ -106,7 +118,7 @@ describe('AvailabilityService', () => {
 
     it('should handle Provider Service errors gracefully', async () => {
       (AvailabilityCache.findOne as jest.Mock).mockResolvedValue(null);
-      mockedAxios.get.mockRejectedValue(new Error('Service unavailable'));
+      mockAxiosInstance.get.mockRejectedValue(new Error('Service unavailable'));
 
       const result = await availabilityService.checkAvailability({
         city: 'Москва',
@@ -123,7 +135,7 @@ describe('AvailabilityService', () => {
         { providerId: 2, isAvailable: true },
       ]);
 
-      mockedAxios.get.mockResolvedValue({
+      mockAxiosInstance.get.mockResolvedValue({
         data: {
           success: true,
           data: [
@@ -144,7 +156,7 @@ describe('AvailabilityService', () => {
         { providerId: 1, isAvailable: true },
       ]);
 
-      mockedAxios.get.mockResolvedValue({
+      mockAxiosInstance.get.mockResolvedValue({
         data: {
           success: true,
           data: [{ id: 1, name: 'Provider 1' }],

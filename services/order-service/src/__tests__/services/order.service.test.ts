@@ -1,10 +1,9 @@
 import { OrderService } from '../../services/order.service';
 import { Order, OrderItem, OrderStatusHistory } from '../../models';
-import axios from 'axios';
+import { mockAxiosInstance } from '../setup';
+import { createHttpClient } from '../../utils/httpClient';
 
-// Мокируем axios
-jest.mock('axios');
-const mockedAxios = axios as jest.Mocked<typeof axios>;
+const mockHttpClient = createHttpClient as jest.MockedFunction<typeof createHttpClient>;
 
 describe('OrderService', () => {
   let orderService: OrderService;
@@ -12,6 +11,10 @@ describe('OrderService', () => {
   beforeEach(() => {
     orderService = new OrderService();
     jest.clearAllMocks();
+    
+    // Очищаем моки HTTP клиента
+    (mockAxiosInstance.get as jest.Mock).mockClear();
+    (mockAxiosInstance.post as jest.Mock).mockClear();
   });
 
   describe('createOrder', () => {
@@ -26,15 +29,18 @@ describe('OrderService', () => {
         status: 'new',
       };
 
-      mockedAxios.post.mockResolvedValueOnce({
+      // Мокируем создание пользователя (первый вызов post)
+      (mockAxiosInstance.post as jest.Mock).mockResolvedValueOnce({
         data: { success: true, data: { id: 1 } },
       });
 
-      mockedAxios.get.mockResolvedValueOnce({
+      // Мокируем проверку тарифа (первый вызов get)
+      (mockAxiosInstance.get as jest.Mock).mockResolvedValueOnce({
         data: { success: true, data: { id: 1, name: 'Tariff', price: 1000 } },
       });
 
-      mockedAxios.post.mockResolvedValueOnce({
+      // Мокируем уведомление (второй вызов post)
+      (mockAxiosInstance.post as jest.Mock).mockResolvedValueOnce({
         data: { success: true },
       });
 
@@ -64,11 +70,13 @@ describe('OrderService', () => {
     });
 
     it('should throw error if tariff not found', async () => {
-      mockedAxios.post.mockResolvedValueOnce({
+      // Мокируем создание пользователя
+      (mockAxiosInstance.post as jest.Mock).mockResolvedValueOnce({
         data: { success: true, data: { id: 1 } },
       });
 
-      mockedAxios.get.mockRejectedValueOnce({
+      // Мокируем ошибку тарифа
+      (mockAxiosInstance.get as jest.Mock).mockRejectedValueOnce({
         response: { status: 404 },
       });
 
@@ -85,7 +93,7 @@ describe('OrderService', () => {
 
   describe('calculateOrderCost', () => {
     it('should calculate order cost correctly', async () => {
-      mockedAxios.get.mockResolvedValue({
+      (mockAxiosInstance.get as jest.Mock).mockResolvedValue({
         data: {
           success: true,
           data: {
@@ -122,13 +130,14 @@ describe('OrderService', () => {
 
       (Order.findByPk as jest.Mock).mockResolvedValue(mockOrder);
       (OrderStatusHistory.create as jest.Mock).mockResolvedValue({});
-      mockedAxios.post.mockResolvedValue({ data: { success: true } });
+      
+      (mockAxiosInstance.post as jest.Mock).mockResolvedValue({ data: { success: true } });
 
       const result = await orderService.updateOrderStatus(1, 'processing', '1', 'Test comment');
 
       expect(mockOrder.update).toHaveBeenCalledWith({ status: 'processing' });
       expect(OrderStatusHistory.create).toHaveBeenCalled();
-      expect(mockedAxios.post).toHaveBeenCalled();
+      expect(mockAxiosInstance.post).toHaveBeenCalled();
     });
   });
 

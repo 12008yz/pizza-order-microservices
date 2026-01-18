@@ -11,11 +11,16 @@ import {
   getOrderStatusHistory,
 } from '../controllers/order.controller';
 import { authenticateToken } from '../middleware/auth';
+import { validateCreateOrder, validateUpdateOrderStatus } from '../utils/validators';
+import { orderLimiter, apiLimiter } from '../middleware/rateLimiter';
 
 const router = Router();
 
-// Создание заявки доступно без авторизации
-router.post('/', createOrder);
+// Применяем общий rate limiter ко всем роутам
+router.use(apiLimiter);
+
+// Создание заявки доступно без авторизации, но с валидацией и специальным rate limiter
+router.post('/', orderLimiter, validateCreateOrder, createOrder);
 
 // Получение всех заявок (для админов) - требует авторизации
 router.get('/', authenticateToken, getAllOrders);
@@ -36,8 +41,8 @@ router.get('/:id', getOrderById);
 // История статусов заявки - без авторизации
 router.get('/:id/status-history', getOrderStatusHistory);
 
-// Обновление статуса (для админов) - требует авторизации
-router.put('/:id/status', authenticateToken, updateOrderStatus);
+// Обновление статуса (для админов) - требует авторизации и валидации
+router.put('/:id/status', authenticateToken, validateUpdateOrderStatus, updateOrderStatus);
 
 // Назначение менеджера (для админов) - требует авторизации
 router.put('/:id/assign', authenticateToken, assignOrder);

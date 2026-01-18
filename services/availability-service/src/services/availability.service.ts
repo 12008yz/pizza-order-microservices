@@ -1,5 +1,6 @@
-import axios from 'axios';
+import axios, { AxiosInstance } from 'axios';
 import crypto from 'crypto';
+import NodeCache from 'node-cache';
 import { AvailabilityCache, TechnicalAccess } from '../models';
 import { AppError } from '../middleware/errorHandler';
 import { logger } from '../utils/logger';
@@ -8,6 +9,18 @@ import { Op } from 'sequelize';
 const PROVIDER_SERVICE_URL = process.env.PROVIDER_SERVICE_URL || 'http://localhost:3003';
 const LOCATION_SERVICE_URL = process.env.LOCATION_SERVICE_URL || 'http://localhost:3005';
 const CACHE_TTL_HOURS = 24; // Время жизни кеша в часах
+
+// In-memory кеш для провайдеров (TTL 5 минут)
+const providerCache = new NodeCache({ stdTTL: 300, checkperiod: 60 });
+
+// HTTP клиент для Provider Service с таймаутом
+const providerClient: AxiosInstance = axios.create({
+  baseURL: PROVIDER_SERVICE_URL,
+  timeout: 5000,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
 
 export interface AddressCheckRequest {
   city: string;
@@ -97,13 +110,12 @@ export class AvailabilityService {
   private async checkCoverage(address: AddressCheckRequest): Promise<ProviderAvailability[]> {
     try {
       // Запрос к Provider Service для проверки покрытия
-      const response = await axios.get(`${PROVIDER_SERVICE_URL}/api/coverage/check`, {
+      const response = await providerClient.get('/api/coverage/check', {
         params: {
           city: address.city,
           street: address.street,
           house: address.house,
         },
-        timeout: 5000,
       });
 
       if (!response.data?.success || !Array.isArray(response.data.data)) {
@@ -200,6 +212,7 @@ export class AvailabilityService {
 
   /**
    * Получает информацию о провайдерах по их ID
+   * Использует кеширование и batch запросы для оптимизации
    */
   private async getProvidersInfo(providerIds: number[]): Promise<ProviderAvailability[]> {
     if (providerIds.length === 0) {
@@ -207,25 +220,75 @@ export class AvailabilityService {
     }
 
     try {
-      // Запрашиваем информацию о провайдерах из Provider Service
-      // Используем batch запрос, если возможно, или последовательные запросы
+      // Проверяем кеш
+      const cachedAll = providerCache.get<ProviderAvailability[]>('all_providers');
+      if (cachedAll) {
+        // Фильтруем только нужных провайдеров из кеша
+        const filtered = cachedAll.filter(p => providerIds.includes(p.providerId));
+        if (filtered.length === providerIds.length) {
+          logger.debug('Providers found in cache', { count: filtered.length });
+          return filtered;
+        }
+      }
+
       const providers: ProviderAvailability[] = [];
       
       // Запрашиваем всех провайдеров сразу через список
       try {
-        const response = await axios.get(`${PROVIDER_SERVICE_URL}/api/providers`, {
+        const response = await providerClient.get('/api/providers', {
           params: {
             active: true,
           },
-          timeout: 5000,
         });
 
         if (response.data?.success && Array.isArray(response.data.data)) {
+          // Преобразуем все провайдеры в формат ProviderAvailability
+          const allProviders: ProviderAvailability[] = response.data.data.map((p: any) => ({
+            providerId: p.id,
+            providerName: p.name || 'Unknown',
+            isAvailable: true,
+            connectionType: 'fiber',
+          }));
+
+          // Сохраняем в кеш
+          providerCache.set('all_providers', allProviders);
+
           // Фильтруем только нужных провайдеров
-          const allProviders = response.data.data;
           for (const providerId of providerIds) {
-            const provider = allProviders.find((p: any) => p.id === providerId);
+            const provider = allProviders.find(p => p.providerId === providerId);
             if (provider) {
+              providers.push(provider);
+            }
+          }
+        }
+      } catch (error: any) {
+        logger.warn('Error fetching providers list', {
+          error: error.message,
+        });
+        
+        // Fallback: batch запросы по 10 провайдеров за раз
+        const batchSize = 10;
+        const batches: number[][] = [];
+        for (let i = 0; i < providerIds.length; i += batchSize) {
+          batches.push(providerIds.slice(i, i + batchSize));
+        }
+
+        for (const batch of batches) {
+          const promises = batch.map(providerId =>
+            providerClient.get(`/api/providers/${providerId}`).catch((err: any) => {
+              logger.warn('Error fetching provider info', {
+                providerId,
+                error: err.message,
+              });
+              return null;
+            })
+          );
+
+          const results = await Promise.allSettled(promises);
+          
+          for (const result of results) {
+            if (result.status === 'fulfilled' && result.value?.data?.success) {
+              const provider = result.value.data.data;
               providers.push({
                 providerId: provider.id,
                 providerName: provider.name || 'Unknown',
@@ -235,39 +298,11 @@ export class AvailabilityService {
             }
           }
         }
-      } catch (error: any) {
-        logger.warn('Error fetching providers list:', {
-          error: error.message,
-        });
-        
-        // Fallback: запрашиваем по одному
-        for (const providerId of providerIds) {
-          try {
-            const response = await axios.get(`${PROVIDER_SERVICE_URL}/api/providers/${providerId}`, {
-              timeout: 3000,
-            });
-
-            if (response.data?.success && response.data.data) {
-              providers.push({
-                providerId: response.data.data.id,
-                providerName: response.data.data.name || 'Unknown',
-                isAvailable: true,
-                connectionType: 'fiber',
-              });
-            }
-          } catch (err: any) {
-            logger.warn('Error fetching provider info:', {
-              providerId,
-              error: err.message,
-            });
-            // Продолжаем с другими провайдерами
-          }
-        }
       }
 
       return providers;
     } catch (error: any) {
-      logger.error('Error getting providers info:', {
+      logger.error('Error getting providers info', {
         error: error.message,
         providerIds,
       });

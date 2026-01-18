@@ -1,8 +1,26 @@
 import { Order, OrderItem, OrderStatusHistory } from '../models';
 import { AppError } from '../middleware/errorHandler';
 import { logger } from '../utils/logger';
-import { Op } from 'sequelize';
-import axios from 'axios';
+import { Op, Transaction } from 'sequelize';
+import { sequelize } from '../config/database';
+import { createHttpClient, callService } from '../utils/httpClient';
+import {
+  HTTP_TIMEOUT,
+  PHONE_REGEX,
+  PHONE_MIN_LENGTH,
+  ROUTER_PURCHASE_PRICE,
+  ROUTER_RENT_PRICE,
+  TV_SETTOP_PURCHASE_PRICE,
+  TV_SETTOP_RENT_PRICE,
+  SIM_CARD_PRICE,
+} from '../config/constants';
+import {
+  CreateOrderData,
+  OrderCalculation,
+  CalculateOrderCostData,
+  OrderFilters,
+  OrderItemCalculation,
+} from '../types/order.types';
 
 const PROVIDER_SERVICE_URL = process.env.PROVIDER_SERVICE_URL || 'http://localhost:3003';
 const LOCATION_SERVICE_URL = process.env.LOCATION_SERVICE_URL || 'http://localhost:3005';
@@ -11,43 +29,20 @@ const EQUIPMENT_SERVICE_URL = process.env.EQUIPMENT_SERVICE_URL || 'http://local
 const NOTIFICATION_SERVICE_URL = process.env.NOTIFICATION_SERVICE_URL || 'http://localhost:3008';
 const AUTH_SERVICE_URL = process.env.AUTH_SERVICE_URL || 'http://localhost:3001';
 
+// Создаем HTTP клиенты для каждого сервиса
+const providerClient = createHttpClient(PROVIDER_SERVICE_URL, HTTP_TIMEOUT);
+const authClient = createHttpClient(AUTH_SERVICE_URL, HTTP_TIMEOUT);
+const availabilityClient = createHttpClient(AVAILABILITY_SERVICE_URL, HTTP_TIMEOUT);
+const notificationClient = createHttpClient(NOTIFICATION_SERVICE_URL, HTTP_TIMEOUT);
+
 export class OrderService {
-  async createOrder(data: {
-    userId?: number | null;
-    tariffId: number;
-    providerId: number;
-    fullName: string;
-    phone: string;
-    email?: string | null;
-    firstName?: string | null;
-    lastName?: string | null;
-    dateOfBirth?: Date | null;
-    citizenship?: string | null;
-    // Адрес через ID из Location Service
-    regionId?: number | null;
-    cityId?: number | null;
-    streetId?: number | null;
-    buildingId?: number | null;
-    apartmentId?: number | null;
-    addressString?: string | null; // Полный адрес строкой для отображения
-    entrance?: string | null;
-    floor?: string | null;
-    intercom?: string | null;
-    preferredDate?: Date | null;
-    preferredTimeFrom?: string | null;
-    preferredTimeTo?: string | null;
-    comment?: string | null;
-    source?: string | null;
-    utmSource?: string | null;
-    utmMedium?: string | null;
-    utmCampaign?: string | null;
-    utmContent?: string | null;
-    utmTerm?: string | null;
-    // Оборудование
-    routerOption?: string | null;
-    tvSettopOption?: string | null;
-    simCardOption?: string | null;
-  }) {
+  /**
+   * Создает новый заказ
+   * @param data - Данные заказа
+   * @returns Созданный заказ
+   * @throws {AppError} Если телефон не указан, тариф не найден или произошла ошибка при создании
+   */
+  async createOrder(data: CreateOrderData): Promise<Order> {
     // Проверяем наличие телефона (обязательное поле)
     if (!data.phone || typeof data.phone !== 'string' || data.phone.trim() === '') {
       const error = new Error('Phone number is required') as AppError;
@@ -56,57 +51,52 @@ export class OrderService {
     }
 
     // Базовая валидация формата телефона
-    const phoneRegex = /^[\d\s\-\+\(\)]+$/;
     const normalizedPhone = data.phone.replace(/\D/g, '');
-    if (!phoneRegex.test(data.phone) || normalizedPhone.length < 10) {
+    if (!PHONE_REGEX.test(data.phone) || normalizedPhone.length < PHONE_MIN_LENGTH) {
       const error = new Error('Invalid phone number format') as AppError;
       error.statusCode = 400;
       throw error;
     }
 
-    // Создаем или обновляем пользователя в User таблице по телефону
-    // Пользователь создается ТОЛЬКО когда введен телефон (это обязательное поле)
+    // Параллельно создаем пользователя и проверяем тариф
     let userId = data.userId;
-    if (!userId) {
-      try {
-        const userResponse = await axios.post(
-          `${AUTH_SERVICE_URL}/api/auth/internal/user-by-phone`,
-          {
+    
+    const [userResponse, tariffResponse] = await Promise.allSettled([
+      // Создаем или обновляем пользователя
+      !userId
+        ? authClient.post('/api/auth/internal/user-by-phone', {
             phone: normalizedPhone,
             fullName: data.fullName,
             email: data.email,
-          }
-        );
+          })
+        : Promise.resolve(null),
+      // Проверяем тариф
+      providerClient.get(`/api/tariffs/${data.tariffId}`),
+    ]);
 
-        if (userResponse.data.success && userResponse.data.data) {
-          userId = userResponse.data.data.id;
-          logger.info(`User created/updated by phone: ${normalizedPhone}, userId: ${userId}`);
-        } else {
-          logger.warn(`Failed to create user: invalid response from auth service`);
-        }
-      } catch (error: any) {
-        // Если не удалось создать пользователя, это критическая ошибка
-        // так как телефон обязателен и пользователь должен быть создан
-        logger.error(`Failed to create/update user by phone: ${error.message}`);
+    // Обрабатываем результат создания пользователя
+    if (!userId) {
+      if (userResponse.status === 'fulfilled' && userResponse.value?.data?.success) {
+        userId = userResponse.value.data.data.id;
+        logger.info('User created/updated by phone', {
+          phone: normalizedPhone,
+          userId,
+        });
+      } else {
+        const errorMessage = userResponse.status === 'rejected' 
+          ? userResponse.reason?.message 
+          : 'Invalid response from auth service';
+        logger.error('Failed to create/update user by phone', { error: errorMessage });
         const appError = new Error('Failed to create user. Please try again.') as AppError;
         appError.statusCode = 500;
         throw appError;
       }
     }
 
-    // Проверяем тариф через Provider Service
-    try {
-      const tariffResponse = await axios.get(
-        `${PROVIDER_SERVICE_URL}/api/tariffs/${data.tariffId}`
-      );
-
-      if (!tariffResponse.data.success) {
-        const error = new Error('Tariff not found') as AppError;
-        error.statusCode = 404;
-        throw error;
-      }
-    } catch (error: any) {
-      if (error.response?.status === 404) {
+    // Обрабатываем результат проверки тарифа
+    if (tariffResponse.status === 'rejected') {
+      const error = tariffResponse.reason;
+      if (error?.response?.status === 404) {
         const appError = new Error('Tariff not found') as AppError;
         appError.statusCode = 404;
         throw appError;
@@ -114,30 +104,37 @@ export class OrderService {
       throw error;
     }
 
+    if (!tariffResponse.value?.data?.success) {
+      const error = new Error('Tariff not found') as AppError;
+      error.statusCode = 404;
+      throw error;
+    }
+
     // Проверяем доступность провайдера по адресу (если указан buildingId)
     if (data.buildingId) {
-      try {
-        const availabilityResponse = await axios.post(
-          `${AVAILABILITY_SERVICE_URL}/api/availability/check`,
-          {
+      await callService(
+        async () => {
+          const availabilityResponse = await availabilityClient.post('/api/availability/check', {
             buildingId: data.buildingId,
             apartmentId: data.apartmentId,
             providerId: data.providerId,
-          }
-        );
+          });
 
-        if (!availabilityResponse.data.success || !availabilityResponse.data.data?.isAvailable) {
-          const error = new Error('Provider is not available at this address') as AppError;
-          error.statusCode = 400;
-          throw error;
-        }
-      } catch (error: any) {
+          if (!availabilityResponse.data.success || !availabilityResponse.data.data?.isAvailable) {
+            const error = new Error('Provider is not available at this address') as AppError;
+            error.statusCode = 400;
+            throw error;
+          }
+        },
+        undefined,
+        'Availability check failed'
+      ).catch((error: any) => {
         if (error.response?.status === 400 || error.response?.status === 404) {
           throw error;
         }
         // Если Availability Service недоступен, логируем предупреждение, но не блокируем создание заявки
-        logger.warn(`Availability check failed for order: ${error.message}`);
-      }
+        logger.warn('Availability check failed for order', { error: error.message });
+      });
     }
 
     // Рассчитываем стоимость перед созданием заявки (если указаны опции оборудования)
@@ -151,61 +148,80 @@ export class OrderService {
       });
     }
 
-    const order = await Order.create({
-      ...data,
-      userId: userId || null,
-      status: 'new',
-      ...(calculation || {}),
-    });
+    // Используем транзакцию для атомарности операций
+    const transaction = await sequelize.transaction();
 
-    // Создаем запись в истории статусов
-    await OrderStatusHistory.create({
-      orderId: order.id,
-      status: 'new',
-      changedBy: userId ? userId.toString() : 'system',
-      comment: 'Заявка создана',
-    });
-
-    // Создаем элементы заявки (если есть расчет)
-    if (calculation) {
-      await this.createOrderItems(order.id, calculation, data.tariffId);
-    }
-
-    logger.info(`Order created: ${order.id} for user ${userId || 'anonymous'}`);
-
-    // Отправляем уведомление о создании заявки
     try {
-      await axios.post(`${NOTIFICATION_SERVICE_URL}/api/notifications`, {
-        userId: userId || null,
-        orderId: order.id,
-        type: 'order_created',
-        email: data.email || null,
-        phone: data.phone || null,
-      });
-    } catch (error: any) {
-      logger.warn(`Failed to send notification: ${error.message}`);
-      // Не блокируем создание заявки, если уведомление не отправилось
-    }
+      const order = await Order.create(
+        {
+          ...data,
+          userId: userId || null,
+          status: 'new',
+          ...(calculation || {}),
+        },
+        { transaction }
+      );
 
-    return order;
+      // Создаем запись в истории статусов
+      await OrderStatusHistory.create(
+        {
+          orderId: order.id,
+          status: 'new',
+          changedBy: userId ? userId.toString() : 'system',
+          comment: 'Заявка создана',
+        },
+        { transaction }
+      );
+
+      // Создаем элементы заявки (если есть расчет)
+      if (calculation) {
+        await this.createOrderItems(order.id, calculation, data.tariffId, transaction);
+      }
+
+      // Коммитим транзакцию
+      await transaction.commit();
+
+      logger.info('Order created', {
+        orderId: order.id,
+        userId: userId || 'anonymous',
+        status: order.status,
+      });
+
+      // Отправляем уведомление о создании заявки (не блокируем, если не отправится)
+      callService(
+        async () => {
+          await notificationClient.post('/api/notifications', {
+            userId: userId || null,
+            orderId: order.id,
+            type: 'order_created',
+            email: data.email || null,
+            phone: data.phone || null,
+          });
+        },
+        undefined,
+        'Failed to send notification'
+      ).catch(() => {
+        // Уже залогировано в callService
+      });
+
+      return order;
+    } catch (error: any) {
+      // Откатываем транзакцию при ошибке
+      await transaction.rollback();
+      logger.error('Failed to create order', {
+        error: error.message,
+        userId: userId || 'anonymous',
+      });
+      throw error;
+    }
   }
 
   /**
    * Рассчитывает стоимость заявки
+   * @param data - Данные для расчета (тариф и опции оборудования)
+   * @returns Расчет стоимости заказа
    */
-  async calculateOrderCost(data: {
-    tariffId: number;
-    routerOption?: string | null;
-    tvSettopOption?: string | null;
-    simCardOption?: string | null;
-  }): Promise<{
-    routerPrice: number | null;
-    tvSettopPrice: number | null;
-    simCardPrice: number | null;
-    totalMonthlyPrice: number | null;
-    totalConnectionPrice: number | null;
-    totalEquipmentPrice: number | null;
-  }> {
+  async calculateOrderCost(data: CalculateOrderCostData): Promise<OrderCalculation> {
     let tariffPrice = 0;
     let connectionPrice = 0;
     let routerPrice = 0;
@@ -214,9 +230,7 @@ export class OrderService {
 
     try {
       // Получаем данные тарифа
-      const tariffResponse = await axios.get(
-        `${PROVIDER_SERVICE_URL}/api/tariffs/${data.tariffId}`
-      );
+      const tariffResponse = await providerClient.get(`/api/tariffs/${data.tariffId}`);
 
       if (tariffResponse.data?.success && tariffResponse.data.data) {
         const tariff = tariffResponse.data.data;
@@ -224,42 +238,42 @@ export class OrderService {
         connectionPrice = parseFloat(tariff.connectionPrice) || 0;
       }
     } catch (error: any) {
-      logger.warn(`Failed to get tariff: ${error.message}`);
+      logger.warn('Failed to get tariff', { error: error.message });
     }
 
     // Получаем цены оборудования
     if (data.routerOption && data.routerOption !== 'none') {
       try {
         // Здесь нужно получить цену роутера из Equipment Service
-        // Пока используем заглушку
-        routerPrice = data.routerOption === 'purchase' ? 2000 : 0;
+        // Пока используем константы
+        routerPrice = data.routerOption === 'purchase' ? ROUTER_PURCHASE_PRICE : 0;
         if (data.routerOption === 'rent') {
-          routerPrice = 200; // Ежемесячная аренда
+          routerPrice = ROUTER_RENT_PRICE; // Ежемесячная аренда
         }
       } catch (error: any) {
-        logger.warn(`Failed to get router price: ${error.message}`);
+        logger.warn('Failed to get router price', { error: error.message });
       }
     }
 
     if (data.tvSettopOption && data.tvSettopOption !== 'none') {
       try {
-        tvSettopPrice = data.tvSettopOption === 'purchase' ? 3000 : 0;
+        tvSettopPrice = data.tvSettopOption === 'purchase' ? TV_SETTOP_PURCHASE_PRICE : 0;
         if (data.tvSettopOption === 'rent') {
-          tvSettopPrice = 300; // Ежемесячная аренда
+          tvSettopPrice = TV_SETTOP_RENT_PRICE; // Ежемесячная аренда
         }
       } catch (error: any) {
-        logger.warn(`Failed to get TV settop price: ${error.message}`);
+        logger.warn('Failed to get TV settop price', { error: error.message });
       }
     }
 
     if (data.simCardOption && data.simCardOption !== 'none') {
-      simCardPrice = 0; // SIM-карта обычно бесплатна
+      simCardPrice = SIM_CARD_PRICE; // SIM-карта обычно бесплатна
     }
 
     const totalEquipmentPrice = routerPrice + tvSettopPrice + simCardPrice;
     const monthlyEquipmentRent = 
-      (data.routerOption === 'rent' ? 200 : 0) +
-      (data.tvSettopOption === 'rent' ? 300 : 0);
+      (data.routerOption === 'rent' ? ROUTER_RENT_PRICE : 0) +
+      (data.tvSettopOption === 'rent' ? TV_SETTOP_RENT_PRICE : 0);
     const totalMonthlyPrice = tariffPrice + monthlyEquipmentRent;
 
     return {
@@ -274,76 +288,87 @@ export class OrderService {
 
   /**
    * Создает элементы заявки
+   * @param orderId - ID заказа
+   * @param calculation - Расчет стоимости оборудования
+   * @param tariffId - ID тарифа
+   * @param transaction - Транзакция БД (опционально)
    */
   private async createOrderItems(
     orderId: number,
-    calculation: {
-      routerPrice: number | null;
-      tvSettopPrice: number | null;
-      simCardPrice: number | null;
-    },
-    tariffId: number
+    calculation: OrderItemCalculation,
+    tariffId: number,
+    transaction?: Transaction
   ): Promise<void> {
     try {
       // Создаем элемент для тарифа
       try {
-        const tariffResponse = await axios.get(
-          `${PROVIDER_SERVICE_URL}/api/tariffs/${tariffId}`
-        );
+        const tariffResponse = await providerClient.get(`/api/tariffs/${tariffId}`);
         if (tariffResponse.data?.success && tariffResponse.data.data) {
           const tariff = tariffResponse.data.data;
-          await OrderItem.create({
-            orderId,
-            itemType: 'tariff',
-            itemId: tariffId,
-            name: tariff.name || 'Тариф',
-            quantity: 1,
-            unitPrice: parseFloat(tariff.price) || 0,
-            totalPrice: parseFloat(tariff.price) || 0,
-          });
+          await OrderItem.create(
+            {
+              orderId,
+              itemType: 'tariff',
+              itemId: tariffId,
+              name: tariff.name || 'Тариф',
+              quantity: 1,
+              unitPrice: parseFloat(tariff.price) || 0,
+              totalPrice: parseFloat(tariff.price) || 0,
+            },
+            { transaction }
+          );
         }
       } catch (error: any) {
-        logger.warn(`Failed to create tariff item: ${error.message}`);
+        logger.warn('Failed to create tariff item', { error: error.message });
       }
 
       // Создаем элементы для оборудования
       if (calculation.routerPrice) {
-        await OrderItem.create({
-          orderId,
-          itemType: 'equipment',
-          itemId: 0, // Можно получить из Equipment Service
-          name: 'Роутер',
-          quantity: 1,
-          unitPrice: calculation.routerPrice,
-          totalPrice: calculation.routerPrice,
-        });
+        await OrderItem.create(
+          {
+            orderId,
+            itemType: 'equipment',
+            itemId: 0, // Можно получить из Equipment Service
+            name: 'Роутер',
+            quantity: 1,
+            unitPrice: calculation.routerPrice,
+            totalPrice: calculation.routerPrice,
+          },
+          { transaction }
+        );
       }
 
       if (calculation.tvSettopPrice) {
-        await OrderItem.create({
-          orderId,
-          itemType: 'equipment',
-          itemId: 0,
-          name: 'ТВ-приставка',
-          quantity: 1,
-          unitPrice: calculation.tvSettopPrice,
-          totalPrice: calculation.tvSettopPrice,
-        });
+        await OrderItem.create(
+          {
+            orderId,
+            itemType: 'equipment',
+            itemId: 0,
+            name: 'ТВ-приставка',
+            quantity: 1,
+            unitPrice: calculation.tvSettopPrice,
+            totalPrice: calculation.tvSettopPrice,
+          },
+          { transaction }
+        );
       }
 
       if (calculation.simCardPrice) {
-        await OrderItem.create({
-          orderId,
-          itemType: 'equipment',
-          itemId: 0,
-          name: 'SIM-карта',
-          quantity: 1,
-          unitPrice: calculation.simCardPrice,
-          totalPrice: calculation.simCardPrice,
-        });
+        await OrderItem.create(
+          {
+            orderId,
+            itemType: 'equipment',
+            itemId: 0,
+            name: 'SIM-карта',
+            quantity: 1,
+            unitPrice: calculation.simCardPrice,
+            totalPrice: calculation.simCardPrice,
+          },
+          { transaction }
+        );
       }
     } catch (error: any) {
-      logger.error(`Failed to create order items: ${error.message}`);
+      logger.error('Failed to create order items', { error: error.message });
       // Не бросаем ошибку, элементы заявки не критичны
     }
   }
@@ -383,12 +408,12 @@ export class OrderService {
     });
   }
 
-  async getAllOrders(filters: {
-    status?: string;
-    providerId?: number;
-    dateFrom?: Date;
-    dateTo?: Date;
-  } = {}) {
+  /**
+   * Получает все заказы с фильтрами
+   * @param filters - Фильтры для поиска заказов
+   * @returns Список заказов
+   */
+  async getAllOrders(filters: OrderFilters = {}): Promise<Order[]> {
     const where: any = {};
 
     if (filters.status) {
@@ -436,19 +461,23 @@ export class OrderService {
 
     logger.info(`Order ${id} status updated from ${oldStatus} to ${status}`);
 
-    // Отправляем уведомление об изменении статуса
-    try {
-      await axios.post(`${NOTIFICATION_SERVICE_URL}/api/notifications`, {
-        userId: order.userId,
-        orderId: id,
-        type: 'status_changed',
-        email: order.email || null,
-        phone: order.phone || null,
-        metadata: { oldStatus, newStatus: status },
-      });
-    } catch (error: any) {
-      logger.warn(`Failed to send status change notification: ${error.message}`);
-    }
+    // Отправляем уведомление об изменении статуса (не блокируем, если не отправится)
+    callService(
+      async () => {
+        await notificationClient.post('/api/notifications', {
+          userId: order.userId,
+          orderId: id,
+          type: 'status_changed',
+          email: order.email || null,
+          phone: order.phone || null,
+          metadata: { oldStatus, newStatus: status },
+        });
+      },
+      undefined,
+      'Failed to send status change notification'
+    ).catch(() => {
+      // Уже залогировано в callService
+    });
 
     return order;
   }

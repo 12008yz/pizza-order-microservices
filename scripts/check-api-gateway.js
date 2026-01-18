@@ -245,12 +245,18 @@ async function checkOrderAPI() {
     `${BASE_URL}/api/orders/by-phone?phone=+79991234567`
   ));
 
-  // GET /api/orders/1
-  results.push(await testEndpoint(
+  // GET /api/orders/1 (может вернуть 404 если заявки нет - это нормально)
+  const orderResult = await testEndpoint(
     'GET /api/orders/1',
     'GET',
-    `${BASE_URL}/api/orders/1`
-  ));
+    `${BASE_URL}/api/orders/1`,
+    { showResponse: false }
+  );
+  // 404 - это нормальное поведение если заявки нет, считаем успехом
+  if (orderResult.status === 404 && orderResult.data?.error === 'Order not found') {
+    orderResult.success = true;
+  }
+  results.push(orderResult);
 
   // GET /api/orders/1/status-history
   results.push(await testEndpoint(
@@ -259,13 +265,18 @@ async function checkOrderAPI() {
     `${BASE_URL}/api/orders/1/status-history`
   ));
 
-  // GET /api/orders/my (требует авторизацию - ожидаем 401)
-  results.push(await testEndpoint(
+  // GET /api/orders/my (требует авторизацию - ожидаем 401, это правильное поведение)
+  const myOrdersResult = await testEndpoint(
     'GET /api/orders/my (без авторизации)',
     'GET',
     `${BASE_URL}/api/orders/my`,
     { showResponse: false }
-  ));
+  );
+  // 401 - это ожидаемое поведение, считаем успехом
+  if (myOrdersResult.status === 401) {
+    myOrdersResult.success = true;
+  }
+  results.push(myOrdersResult);
 
   return results;
 }
@@ -318,6 +329,7 @@ async function checkAuthAPI() {
     `${BASE_URL}/api/auth/register`,
     {
       data: {
+        name: 'Test User',
         email: `test${Date.now()}@example.com`,
         password: 'Test123456!',
         phone: `+7999${Date.now().toString().slice(-7)}`,

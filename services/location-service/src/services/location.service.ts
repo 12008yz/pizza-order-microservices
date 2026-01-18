@@ -138,7 +138,11 @@ export class LocationService {
     try {
       return await this.coverageAutocompleteService.search(query, limit);
     } catch (error: any) {
-      logger.error('Address search error:', error);
+      logger.error('Address search error', {
+        error: error?.message || String(error),
+        query,
+        stack: error?.stack,
+      });
       throw error;
     }
   }
@@ -150,7 +154,11 @@ export class LocationService {
     try {
       return await this.coverageAutocompleteService.autocomplete(query, limit);
     } catch (error: any) {
-      logger.error('Address autocomplete error:', error);
+      logger.error('Address autocomplete error', {
+        error: error?.message || String(error),
+        query,
+        stack: error?.stack,
+      });
       throw error;
     }
   }

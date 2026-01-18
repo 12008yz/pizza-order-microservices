@@ -13,13 +13,16 @@ export const errorHandler = (
   next: NextFunction
 ) => {
   const statusCode = err.statusCode || 500;
-  const message = err.message || 'Internal Server Error';
+  const message = err?.message || (typeof err === 'string' ? err : 'Internal Server Error');
 
-  logger.error({
+  // Улучшенное логирование ошибок
+  logger.error('Request error', {
     error: message,
-    stack: err.stack,
+    stack: err?.stack,
     path: req.path,
     method: req.method,
+    statusCode,
+    errorType: err?.constructor?.name || typeof err,
   });
 
   res.status(statusCode).json({

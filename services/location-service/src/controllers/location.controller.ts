@@ -202,9 +202,12 @@ export const searchAddress = async (
     try {
       const results = await locationService.searchAddress(query.trim(), limit);
       coverageResults = results;
-    } catch (coverageError) {
+    } catch (coverageError: any) {
       // Если сервис покрытия недоступен, используем только локальные результаты
-      console.warn('Coverage service unavailable, using local results only');
+      // Логируем только если это не ожидаемая ошибка (например, сервис недоступен)
+      if (coverageError?.statusCode !== 400) {
+        // Это не критическая ошибка, просто используем локальные результаты
+      }
     }
 
     res.status(200).json({

@@ -41,8 +41,11 @@ const startServer = async () => {
     app.listen(PORT, () => {
       logger.info(`Provider Service running on port ${PORT}`);
     });
-  } catch (error) {
-    logger.error('Unable to start server:', error);
+  } catch (error: any) {
+    logger.error('Unable to start server', {
+      error: error?.message || String(error),
+      stack: error?.stack,
+    });
     process.exit(1);
   }
 };

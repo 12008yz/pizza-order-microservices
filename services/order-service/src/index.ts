@@ -7,7 +7,7 @@ import { logger } from './utils/logger';
 import orderRoutes from './routes/order.routes';
 import { errorHandler } from './middleware/errorHandler';
 import { authenticateToken } from './middleware/auth';
-import './models/Order'; // Инициализация модели
+import './models'; // Инициализация всех моделей (Order, OrderItem, OrderStatusHistory)
 
 dotenv.config();
 

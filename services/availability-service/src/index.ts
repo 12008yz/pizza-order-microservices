@@ -5,6 +5,8 @@ import dotenv from 'dotenv';
 import { sequelize } from './config/database';
 import { logger } from './utils/logger';
 import { errorHandler } from './middleware/errorHandler';
+import availabilityRoutes from './routes/availability.routes';
+import './models'; // Инициализация всех моделей (TechnicalAccess, AvailabilityCache)
 
 dotenv.config();
 
@@ -16,8 +18,8 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Routes will be added here
-// app.use('/api/availability', availabilityRoutes);
+// Routes
+app.use('/api/availability', availabilityRoutes);
 
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'ok', service: 'availability-service' });

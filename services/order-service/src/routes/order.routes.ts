@@ -7,6 +7,8 @@ import {
   updateOrderStatus,
   assignOrder,
   getOrdersByPhone,
+  calculateOrderCost,
+  getOrderStatusHistory,
 } from '../controllers/order.controller';
 import { authenticateToken } from '../middleware/auth';
 
@@ -25,8 +27,14 @@ router.get('/my', authenticateToken, getMyOrders);
 // ВАЖНО: Должен быть ПЕРЕД /:id, иначе /by-phone будет интерпретироваться как /:id
 router.get('/by-phone', getOrdersByPhone);
 
+// Расчет стоимости заявки - без авторизации
+router.post('/calculate', calculateOrderCost);
+
 // Детали заявки - без авторизации (можно добавить проверку прав)
 router.get('/:id', getOrderById);
+
+// История статусов заявки - без авторизации
+router.get('/:id/status-history', getOrderStatusHistory);
 
 // Обновление статуса (для админов) - требует авторизации
 router.put('/:id/status', authenticateToken, updateOrderStatus);

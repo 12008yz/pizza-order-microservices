@@ -1,4 +1,4 @@
-import { Order } from '../models/Order';
+import { Order, OrderItem, OrderStatusHistory } from '../models';
 import { AppError } from '../middleware/errorHandler';
 import { logger } from '../utils/logger';
 import { Op } from 'sequelize';
@@ -7,6 +7,8 @@ import axios from 'axios';
 const PROVIDER_SERVICE_URL = process.env.PROVIDER_SERVICE_URL || 'http://localhost:3003';
 const LOCATION_SERVICE_URL = process.env.LOCATION_SERVICE_URL || 'http://localhost:3005';
 const AVAILABILITY_SERVICE_URL = process.env.AVAILABILITY_SERVICE_URL || 'http://localhost:3006';
+const EQUIPMENT_SERVICE_URL = process.env.EQUIPMENT_SERVICE_URL || 'http://localhost:3007';
+const NOTIFICATION_SERVICE_URL = process.env.NOTIFICATION_SERVICE_URL || 'http://localhost:3008';
 const AUTH_SERVICE_URL = process.env.AUTH_SERVICE_URL || 'http://localhost:3001';
 
 export class OrderService {
@@ -17,6 +19,10 @@ export class OrderService {
     fullName: string;
     phone: string;
     email?: string | null;
+    firstName?: string | null;
+    lastName?: string | null;
+    dateOfBirth?: Date | null;
+    citizenship?: string | null;
     // Адрес через ID из Location Service
     regionId?: number | null;
     cityId?: number | null;
@@ -37,6 +43,10 @@ export class OrderService {
     utmCampaign?: string | null;
     utmContent?: string | null;
     utmTerm?: string | null;
+    // Оборудование
+    routerOption?: string | null;
+    tvSettopOption?: string | null;
+    simCardOption?: string | null;
   }) {
     // Проверяем наличие телефона (обязательное поле)
     if (!data.phone || typeof data.phone !== 'string' || data.phone.trim() === '') {
@@ -130,15 +140,212 @@ export class OrderService {
       }
     }
 
+    // Рассчитываем стоимость перед созданием заявки (если указаны опции оборудования)
+    let calculation = null;
+    if (data.routerOption || data.tvSettopOption || data.simCardOption) {
+      calculation = await this.calculateOrderCost({
+        tariffId: data.tariffId,
+        routerOption: data.routerOption,
+        tvSettopOption: data.tvSettopOption,
+        simCardOption: data.simCardOption,
+      });
+    }
+
     const order = await Order.create({
       ...data,
       userId: userId || null,
       status: 'new',
+      ...(calculation || {}),
     });
+
+    // Создаем запись в истории статусов
+    await OrderStatusHistory.create({
+      orderId: order.id,
+      status: 'new',
+      changedBy: userId ? userId.toString() : 'system',
+      comment: 'Заявка создана',
+    });
+
+    // Создаем элементы заявки (если есть расчет)
+    if (calculation) {
+      await this.createOrderItems(order.id, calculation, data.tariffId);
+    }
 
     logger.info(`Order created: ${order.id} for user ${userId || 'anonymous'}`);
 
+    // Отправляем уведомление о создании заявки
+    try {
+      await axios.post(`${NOTIFICATION_SERVICE_URL}/api/notifications`, {
+        userId: userId || null,
+        orderId: order.id,
+        type: 'order_created',
+        email: data.email || null,
+        phone: data.phone || null,
+      });
+    } catch (error: any) {
+      logger.warn(`Failed to send notification: ${error.message}`);
+      // Не блокируем создание заявки, если уведомление не отправилось
+    }
+
     return order;
+  }
+
+  /**
+   * Рассчитывает стоимость заявки
+   */
+  async calculateOrderCost(data: {
+    tariffId: number;
+    routerOption?: string | null;
+    tvSettopOption?: string | null;
+    simCardOption?: string | null;
+  }): Promise<{
+    routerPrice: number | null;
+    tvSettopPrice: number | null;
+    simCardPrice: number | null;
+    totalMonthlyPrice: number | null;
+    totalConnectionPrice: number | null;
+    totalEquipmentPrice: number | null;
+  }> {
+    let tariffPrice = 0;
+    let connectionPrice = 0;
+    let routerPrice = 0;
+    let tvSettopPrice = 0;
+    let simCardPrice = 0;
+
+    try {
+      // Получаем данные тарифа
+      const tariffResponse = await axios.get(
+        `${PROVIDER_SERVICE_URL}/api/tariffs/${data.tariffId}`
+      );
+
+      if (tariffResponse.data?.success && tariffResponse.data.data) {
+        const tariff = tariffResponse.data.data;
+        tariffPrice = parseFloat(tariff.price) || 0;
+        connectionPrice = parseFloat(tariff.connectionPrice) || 0;
+      }
+    } catch (error: any) {
+      logger.warn(`Failed to get tariff: ${error.message}`);
+    }
+
+    // Получаем цены оборудования
+    if (data.routerOption && data.routerOption !== 'none') {
+      try {
+        // Здесь нужно получить цену роутера из Equipment Service
+        // Пока используем заглушку
+        routerPrice = data.routerOption === 'purchase' ? 2000 : 0;
+        if (data.routerOption === 'rent') {
+          routerPrice = 200; // Ежемесячная аренда
+        }
+      } catch (error: any) {
+        logger.warn(`Failed to get router price: ${error.message}`);
+      }
+    }
+
+    if (data.tvSettopOption && data.tvSettopOption !== 'none') {
+      try {
+        tvSettopPrice = data.tvSettopOption === 'purchase' ? 3000 : 0;
+        if (data.tvSettopOption === 'rent') {
+          tvSettopPrice = 300; // Ежемесячная аренда
+        }
+      } catch (error: any) {
+        logger.warn(`Failed to get TV settop price: ${error.message}`);
+      }
+    }
+
+    if (data.simCardOption && data.simCardOption !== 'none') {
+      simCardPrice = 0; // SIM-карта обычно бесплатна
+    }
+
+    const totalEquipmentPrice = routerPrice + tvSettopPrice + simCardPrice;
+    const monthlyEquipmentRent = 
+      (data.routerOption === 'rent' ? 200 : 0) +
+      (data.tvSettopOption === 'rent' ? 300 : 0);
+    const totalMonthlyPrice = tariffPrice + monthlyEquipmentRent;
+
+    return {
+      routerPrice: routerPrice > 0 ? routerPrice : null,
+      tvSettopPrice: tvSettopPrice > 0 ? tvSettopPrice : null,
+      simCardPrice: simCardPrice > 0 ? simCardPrice : null,
+      totalMonthlyPrice,
+      totalConnectionPrice: connectionPrice,
+      totalEquipmentPrice: totalEquipmentPrice > 0 ? totalEquipmentPrice : null,
+    };
+  }
+
+  /**
+   * Создает элементы заявки
+   */
+  private async createOrderItems(
+    orderId: number,
+    calculation: {
+      routerPrice: number | null;
+      tvSettopPrice: number | null;
+      simCardPrice: number | null;
+    },
+    tariffId: number
+  ): Promise<void> {
+    try {
+      // Создаем элемент для тарифа
+      try {
+        const tariffResponse = await axios.get(
+          `${PROVIDER_SERVICE_URL}/api/tariffs/${tariffId}`
+        );
+        if (tariffResponse.data?.success && tariffResponse.data.data) {
+          const tariff = tariffResponse.data.data;
+          await OrderItem.create({
+            orderId,
+            itemType: 'tariff',
+            itemId: tariffId,
+            name: tariff.name || 'Тариф',
+            quantity: 1,
+            unitPrice: parseFloat(tariff.price) || 0,
+            totalPrice: parseFloat(tariff.price) || 0,
+          });
+        }
+      } catch (error: any) {
+        logger.warn(`Failed to create tariff item: ${error.message}`);
+      }
+
+      // Создаем элементы для оборудования
+      if (calculation.routerPrice) {
+        await OrderItem.create({
+          orderId,
+          itemType: 'equipment',
+          itemId: 0, // Можно получить из Equipment Service
+          name: 'Роутер',
+          quantity: 1,
+          unitPrice: calculation.routerPrice,
+          totalPrice: calculation.routerPrice,
+        });
+      }
+
+      if (calculation.tvSettopPrice) {
+        await OrderItem.create({
+          orderId,
+          itemType: 'equipment',
+          itemId: 0,
+          name: 'ТВ-приставка',
+          quantity: 1,
+          unitPrice: calculation.tvSettopPrice,
+          totalPrice: calculation.tvSettopPrice,
+        });
+      }
+
+      if (calculation.simCardPrice) {
+        await OrderItem.create({
+          orderId,
+          itemType: 'equipment',
+          itemId: 0,
+          name: 'SIM-карта',
+          quantity: 1,
+          unitPrice: calculation.simCardPrice,
+          totalPrice: calculation.simCardPrice,
+        });
+      }
+    } catch (error: any) {
+      logger.error(`Failed to create order items: ${error.message}`);
+      // Не бросаем ошибку, элементы заявки не критичны
+    }
   }
 
   async getOrderById(id: number, userId?: number) {
@@ -208,7 +415,7 @@ export class OrderService {
     });
   }
 
-  async updateOrderStatus(id: number, status: Order['status']) {
+  async updateOrderStatus(id: number, status: Order['status'], changedBy?: string, comment?: string) {
     const order = await Order.findByPk(id);
     if (!order) {
       const error = new Error('Order not found') as AppError;
@@ -216,9 +423,44 @@ export class OrderService {
       throw error;
     }
 
+    const oldStatus = order.status;
     await order.update({ status });
-    logger.info(`Order ${id} status updated to ${status}`);
+
+    // Создаем запись в истории статусов
+    await OrderStatusHistory.create({
+      orderId: id,
+      status,
+      changedBy: changedBy || 'system',
+      comment: comment || `Статус изменен с ${oldStatus} на ${status}`,
+    });
+
+    logger.info(`Order ${id} status updated from ${oldStatus} to ${status}`);
+
+    // Отправляем уведомление об изменении статуса
+    try {
+      await axios.post(`${NOTIFICATION_SERVICE_URL}/api/notifications`, {
+        userId: order.userId,
+        orderId: id,
+        type: 'status_changed',
+        email: order.email || null,
+        phone: order.phone || null,
+        metadata: { oldStatus, newStatus: status },
+      });
+    } catch (error: any) {
+      logger.warn(`Failed to send status change notification: ${error.message}`);
+    }
+
     return order;
+  }
+
+  /**
+   * Получает историю статусов заявки
+   */
+  async getOrderStatusHistory(orderId: number): Promise<OrderStatusHistory[]> {
+    return await OrderStatusHistory.findAll({
+      where: { orderId },
+      order: [['createdAt', 'ASC']],
+    });
   }
 
   async assignOrder(id: number, assignedTo: string) {

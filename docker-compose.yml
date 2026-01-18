@@ -259,6 +259,7 @@ services:
       LOCATION_SERVICE_URL: http://location-service:3005
       AVAILABILITY_SERVICE_URL: http://availability-service:3006
       EQUIPMENT_SERVICE_URL: http://equipment-service:3007
+      NOTIFICATION_SERVICE_URL: http://notification-service:3008
     ports:
       - "3004:3004"
     depends_on:
@@ -294,7 +295,7 @@ services:
       DB_NAME: locations_db
       DB_USER: locations_user
       DB_PASSWORD: locations_password
-      PROVIDER_SERVICE_URL: http://provider-service:3004
+      PROVIDER_SERVICE_URL: http://provider-service:3003
     ports:
       - "3005:3005"
     depends_on:

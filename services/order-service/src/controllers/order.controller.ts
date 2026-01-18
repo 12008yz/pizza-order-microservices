@@ -133,11 +133,60 @@ export const updateOrderStatus = async (
 ) => {
   try {
     const { id } = req.params;
-    const { status } = req.body;
-    const order = await orderService.updateOrderStatus(parseInt(id), status);
+    const { status, comment } = req.body;
+    const changedBy = req.user?.userId?.toString() || 'system';
+    const order = await orderService.updateOrderStatus(parseInt(id), status, changedBy, comment);
     res.status(200).json({
       success: true,
       data: order,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const calculateOrderCost = async (
+  req: any,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { tariffId, routerOption, tvSettopOption, simCardOption } = req.body;
+    
+    if (!tariffId) {
+      return res.status(400).json({
+        success: false,
+        error: 'tariffId is required',
+      });
+    }
+
+    const calculation = await orderService.calculateOrderCost({
+      tariffId,
+      routerOption,
+      tvSettopOption,
+      simCardOption,
+    });
+
+    res.status(200).json({
+      success: true,
+      data: calculation,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getOrderStatusHistory = async (
+  req: any,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params;
+    const history = await orderService.getOrderStatusHistory(parseInt(id));
+    res.status(200).json({
+      success: true,
+      data: history,
     });
   } catch (error) {
     next(error);

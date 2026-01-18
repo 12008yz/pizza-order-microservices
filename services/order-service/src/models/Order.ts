@@ -13,9 +13,13 @@ export interface OrderAttributes {
   status: 'new' | 'processing' | 'contacted' | 'scheduled' | 'connected' | 'cancelled' | 'rejected';
 
   // Контактные данные
+  firstName: string | null;        // Имя
+  lastName: string | null;         // Фамилия
   fullName: string;                // ФИО
   phone: string;                   // Телефон (обязательно)
   email: string | null;            // Email
+  dateOfBirth: Date | null;        // Дата рождения
+  citizenship: string | null;      // Гражданство
 
   // Адрес подключения (ID из Location Service)
   regionId: number | null;         // ID региона (связь через внешний API Location Service)
@@ -44,6 +48,19 @@ export interface OrderAttributes {
   utmContent: string | null;
   utmTerm: string | null;
 
+  // Оборудование
+  routerOption: string | null;     // Вариант роутера: 'purchase', 'rent', 'installment', 'none'
+  routerPrice: number | null;      // Цена роутера
+  tvSettopOption: string | null;   // Вариант ТВ-приставки: 'purchase', 'rent', 'none'
+  tvSettopPrice: number | null;    // Цена ТВ-приставки
+  simCardOption: string | null;    // Вариант SIM-карты: 'purchase', 'none'
+  simCardPrice: number | null;     // Цена SIM-карты
+
+  // Стоимость
+  totalMonthlyPrice: number | null;      // Общая ежемесячная стоимость (тариф + аренда оборудования)
+  totalConnectionPrice: number | null;   // Стоимость подключения
+  totalEquipmentPrice: number | null;    // Общая стоимость оборудования
+
   // Служебное
   assignedTo: string | null;       // Менеджер
   internalComment: string | null;  // Внутренний комментарий
@@ -64,9 +81,13 @@ export class Order
   public tariffId!: number;
   public providerId!: number;
   public status!: 'new' | 'processing' | 'contacted' | 'scheduled' | 'connected' | 'cancelled' | 'rejected';
+  public firstName!: string | null;
+  public lastName!: string | null;
   public fullName!: string;
   public phone!: string;
   public email!: string | null;
+  public dateOfBirth!: Date | null;
+  public citizenship!: string | null;
   public regionId!: number | null;
   public cityId!: number | null;
   public streetId!: number | null;
@@ -86,6 +107,15 @@ export class Order
   public utmCampaign!: string | null;
   public utmContent!: string | null;
   public utmTerm!: string | null;
+  public routerOption!: string | null;
+  public routerPrice!: number | null;
+  public tvSettopOption!: string | null;
+  public tvSettopPrice!: number | null;
+  public simCardOption!: string | null;
+  public simCardPrice!: number | null;
+  public totalMonthlyPrice!: number | null;
+  public totalConnectionPrice!: number | null;
+  public totalEquipmentPrice!: number | null;
   public assignedTo!: string | null;
   public internalComment!: string | null;
 
@@ -116,6 +146,14 @@ Order.init(
       type: DataTypes.ENUM('new', 'processing', 'contacted', 'scheduled', 'connected', 'cancelled', 'rejected'),
       defaultValue: 'new',
     },
+    firstName: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    lastName: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
     fullName: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -130,6 +168,14 @@ Order.init(
       validate: {
         isEmail: true,
       },
+    },
+    dateOfBirth: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
+    citizenship: {
+      type: DataTypes.STRING,
+      allowNull: true,
     },
     regionId: {
       type: DataTypes.INTEGER,

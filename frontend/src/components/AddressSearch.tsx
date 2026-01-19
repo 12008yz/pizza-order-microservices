@@ -1,26 +1,8 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import axios from 'axios';
-
-interface AddressSuggestion {
-  text: string;
-  formatted: string;
-  regionId?: number;
-  cityId?: number;
-  streetId?: number;
-  buildingId?: number;
-  apartmentId?: number;
-}
-
-interface Provider {
-  id: number;
-  name: string;
-  slug: string;
-  logo: string;
-  rating: number;
-  reviewsCount: number;
-}
+import { locationsService, providersService } from '../services';
+import type { AddressSuggestion, Provider } from '../services';
 
 export default function AddressSearch() {
   const [addressQuery, setAddressQuery] = useState('');
@@ -44,17 +26,16 @@ export default function AddressSearch() {
     const timeoutId = setTimeout(async () => {
       try {
         setLoading(true);
-        const response = await axios.get('/api/locations', {
-          params: {
-            endpoint: 'autocomplete',
-            q: addressQuery,
-            limit: 10,
-          },
+        const response = await locationsService.autocomplete({
+          q: addressQuery,
+          limit: 10,
         });
 
-        if (response.data.success) {
-          setSuggestions(response.data.data || []);
+        if (response.success && response.data) {
+          setSuggestions(response.data);
           setShowSuggestions(true);
+        } else {
+          setSuggestions([]);
         }
       } catch (error) {
         console.error('Autocomplete error:', error);
@@ -98,50 +79,42 @@ export default function AddressSearch() {
       const houseMatch = addressParts[2]?.match(/\d+/);
       const house = houseMatch ? parseInt(houseMatch[0]) : undefined;
 
-      // Если есть buildingId - используем точную проверку через Availability Service
+      // Если есть buildingId - используем точную проверку через Providers Service
       if (address.buildingId) {
-        const response = await axios.get('/api/providers/by-address', {
-          params: {
-            buildingId: address.buildingId,
-            cityId: address.cityId,
-            streetId: address.streetId,
-          },
+        const response = await providersService.getProvidersByAddress({
+          buildingId: address.buildingId,
+          cityId: address.cityId,
+          streetId: address.streetId,
         });
 
-        if (response.data.success) {
-          setAvailableProviders(response.data.data || []);
+        if (response.success && response.data) {
+          setAvailableProviders(response.data);
         }
       } else if (city) {
-        // Используем Coverage Service для проверки по городу/улице/дому
-        const response = await axios.get('/api/coverage', {
-          params: {
-            city,
-            street: street || undefined,
-            house: house || undefined,
-          },
+        // Используем Providers Service для проверки по городу/улице/дому
+        const response = await providersService.getProvidersByAddress({
+          city,
+          street: street || undefined,
+          house: house || undefined,
         });
 
-        if (response.data.success) {
-          setAvailableProviders(response.data.data || []);
+        if (response.success && response.data) {
+          setAvailableProviders(response.data);
         }
       } else {
         // Если нет данных адреса, показываем всех провайдеров
-        const response = await axios.get('/api/providers', {
-          params: { active: true },
-        });
-        if (response.data.success) {
-          setAvailableProviders(response.data.data || []);
+        const response = await providersService.getProviders({ active: true });
+        if (response.success && response.data) {
+          setAvailableProviders(response.data);
         }
       }
     } catch (error) {
       console.error('Search providers error:', error);
       // В случае ошибки показываем всех провайдеров
       try {
-        const response = await axios.get('/api/providers', {
-          params: { active: true },
-        });
-        if (response.data.success) {
-          setAvailableProviders(response.data.data || []);
+        const response = await providersService.getProviders({ active: true });
+        if (response.success && response.data) {
+          setAvailableProviders(response.data);
         }
       } catch (fallbackError) {
         setAvailableProviders([]);

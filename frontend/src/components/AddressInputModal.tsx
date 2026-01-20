@@ -212,18 +212,12 @@ export default function AddressInputModal({
 
     if (currentStep === 'city') {
       updateCity(selected?.cityId || undefined, value, selected?.regionId);
-      setCurrentStep('street');
-      setQuery('');
-      setSuggestions([]);
-      setSelectedIndex(null);
-      setTimeout(() => inputRef.current?.focus(), 100);
+      // Закрываем модалку после сохранения города
+      onComplete();
     } else if (currentStep === 'street') {
       updateStreet(selected?.streetId || undefined, value);
-      setCurrentStep('house');
-      setQuery('');
-      setSuggestions([]);
-      setSelectedIndex(null);
-      setTimeout(() => inputRef.current?.focus(), 100);
+      // Закрываем модалку после сохранения улицы
+      onComplete();
     } else if (currentStep === 'house') {
       updateHouseNumber(selected?.buildingId || undefined, value, undefined);
       onComplete();
@@ -279,15 +273,15 @@ export default function AddressInputModal({
                 key={suggestion.id || index}
                 onClick={() => handleSelect(index)}
                 className={`relative flex items-center justify-between p-3 border rounded-[10px] cursor-pointer transition-all ${selectedIndex === index
-                    ? 'border-[#101010] bg-gray-50'
-                    : 'border-gray-200 hover:border-gray-300'
+                  ? 'border-[#101010] bg-gray-50'
+                  : 'border-gray-200 hover:border-gray-300'
                   }`}
               >
                 <span className="text-[#101010] text-sm">{suggestion.formatted || suggestion.text}</span>
                 <div
                   className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${selectedIndex === index
-                      ? 'border-[#101010] bg-[#101010]'
-                      : 'border-gray-300'
+                    ? 'border-[#101010] bg-[#101010]'
+                    : 'border-gray-300'
                     }`}
                 >
                   {selectedIndex === index && (
@@ -367,8 +361,8 @@ export default function AddressInputModal({
             onClick={handleNext}
             disabled={!canProceed}
             className={`flex-1 h-12 rounded-[10px] text-white font-medium transition-colors ${canProceed
-                ? 'bg-[#101010] hover:bg-gray-800'
-                : 'bg-gray-300 cursor-not-allowed'
+              ? 'bg-[#101010] hover:bg-gray-800'
+              : 'bg-gray-300 cursor-not-allowed'
               }`}
           >
             Далее

@@ -584,9 +584,8 @@ function AddressFormContent() {
           isOpen={showConnectionModal}
           onClose={() => setShowConnectionModal(false)}
           onNext={() => {
+            // Только закрываем модалку, не открываем следующую автоматически
             setShowConnectionModal(false);
-            setAddressModalStep('city');
-            setShowAddressModal(true);
           }}
         />
 

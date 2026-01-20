@@ -45,45 +45,145 @@ export default function ConnectionTypeModal({
 
   return (
     <div
-      className="fixed inset-0 z-[10000] flex items-center justify-center bg-black bg-opacity-50"
+      className="fixed inset-0 z-[10000] flex items-end justify-center"
+      style={{
+        background: 'rgba(255, 255, 255, 0.85)',
+        backdropFilter: 'blur(12.5px)',
+        paddingBottom: '155px',
+      }}
       onClick={handleBackdropClick}
     >
+      {/* Подсказка сверху */}
       <div
-        className="relative w-[90%] max-w-[360px] bg-white rounded-[20px] p-6 shadow-xl"
+        style={{
+          position: 'absolute',
+          width: '240px',
+          height: '30px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          top: '75px',
+          fontFamily: 'TT Firs Neue, sans-serif',
+          fontStyle: 'normal',
+          fontWeight: 400,
+          fontSize: '14px',
+          lineHeight: '105%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          textAlign: 'center',
+          color: 'rgba(16, 16, 16, 0.15)',
+        }}
+      >
+        Нажмите в открытое пустое место, чтобы выйти из этого режима
+      </div>
+
+      {/* Основной контейнер модалки */}
+      <div
         onClick={(e) => e.stopPropagation()}
+        style={{
+          boxSizing: 'border-box',
+          position: 'relative',
+          width: '360px',
+          height: '350px',
+          background: '#FFFFFF',
+          border: '1px solid rgba(16, 16, 16, 0.15)',
+          backdropFilter: 'blur(7.5px)',
+          borderRadius: '20px',
+          padding: '15px',
+        }}
       >
         {/* Заголовок */}
-        <h2 className="text-2xl font-bold text-[#101010] mb-2">Проверка тех. доступа</h2>
-        <p className="text-sm text-gray-600 mb-6">
-          Мы подготовили доступные тарифные планы. Пожалуйста, проверьте правильность
-        </p>
+        <div
+          style={{
+            width: '330px',
+            height: '25px',
+            fontFamily: 'TT Firs Neue, sans-serif',
+            fontStyle: 'normal',
+            fontWeight: 400,
+            fontSize: '20px',
+            lineHeight: '125%',
+            display: 'flex',
+            alignItems: 'center',
+            color: '#101010',
+          }}
+        >
+          Проверка тех. доступа
+        </div>
 
-        {/* Список типов подключения */}
-        <div className="space-y-3 mb-6">
+        {/* Подзаголовок */}
+        <div
+          style={{
+            width: '330px',
+            height: '30px',
+            marginTop: '15px',
+            fontFamily: 'TT Firs Neue, sans-serif',
+            fontStyle: 'normal',
+            fontWeight: 400,
+            fontSize: '14px',
+            lineHeight: '105%',
+            color: 'rgba(16, 16, 16, 0.25)',
+          }}
+        >
+          Мы подготовили доступные тарифные планы. Пожалуйста, проверьте правильность
+        </div>
+
+        {/* Опции типов подключения */}
+        <div style={{ marginTop: '20px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
           {connectionTypes.map((type) => (
             <div
               key={type.value}
               onClick={() => handleSelect(type.value)}
-              className={`relative flex items-center justify-between p-4 border rounded-[10px] cursor-pointer transition-all ${
-                selectedType === type.value
-                  ? 'border-[#101010] bg-gray-50'
-                  : 'border-gray-200 hover:border-gray-300'
-              }`}
+              style={{
+                boxSizing: 'border-box',
+                width: '330px',
+                height: '50px',
+                border: selectedType === type.value
+                  ? '1px solid #101010'
+                  : '1px solid rgba(16, 16, 16, 0.25)',
+                borderRadius: '10px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: '0 15px',
+                cursor: 'pointer',
+                transition: 'border-color 0.2s ease',
+              }}
             >
-              <span className="font-medium text-[#101010]">{type.label}</span>
+              <span
+                style={{
+                  fontFamily: 'TT Firs Neue, sans-serif',
+                  fontStyle: 'normal',
+                  fontWeight: 400,
+                  fontSize: '16px',
+                  lineHeight: '125%',
+                  color: selectedType === type.value ? '#101010' : 'rgba(16, 16, 16, 0.5)',
+                }}
+              >
+                {type.label}
+              </span>
+
+              {/* Radio кнопка */}
               <div
-                className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                  selectedType === type.value
-                    ? 'border-[#101010] bg-[#101010]'
-                    : 'border-gray-300'
-                }`}
+                style={{
+                  boxSizing: 'border-box',
+                  width: '16px',
+                  height: '16px',
+                  borderRadius: '50%',
+                  background: selectedType === type.value ? '#101010' : 'transparent',
+                  border: selectedType === type.value
+                    ? 'none'
+                    : '1px solid rgba(16, 16, 16, 0.5)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
               >
                 {selectedType === type.value && (
-                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                  <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
                     <path
-                      d="M2 6L5 9L10 3"
+                      d="M1 4L3.5 6.5L9 1"
                       stroke="white"
-                      strokeWidth="2"
+                      strokeWidth="1.5"
                       strokeLinecap="round"
                       strokeLinejoin="round"
                     />
@@ -95,21 +195,67 @@ export default function ConnectionTypeModal({
         </div>
 
         {/* Кнопки навигации */}
-        <div className="flex items-center justify-between gap-3">
+        <div
+          style={{
+            position: 'absolute',
+            bottom: '15px',
+            left: '15px',
+            right: '15px',
+            display: 'flex',
+            gap: '10px',
+          }}
+        >
+          {/* Кнопка "Назад" */}
           <button
             onClick={onClose}
-            className="flex-1 px-4 py-2 border border-gray-300 rounded-[10px] text-[#101010] hover:bg-gray-50 transition-colors"
+            style={{
+              boxSizing: 'border-box',
+              width: '50px',
+              height: '50px',
+              border: '1px solid rgba(16, 16, 16, 0.15)',
+              borderRadius: '10px',
+              background: 'transparent',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+            }}
           >
-            Назад
+            <svg width="12" height="20" viewBox="0 0 12 20" fill="none">
+              <path
+                d="M10 2L2 10L10 18"
+                stroke="#101010"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
           </button>
+
+          {/* Кнопка "Далее" */}
           <button
             onClick={handleNext}
             disabled={!selectedType}
-            className={`flex-1 px-4 py-3 rounded-[10px] text-white font-medium transition-colors ${
-              selectedType
-                ? 'bg-[#101010] hover:bg-gray-800'
-                : 'bg-gray-300 cursor-not-allowed'
-            }`}
+            style={{
+              boxSizing: 'border-box',
+              flex: 1,
+              height: '50px',
+              background: selectedType ? '#101010' : 'rgba(16, 16, 16, 0.25)',
+              border: '1px solid rgba(16, 16, 16, 0.25)',
+              borderRadius: '10px',
+              fontFamily: 'TT Firs Neue, sans-serif',
+              fontStyle: 'normal',
+              fontWeight: 400,
+              fontSize: '16px',
+              lineHeight: '315%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              textAlign: 'center',
+              color: '#FFFFFF',
+              cursor: selectedType ? 'pointer' : 'not-allowed',
+              transition: 'background-color 0.2s ease',
+            }}
           >
             Далее
           </button>

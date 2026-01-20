@@ -293,11 +293,10 @@ export default function AddressAutocomplete({
   return (
     <div className="relative w-full">
       <div
-        className={`relative w-full border rounded-[10px] bg-white ${
-          disabled
-            ? 'border-gray-200 opacity-50 cursor-not-allowed'
-            : 'border-gray-300 focus-within:border-[#101010]'
-        }`}
+        className={`relative w-full border rounded-[10px] bg-white ${disabled
+          ? 'border-gray-200 opacity-50 cursor-not-allowed'
+          : 'border-gray-300 focus-within:border-[#101010]'
+          }`}
       >
         <input
           ref={inputRef}
@@ -314,22 +313,28 @@ export default function AddressAutocomplete({
           {loading ? (
             <div className="w-4 h-4 border-2 border-gray-300 border-t-[#101010] rounded-full animate-spin" />
           ) : (
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 16 16"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              className="transform -rotate-90"
+            <div
+              className={`w-6 h-6 rounded-full flex items-center justify-center ${displayValue && !disabled
+                ? 'bg-[#101010]'
+                : 'border border-[rgba(16,16,16,0.25)]'
+                }`}
             >
-              <path
-                d="M4 6L8 10L12 6"
-                stroke={disabled ? 'rgba(16, 16, 16, 0.25)' : '#101010'}
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+              <svg
+                width="12"
+                height="12"
+                viewBox="0 0 12 12"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M4.5 3L7.5 6L4.5 9"
+                  stroke={displayValue && !disabled ? '#FFFFFF' : 'rgba(16, 16, 16, 0.25)'}
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </div>
           )}
         </div>
       </div>

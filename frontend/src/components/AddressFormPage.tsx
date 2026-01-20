@@ -216,6 +216,7 @@ function AddressFormContent() {
         {/* Vector - верхний фон (белый) */}
         <div className="absolute left-0 right-[0.06%] top-[10%] bottom-[10%] bg-white" />
 
+        {/* Group 7545 - Шапка */}
         {/* Group 7510 - Кнопка дом (слева) */}
         <div
           className="absolute w-10 h-10 left-5 top-[75px] cursor-pointer z-10"
@@ -236,6 +237,7 @@ function AddressFormContent() {
               justifyContent: 'center',
             }}
           >
+            {/* HouseLine icon */}
             <svg
               width="20"
               height="20"
@@ -244,7 +246,14 @@ function AddressFormContent() {
               xmlns="http://www.w3.org/2000/svg"
             >
               <path
-                d="M3.125 9.375L10 2.5L16.875 9.375M3.125 9.375L10 12.5M3.125 9.375L10 9.375M16.875 9.375L10 12.5M16.875 9.375L10 9.375M10 12.5V17.5"
+                d="M2.5 7.5L10 1.875L17.5 7.5V16.25C17.5 16.5815 17.3683 16.8995 17.1339 17.1339C16.8995 17.3683 16.5815 17.5 16.25 17.5H3.75C3.41848 17.5 3.10054 17.3683 2.86612 17.1339C2.6317 16.8995 2.5 16.5815 2.5 16.25V7.5Z"
+                stroke="#101010"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <path
+                d="M7.5 17.5V10H12.5V17.5"
                 stroke="#101010"
                 strokeWidth="1.5"
                 strokeLinecap="round"
@@ -252,6 +261,38 @@ function AddressFormContent() {
               />
             </svg>
           </div>
+        </div>
+
+        {/* гигапоиск 2 - Логотип (по центру) */}
+        <div
+          className="absolute"
+          style={{
+            width: '140px',
+            height: '10px',
+            left: '70px',
+            top: '90px',
+          }}
+        >
+          <svg
+            width="140"
+            height="10"
+            viewBox="0 0 230 14"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            preserveAspectRatio="xMidYMid meet"
+          >
+            <g clipPath="url(#clip0_13653_131)">
+              <path
+                d="M0 13.8056V0.194444H22.5306V4.86111H5.93306V13.8056H0ZM49.0092 0.194444V13.8056H43.0761V6.02778L29.9708 13.8056H24.0377V0.194444H29.9708V7.97222L43.0761 0.194444H49.0092ZM50.5142 13.8056V0.194444H73.0448V4.86111H56.4473V13.8056H50.5142ZM84.0292 4.47222L81.288 7.97222H86.7705L84.0292 4.47222ZM80.6872 0.194444H87.3713L98.017 13.8056H91.3329L89.8121 11.8611H78.2464L76.7256 13.8056H70.0415L80.6872 0.194444ZM98.7731 13.8056V0.194444H123.744V13.8056H117.811V4.86111H104.706V13.8056H98.7731ZM131.454 0H145.16C148.784 0 151.732 3.24722 151.732 7C151.732 10.7528 148.784 14 145.16 14H131.454C127.831 14 124.883 10.7528 124.883 7C124.883 3.24722 127.831 0 131.454 0ZM143.94 5.05556H132.675C131.642 5.05556 130.797 5.93056 130.797 7C130.797 8.06944 131.642 8.94444 132.675 8.94444H143.94C144.973 8.94444 145.818 8.06944 145.818 7C145.818 5.93056 144.973 5.05556 143.94 5.05556ZM177.834 0.194444V13.8056H171.901V6.02778L158.796 13.8056H152.863V0.194444H158.796V7.97222L171.901 0.194444H177.834ZM203.38 8.75V13.8056H185.544C181.92 13.8056 178.972 10.7528 178.972 7C178.972 3.24722 181.92 0.194444 185.544 0.194444H203.38V5.25H186.764C185.732 5.25 184.887 5.93056 184.887 7C184.887 8.06944 185.732 8.75 186.764 8.75H203.38ZM204.88 13.8056V0.194444H210.813V7.66111L221.252 0.194444H229.852L220.332 7L229.852 13.8056H221.252L216.033 10.0722L210.813 13.8056H204.88Z"
+                fill="#101010"
+              />
+            </g>
+            <defs>
+              <clipPath id="clip0_13653_131">
+                <rect width="230" height="14" fill="white" />
+              </clipPath>
+            </defs>
+          </svg>
         </div>
 
         {/* Group 7509 - Кнопка самолет (справа) */}
@@ -274,6 +315,7 @@ function AddressFormContent() {
               justifyContent: 'center',
             }}
           >
+            {/* PaperPlane icon */}
             <svg
               width="20"
               height="20"
@@ -282,7 +324,7 @@ function AddressFormContent() {
               xmlns="http://www.w3.org/2000/svg"
             >
               <path
-                d="M2.5 10L10 2.5L17.5 10M2.5 10L10 12.5M2.5 10L10 10M17.5 10L10 12.5M17.5 10L10 10M10 12.5V17.5"
+                d="M17.5 2.5L9.16667 10.8333M17.5 2.5L12.0833 17.5L9.16667 10.8333M17.5 2.5L2.5 7.91667L9.16667 10.8333"
                 stroke="#101010"
                 strokeWidth="1.5"
                 strokeLinecap="round"
@@ -290,16 +332,6 @@ function AddressFormContent() {
               />
             </svg>
           </div>
-        </div>
-
-        {/* гигапоиск 2 - Логотип (по центру) */}
-        <div className="absolute w-[140px] h-[10px] left-[70px] top-[90px]">
-          <svg width="140" height="10" viewBox="0 0 140 10" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path
-              d="M0 9.80556V0.194444H12.5306V4.86111H5.93306V9.80556H0ZM29.0092 0.194444V9.80556H23.0761V6.02778L9.9708 9.80556H4.0377V0.194444H9.9708V3.97222L23.0761 0.194444H29.0092ZM30.5142 9.80556V0.194444H43.0448V4.86111H36.4473V9.80556H30.5142ZM54.0292 4.47222L51.288 7.97222H56.7705L54.0292 4.47222ZM50.6872 0.194444H57.3713L68.017 9.80556H61.3329L59.8121 7.86111H48.2464L46.7256 9.80556H40.0415L50.6872 0.194444ZM68.7731 9.80556V0.194444H83.744V9.80556H77.811V4.86111H64.706V9.80556H68.7731ZM81.454 0H95.16C98.784 0 101.732 3.24722 101.732 7C101.732 10.7528 98.784 14 95.16 14H81.454C77.831 14 74.883 10.7528 74.883 7C74.883 3.24722 77.831 0 81.454 0ZM93.94 5.05556H82.675C81.642 5.05556 80.797 5.93056 80.797 7C80.797 8.06944 81.642 8.94444 82.675 8.94444H93.94C94.973 8.94444 95.818 8.06944 95.818 7C95.818 5.93056 94.973 5.05556 93.94 5.05556ZM107.834 0.194444V9.80556H101.901V6.02778L88.796 9.80556H82.863V0.194444H88.796V3.97222L101.901 0.194444H107.834ZM123.38 8.75V9.80556H105.544C101.92 9.80556 98.972 10.7528 98.972 7C98.972 3.24722 101.92 0.194444 105.544 0.194444H123.38V5.25H106.764C105.732 5.25 104.887 5.93056 104.887 7C104.887 8.06944 105.732 8.75 106.764 8.75H123.38ZM124.88 9.80556V0.194444H130.813V7.66111L141.252 0.194444H149.852L140.332 7L149.852 9.80556H141.252L136.033 7.0722L130.813 9.80556H124.88Z"
-              fill="#101010"
-            />
-          </svg>
         </div>
 
         {/* Rectangle 30 - Основной контейнер формы */}
@@ -314,38 +346,43 @@ function AddressFormContent() {
         <div className="absolute left-[8.75%] right-[8.75%] top-[42.53%] bottom-[51.72%]">
           <div
             onClick={handleConnectionTypeClick}
-            className={`box-border relative w-full h-full border rounded-[10px] bg-white cursor-pointer flex items-center justify-between px-[15px] ${
-              addressData.connectionType
-                ? 'border-[#101010]'
-                : addressData.errors.connectionType
+            className={`box-border relative w-full h-full border rounded-[10px] bg-white cursor-pointer flex items-center justify-between px-[15px] ${addressData.connectionType
+              ? 'border-[#101010]'
+              : addressData.errors.connectionType
                 ? 'border-red-500'
                 : 'border-[rgba(16,16,16,0.25)]'
-            }`}
+              }`}
           >
             <span
-              className={`text-base leading-[125%] ${
-                addressData.connectionType ? 'text-[#101010]' : 'text-[rgba(16,16,16,0.5)]'
-              }`}
+              className={`text-base leading-[125%] ${addressData.connectionType ? 'text-[#101010]' : 'text-[rgba(16,16,16,0.5)]'
+                }`}
             >
               {addressData.connectionType
                 ? getConnectionTypeLabel(addressData.connectionType)
                 : 'Подключение'}
             </span>
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 16 16"
-              fill="none"
-              className="transform -rotate-90"
+            {/* Кружок со стрелкой */}
+            <div
+              className={`w-6 h-6 rounded-full flex items-center justify-center ${addressData.connectionType
+                ? 'bg-[#101010]'
+                : 'border border-[rgba(16,16,16,0.25)]'
+                }`}
             >
-              <path
-                d="M4 6L8 10L12 6"
-                stroke="#101010"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+              <svg
+                width="12"
+                height="12"
+                viewBox="0 0 12 12"
+                fill="none"
+              >
+                <path
+                  d="M4.5 3L7.5 6L4.5 9"
+                  stroke={addressData.connectionType ? '#FFFFFF' : 'rgba(16, 16, 16, 0.25)'}
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </div>
           </div>
           {addressData.errors.connectionType && (
             <div className="absolute -bottom-5 left-0 text-xs text-red-500">
@@ -417,27 +454,24 @@ function AddressFormContent() {
 
         {/* Group 7372 - Чекбокс согласия */}
         <div
-          className={`absolute left-[8.75%] right-[8.75%] ${
-            addressData.connectionType === 'apartment' ? 'top-[70.5%] bottom-[23.79%]' : 'top-[67.82%] bottom-[26.44%]'
-          }`}
+          className={`absolute left-[8.75%] right-[8.75%] ${addressData.connectionType === 'apartment' ? 'top-[70.5%] bottom-[23.79%]' : 'top-[67.82%] bottom-[26.44%]'
+            }`}
         >
           <PrivacyConsent />
         </div>
 
         {/* Group 7377 - Кнопка "Показать всех операторов" */}
         <div
-          className={`absolute left-[8.75%] right-[8.75%] ${
-            addressData.connectionType === 'apartment' ? 'top-[78.5%] bottom-[15.75%]' : 'top-[75.86%] bottom-[18.39%]'
-          }`}
+          className={`absolute left-[8.75%] right-[8.75%] ${addressData.connectionType === 'apartment' ? 'top-[78.5%] bottom-[15.75%]' : 'top-[75.86%] bottom-[18.39%]'
+            }`}
         >
           <button
             onClick={handleSubmit}
             disabled={!isFormValid || isSubmitting}
-            className={`box-border absolute left-0 right-0 top-0 bottom-0 rounded-[10px] flex items-center justify-center font-normal text-base leading-[315%] text-center text-white outline-none transition-colors ${
-              isFormValid && !isSubmitting
-                ? 'bg-[#101010] hover:bg-gray-800 cursor-pointer'
-                : 'bg-[rgba(16,16,16,0.25)] cursor-not-allowed'
-            }`}
+            className={`box-border absolute left-0 right-0 top-0 bottom-0 rounded-[10px] flex items-center justify-center font-normal text-base leading-[315%] text-center text-white outline-none transition-colors ${isFormValid && !isSubmitting
+              ? 'bg-[#101010] hover:bg-gray-800 cursor-pointer'
+              : 'bg-[rgba(16,16,16,0.25)] cursor-not-allowed'
+              }`}
           >
             {isSubmitting ? 'Загрузка...' : 'Показать всех операторов'}
           </button>

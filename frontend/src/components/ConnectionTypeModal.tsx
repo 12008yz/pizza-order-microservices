@@ -147,6 +147,8 @@ export default function ConnectionTypeModal({
                 padding: '0 15px',
                 cursor: 'pointer',
                 transition: 'border-color 0.2s ease',
+                position: 'relative',
+                top: type.value === 'private' ? '-3px' : type.value === 'office' ? '-7px' : '0px',
               }}
             >
               <span
@@ -198,7 +200,7 @@ export default function ConnectionTypeModal({
         <div
           style={{
             position: 'absolute',
-            bottom: '15px',
+            bottom: '13px',
             left: '15px',
             right: '15px',
             display: 'flex',
@@ -210,8 +212,8 @@ export default function ConnectionTypeModal({
             onClick={onClose}
             style={{
               boxSizing: 'border-box',
-              width: '50px',
-              height: '50px',
+              width: '48px',
+              height: '48px',
               border: '1px solid rgba(16, 16, 16, 0.15)',
               borderRadius: '10px',
               background: 'transparent',
@@ -239,14 +241,16 @@ export default function ConnectionTypeModal({
             style={{
               boxSizing: 'border-box',
               flex: 1,
-              height: '50px',
+              height: '51px',
+              marginRight: '-3px',
+              position: 'relative',
               background: selectedType ? '#101010' : 'rgba(16, 16, 16, 0.25)',
               border: '1px solid rgba(16, 16, 16, 0.25)',
               borderRadius: '10px',
               fontFamily: 'TT Firs Neue, sans-serif',
               fontStyle: 'normal',
               fontWeight: 400,
-              fontSize: '16px',
+              fontSize: '17px',
               lineHeight: '315%',
               display: 'flex',
               alignItems: 'center',

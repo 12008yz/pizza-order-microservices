@@ -67,7 +67,6 @@ function AddressFormContent() {
       let finalCityId = addressData.cityId;
       let finalStreetId = addressData.streetId;
       let finalBuildingId = addressData.buildingId;
-      let finalApartmentId = addressData.apartmentId;
 
       // Создаем или находим город, если его нет в БД
       if (!finalCityId && addressData.city) {
@@ -143,41 +142,12 @@ function AddressFormContent() {
         }
       }
 
-      // Создаем или находим квартиру, если ее нет в БД (только для типа "квартира")
-      if (
-        addressData.connectionType === 'apartment' &&
-        !finalApartmentId &&
-        addressData.apartmentNumber &&
-        finalBuildingId
-      ) {
-        try {
-          const apartmentResponse = await locationsService.createApartment({
-            number: addressData.apartmentNumber,
-            buildingId: finalBuildingId,
-          });
-          if (apartmentResponse.success && apartmentResponse.data) {
-            finalApartmentId = apartmentResponse.data.id;
-            // Обновляем контекст с новым apartmentId
-            updateApartmentNumber(finalApartmentId, addressData.apartmentNumber);
-          } else {
-            throw new Error(apartmentResponse.error || 'Не удалось создать квартиру');
-          }
-        } catch (error: any) {
-          console.error('Error creating apartment:', error);
-          setSubmitError(error.message || 'Не удалось сохранить номер квартиры. Попробуйте еще раз.');
-          setIsSubmitting(false);
-          return;
-        }
-      }
-
       // Подготавливаем данные для API проверки доступности
       const checkParams = {
         city: addressData.city || '',
         street: addressData.street,
         house: addressData.houseNumber ? parseInt(addressData.houseNumber) : undefined,
         buildingId: finalBuildingId,
-        apartmentId: finalApartmentId,
-        apartmentNumber: addressData.apartmentNumber,
       };
 
       // Проверяем доступность провайдеров
@@ -206,7 +176,6 @@ function AddressFormContent() {
     (addressData.cityId || addressData.city) &&
     (addressData.streetId || addressData.street) &&
     (addressData.buildingId || addressData.houseNumber) &&
-    (addressData.connectionType !== 'apartment' || addressData.apartmentId || addressData.apartmentNumber) &&
     addressData.privacyConsent;
 
   return (
@@ -335,53 +304,68 @@ function AddressFormContent() {
         </div>
 
         {/* Rectangle 30 - Основной контейнер формы */}
-        <div className="absolute left-[5%] right-[5%] top-[29.89%] bottom-[16.67%] bg-white border border-[rgba(16,16,16,0.15)] backdrop-blur-[7.5px] rounded-[20px]" />
+        <div className="absolute left-[5%] right-[5%] top-[30.89%] bottom-[16.67%] bg-white border border-[rgba(16,16,16,0.15)] backdrop-blur-[7.5px] rounded-[20px]" />
 
         {/* Текст заголовка */}
-        <div className="absolute left-[8.75%] right-[8.75%] top-[31.61%] bottom-[59.77%] font-normal text-xl leading-[125%] text-[#101010] flex items-start">
+        <div className="absolute left-[8.75%] right-[8.75%] top-[32.41%] bottom-[59.77%] font-normal text-xl leading-[125%] text-[#101010] flex items-start">
           Маркетплейс тарифных планов, операторов на твоем адресе. Бесплатно заказать «wi-fi»
         </div>
 
         {/* Group 7432 - Поле "Подключение" (Select) */}
-        <div className="absolute left-[8.75%] right-[8.75%] top-[42.53%] bottom-[51.72%]">
+        <div className="absolute left-[8.75%] right-[8.75%] top-[43.13%] bottom-[51.72%]">
           <div
-            onClick={handleConnectionTypeClick}
-            className={`box-border relative w-full h-full border rounded-[10px] bg-white cursor-pointer flex items-center justify-between px-[15px] ${addressData.connectionType
-              ? 'border-[#101010]'
+            className={`relative w-full rounded-[10px] bg-white ${addressData.connectionType
+              ? ''
               : addressData.errors.connectionType
-                ? 'border-red-500'
-                : 'border-[rgba(16,16,16,0.25)]'
+                ? ''
+                : ''
               }`}
+            style={{
+              border: addressData.connectionType
+                ? '0.5px solid #101010'
+                : addressData.errors.connectionType
+                  ? '0.5px solid rgb(239, 68, 68)'
+                  : '0.5px solid rgba(16, 16, 16, 0.25)',
+            }}
           >
-            <span
-              className={`text-base leading-[125%] ${addressData.connectionType ? 'text-[#101010]' : 'text-[rgba(16,16,16,0.5)]'
-                }`}
-            >
-              {addressData.connectionType
-                ? getConnectionTypeLabel(addressData.connectionType)
-                : 'Подключение'}
-            </span>
-            {/* Кружок со стрелкой */}
             <div
-              className={`w-6 h-6 rounded-full flex items-center justify-center ${addressData.connectionType
-                ? 'bg-[#101010]'
-                : 'border border-[rgba(16,16,16,0.25)]'
-                }`}
+              onClick={handleConnectionTypeClick}
+              className="relative w-full h-full px-[15px] rounded-[10px] bg-transparent cursor-pointer flex items-center justify-between"
+              style={{ paddingTop: '15.5px', paddingBottom: '15.5px' }}
             >
-              <svg
-                width="12"
-                height="12"
-                viewBox="0 0 12 12"
-                fill="none"
+              <span
+                className={`text-base leading-[125%] ${addressData.connectionType ? 'text-[#101010]' : 'text-[rgba(16,16,16,0.5)]'
+                  }`}
               >
-                <path
-                  d="M4.5 3L7.5 6L4.5 9"
-                  stroke={addressData.connectionType ? '#FFFFFF' : 'rgba(16, 16, 16, 0.25)'}
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
+                {addressData.connectionType
+                  ? getConnectionTypeLabel(addressData.connectionType)
+                  : 'Подключение'}
+              </span>
+              {/* Кружок со стрелкой */}
+              <div
+                className={`w-4 h-4 rounded-full flex items-center justify-center ${addressData.connectionType
+                  ? 'bg-[#101010]'
+                  : 'border border-[rgba(16,16,16,0.25)]'
+                  }`}
+                style={{
+                  borderWidth: '0.5px',
+                }}
+              >
+                <svg
+                  width="8"
+                  height="8"
+                  viewBox="0 0 12 12"
+                  fill="none"
+                >
+                  <path
+                    d="M4.5 3L7.5 6L4.5 9"
+                    stroke={addressData.connectionType ? '#FFFFFF' : 'rgba(16, 16, 16, 0.25)'}
+                    strokeWidth="1"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </div>
             </div>
           </div>
           {addressData.errors.connectionType && (
@@ -392,7 +376,7 @@ function AddressFormContent() {
         </div>
 
         {/* Group 7514 - Поле "Название населённого пункта" */}
-        <div className="absolute left-[8.75%] right-[8.75%] top-[48.85%] bottom-[45.4%]">
+        <div className="absolute left-[8.75%] right-[8.75%] top-[49.55%] bottom-[45.4%]">
           <AddressAutocomplete
             type="city"
             placeholder="Название населённого пункта"
@@ -406,7 +390,7 @@ function AddressFormContent() {
         </div>
 
         {/* Group 7437 - Поле "Улица" */}
-        <div className="absolute left-[8.75%] right-[8.75%] top-[55.17%] bottom-[39.08%]">
+        <div className="absolute left-[8.75%] right-[8.75%] top-[55.87%] bottom-[39.08%]">
           <AddressAutocomplete
             type="street"
             placeholder="Улица"
@@ -421,7 +405,7 @@ function AddressFormContent() {
         </div>
 
         {/* Group 7438 - Поле "Номер дома" */}
-        <div className="absolute left-[8.75%] right-[8.75%] top-[61.49%] bottom-[32.76%]">
+        <div className="absolute left-[8.75%] right-[8.75%] top-[62.19%] bottom-[32.76%]">
           <AddressAutocomplete
             type="house"
             placeholder="Номер дома"
@@ -435,35 +419,17 @@ function AddressFormContent() {
           )}
         </div>
 
-        {/* Поле "Номер квартиры" - показывается только для квартир */}
-        {addressData.connectionType === 'apartment' && (
-          <div className="absolute left-[8.75%] right-[8.75%] top-[64.6%] bottom-[29.66%]">
-            <AddressAutocomplete
-              type="apartment"
-              placeholder="Номер квартиры"
-              disabled={!addressData.buildingId && !addressData.houseNumber}
-              value={addressData.apartmentNumber}
-            />
-            {addressData.errors.apartmentNumber && (
-              <div className="absolute -bottom-5 left-0 text-xs text-red-500">
-                {addressData.errors.apartmentNumber}
-              </div>
-            )}
-          </div>
-        )}
-
         {/* Group 7372 - Чекбокс согласия */}
         <div
-          className={`absolute left-[8.75%] right-[8.75%] ${addressData.connectionType === 'apartment' ? 'top-[70.5%] bottom-[23.79%]' : 'top-[67.82%] bottom-[26.44%]'
-            }`}
+          className="absolute left-[8.75%] right-[8.75%] top-[67.92%] bottom-[26.44%]"
+          style={{ marginTop: '10px' }}
         >
           <PrivacyConsent />
         </div>
 
         {/* Group 7377 - Кнопка "Показать всех операторов" */}
         <div
-          className={`absolute left-[8.75%] right-[8.75%] ${addressData.connectionType === 'apartment' ? 'top-[78.5%] bottom-[15.75%]' : 'top-[75.86%] bottom-[18.39%]'
-            }`}
+          className="absolute left-[8.75%] right-[8.75%] top-[76.86%] bottom-[18.39%]"
         >
           <button
             onClick={handleSubmit}
@@ -484,9 +450,9 @@ function AddressFormContent() {
 
         {/* Group 7476 - Уведомление о cookies */}
         {showCookieBanner && (
-          <div className="absolute w-[360px] h-[115px] left-5 top-[75px] z-20">
-            <div className="box-border absolute w-[360px] h-[115px] bg-white border border-[rgba(16,16,16,0.15)] backdrop-blur-[7.5px] rounded-[20px] p-[15px_20px]">
-              <div className="font-normal text-xs leading-[125%] text-[rgba(16,16,16,0.5)] mb-1">
+          <div className="absolute w-[360px] h-[115px] left-5 top-[80px] z-20">
+            <div className="box-border absolute w-[360px] h-[115px] bg-white border border-[rgba(16,16,16,0.15)] backdrop-blur-[7.5px] rounded-[20px]" style={{ padding: '15px 20px 15px 18px' }}>
+              <div className="font-normal text-xs leading-[125%] text-[rgba(16,16,16,0.5)] mb-1 mt-2">
                 Автоматически закроется через {cookieTimer}
               </div>
               <div className="font-normal text-sm leading-[105%] text-[#101010]">

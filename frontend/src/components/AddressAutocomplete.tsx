@@ -290,38 +290,57 @@ export default function AddressAutocomplete({
     (type === 'apartment' && addressData.apartmentNumber) ||
     '';
 
+  const [isFocused, setIsFocused] = useState(false);
+
   return (
     <div className="relative w-full">
       <div
-        className={`relative w-full border rounded-[10px] bg-white ${disabled
-          ? 'border-gray-200 opacity-50 cursor-not-allowed'
-          : 'border-gray-300 focus-within:border-[#101010]'
+        className={`relative w-full rounded-[10px] bg-white ${disabled
+          ? 'opacity-50 cursor-not-allowed'
+          : ''
           }`}
+        style={{
+          border: disabled
+            ? '0.5px solid rgba(229, 231, 235, 1)'
+            : isFocused
+              ? '0.5px solid #101010'
+              : '0.5px solid rgba(209, 213, 219, 1)',
+        }}
       >
         <input
           ref={inputRef}
           type="text"
           value={displayValue}
           onChange={handleInputChange}
-          onFocus={handleInputFocus}
-          onBlur={handleBlur}
+          onFocus={(e) => {
+            setIsFocused(true);
+            handleInputFocus();
+          }}
+          onBlur={(e) => {
+            setIsFocused(false);
+            handleBlur();
+          }}
           placeholder={placeholder}
           disabled={disabled}
-          className="w-full h-full px-[15px] py-3 border-none rounded-[10px] bg-transparent outline-none text-base leading-[125%] text-[#101010] placeholder:text-[rgba(16,16,16,0.5)] disabled:cursor-not-allowed"
+          className="w-full h-full px-[15px] border-none rounded-[10px] bg-transparent outline-none text-base leading-[125%] text-[#101010] placeholder:text-[rgba(16,16,16,0.5)] disabled:cursor-not-allowed"
+          style={{ paddingTop: '15.5px', paddingBottom: '15.5px' }}
         />
         <div className="absolute right-[15px] top-1/2 -translate-y-1/2 pointer-events-none">
           {loading ? (
             <div className="w-4 h-4 border-2 border-gray-300 border-t-[#101010] rounded-full animate-spin" />
           ) : (
             <div
-              className={`w-6 h-6 rounded-full flex items-center justify-center ${displayValue && !disabled
+              className={`w-4 h-4 rounded-full flex items-center justify-center ${displayValue && !disabled
                 ? 'bg-[#101010]'
                 : 'border border-[rgba(16,16,16,0.25)]'
                 }`}
+              style={{
+                borderWidth: '0.5px',
+              }}
             >
               <svg
-                width="12"
-                height="12"
+                width="8"
+                height="8"
                 viewBox="0 0 12 12"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
@@ -329,7 +348,7 @@ export default function AddressAutocomplete({
                 <path
                   d="M4.5 3L7.5 6L4.5 9"
                   stroke={displayValue && !disabled ? '#FFFFFF' : 'rgba(16, 16, 16, 0.25)'}
-                  strokeWidth="1.5"
+                  strokeWidth="1"
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 />

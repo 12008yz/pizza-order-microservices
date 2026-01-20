@@ -8,6 +8,10 @@ import {
   getApartments,
   searchAddress,
   autocompleteAddress,
+  createCity,
+  createStreet,
+  createBuilding,
+  createApartment,
 } from '../controllers/location.controller';
 
 const router = Router();
@@ -35,5 +39,11 @@ router.get('/search', searchAddress);
 
 // Автодополнение адреса
 router.get('/autocomplete', autocompleteAddress);
+
+// Создание адресов
+router.post('/cities', createCity);
+router.post('/streets', createStreet);
+router.post('/buildings', createBuilding);
+router.post('/apartments', createApartment);
 
 export default router;

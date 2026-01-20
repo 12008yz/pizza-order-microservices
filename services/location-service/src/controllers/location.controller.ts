@@ -255,3 +255,165 @@ export const autocompleteAddress = async (
     next(error);
   }
 };
+
+/**
+ * POST /api/locations/cities
+ * Создать или найти город
+ */
+export const createCity = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { name, regionId, latitude, longitude } = req.body;
+
+    if (!name || typeof name !== 'string' || name.trim().length === 0) {
+      throw new AppError('City name is required', 400);
+    }
+
+    const city = await locationService.createOrFindCity(
+      name.trim(),
+      regionId ? parseInt(regionId, 10) : undefined,
+      latitude ? parseFloat(latitude) : undefined,
+      longitude ? parseFloat(longitude) : undefined
+    );
+
+    res.status(200).json({
+      success: true,
+      data: {
+        id: city.id,
+        name: city.name,
+        regionId: city.regionId,
+        latitude: city.latitude,
+        longitude: city.longitude,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * POST /api/locations/streets
+ * Создать или найти улицу
+ */
+export const createStreet = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { name, cityId, streetTypeId, latitude, longitude } = req.body;
+
+    if (!name || typeof name !== 'string' || name.trim().length === 0) {
+      throw new AppError('Street name is required', 400);
+    }
+
+    if (!cityId) {
+      throw new AppError('cityId is required', 400);
+    }
+
+    const cityIdNum = parseInt(cityId, 10);
+    if (isNaN(cityIdNum)) {
+      throw new AppError('Invalid cityId', 400);
+    }
+
+    const street = await locationService.createOrFindStreet(
+      name.trim(),
+      cityIdNum,
+      streetTypeId ? parseInt(streetTypeId, 10) : undefined,
+      latitude ? parseFloat(latitude) : undefined,
+      longitude ? parseFloat(longitude) : undefined
+    );
+
+    res.status(200).json({
+      success: true,
+      data: street,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * POST /api/locations/buildings
+ * Создать или найти дом
+ */
+export const createBuilding = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { number, streetId, building, latitude, longitude, postalCode } = req.body;
+
+    if (!number || typeof number !== 'string' || number.trim().length === 0) {
+      throw new AppError('Building number is required', 400);
+    }
+
+    if (!streetId) {
+      throw new AppError('streetId is required', 400);
+    }
+
+    const streetIdNum = parseInt(streetId, 10);
+    if (isNaN(streetIdNum)) {
+      throw new AppError('Invalid streetId', 400);
+    }
+
+    const buildingRecord = await locationService.createOrFindBuilding(
+      number.trim(),
+      streetIdNum,
+      building?.trim(),
+      latitude ? parseFloat(latitude) : undefined,
+      longitude ? parseFloat(longitude) : undefined,
+      postalCode?.trim()
+    );
+
+    res.status(200).json({
+      success: true,
+      data: buildingRecord,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * POST /api/locations/apartments
+ * Создать или найти квартиру
+ */
+export const createApartment = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { number, buildingId } = req.body;
+
+    if (!number || typeof number !== 'string' || number.trim().length === 0) {
+      throw new AppError('Apartment number is required', 400);
+    }
+
+    if (!buildingId) {
+      throw new AppError('buildingId is required', 400);
+    }
+
+    const buildingIdNum = parseInt(buildingId, 10);
+    if (isNaN(buildingIdNum)) {
+      throw new AppError('Invalid buildingId', 400);
+    }
+
+    const apartment = await locationService.createOrFindApartment(
+      number.trim(),
+      buildingIdNum
+    );
+
+    res.status(200).json({
+      success: true,
+      data: apartment,
+    });
+  } catch (error) {
+    next(error);
+  }
+};

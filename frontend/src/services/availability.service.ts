@@ -2,8 +2,12 @@ import { apiClient } from './api/client';
 import type { AvailabilityCheck, ApiResponse } from './api/types';
 
 export interface CheckAvailabilityParams {
-  addressId: number;
-  providerId?: number;
+  city: string;
+  street?: string;
+  house?: number;
+  buildingId?: number;
+  apartmentId?: number;
+  apartmentNumber?: string;
 }
 
 export interface GetProvidersByAddressParams {
@@ -12,20 +16,13 @@ export interface GetProvidersByAddressParams {
 
 class AvailabilityService {
   /**
-   * Проверить доступность провайдера по адресу
+   * Проверить доступность провайдеров по адресу
+   * POST /api/availability/check
    */
   async checkAvailability(
     params: CheckAvailabilityParams
-  ): Promise<ApiResponse<AvailabilityCheck>> {
-    const queryParams = new URLSearchParams();
-    queryParams.append('addressId', params.addressId.toString());
-    if (params.providerId) {
-      queryParams.append('providerId', params.providerId.toString());
-    }
-
-    return apiClient.get<AvailabilityCheck>(
-      `/api/availability/check?${queryParams.toString()}`
-    );
+  ): Promise<ApiResponse<any[]>> {
+    return apiClient.post<any[]>(`/api/availability/check`, params);
   }
 
   /**

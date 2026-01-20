@@ -235,4 +235,159 @@ export class LocationService {
       })),
     ];
   }
+
+  /**
+   * Создать или найти город
+   * Если город существует, возвращает его, иначе создает новый
+   */
+  async createOrFindCity(
+    name: string,
+    regionId?: number,
+    latitude?: number,
+    longitude?: number
+  ): Promise<City> {
+    // Сначала ищем существующий город
+    const existingCity = await City.findOne({
+      where: {
+        name: { [Op.iLike]: name.trim() },
+        ...(regionId ? { regionId } : {}),
+      },
+    });
+
+    if (existingCity) {
+      return existingCity;
+    }
+
+    // Если регион не указан, используем первый доступный или создаем дефолтный
+    let finalRegionId = regionId;
+    if (!finalRegionId) {
+      const defaultRegion = await Region.findOne({ order: [['id', 'ASC']] });
+      if (!defaultRegion) {
+        throw new Error('No regions found in database. Please create at least one region.');
+      }
+      finalRegionId = defaultRegion.id;
+    }
+
+    // Создаем новый город
+    return City.create({
+      name: name.trim(),
+      regionId: finalRegionId,
+      latitude: latitude || null,
+      longitude: longitude || null,
+    });
+  }
+
+  /**
+   * Создать или найти улицу
+   * Если улица существует, возвращает ее, иначе создает новую
+   */
+  async createOrFindStreet(
+    name: string,
+    cityId: number,
+    streetTypeId?: number,
+    latitude?: number,
+    longitude?: number
+  ): Promise<Street> {
+    // Сначала ищем существующую улицу
+    const existingStreet = await Street.findOne({
+      where: {
+        name: { [Op.iLike]: name.trim() },
+        cityId,
+        ...(streetTypeId ? { streetTypeId } : {}),
+      },
+    });
+
+    if (existingStreet) {
+      return existingStreet;
+    }
+
+    // Если тип улицы не указан, используем дефолтный (обычно "улица")
+    let finalStreetTypeId = streetTypeId;
+    if (!finalStreetTypeId) {
+      const defaultStreetType = await StreetType.findOne({
+        where: { shortName: 'ул.' },
+      });
+      if (!defaultStreetType) {
+        // Если нет типа "улица", берем первый доступный
+        const firstStreetType = await StreetType.findOne({ order: [['id', 'ASC']] });
+        if (!firstStreetType) {
+          throw new Error('No street types found in database. Please create at least one street type.');
+        }
+        finalStreetTypeId = firstStreetType.id;
+      } else {
+        finalStreetTypeId = defaultStreetType.id;
+      }
+    }
+
+    // Создаем новую улицу
+    return Street.create({
+      name: name.trim(),
+      cityId,
+      streetTypeId: finalStreetTypeId,
+      latitude: latitude || null,
+      longitude: longitude || null,
+    });
+  }
+
+  /**
+   * Создать или найти дом
+   * Если дом существует, возвращает его, иначе создает новый
+   */
+  async createOrFindBuilding(
+    number: string,
+    streetId: number,
+    building?: string,
+    latitude?: number,
+    longitude?: number,
+    postalCode?: string
+  ): Promise<Building> {
+    // Сначала ищем существующий дом
+    const existingBuilding = await Building.findOne({
+      where: {
+        number: number.trim(),
+        streetId,
+        ...(building ? { building: building.trim() } : { building: null }),
+      },
+    });
+
+    if (existingBuilding) {
+      return existingBuilding;
+    }
+
+    // Создаем новый дом
+    return Building.create({
+      number: number.trim(),
+      streetId,
+      building: building?.trim() || null,
+      latitude: latitude || null,
+      longitude: longitude || null,
+      postalCode: postalCode || null,
+    });
+  }
+
+  /**
+   * Создать или найти квартиру
+   */
+  async createOrFindApartment(
+    number: string,
+    buildingId: number
+  ): Promise<Apartment> {
+    // Сначала ищем существующую квартиру
+    const existingApartment = await Apartment.findOne({
+      where: {
+        number: number.trim(),
+        buildingId,
+      },
+    });
+
+    if (existingApartment) {
+      return existingApartment;
+    }
+
+    // Создаем новую квартиру
+    return Apartment.create({
+      number: number.trim(),
+      buildingId,
+    });
+  }
 }

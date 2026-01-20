@@ -24,16 +24,30 @@ export default function PrivacyConsent() {
       >
         {/* Чекбокс - круглый */}
         <div
-          className={`rounded-full mr-3 flex-shrink-0 ${addressData.privacyConsent
-            ? 'bg-[#101010]'
-            : 'border border-[rgba(16,16,16,0.5)]'
+          className={`rounded-full mr-3 flex-shrink-0 flex items-center justify-center ${addressData.privacyConsent
+              ? 'bg-[#101010]'
+              : hasError
+                ? 'border-2 border-red-500'
+                : 'border border-[rgba(16,16,16,0.5)]'
             }`}
           style={{
             boxSizing: 'border-box',
             width: '16px',
             height: '16px',
           }}
-        />
+        >
+          {addressData.privacyConsent && (
+            <svg width="10" height="10" viewBox="0 0 12 12" fill="none">
+              <path
+                d="M2 6L5 9L10 3"
+                stroke="white"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          )}
+        </div>
 
         {/* Текст */}
         <span className="text-sm leading-[105%] text-[#101010]">

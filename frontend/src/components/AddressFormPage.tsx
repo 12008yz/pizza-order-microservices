@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { AddressProvider, useAddress, ConnectionType } from '../contexts/AddressContext';
 import AddressAutocomplete from './AddressAutocomplete';
 import ConnectionTypeModal from './ConnectionTypeModal';
+import AddressInputModal from './AddressInputModal';
 import PrivacyConsent from './PrivacyConsent';
 import { availabilityService } from '../services/availability.service';
 import { locationsService } from '../services/locations.service';
@@ -14,6 +15,8 @@ function AddressFormContent() {
   const router = useRouter();
   const { addressData, validateForm, updateConnectionType, updateCity, updateStreet, updateHouseNumber, updateApartmentNumber } = useAddress();
   const [showConnectionModal, setShowConnectionModal] = useState(false);
+  const [showAddressModal, setShowAddressModal] = useState(false);
+  const [addressModalStep, setAddressModalStep] = useState<'city' | 'street' | 'house'>('city');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [showCookieBanner, setShowCookieBanner] = useState(true);
@@ -377,11 +380,48 @@ function AddressFormContent() {
 
         {/* Group 7514 - Поле "Название населённого пункта" */}
         <div className="absolute left-[8.75%] right-[8.75%] top-[49.55%] bottom-[45.4%]">
-          <AddressAutocomplete
-            type="city"
-            placeholder="Название населённого пункта"
-            value={addressData.city}
-          />
+          <div
+            onClick={() => {
+              setAddressModalStep('city');
+              setShowAddressModal(true);
+            }}
+            className={`relative w-full rounded-[10px] bg-white cursor-pointer ${addressData.city ? '' : ''
+              }`}
+            style={{
+              border: addressData.city
+                ? '0.5px solid #101010'
+                : addressData.errors.city
+                  ? '0.5px solid rgb(239, 68, 68)'
+                  : '0.5px solid rgba(16, 16, 16, 0.25)',
+            }}
+          >
+            <div
+              className="relative w-full h-full px-[15px] rounded-[10px] bg-transparent flex items-center justify-between"
+              style={{ paddingTop: '15.5px', paddingBottom: '15.5px' }}
+            >
+              <span
+                className={`text-base leading-[125%] ${addressData.city ? 'text-[#101010]' : 'text-[rgba(16,16,16,0.5)]'
+                  }`}
+              >
+                {addressData.city || 'Название населённого пункта'}
+              </span>
+              <div
+                className={`w-4 h-4 rounded-full flex items-center justify-center ${addressData.city ? 'bg-[#101010]' : 'border border-[rgba(16,16,16,0.25)]'
+                  }`}
+                style={{ borderWidth: '0.5px' }}
+              >
+                <svg width="8" height="8" viewBox="0 0 12 12" fill="none">
+                  <path
+                    d="M4.5 3L7.5 6L4.5 9"
+                    stroke={addressData.city ? '#FFFFFF' : 'rgba(16, 16, 16, 0.25)'}
+                    strokeWidth="1"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </div>
+            </div>
+          </div>
           {addressData.errors.city && (
             <div className="absolute -bottom-5 left-0 text-xs text-red-500">
               {addressData.errors.city}
@@ -391,12 +431,50 @@ function AddressFormContent() {
 
         {/* Group 7437 - Поле "Улица" */}
         <div className="absolute left-[8.75%] right-[8.75%] top-[55.87%] bottom-[39.08%]">
-          <AddressAutocomplete
-            type="street"
-            placeholder="Улица"
-            disabled={!addressData.cityId && !addressData.city}
-            value={addressData.street}
-          />
+          <div
+            onClick={() => {
+              if (addressData.city) {
+                setAddressModalStep('street');
+                setShowAddressModal(true);
+              }
+            }}
+            className={`relative w-full rounded-[10px] bg-white ${!addressData.city ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
+              }`}
+            style={{
+              border: addressData.street
+                ? '0.5px solid #101010'
+                : addressData.errors.street
+                  ? '0.5px solid rgb(239, 68, 68)'
+                  : '0.5px solid rgba(16, 16, 16, 0.25)',
+            }}
+          >
+            <div
+              className="relative w-full h-full px-[15px] rounded-[10px] bg-transparent flex items-center justify-between"
+              style={{ paddingTop: '15.5px', paddingBottom: '15.5px' }}
+            >
+              <span
+                className={`text-base leading-[125%] ${addressData.street ? 'text-[#101010]' : 'text-[rgba(16,16,16,0.5)]'
+                  }`}
+              >
+                {addressData.street || 'Улица'}
+              </span>
+              <div
+                className={`w-4 h-4 rounded-full flex items-center justify-center ${addressData.street ? 'bg-[#101010]' : 'border border-[rgba(16,16,16,0.25)]'
+                  }`}
+                style={{ borderWidth: '0.5px' }}
+              >
+                <svg width="8" height="8" viewBox="0 0 12 12" fill="none">
+                  <path
+                    d="M4.5 3L7.5 6L4.5 9"
+                    stroke={addressData.street ? '#FFFFFF' : 'rgba(16, 16, 16, 0.25)'}
+                    strokeWidth="1"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </div>
+            </div>
+          </div>
           {addressData.errors.street && (
             <div className="absolute -bottom-5 left-0 text-xs text-red-500">
               {addressData.errors.street}
@@ -406,12 +484,50 @@ function AddressFormContent() {
 
         {/* Group 7438 - Поле "Номер дома" */}
         <div className="absolute left-[8.75%] right-[8.75%] top-[62.19%] bottom-[32.76%]">
-          <AddressAutocomplete
-            type="house"
-            placeholder="Номер дома"
-            disabled={!addressData.streetId && !addressData.street}
-            value={addressData.houseNumber}
-          />
+          <div
+            onClick={() => {
+              if (addressData.street) {
+                setAddressModalStep('house');
+                setShowAddressModal(true);
+              }
+            }}
+            className={`relative w-full rounded-[10px] bg-white ${!addressData.street ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
+              }`}
+            style={{
+              border: addressData.houseNumber
+                ? '0.5px solid #101010'
+                : addressData.errors.houseNumber
+                  ? '0.5px solid rgb(239, 68, 68)'
+                  : '0.5px solid rgba(16, 16, 16, 0.25)',
+            }}
+          >
+            <div
+              className="relative w-full h-full px-[15px] rounded-[10px] bg-transparent flex items-center justify-between"
+              style={{ paddingTop: '15.5px', paddingBottom: '15.5px' }}
+            >
+              <span
+                className={`text-base leading-[125%] ${addressData.houseNumber ? 'text-[#101010]' : 'text-[rgba(16,16,16,0.5)]'
+                  }`}
+              >
+                {addressData.houseNumber || 'Номер дома'}
+              </span>
+              <div
+                className={`w-4 h-4 rounded-full flex items-center justify-center ${addressData.houseNumber ? 'bg-[#101010]' : 'border border-[rgba(16,16,16,0.25)]'
+                  }`}
+                style={{ borderWidth: '0.5px' }}
+              >
+                <svg width="8" height="8" viewBox="0 0 12 12" fill="none">
+                  <path
+                    d="M4.5 3L7.5 6L4.5 9"
+                    stroke={addressData.houseNumber ? '#FFFFFF' : 'rgba(16, 16, 16, 0.25)'}
+                    strokeWidth="1"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </div>
+            </div>
+          </div>
           {addressData.errors.houseNumber && (
             <div className="absolute -bottom-5 left-0 text-xs text-red-500">
               {addressData.errors.houseNumber}
@@ -469,7 +585,17 @@ function AddressFormContent() {
           onClose={() => setShowConnectionModal(false)}
           onNext={() => {
             setShowConnectionModal(false);
+            setAddressModalStep('city');
+            setShowAddressModal(true);
           }}
+        />
+
+        {/* Модальное окно ввода адреса */}
+        <AddressInputModal
+          isOpen={showAddressModal}
+          onClose={() => setShowAddressModal(false)}
+          onComplete={() => setShowAddressModal(false)}
+          initialStep={addressModalStep}
         />
       </div>
     </div>

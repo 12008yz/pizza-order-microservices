@@ -67,19 +67,27 @@ export default function AddressAutocomplete({
             limit: 10,
           });
         } else if (type === 'street') {
-          // Для улицы нужен cityId
-          if (!addressData.cityId) {
+          // Для улицы нужен cityId или city (если город введен вручную)
+          if (!addressData.cityId && !addressData.city) {
             setSuggestions([]);
             setLoading(false);
             return;
           }
+          // Если есть cityId, используем его, иначе ищем по названию города
           response = await locationsService.autocomplete({
             q: query,
-            cityId: addressData.cityId,
+            ...(addressData.cityId ? { cityId: addressData.cityId } : {}),
             limit: 10,
           });
         } else if (type === 'house') {
-          // Для дома нужен streetId
+          // Для дома нужен streetId или street (если улица введена вручную)
+          if (!addressData.streetId && !addressData.street) {
+            setSuggestions([]);
+            setLoading(false);
+            return;
+          }
+          // Если streetId нет, не можем получить список домов из БД
+          // В этом случае пользователь должен ввести номер дома вручную
           if (!addressData.streetId) {
             setSuggestions([]);
             setLoading(false);
@@ -362,15 +370,21 @@ export default function AddressAutocomplete({
       {showSuggestions && suggestions.length > 0 && (
         <div
           ref={suggestionsRef}
-          className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto"
+          className="absolute z-50 w-full mt-2 bg-white border border-[rgba(16,16,16,0.15)] rounded-[10px] shadow-lg max-h-60 overflow-y-auto"
+          style={{
+            boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)',
+          }}
         >
           {suggestions.map((suggestion, index) => (
             <div
               key={index}
               onClick={() => handleSelect(suggestion)}
-              className="px-4 py-2 hover:bg-blue-50 cursor-pointer border-b border-gray-100 last:border-b-0"
+              className="px-[15px] py-3 hover:bg-gray-50 cursor-pointer border-b border-[rgba(16,16,16,0.05)] last:border-b-0 transition-colors"
+              style={{
+                borderBottom: index < suggestions.length - 1 ? '0.5px solid rgba(16, 16, 16, 0.05)' : 'none',
+              }}
             >
-              <div className="font-medium text-gray-900">
+              <div className="text-base leading-[125%] text-[#101010] font-normal">
                 {suggestion.formatted || suggestion.text}
               </div>
             </div>

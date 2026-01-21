@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useAddress } from '../contexts/AddressContext';
 import { locationsService } from '../services/locations.service';
+import { CaretLeft, CaretUp, CaretDown } from '@phosphor-icons/react';
 
 type AddressStep = 'city' | 'street' | 'house';
 
@@ -65,6 +66,14 @@ export default function AddressInputModal({
     }
   }, [isOpen, initialStep]);
 
+  // При выборе варианта - подставляем в поле ввода
+  useEffect(() => {
+    if (selectedIndex !== null && suggestions[selectedIndex]) {
+      const selected = suggestions[selectedIndex];
+      setQuery(selected.formatted || selected.text);
+    }
+  }, [selectedIndex, suggestions]);
+
   // Fetch suggestions with debounce
   useEffect(() => {
     if (timeoutRef.current) {
@@ -74,6 +83,14 @@ export default function AddressInputModal({
     if (query.length < 1) {
       setSuggestions([]);
       return;
+    }
+
+    // Не делаем запрос если значение совпадает с выбранным
+    if (selectedIndex !== null && suggestions[selectedIndex]) {
+      const selected = suggestions[selectedIndex];
+      if (query === (selected.formatted || selected.text)) {
+        return;
+      }
     }
 
     timeoutRef.current = setTimeout(async () => {
@@ -97,7 +114,6 @@ export default function AddressInputModal({
               region: item.region,
             })));
           } else {
-            // Mock data for demo
             const mockCities = [
               { id: 1, text: `гор. ${query}, Московская обл.`, formatted: `гор. ${query}, Московская обл.`, cityId: 1, regionId: 1 },
               { id: 2, text: `д. ${query}, Псковская обл.`, formatted: `д. ${query}, Псковская обл.`, cityId: 2, regionId: 2 },
@@ -122,7 +138,6 @@ export default function AddressInputModal({
               streetId: item.streetId,
             })));
           } else {
-            // Mock data for demo
             const mockStreets = [
               { id: 1, text: `ул. ${query}менчугская`, formatted: `ул. ${query}менчугская`, streetId: 1 },
               { id: 2, text: `наб. ${query}млевская`, formatted: `наб. ${query}млевская`, streetId: 2 },
@@ -148,7 +163,6 @@ export default function AddressInputModal({
                 buildingId: building.id,
               })));
             } else {
-              // Mock data for demo
               const mockHouses = [
                 { id: 1, text: `д. ${query} к 5`, formatted: `д. ${query} к 5`, buildingId: 1 },
                 { id: 2, text: `д. ${query} к 6`, formatted: `д. ${query} к 6`, buildingId: 2 },
@@ -157,7 +171,6 @@ export default function AddressInputModal({
               setSuggestions(mockHouses);
             }
           } else {
-            // Mock data for demo
             const mockHouses = [
               { id: 1, text: `д. ${query} к 5`, formatted: `д. ${query} к 5`, buildingId: 1 },
               { id: 2, text: `д. ${query} к 6`, formatted: `д. ${query} к 6`, buildingId: 2 },
@@ -166,9 +179,9 @@ export default function AddressInputModal({
             setSuggestions(mockHouses);
           }
         }
+        setSelectedIndex(null);
       } catch (error) {
         console.error('Autocomplete error:', error);
-        // Fallback to mock data
         if (currentStep === 'city') {
           setSuggestions([
             { id: 1, text: `гор. ${query}, Московская обл.`, formatted: `гор. ${query}, Московская обл.`, cityId: 1, regionId: 1 },
@@ -188,6 +201,7 @@ export default function AddressInputModal({
             { id: 3, text: `д. ${query} к 9`, formatted: `д. ${query} к 9`, buildingId: 3 },
           ]);
         }
+        setSelectedIndex(null);
       } finally {
         setLoading(false);
       }
@@ -204,6 +218,26 @@ export default function AddressInputModal({
     setSelectedIndex(index);
   };
 
+  const handleScrollUp = () => {
+    if (suggestions.length > 0) {
+      if (selectedIndex === null || selectedIndex === 0) {
+        setSelectedIndex(suggestions.length - 1);
+      } else {
+        setSelectedIndex(selectedIndex - 1);
+      }
+    }
+  };
+
+  const handleScrollDown = () => {
+    if (suggestions.length > 0) {
+      if (selectedIndex === null || selectedIndex === suggestions.length - 1) {
+        setSelectedIndex(0);
+      } else {
+        setSelectedIndex(selectedIndex + 1);
+      }
+    }
+  };
+
   const handleNext = () => {
     if (selectedIndex === null && !query.trim()) return;
 
@@ -212,31 +246,13 @@ export default function AddressInputModal({
 
     if (currentStep === 'city') {
       updateCity(selected?.cityId || undefined, value, selected?.regionId);
-      // Закрываем модалку после сохранения города
       onComplete();
     } else if (currentStep === 'street') {
       updateStreet(selected?.streetId || undefined, value);
-      // Закрываем модалку после сохранения улицы
       onComplete();
     } else if (currentStep === 'house') {
       updateHouseNumber(selected?.buildingId || undefined, value, undefined);
       onComplete();
-    }
-  };
-
-  const handlePrev = () => {
-    if (currentStep === 'street') {
-      setCurrentStep('city');
-      setQuery('');
-      setSuggestions([]);
-      setSelectedIndex(null);
-    } else if (currentStep === 'house') {
-      setCurrentStep('street');
-      setQuery('');
-      setSuggestions([]);
-      setSelectedIndex(null);
-    } else {
-      onClose();
     }
   };
 
@@ -250,46 +266,160 @@ export default function AddressInputModal({
 
   const canProceed = selectedIndex !== null || query.trim().length > 0;
 
+  // Адаптивная высота: базовая высота + высота для каждого варианта (макс 3)
+  const visibleSuggestions = suggestions.slice(0, 3);
+  const suggestionHeight = 50;
+  const baseHeight = 200; // заголовок + подзаголовок + инпут + кнопки
+  const suggestionsBlockHeight = visibleSuggestions.length * (suggestionHeight + 10);
+  const modalHeight = baseHeight + suggestionsBlockHeight + (visibleSuggestions.length > 0 ? 20 : 0);
+
   return (
     <div
-      className="fixed inset-0 z-[10000] flex items-center justify-center bg-black bg-opacity-50"
+      className="fixed inset-0 z-[10000] flex items-end justify-center"
+      style={{
+        background: 'rgba(255, 255, 255, 0.85)',
+        backdropFilter: 'blur(12.5px)',
+        paddingBottom: '155px',
+      }}
       onClick={handleBackdropClick}
     >
+      {/* Подсказка сверху */}
       <div
-        className="relative w-[90%] max-w-[360px] bg-white rounded-[20px] p-6 shadow-xl"
-        onClick={(e) => e.stopPropagation()}
+        style={{
+          position: 'absolute',
+          width: '240px',
+          height: '30px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          top: '75px',
+          fontFamily: 'TT Firs Neue, sans-serif',
+          fontStyle: 'normal',
+          fontWeight: 400,
+          fontSize: '14px',
+          lineHeight: '105%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          textAlign: 'center',
+          color: 'rgba(16, 16, 16, 0.15)',
+        }}
       >
-        {/* Header */}
-        <h2 className="text-2xl font-bold text-[#101010] mb-2">Проверка тех. доступа</h2>
-        <p className="text-sm text-gray-500 mb-4">
-          Мы подготовили доступные тарифные планы. Пожалуйста, проверьте правильность
-        </p>
+        Нажмите в открытое пустое место, чтобы выйти из этого режима
+      </div>
 
-        {/* Suggestions list with radio buttons */}
-        {suggestions.length > 0 && (
-          <div className="space-y-2 mb-4 max-h-[180px] overflow-y-auto">
-            {suggestions.map((suggestion, index) => (
+      {/* Основной контейнер модалки */}
+      <div
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          boxSizing: 'border-box',
+          position: 'relative',
+          width: '360px',
+          minHeight: `${modalHeight}px`,
+          background: '#FFFFFF',
+          border: '1px solid rgba(16, 16, 16, 0.15)',
+          backdropFilter: 'blur(7.5px)',
+          borderRadius: '20px',
+          padding: '15px',
+          transition: 'min-height 0.2s ease',
+        }}
+      >
+        {/* Заголовок */}
+        <div
+          style={{
+            width: '330px',
+            height: '25px',
+            fontFamily: 'TT Firs Neue, sans-serif',
+            fontStyle: 'normal',
+            fontWeight: 400,
+            fontSize: '20px',
+            lineHeight: '125%',
+            display: 'flex',
+            alignItems: 'center',
+            color: '#101010',
+          }}
+        >
+          Проверка тех. доступа
+        </div>
+
+        {/* Подзаголовок */}
+        <div
+          style={{
+            width: '330px',
+            height: '30px',
+            marginTop: '15px',
+            fontFamily: 'TT Firs Neue, sans-serif',
+            fontStyle: 'normal',
+            fontWeight: 400,
+            fontSize: '14px',
+            lineHeight: '105%',
+            color: 'rgba(16, 16, 16, 0.25)',
+          }}
+        >
+          Мы подготовили доступные тарифные планы. Пожалуйста, проверьте правильность
+        </div>
+
+        {/* Опции вариантов */}
+        {visibleSuggestions.length > 0 && (
+          <div style={{ marginTop: '20px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            {visibleSuggestions.map((suggestion, index) => (
               <div
                 key={suggestion.id || index}
                 onClick={() => handleSelect(index)}
-                className={`relative flex items-center justify-between p-3 border rounded-[10px] cursor-pointer transition-all ${selectedIndex === index
-                  ? 'border-[#101010] bg-gray-50'
-                  : 'border-gray-200 hover:border-gray-300'
-                  }`}
+                style={{
+                  boxSizing: 'border-box',
+                  width: '330px',
+                  height: '50px',
+                  border: selectedIndex === index
+                    ? '1px solid #101010'
+                    : '1px solid rgba(16, 16, 16, 0.25)',
+                  borderRadius: '10px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: '0 15px',
+                  cursor: 'pointer',
+                  transition: 'border-color 0.2s ease',
+                }}
               >
-                <span className="text-[#101010] text-sm">{suggestion.formatted || suggestion.text}</span>
+                <span
+                  style={{
+                    fontFamily: 'TT Firs Neue, sans-serif',
+                    fontStyle: 'normal',
+                    fontWeight: 400,
+                    fontSize: '16px',
+                    lineHeight: '125%',
+                    color: selectedIndex === index ? '#101010' : 'rgba(16, 16, 16, 0.5)',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  {suggestion.formatted || suggestion.text}
+                </span>
+
+                {/* Radio кнопка */}
                 <div
-                  className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${selectedIndex === index
-                    ? 'border-[#101010] bg-[#101010]'
-                    : 'border-gray-300'
-                    }`}
+                  style={{
+                    boxSizing: 'border-box',
+                    width: '16px',
+                    height: '16px',
+                    borderRadius: '50%',
+                    background: selectedIndex === index ? '#101010' : 'transparent',
+                    border: selectedIndex === index
+                      ? 'none'
+                      : '1px solid rgba(16, 16, 16, 0.5)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flexShrink: 0,
+                  }}
                 >
                   {selectedIndex === index && (
-                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                    <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
                       <path
-                        d="M2 6L5 9L10 3"
+                        d="M1 4L3.5 6.5L9 1"
                         stroke="white"
-                        strokeWidth="2"
+                        strokeWidth="1.5"
                         strokeLinecap="round"
                         strokeLinejoin="round"
                       />
@@ -301,8 +431,8 @@ export default function AddressInputModal({
           </div>
         )}
 
-        {/* Input field */}
-        <div className="mb-4">
+        {/* Поле ввода */}
+        <div style={{ marginTop: '20px' }}>
           <input
             ref={inputRef}
             type="text"
@@ -312,58 +442,117 @@ export default function AddressInputModal({
               setSelectedIndex(null);
             }}
             placeholder={stepConfig[currentStep].placeholder}
-            className="w-full px-4 py-3 border border-gray-300 rounded-[10px] text-[#101010] placeholder:text-gray-400 focus:outline-none focus:border-[#101010] transition-colors"
+            style={{
+              boxSizing: 'border-box',
+              width: '330px',
+              height: '50px',
+              border: '1px solid rgba(16, 16, 16, 0.25)',
+              borderRadius: '10px',
+              padding: '0 15px',
+              fontFamily: 'TT Firs Neue, sans-serif',
+              fontStyle: 'normal',
+              fontWeight: 400,
+              fontSize: '16px',
+              lineHeight: '125%',
+              color: '#101010',
+              outline: 'none',
+            }}
           />
         </div>
 
-        {/* Navigation buttons */}
-        <div className="flex items-center gap-3">
-          {/* Back button */}
+        {/* Кнопки навигации */}
+        <div
+          style={{
+            marginTop: '15px',
+            display: 'flex',
+            gap: '10px',
+          }}
+        >
+          {/* Кнопка "Назад" */}
           <button
-            onClick={handlePrev}
-            className="w-12 h-12 flex items-center justify-center border border-gray-300 rounded-[10px] hover:bg-gray-50 transition-colors"
-          >
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-              <path
-                d="M12.5 15L7.5 10L12.5 5"
-                stroke="#101010"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </button>
-
-          {/* Down arrow button */}
-          <button
-            onClick={() => {
-              if (suggestions.length > 0 && selectedIndex !== null && selectedIndex < suggestions.length - 1) {
-                setSelectedIndex(selectedIndex + 1);
-              } else if (suggestions.length > 0 && selectedIndex === null) {
-                setSelectedIndex(0);
-              }
+            onClick={onClose}
+            style={{
+              boxSizing: 'border-box',
+              width: '50px',
+              height: '50px',
+              border: '1px solid rgba(16, 16, 16, 0.15)',
+              borderRadius: '10px',
+              background: 'transparent',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
             }}
-            className="w-12 h-12 flex items-center justify-center border border-gray-300 rounded-[10px] hover:bg-gray-50 transition-colors"
           >
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-              <path
-                d="M5 7.5L10 12.5L15 7.5"
-                stroke="#101010"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+            <CaretLeft size={20} color="#101010" weight="bold" />
           </button>
 
-          {/* Next button */}
+          {/* Кнопка "Вверх" */}
+          <button
+            onClick={handleScrollUp}
+            disabled={suggestions.length === 0}
+            style={{
+              boxSizing: 'border-box',
+              width: '50px',
+              height: '50px',
+              border: '1px solid rgba(16, 16, 16, 0.15)',
+              borderRadius: '10px',
+              background: 'transparent',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: suggestions.length > 0 ? 'pointer' : 'not-allowed',
+              opacity: suggestions.length > 0 ? 1 : 0.5,
+            }}
+          >
+            <CaretUp size={20} color="#101010" weight="bold" />
+          </button>
+
+          {/* Кнопка "Вниз" */}
+          <button
+            onClick={handleScrollDown}
+            disabled={suggestions.length === 0}
+            style={{
+              boxSizing: 'border-box',
+              width: '50px',
+              height: '50px',
+              border: '1px solid rgba(16, 16, 16, 0.15)',
+              borderRadius: '10px',
+              background: 'transparent',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: suggestions.length > 0 ? 'pointer' : 'not-allowed',
+              opacity: suggestions.length > 0 ? 1 : 0.5,
+            }}
+          >
+            <CaretDown size={20} color="#101010" weight="bold" />
+          </button>
+
+          {/* Кнопка "Далее" */}
           <button
             onClick={handleNext}
             disabled={!canProceed}
-            className={`flex-1 h-12 rounded-[10px] text-white font-medium transition-colors ${canProceed
-              ? 'bg-[#101010] hover:bg-gray-800'
-              : 'bg-gray-300 cursor-not-allowed'
-              }`}
+            style={{
+              boxSizing: 'border-box',
+              flex: 1,
+              height: '50px',
+              background: canProceed ? '#101010' : 'rgba(16, 16, 16, 0.25)',
+              border: '1px solid rgba(16, 16, 16, 0.25)',
+              borderRadius: '10px',
+              fontFamily: 'TT Firs Neue, sans-serif',
+              fontStyle: 'normal',
+              fontWeight: 400,
+              fontSize: '16px',
+              lineHeight: '315%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              textAlign: 'center',
+              color: '#FFFFFF',
+              cursor: canProceed ? 'pointer' : 'not-allowed',
+              transition: 'background-color 0.2s ease',
+            }}
           >
             Далее
           </button>

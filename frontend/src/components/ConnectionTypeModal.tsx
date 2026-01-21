@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useAddress, ConnectionType } from '../contexts/AddressContext';
+import { CaretLeft } from '@phosphor-icons/react';
 
 interface ConnectionTypeModalProps {
   isOpen: boolean;
@@ -200,7 +201,7 @@ export default function ConnectionTypeModal({
         <div
           style={{
             position: 'absolute',
-            bottom: '13px',
+            bottom: '12px',
             left: '15px',
             right: '15px',
             display: 'flex',

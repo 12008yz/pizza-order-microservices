@@ -3,7 +3,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAddress } from '../contexts/AddressContext';
 import { locationsService } from '../services/locations.service';
-import { CaretLeft, CaretUp, CaretDown } from '@phosphor-icons/react';
 
 type AddressStep = 'city' | 'street' | 'house';
 
@@ -265,297 +264,340 @@ export default function AddressInputModal({
   if (!isOpen) return null;
 
   const canProceed = selectedIndex !== null || query.trim().length > 0;
+  const hasSuggestions = suggestions.length > 0;
 
-  // Адаптивная высота: базовая высота + высота для каждого варианта (макс 3)
+  // Адаптивная высота модалки: базовая 240px + высота для вариантов
   const visibleSuggestions = suggestions.slice(0, 3);
   const suggestionHeight = 50;
-  const baseHeight = 200; // заголовок + подзаголовок + инпут + кнопки
-  const suggestionsBlockHeight = visibleSuggestions.length * (suggestionHeight + 10);
-  const modalHeight = baseHeight + suggestionsBlockHeight + (visibleSuggestions.length > 0 ? 20 : 0);
+  const suggestionGap = 10;
+  const baseHeight = 240;
+  const suggestionsBlockHeight = visibleSuggestions.length > 0
+    ? visibleSuggestions.length * suggestionHeight + (visibleSuggestions.length - 1) * suggestionGap + 20
+    : 0;
+  const modalHeight = baseHeight + suggestionsBlockHeight;
 
   return (
     <div
-      className="fixed inset-0 z-[10000] flex items-end justify-center"
+      className="fixed inset-0 z-[10000] flex items-center justify-center"
       style={{
-        background: 'rgba(255, 255, 255, 0.85)',
+        background: '#FFFFFF',
         backdropFilter: 'blur(12.5px)',
-        paddingBottom: '155px',
       }}
       onClick={handleBackdropClick}
     >
-      {/* Подсказка сверху */}
+      {/* Контейнер 400x870 */}
       <div
         style={{
-          position: 'absolute',
-          width: '240px',
-          height: '30px',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          top: '75px',
-          fontFamily: 'TT Firs Neue, sans-serif',
-          fontStyle: 'normal',
-          fontWeight: 400,
-          fontSize: '14px',
-          lineHeight: '105%',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          textAlign: 'center',
-          color: 'rgba(16, 16, 16, 0.15)',
-        }}
-      >
-        Нажмите в открытое пустое место, чтобы выйти из этого режима
-      </div>
-
-      {/* Основной контейнер модалки */}
-      <div
-        onClick={(e) => e.stopPropagation()}
-        style={{
-          boxSizing: 'border-box',
           position: 'relative',
-          width: '360px',
-          minHeight: `${modalHeight}px`,
+          width: '400px',
+          height: '870px',
           background: '#FFFFFF',
-          border: '1px solid rgba(16, 16, 16, 0.15)',
-          backdropFilter: 'blur(7.5px)',
-          borderRadius: '20px',
-          padding: '15px',
-          transition: 'min-height 0.2s ease',
         }}
       >
-        {/* Заголовок */}
+        {/* Подсказка сверху */}
         <div
           style={{
-            width: '330px',
-            height: '25px',
-            fontFamily: 'TT Firs Neue, sans-serif',
-            fontStyle: 'normal',
-            fontWeight: 400,
-            fontSize: '20px',
-            lineHeight: '125%',
-            display: 'flex',
-            alignItems: 'center',
-            color: '#101010',
-          }}
-        >
-          Проверка тех. доступа
-        </div>
-
-        {/* Подзаголовок */}
-        <div
-          style={{
-            width: '330px',
+            position: 'absolute',
+            width: '240px',
             height: '30px',
-            marginTop: '15px',
+            left: 'calc(50% - 240px/2)',
+            top: '75px',
             fontFamily: 'TT Firs Neue, sans-serif',
             fontStyle: 'normal',
             fontWeight: 400,
             fontSize: '14px',
             lineHeight: '105%',
-            color: 'rgba(16, 16, 16, 0.25)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            textAlign: 'center',
+            color: 'rgba(16, 16, 16, 0.15)',
           }}
         >
-          Мы подготовили доступные тарифные планы. Пожалуйста, проверьте правильность
+          Нажмите в открытое пустое место, чтобы выйти из этого режима
         </div>
 
-        {/* Опции вариантов */}
-        {visibleSuggestions.length > 0 && (
-          <div style={{ marginTop: '20px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            {visibleSuggestions.map((suggestion, index) => (
-              <div
-                key={suggestion.id || index}
-                onClick={() => handleSelect(index)}
-                style={{
-                  boxSizing: 'border-box',
-                  width: '330px',
-                  height: '50px',
-                  border: selectedIndex === index
-                    ? '1px solid #101010'
-                    : '1px solid rgba(16, 16, 16, 0.25)',
-                  borderRadius: '10px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  padding: '0 15px',
-                  cursor: 'pointer',
-                  transition: 'border-color 0.2s ease',
-                }}
-              >
-                <span
-                  style={{
-                    fontFamily: 'TT Firs Neue, sans-serif',
-                    fontStyle: 'normal',
-                    fontWeight: 400,
-                    fontSize: '16px',
-                    lineHeight: '125%',
-                    color: selectedIndex === index ? '#101010' : 'rgba(16, 16, 16, 0.5)',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap',
-                  }}
-                >
-                  {suggestion.formatted || suggestion.text}
-                </span>
+        {/* Основной контейнер модалки - Rectangle 67 */}
+        <div
+          onClick={(e) => e.stopPropagation()}
+          style={{
+            boxSizing: 'border-box',
+            position: 'absolute',
+            width: '360px',
+            minHeight: `${modalHeight}px`,
+            left: '20px',
+            top: '242px',
+            background: '#FFFFFF',
+            border: '1px solid rgba(16, 16, 16, 0.15)',
+            backdropFilter: 'blur(7.5px)',
+            borderRadius: '20px',
+            transition: 'min-height 0.2s ease',
+          }}
+        >
+          {/* Group 7539 - Заголовок и подзаголовок */}
+          {/* Проверка тех. доступа */}
+          <div
+            style={{
+              position: 'absolute',
+              width: '330px',
+              height: '25px',
+              left: '15px',
+              top: '15px',
+              fontFamily: 'TT Firs Neue, sans-serif',
+              fontStyle: 'normal',
+              fontWeight: 400,
+              fontSize: '20px',
+              lineHeight: '125%',
+              display: 'flex',
+              alignItems: 'center',
+              color: '#101010',
+            }}
+          >
+            Проверка тех. доступа
+          </div>
 
-                {/* Radio кнопка */}
+          {/* Подзаголовок */}
+          <div
+            style={{
+              position: 'absolute',
+              width: '330px',
+              height: '30px',
+              left: '15px',
+              top: '55px',
+              fontFamily: 'TT Firs Neue, sans-serif',
+              fontStyle: 'normal',
+              fontWeight: 400,
+              fontSize: '14px',
+              lineHeight: '105%',
+              color: 'rgba(16, 16, 16, 0.25)',
+            }}
+          >
+            Мы подготовили доступные тарифные планы. Пожалуйста, проверьте правильность
+          </div>
+
+          {/* Опции вариантов */}
+          {visibleSuggestions.length > 0 && (
+            <div
+              style={{
+                position: 'absolute',
+                left: '15px',
+                top: '105px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '10px',
+              }}
+            >
+              {visibleSuggestions.map((suggestion, index) => (
                 <div
+                  key={suggestion.id || index}
+                  onClick={() => handleSelect(index)}
                   style={{
                     boxSizing: 'border-box',
-                    width: '16px',
-                    height: '16px',
-                    borderRadius: '50%',
-                    background: selectedIndex === index ? '#101010' : 'transparent',
+                    width: '330px',
+                    height: '50px',
                     border: selectedIndex === index
-                      ? 'none'
-                      : '1px solid rgba(16, 16, 16, 0.5)',
+                      ? '1px solid #101010'
+                      : '1px solid rgba(16, 16, 16, 0.25)',
+                    borderRadius: '10px',
                     display: 'flex',
                     alignItems: 'center',
-                    justifyContent: 'center',
-                    flexShrink: 0,
+                    justifyContent: 'space-between',
+                    padding: '0 15px',
+                    cursor: 'pointer',
+                    transition: 'border-color 0.2s ease',
                   }}
                 >
-                  {selectedIndex === index && (
-                    <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
-                      <path
-                        d="M1 4L3.5 6.5L9 1"
-                        stroke="white"
-                        strokeWidth="1.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
+                  <span
+                    style={{
+                      fontFamily: 'TT Firs Neue, sans-serif',
+                      fontStyle: 'normal',
+                      fontWeight: 400,
+                      fontSize: '16px',
+                      lineHeight: '125%',
+                      color: selectedIndex === index ? '#101010' : 'rgba(16, 16, 16, 0.5)',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    {suggestion.formatted || suggestion.text}
+                  </span>
 
-        {/* Поле ввода */}
-        <div style={{ marginTop: '20px' }}>
-          <input
-            ref={inputRef}
-            type="text"
-            value={query}
-            onChange={(e) => {
-              setQuery(e.target.value);
-              setSelectedIndex(null);
-            }}
-            placeholder={stepConfig[currentStep].placeholder}
+                  {/* Radio кнопка */}
+                  <div
+                    style={{
+                      boxSizing: 'border-box',
+                      width: '16px',
+                      height: '16px',
+                      borderRadius: '50%',
+                      background: selectedIndex === index ? '#101010' : 'transparent',
+                      border: selectedIndex === index
+                        ? 'none'
+                        : '1px solid rgba(16, 16, 16, 0.5)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexShrink: 0,
+                    }}
+                  >
+                    {selectedIndex === index && (
+                      <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+                        <path
+                          d="M1 4L3.5 6.5L9 1"
+                          stroke="white"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Group 7542 - Поле ввода */}
+          <div
             style={{
-              boxSizing: 'border-box',
+              position: 'absolute',
+              left: '15px',
+              top: visibleSuggestions.length > 0
+                ? `${105 + suggestionsBlockHeight}px`
+                : '105px',
               width: '330px',
               height: '50px',
-              border: '1px solid rgba(16, 16, 16, 0.25)',
-              borderRadius: '10px',
-              padding: '0 15px',
-              fontFamily: 'TT Firs Neue, sans-serif',
-              fontStyle: 'normal',
-              fontWeight: 400,
-              fontSize: '16px',
-              lineHeight: '125%',
-              color: '#101010',
-              outline: 'none',
-            }}
-          />
-        </div>
-
-        {/* Кнопки навигации */}
-        <div
-          style={{
-            marginTop: '15px',
-            display: 'flex',
-            gap: '10px',
-          }}
-        >
-          {/* Кнопка "Назад" */}
-          <button
-            onClick={onClose}
-            style={{
-              boxSizing: 'border-box',
-              width: '50px',
-              height: '50px',
-              border: '1px solid rgba(16, 16, 16, 0.15)',
-              borderRadius: '10px',
-              background: 'transparent',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: 'pointer',
             }}
           >
-            <CaretLeft size={20} color="#101010" weight="bold" />
-          </button>
+            <input
+              ref={inputRef}
+              type="text"
+              value={query}
+              onChange={(e) => {
+                setQuery(e.target.value);
+                setSelectedIndex(null);
+              }}
+              placeholder={stepConfig[currentStep].placeholder}
+              style={{
+                boxSizing: 'border-box',
+                width: '330px',
+                height: '50px',
+                border: '1px solid #101010',
+                borderRadius: '10px',
+                padding: '0 15px',
+                fontFamily: 'TT Firs Neue, sans-serif',
+                fontStyle: 'normal',
+                fontWeight: 400,
+                fontSize: '16px',
+                lineHeight: '125%',
+                color: '#101010',
+                outline: 'none',
+              }}
+            />
+          </div>
 
-          {/* Кнопка "Вверх" */}
-          <button
-            onClick={handleScrollUp}
-            disabled={suggestions.length === 0}
+          {/* Group 7571 - Кнопки навигации */}
+          <div
             style={{
-              boxSizing: 'border-box',
-              width: '50px',
+              position: 'absolute',
+              width: '330px',
               height: '50px',
-              border: '1px solid rgba(16, 16, 16, 0.15)',
-              borderRadius: '10px',
-              background: 'transparent',
+              left: '15px',
+              top: visibleSuggestions.length > 0
+                ? `${105 + suggestionsBlockHeight + 50 + 15}px`
+                : '175px',
               display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: suggestions.length > 0 ? 'pointer' : 'not-allowed',
-              opacity: suggestions.length > 0 ? 1 : 0.5,
+              gap: '5px',
             }}
           >
-            <CaretUp size={20} color="#101010" weight="bold" />
-          </button>
+            {/* Group 7508 - Кнопка "Вверх" */}
+            <button
+              onClick={handleScrollUp}
+              disabled={!hasSuggestions}
+              style={{
+                boxSizing: 'border-box',
+                width: '50px',
+                height: '50px',
+                border: '1px solid rgba(16, 16, 16, 0.15)',
+                borderRadius: '10px',
+                background: 'transparent',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: hasSuggestions ? 'pointer' : 'default',
+                opacity: 0.25,
+              }}
+            >
+              {/* Vector - стрелка вверх */}
+              <svg width="12" height="6" viewBox="0 0 12 6" fill="none">
+                <path
+                  d="M1 5L6 1L11 5"
+                  stroke="#101010"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </button>
 
-          {/* Кнопка "Вниз" */}
-          <button
-            onClick={handleScrollDown}
-            disabled={suggestions.length === 0}
-            style={{
-              boxSizing: 'border-box',
-              width: '50px',
-              height: '50px',
-              border: '1px solid rgba(16, 16, 16, 0.15)',
-              borderRadius: '10px',
-              background: 'transparent',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: suggestions.length > 0 ? 'pointer' : 'not-allowed',
-              opacity: suggestions.length > 0 ? 1 : 0.5,
-            }}
-          >
-            <CaretDown size={20} color="#101010" weight="bold" />
-          </button>
+            {/* Group 7509 - Кнопка "Вниз" */}
+            <button
+              onClick={handleScrollDown}
+              disabled={!hasSuggestions}
+              style={{
+                boxSizing: 'border-box',
+                width: '50px',
+                height: '50px',
+                border: '1px solid rgba(16, 16, 16, 0.15)',
+                borderRadius: '10px',
+                background: 'transparent',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: hasSuggestions ? 'pointer' : 'default',
+                opacity: 0.25,
+              }}
+            >
+              {/* Vector - стрелка вниз */}
+              <svg width="12" height="6" viewBox="0 0 12 6" fill="none">
+                <path
+                  d="M1 1L6 5L11 1"
+                  stroke="#101010"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </button>
 
-          {/* Кнопка "Далее" */}
-          <button
-            onClick={handleNext}
-            disabled={!canProceed}
-            style={{
-              boxSizing: 'border-box',
-              flex: 1,
-              height: '50px',
-              background: canProceed ? '#101010' : 'rgba(16, 16, 16, 0.25)',
-              border: '1px solid rgba(16, 16, 16, 0.25)',
-              borderRadius: '10px',
-              fontFamily: 'TT Firs Neue, sans-serif',
-              fontStyle: 'normal',
-              fontWeight: 400,
-              fontSize: '16px',
-              lineHeight: '315%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              textAlign: 'center',
-              color: '#FFFFFF',
-              cursor: canProceed ? 'pointer' : 'not-allowed',
-              transition: 'background-color 0.2s ease',
-            }}
-          >
-            Далее
-          </button>
+            {/* Group 7377 - Кнопка "Далее" */}
+            <button
+              onClick={handleNext}
+              disabled={!canProceed}
+              style={{
+                boxSizing: 'border-box',
+                flex: 1,
+                height: '50px',
+                background: canProceed ? '#101010' : 'rgba(16, 16, 16, 0.25)',
+                border: '1px solid rgba(16, 16, 16, 0.25)',
+                borderRadius: '10px',
+                fontFamily: 'TT Firs Neue, sans-serif',
+                fontStyle: 'normal',
+                fontWeight: 400,
+                fontSize: '16px',
+                lineHeight: '315%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                textAlign: 'center',
+                color: '#FFFFFF',
+                cursor: canProceed ? 'pointer' : 'not-allowed',
+                transition: 'background-color 0.2s ease',
+              }}
+            >
+              Далее
+            </button>
+          </div>
         </div>
       </div>
     </div>

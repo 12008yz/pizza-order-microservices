@@ -344,7 +344,7 @@ function AddressFormContent() {
                   ? getConnectionTypeLabel(addressData.connectionType)
                   : 'Подключение'}
               </span>
-              {/* Кружок со стрелкой */}
+              {/* Кружок со стрелкой или галочкой */}
               <div
                 className={`w-4 h-4 rounded-full flex items-center justify-center ${addressData.connectionType
                   ? 'bg-[#101010]'
@@ -360,13 +360,23 @@ function AddressFormContent() {
                   viewBox="0 0 12 12"
                   fill="none"
                 >
-                  <path
-                    d="M4.5 3L7.5 6L4.5 9"
-                    stroke={addressData.connectionType ? '#FFFFFF' : 'rgba(16, 16, 16, 0.25)'}
-                    strokeWidth="1"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
+                  {addressData.connectionType ? (
+                    <path
+                      d="M2.5 6L5 8.5L9.5 3.5"
+                      stroke="#FFFFFF"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  ) : (
+                    <path
+                      d="M4.5 3L7.5 6L4.5 9"
+                      stroke="rgba(16, 16, 16, 0.25)"
+                      strokeWidth="1"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  )}
                 </svg>
               </div>
             </div>
@@ -411,13 +421,23 @@ function AddressFormContent() {
                 style={{ borderWidth: '0.5px' }}
               >
                 <svg width="8" height="8" viewBox="0 0 12 12" fill="none">
-                  <path
-                    d="M4.5 3L7.5 6L4.5 9"
-                    stroke={addressData.city ? '#FFFFFF' : 'rgba(16, 16, 16, 0.25)'}
-                    strokeWidth="1"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
+                  {addressData.city ? (
+                    <path
+                      d="M2.5 6L5 8.5L9.5 3.5"
+                      stroke="#FFFFFF"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  ) : (
+                    <path
+                      d="M4.5 3L7.5 6L4.5 9"
+                      stroke="rgba(16, 16, 16, 0.25)"
+                      strokeWidth="1"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  )}
                 </svg>
               </div>
             </div>
@@ -464,13 +484,23 @@ function AddressFormContent() {
                 style={{ borderWidth: '0.5px' }}
               >
                 <svg width="8" height="8" viewBox="0 0 12 12" fill="none">
-                  <path
-                    d="M4.5 3L7.5 6L4.5 9"
-                    stroke={addressData.street ? '#FFFFFF' : 'rgba(16, 16, 16, 0.25)'}
-                    strokeWidth="1"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
+                  {addressData.street ? (
+                    <path
+                      d="M2.5 6L5 8.5L9.5 3.5"
+                      stroke="#FFFFFF"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  ) : (
+                    <path
+                      d="M4.5 3L7.5 6L4.5 9"
+                      stroke="rgba(16, 16, 16, 0.25)"
+                      strokeWidth="1"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  )}
                 </svg>
               </div>
             </div>
@@ -517,13 +547,23 @@ function AddressFormContent() {
                 style={{ borderWidth: '0.5px' }}
               >
                 <svg width="8" height="8" viewBox="0 0 12 12" fill="none">
-                  <path
-                    d="M4.5 3L7.5 6L4.5 9"
-                    stroke={addressData.houseNumber ? '#FFFFFF' : 'rgba(16, 16, 16, 0.25)'}
-                    strokeWidth="1"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
+                  {addressData.houseNumber ? (
+                    <path
+                      d="M2.5 6L5 8.5L9.5 3.5"
+                      stroke="#FFFFFF"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  ) : (
+                    <path
+                      d="M4.5 3L7.5 6L4.5 9"
+                      stroke="rgba(16, 16, 16, 0.25)"
+                      strokeWidth="1"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  )}
                 </svg>
               </div>
             </div>

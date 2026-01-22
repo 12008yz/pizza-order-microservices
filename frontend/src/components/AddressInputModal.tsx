@@ -3,19 +3,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAddress } from '../contexts/AddressContext';
 import { locationsService } from '../services/locations.service';
+import type { AddressSuggestion } from '../services/api/types';
 
-type AddressStep = 'city' | 'street' | 'house';
-
-interface AddressSuggestion {
-  id?: number;
-  text: string;
-  formatted?: string;
-  cityId?: number;
-  streetId?: number;
-  buildingId?: number;
-  regionId?: number;
-  region?: string;
-}
+type AddressStep = 'city' | 'street' | 'house' | 'apartment';
 
 interface AddressInputModalProps {
   isOpen: boolean;
@@ -37,6 +27,10 @@ const stepConfig = {
     title: 'Номер дома',
     placeholder: 'Номер дома',
   },
+  apartment: {
+    title: 'Номер квартиры',
+    placeholder: 'Номер квартиры',
+  },
 };
 
 export default function AddressInputModal({
@@ -45,7 +39,7 @@ export default function AddressInputModal({
   onComplete,
   initialStep = 'city',
 }: AddressInputModalProps) {
-  const { addressData, updateCity, updateStreet, updateHouseNumber } = useAddress();
+  const { addressData, updateCity, updateStreet, updateHouseNumber, updateApartmentNumber } = useAddress();
   const [currentStep, setCurrentStep] = useState<AddressStep>(initialStep);
   const [query, setQuery] = useState('');
   const [suggestions, setSuggestions] = useState<AddressSuggestion[]>([]);
@@ -113,12 +107,8 @@ export default function AddressInputModal({
               region: item.region,
             })));
           } else {
-            const mockCities = [
-              { id: 1, text: `гор. ${query}, Московская обл.`, formatted: `гор. ${query}, Московская обл.`, cityId: 1, regionId: 1 },
-              { id: 2, text: `д. ${query}, Псковская обл.`, formatted: `д. ${query}, Псковская обл.`, cityId: 2, regionId: 2 },
-              { id: 3, text: `д. ${query}, Тверская обл.`, formatted: `д. ${query}, Тверская обл.`, cityId: 3, regionId: 3 },
-            ];
-            setSuggestions(mockCities);
+            // Нет данных в БД - позволяем ввести вручную
+            setSuggestions([]);
           }
         } else if (currentStep === 'street') {
           if (addressData.cityId) {
@@ -137,12 +127,8 @@ export default function AddressInputModal({
               streetId: item.streetId,
             })));
           } else {
-            const mockStreets = [
-              { id: 1, text: `ул. ${query}менчугская`, formatted: `ул. ${query}менчугская`, streetId: 1 },
-              { id: 2, text: `наб. ${query}млевская`, formatted: `наб. ${query}млевская`, streetId: 2 },
-              { id: 3, text: `ул. ${query}нкеля`, formatted: `ул. ${query}нкеля`, streetId: 3 },
-            ];
-            setSuggestions(mockStreets);
+            // Нет данных в БД - позволяем ввести вручную
+            setSuggestions([]);
           }
         } else if (currentStep === 'house') {
           if (addressData.streetId) {
@@ -162,44 +148,44 @@ export default function AddressInputModal({
                 buildingId: building.id,
               })));
             } else {
-              const mockHouses = [
-                { id: 1, text: `д. ${query} к 5`, formatted: `д. ${query} к 5`, buildingId: 1 },
-                { id: 2, text: `д. ${query} к 6`, formatted: `д. ${query} к 6`, buildingId: 2 },
-                { id: 3, text: `д. ${query} к 9`, formatted: `д. ${query} к 9`, buildingId: 3 },
-              ];
-              setSuggestions(mockHouses);
+              // Нет данных в БД - позволяем ввести вручную
+              setSuggestions([]);
             }
           } else {
-            const mockHouses = [
-              { id: 1, text: `д. ${query} к 5`, formatted: `д. ${query} к 5`, buildingId: 1 },
-              { id: 2, text: `д. ${query} к 6`, formatted: `д. ${query} к 6`, buildingId: 2 },
-              { id: 3, text: `д. ${query} к 9`, formatted: `д. ${query} к 9`, buildingId: 3 },
-            ];
-            setSuggestions(mockHouses);
+            // Нет streetId - позволяем ввести вручную
+            setSuggestions([]);
+          }
+        } else if (currentStep === 'apartment') {
+          if (addressData.buildingId) {
+            const apartmentsResponse = await locationsService.getApartments({
+              buildingId: addressData.buildingId,
+              limit: 100,
+            });
+
+            if (apartmentsResponse?.success && apartmentsResponse.data) {
+              const filtered = apartmentsResponse.data.filter((apartment: any) =>
+                apartment.apartmentNumber?.toString().includes(query)
+              );
+              setSuggestions(filtered.map((apartment: any) => ({
+                id: apartment.id,
+                text: `кв. ${apartment.apartmentNumber}`,
+                formatted: `кв. ${apartment.apartmentNumber}`,
+                apartmentId: apartment.id,
+              })));
+            } else {
+              // Нет данных в БД - позволяем ввести вручную
+              setSuggestions([]);
+            }
+          } else {
+            // Нет buildingId - позволяем ввести вручную
+            setSuggestions([]);
           }
         }
         setSelectedIndex(null);
       } catch (error) {
         console.error('Autocomplete error:', error);
-        if (currentStep === 'city') {
-          setSuggestions([
-            { id: 1, text: `гор. ${query}, Московская обл.`, formatted: `гор. ${query}, Московская обл.`, cityId: 1, regionId: 1 },
-            { id: 2, text: `д. ${query}, Псковская обл.`, formatted: `д. ${query}, Псковская обл.`, cityId: 2, regionId: 2 },
-            { id: 3, text: `д. ${query}, Тверская обл.`, formatted: `д. ${query}, Тверская обл.`, cityId: 3, regionId: 3 },
-          ]);
-        } else if (currentStep === 'street') {
-          setSuggestions([
-            { id: 1, text: `ул. ${query}менчугская`, formatted: `ул. ${query}менчугская`, streetId: 1 },
-            { id: 2, text: `наб. ${query}млевская`, formatted: `наб. ${query}млевская`, streetId: 2 },
-            { id: 3, text: `ул. ${query}нкеля`, formatted: `ул. ${query}нкеля`, streetId: 3 },
-          ]);
-        } else {
-          setSuggestions([
-            { id: 1, text: `д. ${query} к 5`, formatted: `д. ${query} к 5`, buildingId: 1 },
-            { id: 2, text: `д. ${query} к 6`, formatted: `д. ${query} к 6`, buildingId: 2 },
-            { id: 3, text: `д. ${query} к 9`, formatted: `д. ${query} к 9`, buildingId: 3 },
-          ]);
-        }
+        // При ошибке API просто очищаем подсказки - пользователь может ввести данные вручную
+        setSuggestions([]);
         setSelectedIndex(null);
       } finally {
         setLoading(false);
@@ -211,7 +197,7 @@ export default function AddressInputModal({
         clearTimeout(timeoutRef.current);
       }
     };
-  }, [query, currentStep, addressData.cityId, addressData.streetId]);
+  }, [query, currentStep, addressData.cityId, addressData.streetId, addressData.buildingId]);
 
   const handleSelect = (index: number) => {
     setSelectedIndex(index);
@@ -251,6 +237,9 @@ export default function AddressInputModal({
       onComplete();
     } else if (currentStep === 'house') {
       updateHouseNumber(selected?.buildingId || undefined, value, undefined);
+      onComplete();
+    } else if (currentStep === 'apartment') {
+      updateApartmentNumber(selected?.apartmentId || undefined, value);
       onComplete();
     }
   };

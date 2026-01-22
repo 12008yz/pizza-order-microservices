@@ -16,9 +16,11 @@ export interface PaginatedResponse<T> {
 }
 
 export interface AddressSuggestion {
+  id?: number; // Вспомогательное поле для React key и идентификации
   text: string;
-  formatted: string;
+  formatted?: string;
   regionId?: number;
+  region?: string;
   cityId?: number;
   streetId?: number;
   buildingId?: number;

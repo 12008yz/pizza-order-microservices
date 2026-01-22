@@ -16,7 +16,7 @@ function AddressFormContent() {
   const { addressData, validateForm, updateConnectionType, updateCity, updateStreet, updateHouseNumber, updateApartmentNumber } = useAddress();
   const [showConnectionModal, setShowConnectionModal] = useState(false);
   const [showAddressModal, setShowAddressModal] = useState(false);
-  const [addressModalStep, setAddressModalStep] = useState<'city' | 'street' | 'house'>('city');
+  const [addressModalStep, setAddressModalStep] = useState<'city' | 'street' | 'house' | 'apartment'>('city');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [showCookieBanner, setShowCookieBanner] = useState(true);
@@ -179,6 +179,8 @@ function AddressFormContent() {
     (addressData.cityId || addressData.city) &&
     (addressData.streetId || addressData.street) &&
     (addressData.buildingId || addressData.houseNumber) &&
+    // Для типа "apartment" требуется номер квартиры
+    (addressData.connectionType !== 'apartment' || addressData.apartmentId || addressData.apartmentNumber) &&
     addressData.privacyConsent;
 
   return (
@@ -583,17 +585,91 @@ function AddressFormContent() {
           )}
         </div>
 
+        {/* Group 7439 - Поле "Номер квартиры" (только для типа подключения "apartment") */}
+        {addressData.connectionType === 'apartment' && (
+          <div className="absolute left-[8.75%] right-[8.75%] top-[67.36%] bottom-[26.44%]">
+            <div
+              onClick={() => {
+                if (addressData.houseNumber) {
+                  setAddressModalStep('apartment');
+                  setShowAddressModal(true);
+                }
+              }}
+              className={`relative w-full rounded-[10px] bg-white ${!addressData.houseNumber ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
+                }`}
+              style={{
+                border: addressData.apartmentNumber
+                  ? '0.5px solid #101010'
+                  : addressData.errors.apartmentNumber
+                    ? '0.5px solid rgb(239, 68, 68)'
+                    : '0.5px solid rgba(16, 16, 16, 0.25)',
+              }}
+            >
+              <div
+                className="relative w-full h-full px-[15px] rounded-[10px] bg-transparent flex items-center justify-between"
+                style={{ paddingTop: '15.5px', paddingBottom: '13.5px' }}
+              >
+                <span
+                  className={`text-base leading-[125%] ${addressData.apartmentNumber ? 'text-[#101010]' : 'text-[rgba(16,16,16,0.5)]'
+                    }`}
+                  style={{ letterSpacing: '0.5px' }}
+                >
+                  {addressData.apartmentNumber || 'Номер квартиры'}
+                </span>
+                <div
+                  className={`w-4 h-4 rounded-full flex items-center justify-center ${addressData.apartmentNumber ? 'bg-[#101010]' : 'border border-[rgba(16,16,16,0.25)]'
+                    }`}
+                  style={{ borderWidth: '0.5px' }}
+                >
+                  <svg width="8" height="8" viewBox="0 0 12 12" fill="none">
+                    {addressData.apartmentNumber ? (
+                      <path
+                        d="M2.5 6L5 8.5L9.5 3.5"
+                        stroke="#FFFFFF"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    ) : (
+                      <path
+                        d="M4.5 3L7.5 6L4.5 9"
+                        stroke="rgba(16, 16, 16, 0.25)"
+                        strokeWidth="1"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    )}
+                  </svg>
+                </div>
+              </div>
+            </div>
+            {addressData.errors.apartmentNumber && (
+              <div className="absolute -bottom-5 left-0 text-xs text-red-500" style={{ letterSpacing: '0.5px' }}>
+                {addressData.errors.apartmentNumber}
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Group 7372 - Чекбокс согласия */}
         <div
-          className="absolute left-[8.75%] right-[8.75%] top-[66.76%] bottom-[26.44%]"
-          style={{ marginTop: '6px' }}
+          className="absolute left-[8.75%] right-[8.75%]"
+          style={{
+            marginTop: '6px',
+            top: addressData.connectionType === 'apartment' ? '73.68%' : '66.76%',
+            bottom: addressData.connectionType === 'apartment' ? '20.12%' : '26.44%',
+          }}
         >
           <PrivacyConsent />
         </div>
 
         {/* Group 7377 - Кнопка "Показать всех операторов" */}
         <div
-          className="absolute left-[8.75%] right-[8.75%] top-[75.71%] bottom-[18.39%]"
+          className="absolute left-[8.75%] right-[8.75%]"
+          style={{
+            top: addressData.connectionType === 'apartment' ? '79.71%' : '75.71%',
+            bottom: addressData.connectionType === 'apartment' ? '14.39%' : '18.39%',
+          }}
         >
           <button
             onClick={handleSubmit}

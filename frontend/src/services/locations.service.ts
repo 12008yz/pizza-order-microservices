@@ -128,7 +128,7 @@ class LocationsService {
       queryParams.append('offset', params.offset.toString());
     }
 
-    if (params.streetTypeId) {
+    if (params?.streetTypeId) {
       queryParams.append('streetTypeId', params.streetTypeId.toString());
     }
 

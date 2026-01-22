@@ -264,14 +264,17 @@ export default function AddressAutocomplete({
       // ID будет создан при отправке формы
       if (type === 'city') {
         // Обновляем только если значение изменилось
+        // updateCity автоматически очистит зависимые поля (улица, дом, квартира)
         if (addressData.city !== newValue) {
           updateCity(undefined, newValue, undefined);
         }
       } else if (type === 'street') {
+        // updateStreet автоматически очистит зависимые поля (дом, квартира)
         if (addressData.street !== newValue) {
           updateStreet(undefined, newValue);
         }
       } else if (type === 'house') {
+        // updateHouseNumber автоматически очистит квартиру
         if (addressData.houseNumber !== newValue) {
           updateHouseNumber(undefined, newValue, undefined);
         }

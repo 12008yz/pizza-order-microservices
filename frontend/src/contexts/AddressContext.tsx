@@ -7,7 +7,7 @@ export type ConnectionType = 'apartment' | 'private' | 'office' | '';
 export interface AddressData {
   // Тип подключения
   connectionType: ConnectionType;
-  
+
   // Адрес (ID из базы данных)
   regionId?: number;
   cityId?: number;
@@ -18,10 +18,10 @@ export interface AddressData {
   houseNumber?: string;
   apartmentId?: number;
   apartmentNumber?: string;
-  
+
   // Согласие с политикой
   privacyConsent: boolean;
-  
+
   // Валидация
   errors: {
     connectionType?: string;
@@ -101,10 +101,10 @@ export const AddressProvider: React.FC<{ children: ReactNode }> = ({ children })
         ...prev,
         buildingId,
         houseNumber,
-        apartmentId,
-        // Очищаем квартиру при изменении дома
-        apartmentNumber: undefined,
-        apartmentId: undefined,
+        // Если передан apartmentId, используем его, иначе очищаем
+        apartmentId: apartmentId ?? undefined,
+        // Очищаем номер квартиры при изменении дома (если не передан apartmentId)
+        apartmentNumber: apartmentId ? prev.apartmentNumber : undefined,
         errors: { ...prev.errors, houseNumber: undefined, apartmentNumber: undefined },
       }));
     },

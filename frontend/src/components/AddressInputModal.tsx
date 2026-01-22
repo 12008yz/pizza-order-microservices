@@ -268,8 +268,8 @@ export default function AddressInputModal({
   const visibleSuggestions = suggestions.slice(0, 3);
 
   // Высота одной подсказки и отступы
-  const suggestionHeight = 50;
-  const suggestionGap = 10;
+  const suggestionHeight = 40;
+  const suggestionGap = 0;
 
   // Высота блока подсказок
   const suggestionsBlockHeight = visibleSuggestions.length > 0
@@ -279,7 +279,7 @@ export default function AddressInputModal({
   // Базовая высота модалки (без подсказок)
   const baseHeight = 240;
   // Дополнительная высота для подсказок
-  const extraHeight = hasSuggestions ? suggestionsBlockHeight + 15 : 0;
+  const extraHeight = hasSuggestions ? suggestionsBlockHeight + 5 : 0;
   // Полная высота модалки с подсказками
   const modalHeight = baseHeight + extraHeight;
 
@@ -389,10 +389,12 @@ export default function AddressInputModal({
               style={{
                 position: 'absolute',
                 left: '15px',
-                top: '95px',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: `${suggestionGap}px`,
+                bottom: '139px',
+                width: '330px',
+                boxSizing: 'border-box',
+                border: '1px solid rgba(16, 16, 16, 0.25)',
+                borderRadius: '10px',
+                overflow: 'hidden',
               }}
             >
               {visibleSuggestions.map((suggestion, index) => (
@@ -401,18 +403,15 @@ export default function AddressInputModal({
                   onClick={() => handleSelect(index)}
                   style={{
                     boxSizing: 'border-box',
-                    width: '330px',
+                    width: '100%',
                     height: `${suggestionHeight}px`,
-                    border: selectedIndex === index
-                      ? '1px solid #101010'
-                      : '1px solid rgba(16, 16, 16, 0.25)',
-                    borderRadius: '10px',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
                     padding: '0 15px',
                     cursor: 'pointer',
-                    transition: 'border-color 0.2s ease',
+                    transition: 'background-color 0.2s ease',
+                    backgroundColor: selectedIndex === index ? 'rgba(16, 16, 16, 0.05)' : 'transparent',
                   }}
                 >
                   <span
@@ -420,8 +419,9 @@ export default function AddressInputModal({
                       fontFamily: 'TT Firs Neue, sans-serif',
                       fontStyle: 'normal',
                       fontWeight: 400,
-                      fontSize: '16px',
+                      fontSize: '14px',
                       lineHeight: '125%',
+                      letterSpacing: '1.2px',
                       color: selectedIndex === index ? '#101010' : 'rgba(16, 16, 16, 0.5)',
                       overflow: 'hidden',
                       textOverflow: 'ellipsis',

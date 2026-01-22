@@ -19,25 +19,25 @@ export default function PrivacyConsent() {
     >
       <div
         className="relative w-full px-[15px] rounded-[10px] bg-transparent cursor-pointer flex items-center"
-        style={{ paddingTop: '11px', paddingBottom: '11px' }}
+        style={{ paddingTop: '8px', paddingBottom: '8px' }}
         onClick={() => updatePrivacyConsent(!addressData.privacyConsent)}
       >
         {/* Чекбокс - круглый */}
         <div
-          className={`rounded-full mr-3 flex-shrink-0 flex items-center justify-center ${addressData.privacyConsent
-              ? 'bg-[#101010]'
-              : hasError
-                ? 'border-2 border-red-500'
-                : 'border border-[rgba(16,16,16,0.5)]'
+          className={`rounded-full mr-2.5 flex-shrink-0 flex items-center justify-center ${addressData.privacyConsent
+            ? 'bg-[#101010]'
+            : hasError
+              ? 'border-2 border-red-500'
+              : 'border border-[rgba(16,16,16,0.5)]'
             }`}
           style={{
             boxSizing: 'border-box',
-            width: '16px',
-            height: '16px',
+            width: '15px',
+            height: '15px',
           }}
         >
           {addressData.privacyConsent && (
-            <svg width="10" height="10" viewBox="0 0 12 12" fill="none">
+            <svg width="9" height="9" viewBox="0 0 12 12" fill="none">
               <path
                 d="M2 6L5 9L10 3"
                 stroke="white"
@@ -57,10 +57,11 @@ export default function PrivacyConsent() {
             target="_blank"
             rel="noopener noreferrer"
             onClick={(e) => e.stopPropagation()}
-            className="text-blue-600 hover:underline"
+            className="text-blue-600 underline"
           >
-            политики конфиденциальности портала
+            политики конфиденциальности
           </a>
+          {' '}портала
         </span>
       </div>
 

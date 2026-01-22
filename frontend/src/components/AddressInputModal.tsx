@@ -265,16 +265,28 @@ export default function AddressInputModal({
 
   const canProceed = selectedIndex !== null || query.trim().length > 0;
   const hasSuggestions = suggestions.length > 0;
-
-  // Адаптивная высота модалки: базовая 240px + высота для вариантов
   const visibleSuggestions = suggestions.slice(0, 3);
+
+  // Высота одной подсказки и отступы
   const suggestionHeight = 50;
   const suggestionGap = 10;
-  const baseHeight = 240;
+
+  // Высота блока подсказок
   const suggestionsBlockHeight = visibleSuggestions.length > 0
-    ? visibleSuggestions.length * suggestionHeight + (visibleSuggestions.length - 1) * suggestionGap + 20
+    ? visibleSuggestions.length * suggestionHeight + (visibleSuggestions.length - 1) * suggestionGap
     : 0;
-  const modalHeight = baseHeight + suggestionsBlockHeight;
+
+  // Базовая высота модалки (без подсказок)
+  const baseHeight = 240;
+  // Дополнительная высота для подсказок
+  const extraHeight = hasSuggestions ? suggestionsBlockHeight + 15 : 0;
+  // Полная высота модалки с подсказками
+  const modalHeight = baseHeight + extraHeight;
+
+  // Базовая позиция top модалки (ИСХОДНОЕ положение)
+  const baseTop = 242;
+  // При появлении подсказок модалка расширяется ВВЕРХ (top уменьшается)
+  const modalTop = baseTop - extraHeight;
 
   return (
     <div
@@ -317,30 +329,29 @@ export default function AddressInputModal({
           Нажмите в открытое пустое место, чтобы выйти из этого режима
         </div>
 
-        {/* Основной контейнер модалки - Rectangle 67 */}
+        {/* Основной контейнер модалки */}
         <div
           onClick={(e) => e.stopPropagation()}
           style={{
             boxSizing: 'border-box',
             position: 'absolute',
             width: '360px',
-            minHeight: `${modalHeight}px`,
+            height: `${modalHeight}px`,
             left: '20px',
-            top: '242px',
+            top: `${modalTop}px`,
             background: '#FFFFFF',
             border: '1px solid rgba(16, 16, 16, 0.15)',
             backdropFilter: 'blur(7.5px)',
             borderRadius: '20px',
-            transition: 'min-height 0.2s ease',
+            transition: 'top 0.3s ease, height 0.3s ease',
+            overflow: 'hidden',
           }}
         >
-          {/* Group 7539 - Заголовок и подзаголовок */}
-          {/* Проверка тех. доступа */}
+          {/* Заголовок - фиксирован сверху */}
           <div
             style={{
               position: 'absolute',
               width: '330px',
-              height: '25px',
               left: '15px',
               top: '15px',
               fontFamily: 'TT Firs Neue, sans-serif',
@@ -348,22 +359,19 @@ export default function AddressInputModal({
               fontWeight: 400,
               fontSize: '20px',
               lineHeight: '125%',
-              display: 'flex',
-              alignItems: 'center',
               color: '#101010',
             }}
           >
             Проверка тех. доступа
           </div>
 
-          {/* Подзаголовок */}
+          {/* Подзаголовок - фиксирован сверху */}
           <div
             style={{
               position: 'absolute',
               width: '330px',
-              height: '30px',
               left: '15px',
-              top: '55px',
+              top: '50px',
               fontFamily: 'TT Firs Neue, sans-serif',
               fontStyle: 'normal',
               fontWeight: 400,
@@ -375,16 +383,16 @@ export default function AddressInputModal({
             Мы подготовили доступные тарифные планы. Пожалуйста, проверьте правильность
           </div>
 
-          {/* Опции вариантов */}
-          {visibleSuggestions.length > 0 && (
+          {/* Подсказки - появляются между заголовком и полем ввода */}
+          {hasSuggestions && (
             <div
               style={{
                 position: 'absolute',
                 left: '15px',
-                top: '105px',
+                top: '95px',
                 display: 'flex',
                 flexDirection: 'column',
-                gap: '10px',
+                gap: `${suggestionGap}px`,
               }}
             >
               {visibleSuggestions.map((suggestion, index) => (
@@ -394,7 +402,7 @@ export default function AddressInputModal({
                   style={{
                     boxSizing: 'border-box',
                     width: '330px',
-                    height: '50px',
+                    height: `${suggestionHeight}px`,
                     border: selectedIndex === index
                       ? '1px solid #101010'
                       : '1px solid rgba(16, 16, 16, 0.25)',
@@ -457,14 +465,12 @@ export default function AddressInputModal({
             </div>
           )}
 
-          {/* Group 7542 - Поле ввода */}
+          {/* Поле ввода - ФИКСИРОВАНО от низа модалки (240 - 105 - 50 = 85px) */}
           <div
             style={{
               position: 'absolute',
               left: '15px',
-              top: visibleSuggestions.length > 0
-                ? `${105 + suggestionsBlockHeight}px`
-                : '105px',
+              bottom: '85px',
               width: '330px',
               height: '50px',
             }}
@@ -496,21 +502,19 @@ export default function AddressInputModal({
             />
           </div>
 
-          {/* Group 7571 - Кнопки навигации */}
+          {/* Кнопки навигации - ФИКСИРОВАНЫ от низа модалки */}
           <div
             style={{
               position: 'absolute',
               width: '330px',
               height: '50px',
               left: '15px',
-              top: visibleSuggestions.length > 0
-                ? `${105 + suggestionsBlockHeight + 50 + 15}px`
-                : '175px',
+              bottom: '15px',
               display: 'flex',
               gap: '5px',
             }}
           >
-            {/* Group 7508 - Кнопка "Вверх" */}
+            {/* Кнопка "Вверх" */}
             <button
               onClick={handleScrollUp}
               disabled={!hasSuggestions}
@@ -528,7 +532,6 @@ export default function AddressInputModal({
                 opacity: 0.25,
               }}
             >
-              {/* Vector - стрелка вверх */}
               <svg width="12" height="6" viewBox="0 0 12 6" fill="none">
                 <path
                   d="M1 5L6 1L11 5"
@@ -540,7 +543,7 @@ export default function AddressInputModal({
               </svg>
             </button>
 
-            {/* Group 7509 - Кнопка "Вниз" */}
+            {/* Кнопка "Вниз" */}
             <button
               onClick={handleScrollDown}
               disabled={!hasSuggestions}
@@ -558,7 +561,6 @@ export default function AddressInputModal({
                 opacity: 0.25,
               }}
             >
-              {/* Vector - стрелка вниз */}
               <svg width="12" height="6" viewBox="0 0 12 6" fill="none">
                 <path
                   d="M1 1L6 5L11 1"
@@ -570,7 +572,7 @@ export default function AddressInputModal({
               </svg>
             </button>
 
-            {/* Group 7377 - Кнопка "Далее" */}
+            {/* Кнопка "Далее" */}
             <button
               onClick={handleNext}
               disabled={!canProceed}

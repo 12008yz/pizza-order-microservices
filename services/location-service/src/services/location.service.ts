@@ -96,6 +96,7 @@ export class LocationService {
   async getBuildingsByStreet(streetId: number): Promise<Building[]> {
     return Building.findAll({
       where: { streetId },
+      attributes: ['id', 'number', 'building', 'entrances', 'floors', 'apartmentsPerFloor', 'streetId', 'latitude', 'longitude', 'postalCode'],
       include: [
         {
           model: Street,
@@ -117,14 +118,117 @@ export class LocationService {
   /**
    * Получить квартиры по дому
    */
-  async getApartmentsByBuilding(buildingId: number): Promise<Apartment[]> {
+  /**
+   * Получить структуру дома (подъезды, этажи, квартиры на этаже)
+   */
+  async getBuildingStructure(buildingId: number): Promise<{
+    building: Building;
+    entrances: number | null;
+    floors: number | null;
+    apartmentsPerFloor: number | null;
+  }> {
+    const building = await Building.findByPk(buildingId);
+    if (!building) {
+      throw new Error(`Building with id ${buildingId} not found`);
+    }
+    return {
+      building,
+      entrances: building.entrances,
+      floors: building.floors,
+      apartmentsPerFloor: building.apartmentsPerFloor,
+    };
+  }
+
+  /**
+   * Генерировать список квартир на основе структуры дома
+   * Если указан подъезд, генерируем квартиры только для этого подъезда
+   * Если указан этаж, генерируем квартиры только для этого этажа
+   */
+  generateApartmentSuggestions(
+    entrances: number | null,
+    floors: number | null,
+    apartmentsPerFloor: number | null,
+    entrance?: number | null,
+    floor?: number | null
+  ): Array<{ number: string; entrance: number; floor: number }> {
+    const suggestions: Array<{ number: string; entrance: number; floor: number }> = [];
+
+    // Если структура дома не указана, возвращаем пустой массив
+    if (!entrances || !floors || !apartmentsPerFloor) {
+      return suggestions;
+    }
+
+    // Определяем диапазон подъездов
+    const entranceStart = entrance ? entrance : 1;
+    const entranceEnd = entrance ? entrance : entrances;
+
+    // Определяем диапазон этажей
+    const floorStart = floor ? floor : 1;
+    const floorEnd = floor ? floor : floors;
+
+    // Генерируем квартиры
+    for (let ent = entranceStart; ent <= entranceEnd; ent++) {
+      for (let fl = floorStart; fl <= floorEnd; fl++) {
+        // Вычисляем начальный номер квартиры для этого подъезда и этажа
+        // Формула: (подъезд - 1) * (этажей * квартир на этаже) + (этаж - 1) * квартир на этаже + 1
+        const apartmentStart = (ent - 1) * (floors * apartmentsPerFloor) + (fl - 1) * apartmentsPerFloor + 1;
+        
+        for (let apt = 0; apt < apartmentsPerFloor; apt++) {
+          const apartmentNumber = apartmentStart + apt;
+          suggestions.push({
+            number: apartmentNumber.toString(),
+            entrance: ent,
+            floor: fl,
+          });
+        }
+      }
+    }
+
+    return suggestions;
+  }
+
+  async getApartmentsByBuilding(
+    buildingId: number,
+    entrance?: number | null,
+    floor?: number | null
+  ): Promise<Array<Apartment | { number: string; entrance: number; floor: number; id?: number }>> {
+    // Получаем структуру дома
+    const structure = await this.getBuildingStructure(buildingId);
+
+    // Если структура дома указана, генерируем подсказки
+    if (structure.entrances && structure.floors && structure.apartmentsPerFloor) {
+      const generated = this.generateApartmentSuggestions(
+        structure.entrances,
+        structure.floors,
+        structure.apartmentsPerFloor,
+        entrance,
+        floor
+      );
+
+      // Если есть сгенерированные подсказки, возвращаем их
+      if (generated.length > 0) {
+        return generated.map((apt) => ({
+          id: undefined,
+          number: apt.number,
+          buildingId,
+          entrance: apt.entrance,
+          floor: apt.floor,
+        })) as any[];
+      }
+    }
+
+    // Иначе возвращаем существующие квартиры из БД
     return Apartment.findAll({
-      where: { buildingId },
+      where: {
+        buildingId,
+        ...(entrance ? { entrance } : {}),
+        ...(floor ? { floor } : {}),
+      },
       include: [
         {
           model: Building,
           as: 'building',
-          attributes: ['id', 'number', 'building'],
+          attributes: ['id', 'number', 'building', 'entrances', 'floors', 'apartmentsPerFloor'],
         },
       ],
       order: [['number', 'ASC']],
@@ -149,28 +253,133 @@ export class LocationService {
 
   /**
    * Автодополнение адреса из базы данных покрытия
+   * Использует fallback на локальную БД, если provider-service недоступен или данных нет
+   * @param query - поисковый запрос
+   * @param limit - максимальное количество результатов
+   * @param cityId - опциональный ID города для фильтрации улиц
    */
-  async autocompleteAddress(query: string, limit: number = 10): Promise<AddressSuggestion[]> {
+  async autocompleteAddress(query: string, limit: number = 10, cityId?: number): Promise<AddressSuggestion[]> {
     try {
-      return await this.coverageAutocompleteService.autocomplete(query, limit);
+      logger.info('Starting autocomplete search', { query, limit });
+      const coverageResults = await this.coverageAutocompleteService.autocomplete(query, limit);
+      logger.info('Coverage results', { query, count: coverageResults?.length || 0 });
+      
+      // Если есть результаты из coverage, возвращаем их
+      if (coverageResults && coverageResults.length > 0) {
+        logger.info('Returning coverage results', { query, count: coverageResults.length });
+        return coverageResults;
+      }
+      
+      // Fallback: ищем в локальной БД location-service
+      logger.info('No coverage results found, falling back to local database search', { query, cityId });
+      const localResults = await this.searchLocal(query, cityId);
+      logger.info('Local search results', { query, cityId, count: localResults?.length || 0 });
+      
+      // Преобразуем результаты локального поиска в формат AddressSuggestion
+      const suggestions: AddressSuggestion[] = localResults.slice(0, limit).map((item: any) => {
+        if (item.type === 'city') {
+          return {
+            text: item.name,
+            formatted: item.region ? `${item.name}, ${item.region}` : item.name,
+            city: item.name,
+            district: item.region,
+            cityId: item.id,
+            regionId: item.regionId,
+            region: item.region,
+            latitude: item.latitude,
+            longitude: item.longitude,
+          };
+        } else {
+          // street
+          const streetName = item.streetType ? `${item.streetType} ${item.name}` : item.name;
+          const formatted = item.city 
+            ? `${item.city}, ${streetName}`
+            : streetName;
+          return {
+            text: formatted,
+            formatted,
+            city: item.city || '',
+            street: item.name,
+            district: item.region,
+            streetId: item.id,
+            cityId: item.cityId,
+            regionId: item.regionId,
+            region: item.region,
+            latitude: item.latitude,
+            longitude: item.longitude,
+          };
+        }
+      });
+      
+      return suggestions;
     } catch (error: any) {
       logger.error('Address autocomplete error', {
         error: error?.message || String(error),
         query,
         stack: error?.stack,
       });
-      throw error;
+      
+      // Если ошибка при обращении к provider-service, пробуем локальный поиск
+      try {
+        logger.info('Coverage service error, falling back to local database search', { query, cityId });
+        const localResults = await this.searchLocal(query, cityId);
+        
+        const suggestions: AddressSuggestion[] = localResults.slice(0, limit).map((item: any) => {
+          if (item.type === 'city') {
+            return {
+              text: item.name,
+              formatted: item.region ? `${item.name}, ${item.region}` : item.name,
+              city: item.name,
+              district: item.region,
+              cityId: item.id,
+              regionId: item.regionId,
+              region: item.region,
+              latitude: item.latitude,
+              longitude: item.longitude,
+            };
+          } else {
+            const streetName = item.streetType ? `${item.streetType} ${item.name}` : item.name;
+            const formatted = item.city 
+              ? `${item.city}, ${streetName}`
+              : streetName;
+            return {
+              text: formatted,
+              formatted,
+              city: item.city || '',
+              street: item.name,
+              district: item.region,
+              streetId: item.id,
+              cityId: item.cityId,
+              regionId: item.regionId,
+              region: item.region,
+              latitude: item.latitude,
+              longitude: item.longitude,
+            };
+          }
+        });
+        
+        return suggestions;
+      } catch (fallbackError: any) {
+        logger.error('Local database search also failed', {
+          error: fallbackError?.message || String(fallbackError),
+          query,
+        });
+        // Возвращаем пустой массив вместо ошибки, чтобы не ломать работу приложения
+        return [];
+      }
     }
   }
 
   /**
    * Поиск в локальной БД (если адрес уже сохранен)
+   * @param query - поисковый запрос
+   * @param cityId - опциональный ID города для фильтрации улиц
    */
-  async searchLocal(query: string): Promise<any[]> {
+  async searchLocal(query: string, cityId?: number): Promise<any[]> {
     const searchTerm = `%${query.toLowerCase()}%`;
 
-    // Поиск по городам
-    const cities = await City.findAll({
+    // Поиск по городам (только если не указан cityId)
+    const cities = cityId ? [] : await City.findAll({
       where: {
         [Op.or]: [
           { name: { [Op.iLike]: searchTerm } },
@@ -187,11 +396,16 @@ export class LocationService {
       limit: 5,
     }) as CityWithRegion[];
 
-    // Поиск по улицам
+    // Поиск по улицам (если указан cityId, ищем только в этом городе)
+    const streetWhere: any = {
+      name: { [Op.iLike]: searchTerm },
+    };
+    if (cityId) {
+      streetWhere.cityId = cityId;
+    }
+
     const streets = await Street.findAll({
-      where: {
-        name: { [Op.iLike]: searchTerm },
-      },
+      where: streetWhere,
       include: [
         {
           model: City,
@@ -220,6 +434,8 @@ export class LocationService {
         id: city.id,
         name: city.name,
         region: city.region?.name,
+        regionId: city.region?.id,
+        cityId: city.id,
         latitude: city.latitude,
         longitude: city.longitude,
       })),
@@ -228,7 +444,10 @@ export class LocationService {
         id: street.id,
         name: street.name,
         city: street.city?.name,
+        cityId: street.city?.id,
         region: street.city?.region?.name,
+        regionId: street.city?.region?.id,
+        streetId: street.id,
         streetType: street.streetType?.shortName,
         latitude: street.latitude,
         longitude: street.longitude,

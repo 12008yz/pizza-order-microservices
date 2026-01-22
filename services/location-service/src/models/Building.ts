@@ -7,6 +7,9 @@ export interface BuildingAttributes {
   number: string; // Номер дома (может быть "1", "1А", "1-3" и т.д.)
   building?: string | null; // Корпус/строение (например, "к.1", "стр.2")
   streetId: number;
+  entrances?: number | null; // Количество подъездов
+  floors?: number | null; // Количество этажей
+  apartmentsPerFloor?: number | null; // Количество квартир на этаже в одном подъезде
   latitude?: number | null;
   longitude?: number | null;
   postalCode?: string | null;
@@ -15,7 +18,7 @@ export interface BuildingAttributes {
 }
 
 export interface BuildingCreationAttributes
-  extends Optional<BuildingAttributes, 'id' | 'building' | 'latitude' | 'longitude' | 'postalCode' | 'createdAt' | 'updatedAt'> {}
+  extends Optional<BuildingAttributes, 'id' | 'building' | 'entrances' | 'floors' | 'apartmentsPerFloor' | 'latitude' | 'longitude' | 'postalCode' | 'createdAt' | 'updatedAt'> {}
 
 export class Building
   extends Model<BuildingAttributes, BuildingCreationAttributes>
@@ -25,6 +28,9 @@ export class Building
   public number!: string;
   public building!: string | null;
   public streetId!: number;
+  public entrances!: number | null;
+  public floors!: number | null;
+  public apartmentsPerFloor!: number | null;
   public latitude!: number | null;
   public longitude!: number | null;
   public postalCode!: string | null;
@@ -76,6 +82,21 @@ Building.init(
       type: DataTypes.STRING(10),
       allowNull: true,
       comment: 'Почтовый индекс',
+    },
+    entrances: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      comment: 'Количество подъездов',
+    },
+    floors: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      comment: 'Количество этажей',
+    },
+    apartmentsPerFloor: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      comment: 'Количество квартир на этаже в одном подъезде',
     },
   },
   {

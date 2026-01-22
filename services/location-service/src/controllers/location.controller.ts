@@ -147,8 +147,10 @@ export const getBuildings = async (
 };
 
 /**
- * GET /api/locations/apartments?building_id={id}
+ * GET /api/locations/apartments?building_id={id}&entrance={entrance}&floor={floor}
  * Получить квартиры по дому
+ * Если указан подъезд и/или этаж, возвращаются квартиры только для указанных значений
+ * Если у дома указана структура (подъезды, этажи, квартир на этаже), генерируются подсказки
  */
 export const getApartments = async (
   req: Request,
@@ -157,6 +159,8 @@ export const getApartments = async (
 ) => {
   try {
     const buildingId = req.query.building_id as string;
+    const entrance = req.query.entrance as string | undefined;
+    const floor = req.query.floor as string | undefined;
 
     if (!buildingId) {
       throw new AppError('building_id is required', 400);
@@ -167,7 +171,21 @@ export const getApartments = async (
       throw new AppError('Invalid building_id', 400);
     }
 
-    const apartments = await locationService.getApartmentsByBuilding(buildingIdNum);
+    const entranceNum = entrance ? parseInt(entrance, 10) : undefined;
+    if (entrance && isNaN(entranceNum!)) {
+      throw new AppError('Invalid entrance', 400);
+    }
+
+    const floorNum = floor ? parseInt(floor, 10) : undefined;
+    if (floor && isNaN(floorNum!)) {
+      throw new AppError('Invalid floor', 400);
+    }
+
+    const apartments = await locationService.getApartmentsByBuilding(
+      buildingIdNum,
+      entranceNum ?? null,
+      floorNum ?? null
+    );
     res.status(200).json({
       success: true,
       data: apartments,
@@ -234,6 +252,7 @@ export const autocompleteAddress = async (
   try {
     const query = req.query.q as string;
     const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : 10;
+    const cityId = req.query.cityId ? parseInt(req.query.cityId as string, 10) : undefined;
 
     if (!query || query.trim().length === 0) {
       throw new AppError('Query parameter "q" is required', 400);
@@ -246,7 +265,7 @@ export const autocompleteAddress = async (
       });
     }
 
-    const results = await locationService.autocompleteAddress(query.trim(), limit);
+    const results = await locationService.autocompleteAddress(query.trim(), limit, cityId);
     res.status(200).json({
       success: true,
       data: results,

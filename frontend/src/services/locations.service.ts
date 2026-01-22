@@ -48,8 +48,14 @@ class LocationsService {
    * Автодополнение адреса
    */
   async autocomplete(params: AutocompleteParams): Promise<ApiResponse<AddressSuggestion[]>> {
+    // Проверяем что q не пустой
+    const trimmedQ = params.q?.trim();
+    if (!trimmedQ || trimmedQ.length < 2) {
+      return { success: true, data: [] };
+    }
+
     const queryParams = new URLSearchParams();
-    queryParams.append('q', params.q);
+    queryParams.append('q', trimmedQ);
     if (params.limit) {
       queryParams.append('limit', params.limit.toString());
     }
@@ -69,8 +75,14 @@ class LocationsService {
    * Поиск адреса
    */
   async searchAddress(params: SearchAddressParams): Promise<ApiResponse<any>> {
+    // Проверяем что q не пустой
+    const trimmedQ = params.q?.trim();
+    if (!trimmedQ || trimmedQ.length < 2) {
+      return { success: true, data: { local: [], coverage: [] } };
+    }
+
     const queryParams = new URLSearchParams();
-    queryParams.append('q', params.q);
+    queryParams.append('q', trimmedQ);
     if (params.limit) {
       queryParams.append('limit', params.limit.toString());
     }
@@ -156,7 +168,7 @@ class LocationsService {
   /**
    * Получить список квартир по дому
    */
-  async getApartments(params: GetApartmentsParams): Promise<ApiResponse<any[]>> {
+  async getApartments(params: GetApartmentsParams & { entrance?: number; floor?: number }): Promise<ApiResponse<any[]>> {
     const queryParams = new URLSearchParams();
     queryParams.append('building_id', params.buildingId.toString());
     if (params.limit) {
@@ -164,6 +176,12 @@ class LocationsService {
     }
     if (params.offset) {
       queryParams.append('offset', params.offset.toString());
+    }
+    if (params.entrance !== undefined) {
+      queryParams.append('entrance', params.entrance.toString());
+    }
+    if (params.floor !== undefined) {
+      queryParams.append('floor', params.floor.toString());
     }
 
     const url = `/api/locations?endpoint=apartments&${queryParams.toString()}`;

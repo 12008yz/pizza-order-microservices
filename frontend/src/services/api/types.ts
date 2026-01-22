@@ -25,6 +25,12 @@ export interface AddressSuggestion {
   streetId?: number;
   buildingId?: number;
   apartmentId?: number;
+  entrance?: number; // Номер подъезда
+  floor?: number; // Номер этажа
+  // Поля для структуры дома (используются при выборе дома)
+  entrances?: number;
+  floors?: number;
+  apartmentsPerFloor?: number;
 }
 
 export interface Provider {

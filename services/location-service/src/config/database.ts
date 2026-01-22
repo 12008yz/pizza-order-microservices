@@ -12,6 +12,15 @@ export const sequelize = new Sequelize(
     port: parseInt(process.env.DB_PORT || '5432'),
     dialect: 'postgres',
     logging: process.env.NODE_ENV === 'development' ? console.log : false,
+    // Гарантируем правильное цитирование идентификаторов в SQL запросах
+    // PostgreSQL без кавычек преобразует имена в нижний регистр (shortName -> shortname)
+    // С кавычками сохраняется точное имя колонки
+    quoteIdentifiers: true,
+    define: {
+      // Отключаем автоматическое преобразование camelCase в snake_case
+      // Это важно, так как в БД колонки созданы в camelCase (shortName, streetTypeId и т.д.)
+      underscored: false,
+    },
     pool: {
       max: 5,
       min: 0,

@@ -5,18 +5,26 @@ export async function GET(request: NextRequest) {
   // Читаем переменную окружения внутри функции для правильной работы в runtime
   const LOCATION_SERVICE_URL =
     process.env.LOCATION_SERVICE_URL || 'http://localhost:3005';
-  
+
   try {
     const { searchParams } = new URL(request.url);
     const endpoint = searchParams.get('endpoint') || 'regions';
     const queryParams = new URLSearchParams();
 
-    // Копируем все query параметры кроме endpoint
+    // Копируем все query параметры кроме endpoint, пропуская пустые значения
     searchParams.forEach((value, key) => {
-      if (key !== 'endpoint') {
-        queryParams.append(key, value);
+      if (key !== 'endpoint' && value && value.trim()) {
+        queryParams.append(key, value.trim());
       }
     });
+
+    // Для autocomplete и search проверяем что q не пустой
+    if ((endpoint === 'autocomplete' || endpoint === 'search') && !queryParams.get('q')) {
+      return NextResponse.json({
+        success: true,
+        data: endpoint === 'search' ? { local: [], coverage: [] } : [],
+      });
+    }
 
     const url = `${LOCATION_SERVICE_URL}/api/locations/${endpoint}?${queryParams.toString()}`;
 
@@ -42,7 +50,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   const LOCATION_SERVICE_URL =
     process.env.LOCATION_SERVICE_URL || 'http://localhost:3005';
-  
+
   try {
     const { searchParams } = new URL(request.url);
     const endpoint = searchParams.get('endpoint') || 'cities';

@@ -5,7 +5,7 @@ import { useAddress } from '../contexts/AddressContext';
 import { locationsService } from '../services/locations.service';
 import type { AddressSuggestion } from '../services/api/types';
 
-type AddressStep = 'city' | 'street' | 'house' | 'apartment';
+type AddressStep = 'city' | 'street' | 'house' | 'entrance' | 'floor' | 'apartment';
 
 interface AddressInputModalProps {
   isOpen: boolean;
@@ -27,6 +27,14 @@ const stepConfig = {
     title: 'Номер дома',
     placeholder: 'Номер дома',
   },
+  entrance: {
+    title: 'Подъезд',
+    placeholder: 'Номер подъезда',
+  },
+  floor: {
+    title: 'Этаж',
+    placeholder: 'Номер этажа',
+  },
   apartment: {
     title: 'Номер квартиры',
     placeholder: 'Номер квартиры',
@@ -39,12 +47,13 @@ export default function AddressInputModal({
   onComplete,
   initialStep = 'city',
 }: AddressInputModalProps) {
-  const { addressData, updateCity, updateStreet, updateHouseNumber, updateApartmentNumber } = useAddress();
+  const { addressData, updateCity, updateStreet, updateHouseNumber, updateEntrance, updateFloor, updateApartmentNumber } = useAddress();
   const [currentStep, setCurrentStep] = useState<AddressStep>(initialStep);
   const [query, setQuery] = useState('');
   const [suggestions, setSuggestions] = useState<AddressSuggestion[]>([]);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
+  const [buildingStructure, setBuildingStructure] = useState<{ entrances?: number; floors?: number; apartmentsPerFloor?: number } | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -55,9 +64,11 @@ export default function AddressInputModal({
       setQuery('');
       setSuggestions([]);
       setSelectedIndex(null);
+      setBuildingStructure(null);
       setTimeout(() => inputRef.current?.focus(), 100);
     }
   }, [isOpen, initialStep]);
+
 
   // При выборе варианта - подставляем в поле ввода
   useEffect(() => {
@@ -138,14 +149,12 @@ export default function AddressInputModal({
             });
 
             if (buildingsResponse?.success && buildingsResponse.data) {
-              console.log('Buildings response:', buildingsResponse.data);
               // Если запрос пустой, показываем все дома, иначе фильтруем
-              const filtered = query.trim() === '' 
-                ? buildingsResponse.data 
+              const filtered = query.trim() === ''
+                ? buildingsResponse.data
                 : buildingsResponse.data.filter((building: any) =>
-                    building.number?.toString().toLowerCase().includes(query.toLowerCase())
-                  );
-              console.log('Filtered buildings:', filtered);
+                  building.number?.toString().toLowerCase().includes(query.toLowerCase())
+                );
               setSuggestions(filtered.map((building: any) => {
                 const houseNumber = building.number + (building.building ? ` ${building.building}` : '');
                 return {
@@ -153,10 +162,12 @@ export default function AddressInputModal({
                   text: `д. ${houseNumber}`,
                   formatted: `д. ${houseNumber}`,
                   buildingId: building.id,
+                  entrances: building.entrances,
+                  floors: building.floors,
+                  apartmentsPerFloor: building.apartmentsPerFloor,
                 };
               }));
             } else {
-              console.log('No buildings response or error:', buildingsResponse);
               // Нет данных в БД - позволяем ввести вручную
               setSuggestions([]);
             }
@@ -164,30 +175,55 @@ export default function AddressInputModal({
             // Нет streetId - позволяем ввести вручную
             setSuggestions([]);
           }
+        } else if (currentStep === 'entrance') {
+          // Генерируем список подъездов на основе структуры дома
+          if (buildingStructure?.entrances) {
+            const entrances = Array.from({ length: buildingStructure.entrances }, (_, i) => i + 1);
+            setSuggestions(entrances.map((ent) => ({
+              id: ent,
+              text: `Подъезд ${ent}`,
+              formatted: `Подъезд ${ent}`,
+              entrance: ent,
+            })));
+          } else {
+            setSuggestions([]);
+          }
+        } else if (currentStep === 'floor') {
+          // Генерируем список этажей на основе структуры дома
+          if (buildingStructure?.floors) {
+            const floors = Array.from({ length: buildingStructure.floors }, (_, i) => i + 1);
+            setSuggestions(floors.map((fl) => ({
+              id: fl,
+              text: `${fl} этаж`,
+              formatted: `${fl} этаж`,
+              floor: fl,
+            })));
+          } else {
+            setSuggestions([]);
+          }
         } else if (currentStep === 'apartment') {
           if (addressData.buildingId) {
             const apartmentsResponse = await locationsService.getApartments({
               buildingId: addressData.buildingId,
+              entrance: addressData.entrance,
+              floor: addressData.floor,
               limit: 100,
             });
 
             if (apartmentsResponse?.success && apartmentsResponse.data) {
-              console.log('Apartments response:', apartmentsResponse.data);
               // Если запрос пустой, показываем все квартиры, иначе фильтруем
               const filtered = query.trim() === ''
                 ? apartmentsResponse.data
                 : apartmentsResponse.data.filter((apartment: any) =>
-                    apartment.number?.toString().toLowerCase().includes(query.toLowerCase())
-                  );
-              console.log('Filtered apartments:', filtered);
+                  apartment.number?.toString().toLowerCase().includes(query.toLowerCase())
+                );
               setSuggestions(filtered.map((apartment: any) => ({
-                id: apartment.id,
+                id: apartment.id || apartment.number,
                 text: `кв. ${apartment.number}`,
                 formatted: `кв. ${apartment.number}`,
                 apartmentId: apartment.id,
               })));
             } else {
-              console.log('No apartments response or error:', apartmentsResponse);
               // Нет данных в БД - позволяем ввести вручную
               setSuggestions([]);
             }
@@ -212,7 +248,7 @@ export default function AddressInputModal({
         clearTimeout(timeoutRef.current);
       }
     };
-  }, [query, currentStep, addressData.cityId, addressData.streetId, addressData.buildingId]);
+  }, [query, currentStep, addressData.cityId, addressData.streetId, addressData.buildingId, addressData.entrance, addressData.floor]);
 
   const handleSelect = (index: number) => {
     setSelectedIndex(index);
@@ -251,8 +287,50 @@ export default function AddressInputModal({
       updateStreet(selected?.streetId || undefined, value);
       onComplete();
     } else if (currentStep === 'house') {
-      updateHouseNumber(selected?.buildingId || undefined, value, undefined);
-      onComplete();
+      const buildingId = selected?.buildingId || undefined;
+      updateHouseNumber(buildingId, value, undefined);
+
+      // Сохраняем структуру дома
+      const structure = selected ? {
+        entrances: (selected as any).entrances,
+        floors: (selected as any).floors,
+        apartmentsPerFloor: (selected as any).apartmentsPerFloor,
+      } : null;
+      setBuildingStructure(structure);
+
+      // Проверяем структуру дома - если есть подъезды, переходим к выбору подъезда
+      if (structure && structure.entrances && structure.entrances > 0) {
+        setCurrentStep('entrance');
+        setQuery('');
+        setSuggestions([]);
+        setSelectedIndex(null);
+      } else {
+        // Если структуры нет, переходим к выбору квартиры
+        setCurrentStep('apartment');
+        setQuery('');
+        setSuggestions([]);
+        setSelectedIndex(null);
+      }
+    } else if (currentStep === 'entrance') {
+      const entrance = selected?.entrance || (selected as any)?.id || parseInt(query.trim(), 10);
+      if (entrance) {
+        updateEntrance(entrance);
+        // Переходим к выбору этажа
+        setCurrentStep('floor');
+        setQuery('');
+        setSuggestions([]);
+        setSelectedIndex(null);
+      }
+    } else if (currentStep === 'floor') {
+      const floor = selected?.floor || (selected as any)?.id || parseInt(query.trim(), 10);
+      if (floor) {
+        updateFloor(floor);
+        // Переходим к выбору квартиры
+        setCurrentStep('apartment');
+        setQuery('');
+        setSuggestions([]);
+        setSelectedIndex(null);
+      }
     } else if (currentStep === 'apartment') {
       updateApartmentNumber(selected?.apartmentId || undefined, value);
       onComplete();

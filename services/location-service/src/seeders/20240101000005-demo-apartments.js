@@ -10,7 +10,7 @@ module.exports = {
     );
 
     const existingApartments = Array.isArray(existingApartmentsResult) ? existingApartmentsResult[0] : existingApartmentsResult;
-    
+
     if (existingApartments && existingApartments.count > 0) {
       console.log('Apartments already exist, skipping seed');
       return;
@@ -28,7 +28,7 @@ module.exports = {
     }
 
     const apartments = [];
-    
+
     // Для каждого дома создаем по 1-2 квартиры
     buildings.forEach((building, index) => {
       const apartmentNumber = (index + 1).toString();
@@ -39,7 +39,7 @@ module.exports = {
         createdAt: new Date(),
         updatedAt: new Date()
       });
-      
+
       // Для некоторых домов добавляем вторую квартиру
       if (index % 2 === 0 && apartments.length < 20) {
         apartments.push({

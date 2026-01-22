@@ -10,7 +10,7 @@ module.exports = {
     );
 
     const existingCities = Array.isArray(existingCitiesResult) ? existingCitiesResult[0] : existingCitiesResult;
-    
+
     if (existingCities && existingCities.count > 0) {
       console.log('Cities already exist, skipping seed');
       return;

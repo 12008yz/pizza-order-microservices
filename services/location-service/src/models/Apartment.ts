@@ -6,13 +6,14 @@ export interface ApartmentAttributes {
   id: number;
   number: string; // Номер квартиры (может быть "1", "1А", "1-10" и т.д.)
   buildingId: number;
+  entrance?: number | null; // Номер подъезда
   floor?: number | null;
   createdAt?: Date;
   updatedAt?: Date;
 }
 
 export interface ApartmentCreationAttributes
-  extends Optional<ApartmentAttributes, 'id' | 'floor' | 'createdAt' | 'updatedAt'> {}
+  extends Optional<ApartmentAttributes, 'id' | 'entrance' | 'floor' | 'createdAt' | 'updatedAt'> {}
 
 export class Apartment
   extends Model<ApartmentAttributes, ApartmentCreationAttributes>
@@ -21,6 +22,7 @@ export class Apartment
   public id!: number;
   public number!: string;
   public buildingId!: number;
+  public entrance!: number | null;
   public floor!: number | null;
 
   public readonly createdAt!: Date;
@@ -50,6 +52,11 @@ Apartment.init(
         key: 'id',
       },
       comment: 'ID дома',
+    },
+    entrance: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      comment: 'Номер подъезда',
     },
     floor: {
       type: DataTypes.INTEGER,

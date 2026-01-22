@@ -16,6 +16,8 @@ export interface AddressData {
   street?: string;
   buildingId?: number;
   houseNumber?: string;
+  entrance?: number; // Номер подъезда
+  floor?: number; // Номер этажа
   apartmentId?: number;
   apartmentNumber?: string;
 
@@ -39,6 +41,8 @@ interface AddressContextType {
   updateCity: (cityId?: number, city?: string, regionId?: number) => void;
   updateStreet: (streetId?: number, street?: string) => void;
   updateHouseNumber: (buildingId?: number, houseNumber?: string, apartmentId?: number) => void;
+  updateEntrance: (entrance?: number) => void;
+  updateFloor: (floor?: number) => void;
   updateApartmentNumber: (apartmentId?: number, apartmentNumber?: string) => void;
   updatePrivacyConsent: (consent: boolean) => void;
   clearAddress: () => void;
@@ -101,6 +105,9 @@ export const AddressProvider: React.FC<{ children: ReactNode }> = ({ children })
         ...prev,
         buildingId,
         houseNumber,
+        // Очищаем подъезд и этаж при изменении дома
+        entrance: undefined,
+        floor: undefined,
         // Если передан apartmentId, используем его, иначе очищаем
         apartmentId: apartmentId ?? undefined,
         // Очищаем номер квартиры при изменении дома (если не передан apartmentId)
@@ -110,6 +117,29 @@ export const AddressProvider: React.FC<{ children: ReactNode }> = ({ children })
     },
     []
   );
+
+  const updateEntrance = useCallback((entrance?: number) => {
+    setAddressData((prev) => ({
+      ...prev,
+      entrance,
+      // Очищаем этаж и квартиру при изменении подъезда
+      floor: undefined,
+      apartmentId: undefined,
+      apartmentNumber: undefined,
+      errors: { ...prev.errors, apartmentNumber: undefined },
+    }));
+  }, []);
+
+  const updateFloor = useCallback((floor?: number) => {
+    setAddressData((prev) => ({
+      ...prev,
+      floor,
+      // Очищаем квартиру при изменении этажа
+      apartmentId: undefined,
+      apartmentNumber: undefined,
+      errors: { ...prev.errors, apartmentNumber: undefined },
+    }));
+  }, []);
 
   const updateApartmentNumber = useCallback(
     (apartmentId?: number, apartmentNumber?: string) => {
@@ -187,6 +217,8 @@ export const AddressProvider: React.FC<{ children: ReactNode }> = ({ children })
     updateCity,
     updateStreet,
     updateHouseNumber,
+    updateEntrance,
+    updateFloor,
     updateApartmentNumber,
     updatePrivacyConsent,
     clearAddress,

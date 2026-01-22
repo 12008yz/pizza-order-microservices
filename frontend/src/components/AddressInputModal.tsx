@@ -138,16 +138,25 @@ export default function AddressInputModal({
             });
 
             if (buildingsResponse?.success && buildingsResponse.data) {
-              const filtered = buildingsResponse.data.filter((building: any) =>
-                building.houseNumber?.toString().includes(query)
-              );
-              setSuggestions(filtered.map((building: any) => ({
-                id: building.id,
-                text: `д. ${building.houseNumber}`,
-                formatted: `д. ${building.houseNumber}`,
-                buildingId: building.id,
-              })));
+              console.log('Buildings response:', buildingsResponse.data);
+              // Если запрос пустой, показываем все дома, иначе фильтруем
+              const filtered = query.trim() === '' 
+                ? buildingsResponse.data 
+                : buildingsResponse.data.filter((building: any) =>
+                    building.number?.toString().toLowerCase().includes(query.toLowerCase())
+                  );
+              console.log('Filtered buildings:', filtered);
+              setSuggestions(filtered.map((building: any) => {
+                const houseNumber = building.number + (building.building ? ` ${building.building}` : '');
+                return {
+                  id: building.id,
+                  text: `д. ${houseNumber}`,
+                  formatted: `д. ${houseNumber}`,
+                  buildingId: building.id,
+                };
+              }));
             } else {
+              console.log('No buildings response or error:', buildingsResponse);
               // Нет данных в БД - позволяем ввести вручную
               setSuggestions([]);
             }
@@ -163,16 +172,22 @@ export default function AddressInputModal({
             });
 
             if (apartmentsResponse?.success && apartmentsResponse.data) {
-              const filtered = apartmentsResponse.data.filter((apartment: any) =>
-                apartment.apartmentNumber?.toString().includes(query)
-              );
+              console.log('Apartments response:', apartmentsResponse.data);
+              // Если запрос пустой, показываем все квартиры, иначе фильтруем
+              const filtered = query.trim() === ''
+                ? apartmentsResponse.data
+                : apartmentsResponse.data.filter((apartment: any) =>
+                    apartment.number?.toString().toLowerCase().includes(query.toLowerCase())
+                  );
+              console.log('Filtered apartments:', filtered);
               setSuggestions(filtered.map((apartment: any) => ({
                 id: apartment.id,
-                text: `кв. ${apartment.apartmentNumber}`,
-                formatted: `кв. ${apartment.apartmentNumber}`,
+                text: `кв. ${apartment.number}`,
+                formatted: `кв. ${apartment.number}`,
                 apartmentId: apartment.id,
               })));
             } else {
+              console.log('No apartments response or error:', apartmentsResponse);
               // Нет данных в БД - позволяем ввести вручную
               setSuggestions([]);
             }

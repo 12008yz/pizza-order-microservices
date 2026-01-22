@@ -14,7 +14,7 @@ services:
     networks:
       - tariff-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U auth_user -d auth_db"]
+      test: [ "CMD-SHELL", "pg_isready -U auth_user -d auth_db" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -34,7 +34,7 @@ services:
     networks:
       - tariff-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U user_user -d user_db"]
+      test: [ "CMD-SHELL", "pg_isready -U user_user -d user_db" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -54,7 +54,7 @@ services:
     networks:
       - tariff-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U provider_user -d provider_db"]
+      test: [ "CMD-SHELL", "pg_isready -U provider_user -d provider_db" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -74,7 +74,7 @@ services:
     networks:
       - tariff-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U orders_user -d orders_db"]
+      test: [ "CMD-SHELL", "pg_isready -U orders_user -d orders_db" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -94,7 +94,7 @@ services:
     networks:
       - tariff-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U locations_user -d locations_db"]
+      test: [ "CMD-SHELL", "pg_isready -U locations_user -d locations_db" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -114,7 +114,7 @@ services:
     networks:
       - tariff-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U availability_user -d availability_db"]
+      test: [ "CMD-SHELL", "pg_isready -U availability_user -d availability_db" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -134,7 +134,7 @@ services:
     networks:
       - tariff-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U equipment_user -d equipment_db"]
+      test: [ "CMD-SHELL", "pg_isready -U equipment_user -d equipment_db" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -154,7 +154,7 @@ services:
     networks:
       - tariff-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U notifications_user -d notifications_db"]
+      test: [ "CMD-SHELL", "pg_isready -U notifications_user -d notifications_db" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -185,6 +185,7 @@ services:
     volumes:
       - ./services/auth-service:/app
       - /app/node_modules
+    command: sh -c "npx sequelize-cli db:migrate && npm run dev"
 
   # User Service
   user-service:
@@ -213,6 +214,7 @@ services:
     volumes:
       - ./services/user-service:/app
       - /app/node_modules
+    command: sh -c "npx sequelize-cli db:migrate && npm run dev"
 
   # Provider Service
   provider-service:
@@ -238,6 +240,7 @@ services:
     volumes:
       - ./services/provider-service:/app
       - /app/node_modules
+    command: sh -c "npx sequelize-cli db:migrate && npx sequelize-cli db:seed:all --debug && npm run dev"
 
   # Order Service
   order-service:
@@ -280,6 +283,7 @@ services:
     volumes:
       - ./services/order-service:/app
       - /app/node_modules
+    command: sh -c "npx sequelize-cli db:migrate && npm run dev"
 
   # Location Service
   location-service:
@@ -306,6 +310,7 @@ services:
     volumes:
       - ./services/location-service:/app
       - /app/node_modules
+    command: sh -c "npx sequelize-cli db:migrate && npx sequelize-cli db:seed:all && npm run dev"
 
   # Availability Service
   availability-service:
@@ -337,6 +342,7 @@ services:
     volumes:
       - ./services/availability-service:/app
       - /app/node_modules
+    command: sh -c "npx sequelize-cli db:migrate && npm run dev"
 
   # Equipment Service
   equipment-service:
@@ -365,6 +371,7 @@ services:
     volumes:
       - ./services/equipment-service:/app
       - /app/node_modules
+    command: sh -c "npx sequelize-cli db:migrate && npm run dev"
 
   # Notification Service
   notification-service:
@@ -393,6 +400,7 @@ services:
     volumes:
       - ./services/notification-service:/app
       - /app/node_modules
+    command: sh -c "npx sequelize-cli db:migrate && npm run dev"
 
   # Frontend (Next.js)
   frontend:
@@ -439,7 +447,7 @@ volumes:
   equipment_db_data:
   notifications_db_data:
 
+
 networks:
   tariff-network:
     driver: bridge
-

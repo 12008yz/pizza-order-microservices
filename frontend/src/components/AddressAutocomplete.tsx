@@ -101,14 +101,17 @@ export default function AddressAutocomplete({
           if (buildingsResponse.success && buildingsResponse.data) {
             // Фильтруем дома по введенному запросу
             const filtered = buildingsResponse.data.filter((building: any) =>
-              building.houseNumber?.toString().toLowerCase().includes(query.toLowerCase())
+              building.number?.toString().toLowerCase().includes(query.toLowerCase())
             );
             setSuggestions(
-              filtered.map((building: any) => ({
-                text: building.houseNumber || '',
-                formatted: building.houseNumber || '',
-                buildingId: building.id,
-              }))
+              filtered.map((building: any) => {
+                const houseNumber = building.number + (building.building ? ` ${building.building}` : '');
+                return {
+                  text: houseNumber,
+                  formatted: houseNumber,
+                  buildingId: building.id,
+                };
+              })
             );
             setShowSuggestions(true);
             setLoading(false);
@@ -132,12 +135,12 @@ export default function AddressAutocomplete({
           if (apartmentsResponse.success && apartmentsResponse.data) {
             // Фильтруем квартиры по введенному запросу
             const filtered = apartmentsResponse.data.filter((apartment: any) =>
-              apartment.apartmentNumber?.toString().toLowerCase().includes(query.toLowerCase())
+              apartment.number?.toString().toLowerCase().includes(query.toLowerCase())
             );
             setSuggestions(
               filtered.map((apartment: any) => ({
-                text: apartment.apartmentNumber || '',
-                formatted: apartment.apartmentNumber || '',
+                text: apartment.number || '',
+                formatted: apartment.number || '',
                 apartmentId: apartment.id,
               }))
             );

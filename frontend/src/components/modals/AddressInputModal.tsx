@@ -1,9 +1,9 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { useAddress } from '../contexts/AddressContext';
-import { locationsService } from '../services/locations.service';
-import type { AddressSuggestion } from '../services/api/types';
+import { useAddress } from '../../contexts/AddressContext';
+import { locationsService } from '../../services/locations.service';
+import type { AddressSuggestion } from '../../services/api/types';
 
 type AddressStep = 'city' | 'street' | 'house' | 'entrance' | 'floor' | 'apartment';
 

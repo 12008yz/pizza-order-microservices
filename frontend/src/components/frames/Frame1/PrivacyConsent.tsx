@@ -1,6 +1,6 @@
 'use client';
 
-import { useAddress } from '../contexts/AddressContext';
+import { useAddress } from '../../../contexts/AddressContext';
 
 export default function PrivacyConsent() {
   const { addressData, updatePrivacyConsent } = useAddress();

@@ -1,8 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useAddress, ConnectionType } from '../contexts/AddressContext';
-import { CaretLeft } from '@phosphor-icons/react';
+import { useAddress, ConnectionType } from '../../contexts/AddressContext';
 
 interface ConnectionTypeModalProps {
   isOpen: boolean;

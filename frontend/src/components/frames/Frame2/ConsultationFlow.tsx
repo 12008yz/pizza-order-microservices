@@ -15,10 +15,11 @@ interface NotificationItem {
 
 interface ConsultationFlowProps {
   onClose: () => void;
-  onSubmit: (data: { phone?: string; method?: ContactMethod }) => void;
+  onSubmit: (data: { phone?: string; method?: ContactMethod }) => void | Promise<void>;
+  onSkip?: () => void | Promise<void>;
 }
 
-export default function ConsultationFlow({ onClose, onSubmit }: ConsultationFlowProps) {
+export default function ConsultationFlow({ onClose, onSubmit, onSkip }: ConsultationFlowProps) {
   const [step, setStep] = useState<ConsultationStep>('phone-input');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [selectedMethod, setSelectedMethod] = useState<ContactMethod | null>(null);
@@ -69,18 +70,15 @@ export default function ConsultationFlow({ onClose, onSubmit }: ConsultationFlow
 
   const handleSubmitPhone = () => {
     if (phoneNumber.replace(/\D/g, '').length >= 11) {
-      // Добавляем второе уведомление
-      setNotifications((prev) => [
-        ...prev,
-        {
-          id: 'sent',
-          timer: 7,
-          title: 'Автоматически закроется через',
-          content: 'Информация направлена.',
-          hasLink: true,
-        },
-      ]);
-      onSubmit({ phone: phoneNumber });
+      // Переходим к выбору способа связи
+      setStep('contact-method');
+    }
+  };
+
+  const handleSubmitPhoneAfterMethod = () => {
+    if (phoneNumber.replace(/\D/g, '').length >= 11) {
+      // Отправляем данные с телефоном и методом связи
+      onSubmit({ phone: phoneNumber, method: 'phone' });
     }
   };
 
@@ -92,7 +90,7 @@ export default function ConsultationFlow({ onClose, onSubmit }: ConsultationFlow
     if (selectedMethod === 'phone') {
       setStep('phone-after-method');
     } else if (selectedMethod) {
-      onSubmit({ method: selectedMethod });
+      onSubmit({ phone: phoneNumber, method: selectedMethod });
     }
   };
 
@@ -254,7 +252,7 @@ export default function ConsultationFlow({ onClose, onSubmit }: ConsultationFlow
 
         {/* Кнопка */}
         <button
-          onClick={isPhoneValid ? handleSubmitPhone : onClose}
+          onClick={isPhoneValid ? handleSubmitPhone : (onSkip || onClose)}
           className="box-border absolute rounded-[10px] font-normal text-base leading-[315%] flex items-center justify-center text-center text-white"
           style={{
             left: '15px',
@@ -604,7 +602,7 @@ export default function ConsultationFlow({ onClose, onSubmit }: ConsultationFlow
 
           {/* Кнопка Далее */}
           <button
-            onClick={handleSubmitPhone}
+            onClick={handleSubmitPhoneAfterMethod}
             disabled={!isPhoneValid}
             className="box-border flex-1 rounded-[10px] font-normal text-base leading-[315%] flex items-center justify-center text-center text-white"
             style={{

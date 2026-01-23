@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { AddressProvider, useAddress, ConnectionType } from '../../../contexts/AddressContext';
 import ConnectionTypeModal from '../../modals/ConnectionTypeModal';
 import AddressInputModal from '../../modals/AddressInputModal';
@@ -10,8 +11,10 @@ import LoadingScreen from '../../LoadingScreen';
 import ConsultationFlow from '../Frame2/ConsultationFlow';
 
 type FlowState = 'form' | 'loading' | 'consultation';
+type ContactMethod = 'max' | 'telegram' | 'phone';
 
 function AddressFormContent() {
+  const router = useRouter();
   const { addressData, validateForm } = useAddress();
   const [showConnectionModal, setShowConnectionModal] = useState(false);
   const [showAddressModal, setShowAddressModal] = useState(false);
@@ -93,9 +96,61 @@ function AddressFormContent() {
     setLoadingProgress(0);
   };
 
-  const handleConsultationSubmit = (data: { phone?: string; method?: string }) => {
+  // Функция сохранения данных пользователя и перехода на тарифы
+  const saveUserDataAndNavigate = async (phone?: string, method?: ContactMethod) => {
+    try {
+      // Сохраняем данные в sessionStorage для отображения на странице тарифов
+      sessionStorage.setItem('addressData', JSON.stringify(addressData));
+
+      // Если есть телефон, сохраняем данные пользователя в базу данных
+      if (phone) {
+        const userData = {
+          phone: phone.replace(/\D/g, ''), // Только цифры
+          city: addressData.city,
+          street: addressData.street,
+          house: addressData.houseNumber,
+          connectionType: addressData.connectionType,
+          contactMethod: method,
+        };
+
+        // Отправляем данные на сервер для сохранения в базе данных
+        try {
+          const response = await fetch('/api/users/profile', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(userData),
+          });
+
+          if (!response.ok) {
+            console.error('Failed to save user data:', await response.text());
+          }
+        } catch (error) {
+          console.error('Error saving user data:', error);
+          // Продолжаем даже если сохранение не удалось
+        }
+      }
+
+      // Переходим на страницу тарифов
+      router.push('/providers');
+    } catch (error) {
+      console.error('Error in saveUserDataAndNavigate:', error);
+      // В случае ошибки всё равно переходим на страницу тарифов
+      router.push('/providers');
+    }
+  };
+
+  // Обработка отправки данных консультации (с телефоном и методом связи)
+  const handleConsultationSubmit = async (data: { phone?: string; method?: ContactMethod }) => {
     console.log('Consultation submitted:', data);
-    setFlowState('form');
+    await saveUserDataAndNavigate(data.phone, data.method);
+  };
+
+  // Обработка пропуска консультации ("Нет, спасибо")
+  const handleConsultationSkip = async () => {
+    console.log('Consultation skipped');
+    await saveUserDataAndNavigate();
   };
 
   const isFormValid =
@@ -114,6 +169,7 @@ function AddressFormContent() {
       <ConsultationFlow
         onClose={handleConsultationClose}
         onSubmit={handleConsultationSubmit}
+        onSkip={handleConsultationSkip}
       />
     );
   }

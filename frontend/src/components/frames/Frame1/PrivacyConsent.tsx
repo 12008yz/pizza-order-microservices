@@ -64,13 +64,6 @@ export default function PrivacyConsent() {
           {' '}портала
         </span>
       </div>
-
-      {/* Сообщение об ошибке */}
-      {hasError && (
-        <div className="absolute -bottom-5 left-0 text-xs text-red-500">
-          {addressData.errors.privacyConsent}
-        </div>
-      )}
     </div>
   );
 }

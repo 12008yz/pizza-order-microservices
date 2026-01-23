@@ -15,7 +15,7 @@ type ContactMethod = 'max' | 'telegram' | 'phone';
 
 function AddressFormContent() {
   const router = useRouter();
-  const { addressData, validateForm } = useAddress();
+  const { addressData, validateForm, clearErrors } = useAddress();
   const [showConnectionModal, setShowConnectionModal] = useState(false);
   const [showAddressModal, setShowAddressModal] = useState(false);
   const [addressModalStep, setAddressModalStep] = useState<'city' | 'street' | 'house'>('city');
@@ -80,6 +80,8 @@ function AddressFormContent() {
 
   const handleSubmit = async () => {
     setSubmitError(null);
+    // Очищаем все ошибки валидации при нажатии на кнопку
+    clearErrors();
 
     // Валидация формы
     if (!validateForm()) {
@@ -253,11 +255,6 @@ function AddressFormContent() {
               </div>
             </div>
           </div>
-          {addressData.errors.connectionType && (
-            <div className="absolute -bottom-5 left-0 text-xs text-red-500" style={{ letterSpacing: '0.5px' }}>
-              {addressData.errors.connectionType}
-            </div>
-          )}
         </div>
 
         <div className="absolute left-[8.75%] right-[8.75%] top-[48.37%] bottom-[45.4%]">
@@ -314,11 +311,6 @@ function AddressFormContent() {
               </div>
             </div>
           </div>
-          {addressData.errors.city && (
-            <div className="absolute -bottom-5 left-0 text-xs text-red-500" style={{ letterSpacing: '0.5px' }}>
-              {addressData.errors.city}
-            </div>
-          )}
         </div>
 
         <div className="absolute left-[8.75%] right-[8.75%] top-[54.72%] bottom-[39.08%]">
@@ -377,11 +369,6 @@ function AddressFormContent() {
               </div>
             </div>
           </div>
-          {addressData.errors.street && (
-            <div className="absolute -bottom-5 left-0 text-xs text-red-500" style={{ letterSpacing: '0.5px' }}>
-              {addressData.errors.street}
-            </div>
-          )}
         </div>
 
         <div className="absolute left-[8.75%] right-[8.75%] top-[61.04%] bottom-[32.76%]">
@@ -440,11 +427,6 @@ function AddressFormContent() {
               </div>
             </div>
           </div>
-          {addressData.errors.houseNumber && (
-            <div className="absolute -bottom-5 left-0 text-xs text-red-500" style={{ letterSpacing: '0.5px' }}>
-              {addressData.errors.houseNumber}
-            </div>
-          )}
         </div>
 
         <div
@@ -467,20 +449,14 @@ function AddressFormContent() {
         >
           <button
             onClick={handleSubmit}
-            disabled={!isFormValid}
             className={`box-border absolute left-0 right-0 top-0 bottom-0 rounded-[10px] flex items-center justify-center font-normal text-base leading-[315%] text-center text-white outline-none transition-colors ${isFormValid
               ? 'bg-[#101010] hover:bg-gray-800 cursor-pointer'
-              : 'bg-[rgba(16,16,16,0.25)] cursor-not-allowed'
+              : 'bg-[rgba(16,16,16,0.25)] cursor-pointer'
               }`}
             style={{ letterSpacing: '0.5px' }}
           >
             Показать всех операторов
           </button>
-          {submitError && (
-            <div className="absolute -bottom-6 left-0 right-0 text-xs text-red-500 text-center" style={{ letterSpacing: '0.5px' }}>
-              {submitError}
-            </div>
-          )}
         </div>
 
         {showCookieBanner && (

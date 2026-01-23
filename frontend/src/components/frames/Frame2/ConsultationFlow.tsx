@@ -371,12 +371,12 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
             />
           </div>
 
-          {/* Написать в Telegram (неактивна) */}
+          {/* Написать в Telegram (активна) */}
           <div
             className="box-border relative rounded-[10px] cursor-pointer"
             style={{
               height: '50px',
-              border: '1px solid rgba(16, 16, 16, 0.25)',
+              border: selectedMethod === 'telegram' ? '1px solid #101010' : '1px solid rgba(16, 16, 16, 0.25)',
             }}
             onClick={() => handleSelectMethod('telegram')}
           >
@@ -385,21 +385,33 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
               style={{
                 left: '15px',
                 top: '15px',
-                color: 'rgba(16, 16, 16, 0.5)',
+                color: selectedMethod === 'telegram' ? '#101010' : 'rgba(16, 16, 16, 0.5)',
                 letterSpacing: '0.5px',
               }}
             >
               Написать нам в «Telegram»
             </div>
             <div
-              className="absolute w-4 h-4 rounded-full border"
+              className="absolute w-4 h-4 rounded-full flex items-center justify-center"
               style={{
                 right: '15px',
                 top: '17px',
-                borderColor: 'rgba(16, 16, 16, 0.5)',
-                borderWidth: '1px',
+                background: selectedMethod === 'telegram' ? '#101010' : 'transparent',
+                border: selectedMethod === 'telegram' ? 'none' : '1px solid rgba(16, 16, 16, 0.5)',
               }}
-            />
+            >
+              {selectedMethod === 'telegram' && (
+                <svg width="8" height="8" viewBox="0 0 12 12" fill="none">
+                  <path
+                    d="M2.5 6L5 8.5L9.5 3.5"
+                    stroke="#FFFFFF"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              )}
+            </div>
           </div>
 
           {/* Перезвонить на номер телефона (активна) */}

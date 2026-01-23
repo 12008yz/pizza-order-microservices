@@ -198,10 +198,7 @@ export const AddressProvider: React.FC<{ children: ReactNode }> = ({ children })
       errors.houseNumber = 'Укажите номер дома';
     }
 
-    // Для квартиры нужен номер квартиры
-    if (addressData.connectionType === 'apartment' && !addressData.apartmentId && !addressData.apartmentNumber) {
-      errors.apartmentNumber = 'Укажите номер квартиры';
-    }
+    // Ввод квартиры будет позже, не валидируем здесь
 
     if (!addressData.privacyConsent) {
       errors.privacyConsent = 'Необходимо согласие с политикой конфиденциальности';

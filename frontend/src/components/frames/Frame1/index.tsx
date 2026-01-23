@@ -13,10 +13,10 @@ import { useRouter } from 'next/navigation';
 // Внутренний компонент, использующий контекст
 function AddressFormContent() {
   const router = useRouter();
-  const { addressData, validateForm, updateConnectionType, updateCity, updateStreet, updateHouseNumber, updateApartmentNumber } = useAddress();
+  const { addressData, validateForm, updateConnectionType, updateCity, updateStreet, updateHouseNumber } = useAddress();
   const [showConnectionModal, setShowConnectionModal] = useState(false);
   const [showAddressModal, setShowAddressModal] = useState(false);
-  const [addressModalStep, setAddressModalStep] = useState<'city' | 'street' | 'house' | 'apartment'>('city');
+  const [addressModalStep, setAddressModalStep] = useState<'city' | 'street' | 'house'>('city');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [showCookieBanner, setShowCookieBanner] = useState(true);

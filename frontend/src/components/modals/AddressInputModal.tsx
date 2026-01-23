@@ -289,28 +289,8 @@ export default function AddressInputModal({
     } else if (currentStep === 'house') {
       const buildingId = selected?.buildingId || undefined;
       updateHouseNumber(buildingId, value, undefined);
-
-      // Сохраняем структуру дома
-      const structure = selected ? {
-        entrances: (selected as any).entrances,
-        floors: (selected as any).floors,
-        apartmentsPerFloor: (selected as any).apartmentsPerFloor,
-      } : null;
-      setBuildingStructure(structure);
-
-      // Проверяем структуру дома - если есть подъезды, переходим к выбору подъезда
-      if (structure && structure.entrances && structure.entrances > 0) {
-        setCurrentStep('entrance');
-        setQuery('');
-        setSuggestions([]);
-        setSelectedIndex(null);
-      } else {
-        // Если структуры нет, переходим к выбору квартиры
-        setCurrentStep('apartment');
-        setQuery('');
-        setSuggestions([]);
-        setSelectedIndex(null);
-      }
+      // После выбора дома закрываем модалку - квартира вводится позже
+      onComplete();
     } else if (currentStep === 'entrance') {
       const entrance = selected?.entrance || (selected as any)?.id || parseInt(query.trim(), 10);
       if (entrance) {

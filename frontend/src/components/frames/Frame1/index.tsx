@@ -6,21 +6,23 @@ import ConnectionTypeModal from '../../modals/ConnectionTypeModal';
 import AddressInputModal from '../../modals/AddressInputModal';
 import PrivacyConsent from './PrivacyConsent';
 import Header from '../../layout/Header';
-import { availabilityService } from '../../../services/availability.service';
-import { locationsService } from '../../../services/locations.service';
-import { useRouter } from 'next/navigation';
+import LoadingScreen from '../../LoadingScreen';
+import ConsultationFlow from '../Frame2/ConsultationFlow';
 
-// Внутренний компонент, использующий контекст
+type FlowState = 'form' | 'loading' | 'consultation';
+
 function AddressFormContent() {
-  const router = useRouter();
-  const { addressData, validateForm, updateConnectionType, updateCity, updateStreet, updateHouseNumber } = useAddress();
+  const { addressData, validateForm } = useAddress();
   const [showConnectionModal, setShowConnectionModal] = useState(false);
   const [showAddressModal, setShowAddressModal] = useState(false);
   const [addressModalStep, setAddressModalStep] = useState<'city' | 'street' | 'house'>('city');
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [showCookieBanner, setShowCookieBanner] = useState(true);
   const [cookieTimer, setCookieTimer] = useState(7);
+
+  // Flow state for loading and consultation
+  const [flowState, setFlowState] = useState<FlowState>('form');
+  const [loadingProgress, setLoadingProgress] = useState(0);
 
   // Закрытие баннера cookies через 7 секунд с обратным отсчетом
   useEffect(() => {
@@ -37,6 +39,24 @@ function AddressFormContent() {
       return () => clearInterval(timer);
     }
   }, [showCookieBanner, cookieTimer]);
+
+  // Эффект для загрузочного экрана
+  useEffect(() => {
+    if (flowState === 'loading') {
+      const interval = setInterval(() => {
+        setLoadingProgress((prev) => {
+          if (prev >= 100) {
+            clearInterval(interval);
+            setFlowState('consultation');
+            return 100;
+          }
+          return prev + 5;
+        });
+      }, 30);
+
+      return () => clearInterval(interval);
+    }
+  }, [flowState]);
 
   const getConnectionTypeLabel = (type: ConnectionType): string => {
     switch (type) {
@@ -63,115 +83,19 @@ function AddressFormContent() {
       return;
     }
 
-    setIsSubmitting(true);
+    // Показываем загрузочный экран
+    setLoadingProgress(0);
+    setFlowState('loading');
+  };
 
-    try {
-      // Сохраняем адрес в БД, если его там нет
-      let finalCityId = addressData.cityId;
-      let finalStreetId = addressData.streetId;
-      let finalBuildingId = addressData.buildingId;
+  const handleConsultationClose = () => {
+    setFlowState('form');
+    setLoadingProgress(0);
+  };
 
-      // Создаем или находим город, если его нет в БД
-      if (!finalCityId && addressData.city) {
-        try {
-          const cityResponse = await locationsService.createCity({
-            name: addressData.city,
-            regionId: addressData.regionId,
-          });
-          if (cityResponse.success && cityResponse.data) {
-            finalCityId = cityResponse.data.id;
-            // Получаем regionId из ответа или используем существующий
-            const regionId = cityResponse.data.regionId || cityResponse.data.region?.id || addressData.regionId;
-            // Обновляем контекст с новым cityId и regionId
-            updateCity(finalCityId, addressData.city, regionId);
-          } else {
-            throw new Error(cityResponse.error || 'Не удалось создать город');
-          }
-        } catch (error: any) {
-          console.error('Error creating city:', error);
-          setSubmitError(error.message || 'Не удалось сохранить город. Попробуйте еще раз.');
-          setIsSubmitting(false);
-          return;
-        }
-      }
-
-      // Создаем или находим улицу, если ее нет в БД
-      if (!finalStreetId && addressData.street && finalCityId) {
-        try {
-          const streetResponse = await locationsService.createStreet({
-            name: addressData.street,
-            cityId: finalCityId,
-          });
-          if (streetResponse.success && streetResponse.data) {
-            finalStreetId = streetResponse.data.id;
-            // Обновляем контекст с новым streetId
-            updateStreet(finalStreetId, addressData.street);
-          } else {
-            throw new Error(streetResponse.error || 'Не удалось создать улицу');
-          }
-        } catch (error: any) {
-          console.error('Error creating street:', error);
-          setSubmitError(error.message || 'Не удалось сохранить улицу. Попробуйте еще раз.');
-          setIsSubmitting(false);
-          return;
-        }
-      }
-
-      // Создаем или находим дом, если его нет в БД
-      if (!finalBuildingId && addressData.houseNumber && finalStreetId) {
-        try {
-          // Парсим номер дома (может быть "9", "9 к 5", "9-11" и т.д.)
-          const houseParts = addressData.houseNumber.split(/[кК]/);
-          const houseNumber = houseParts[0].trim();
-          const building = houseParts[1]?.trim();
-
-          const buildingResponse = await locationsService.createBuilding({
-            number: houseNumber,
-            streetId: finalStreetId,
-            building: building,
-          });
-          if (buildingResponse.success && buildingResponse.data) {
-            finalBuildingId = buildingResponse.data.id;
-            // Обновляем контекст с новым buildingId
-            updateHouseNumber(finalBuildingId, addressData.houseNumber, undefined);
-          } else {
-            throw new Error(buildingResponse.error || 'Не удалось создать дом');
-          }
-        } catch (error: any) {
-          console.error('Error creating building:', error);
-          setSubmitError(error.message || 'Не удалось сохранить номер дома. Попробуйте еще раз.');
-          setIsSubmitting(false);
-          return;
-        }
-      }
-
-      // Подготавливаем данные для API проверки доступности
-      const checkParams = {
-        city: addressData.city || '',
-        street: addressData.street,
-        house: addressData.houseNumber ? parseInt(addressData.houseNumber) : undefined,
-        buildingId: finalBuildingId,
-      };
-
-      // Проверяем доступность провайдеров
-      const response = await availabilityService.checkAvailability(checkParams);
-
-      if (response.success && response.data) {
-        // Сохраняем данные адреса в sessionStorage для использования на следующей странице
-        sessionStorage.setItem('addressData', JSON.stringify(addressData));
-        sessionStorage.setItem('providers', JSON.stringify(response.data));
-
-        // Переходим на страницу результатов
-        router.push('/providers');
-      } else {
-        setSubmitError(response.error || 'Не удалось найти провайдеров по данному адресу');
-      }
-    } catch (error: any) {
-      console.error('Submit error:', error);
-      setSubmitError(error.message || 'Произошла ошибка при проверке доступности');
-    } finally {
-      setIsSubmitting(false);
-    }
+  const handleConsultationSubmit = (data: { phone?: string; method?: string }) => {
+    console.log('Consultation submitted:', data);
+    setFlowState('form');
   };
 
   const isFormValid =
@@ -181,25 +105,32 @@ function AddressFormContent() {
     (addressData.buildingId || addressData.houseNumber) &&
     addressData.privacyConsent;
 
+  if (flowState === 'loading') {
+    return <LoadingScreen progress={loadingProgress} />;
+  }
+
+  if (flowState === 'consultation') {
+    return (
+      <ConsultationFlow
+        onClose={handleConsultationClose}
+        onSubmit={handleConsultationSubmit}
+      />
+    );
+  }
+
   return (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-white overflow-hidden">
-      {/* Main Container */}
       <div className="relative w-[400px] h-[870px] bg-white">
-        {/* Vector - верхний фон (белый) */}
         <div className="absolute left-0 right-[0.06%] top-[10%] bottom-[10%] bg-white" />
 
-        {/* Group 7545 - Шапка */}
         {!showCookieBanner && <Header />}
 
-        {/* Rectangle 30 - Основной контейнер формы */}
         <div className="absolute left-[5%] right-[5%] top-[29.74%] bottom-[16.67%] bg-white border border-[rgba(16,16,16,0.15)] backdrop-blur-[7.5px] rounded-[20px]" />
 
-        {/* Текст заголовка */}
         <div className="absolute left-[8.75%] right-[8.75%] top-[31.26%] bottom-[59.77%] font-normal text-xl leading-[125%] text-[#101010] flex items-start" style={{ letterSpacing: '0.5px' }}>
           Маркетплейс тарифных планов, операторов на твоем адресе. Бесплатно заказать «wi-fi»
         </div>
 
-        {/* Group 7432 - Поле "Подключение" (Select) */}
         <div className="absolute left-[8.75%] right-[8.75%] top-[41.98%] bottom-[51.72%]">
           <div
             className={`relative w-full rounded-[10px] bg-white ${addressData.connectionType
@@ -230,7 +161,6 @@ function AddressFormContent() {
                   ? getConnectionTypeLabel(addressData.connectionType)
                   : 'Подключение'}
               </span>
-              {/* Кружок со стрелкой или галочкой */}
               <div
                 className={`w-4 h-4 rounded-full flex items-center justify-center ${addressData.connectionType
                   ? 'bg-[#101010]'
@@ -274,7 +204,6 @@ function AddressFormContent() {
           )}
         </div>
 
-        {/* Group 7514 - Поле "Название населённого пункта" */}
         <div className="absolute left-[8.75%] right-[8.75%] top-[48.37%] bottom-[45.4%]">
           <div
             onClick={() => {
@@ -336,7 +265,6 @@ function AddressFormContent() {
           )}
         </div>
 
-        {/* Group 7437 - Поле "Улица" */}
         <div className="absolute left-[8.75%] right-[8.75%] top-[54.72%] bottom-[39.08%]">
           <div
             onClick={() => {
@@ -400,7 +328,6 @@ function AddressFormContent() {
           )}
         </div>
 
-        {/* Group 7438 - Поле "Номер дома" */}
         <div className="absolute left-[8.75%] right-[8.75%] top-[61.04%] bottom-[32.76%]">
           <div
             onClick={() => {
@@ -464,7 +391,6 @@ function AddressFormContent() {
           )}
         </div>
 
-        {/* Group 7372 - Чекбокс согласия */}
         <div
           className="absolute left-[8.75%] right-[8.75%]"
           style={{
@@ -476,7 +402,6 @@ function AddressFormContent() {
           <PrivacyConsent />
         </div>
 
-        {/* Group 7377 - Кнопка "Показать всех операторов" */}
         <div
           className="absolute left-[8.75%] right-[8.75%]"
           style={{
@@ -486,14 +411,14 @@ function AddressFormContent() {
         >
           <button
             onClick={handleSubmit}
-            disabled={!isFormValid || isSubmitting}
-            className={`box-border absolute left-0 right-0 top-0 bottom-0 rounded-[10px] flex items-center justify-center font-normal text-base leading-[315%] text-center text-white outline-none transition-colors ${isFormValid && !isSubmitting
+            disabled={!isFormValid}
+            className={`box-border absolute left-0 right-0 top-0 bottom-0 rounded-[10px] flex items-center justify-center font-normal text-base leading-[315%] text-center text-white outline-none transition-colors ${isFormValid
               ? 'bg-[#101010] hover:bg-gray-800 cursor-pointer'
               : 'bg-[rgba(16,16,16,0.25)] cursor-not-allowed'
               }`}
             style={{ letterSpacing: '0.5px' }}
           >
-            {isSubmitting ? 'Загрузка...' : 'Показать всех операторов'}
+            Показать всех операторов
           </button>
           {submitError && (
             <div className="absolute -bottom-6 left-0 right-0 text-xs text-red-500 text-center" style={{ letterSpacing: '0.5px' }}>
@@ -502,7 +427,6 @@ function AddressFormContent() {
           )}
         </div>
 
-        {/* Group 7476 - Уведомление о cookies */}
         {showCookieBanner && (
           <div className="absolute w-[360px] h-[115px] left-5 top-[70px] z-20">
             <div className="box-border absolute w-[360px] h-[115px] bg-white border border-[rgba(16,16,16,0.15)] backdrop-blur-[7.5px] rounded-[20px]" style={{ padding: '15px 20px 15px 18px' }}>
@@ -526,17 +450,14 @@ function AddressFormContent() {
           </div>
         )}
 
-        {/* Модальное окно выбора типа подключения */}
         <ConnectionTypeModal
           isOpen={showConnectionModal}
           onClose={() => setShowConnectionModal(false)}
           onNext={() => {
-            // Только закрываем модалку, не открываем следующую автоматически
             setShowConnectionModal(false);
           }}
         />
 
-        {/* Модальное окно ввода адреса */}
         <AddressInputModal
           isOpen={showAddressModal}
           onClose={() => setShowAddressModal(false)}
@@ -548,7 +469,6 @@ function AddressFormContent() {
   );
 }
 
-// Главный компонент с провайдером контекста
 export default function AddressFormPage() {
   return (
     <AddressProvider>

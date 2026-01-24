@@ -85,6 +85,8 @@ function AddressFormContent() {
 
     // Валидация формы
     if (!validateForm()) {
+      // Если форма не валидна, ошибки уже установлены в validateForm
+      // Поля автоматически подсветятся красным
       return;
     }
 
@@ -449,10 +451,7 @@ function AddressFormContent() {
         >
           <button
             onClick={handleSubmit}
-            className={`box-border absolute left-0 right-0 top-0 bottom-0 rounded-[10px] flex items-center justify-center font-normal text-base leading-[315%] text-center text-white outline-none transition-colors ${isFormValid
-              ? 'bg-[#101010] hover:bg-gray-800 cursor-pointer'
-              : 'bg-[rgba(16,16,16,0.25)] cursor-pointer'
-              }`}
+            className="box-border absolute left-0 right-0 top-0 bottom-0 rounded-[10px] flex items-center justify-center font-normal text-base leading-[315%] text-center text-white outline-none transition-colors bg-[#101010] hover:bg-gray-800 cursor-pointer"
             style={{ letterSpacing: '0.5px' }}
           >
             Показать всех операторов

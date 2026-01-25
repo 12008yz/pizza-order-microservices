@@ -8,7 +8,6 @@ type ConsultationStep = 'phone-input' | 'contact-method' | 'phone-after-method';
 interface NotificationItem {
   id: string;
   timer: number;
-  title: string;
   content: string;
   hasLink?: boolean;
 }
@@ -29,7 +28,6 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
     {
       id: 'privacy',
       timer: 7,
-      title: 'Автоматически закроется через',
       content: 'Информация полностью конфиденциальна.',
       hasLink: true,
     },
@@ -68,17 +66,25 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const formatted = formatPhoneNumber(e.target.value);
     setPhoneNumber(formatted);
-    // Сбрасываем ошибку и флаг "показать пропустить" при изменении ввода
     setPhoneError(false);
     setShowSkipAfterError(false);
   };
 
   const handleSubmitPhone = () => {
     if (phoneNumber.replace(/\D/g, '').length >= 11) {
+      // Добавляем второе уведомление
+      setNotifications((prev) => [
+        ...prev,
+        {
+          id: 'sent',
+          timer: 7,
+          content: 'Информация направлена.',
+          hasLink: true,
+        },
+      ]);
       // Переходим к выбору способа связи
       setStep('contact-method');
     } else {
-      // Показываем ошибку
       setPhoneError(true);
       setShowSkipAfterError(true);
     }
@@ -86,7 +92,6 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
 
   const handleSubmitPhoneAfterMethod = () => {
     if (phoneNumber.replace(/\D/g, '').length >= 11) {
-      // Отправляем данные с телефоном и методом связи
       onSubmit({ phone: phoneNumber, method: 'phone' });
     }
   };
@@ -97,6 +102,22 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
 
   const handleNextFromMethod = () => {
     if (selectedMethod === 'phone') {
+      // Добавляем уведомление о конфиденциальности при переходе на ввод телефона
+      setNotifications((prev) => {
+        // Проверяем, нет ли уже такого уведомления
+        if (!prev.find((n) => n.id === 'privacy-phone')) {
+          return [
+            ...prev,
+            {
+              id: 'privacy-phone',
+              timer: 7,
+              content: 'Информация полностью конфиденциальна.',
+              hasLink: true,
+            },
+          ];
+        }
+        return prev;
+      });
       setStep('phone-after-method');
     } else if (selectedMethod) {
       onSubmit({ phone: phoneNumber, method: selectedMethod });
@@ -116,76 +137,91 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
   const isPhoneValid = phoneNumber.replace(/\D/g, '').length >= 11;
   const hasInput = phoneNumber.length > 0;
 
-  // Определяем текст и поведение кнопки
   const getButtonConfig = () => {
     if (showSkipAfterError) {
-      return { text: 'Пропустить', action: onSkip || onClose, isError: false };
+      return { text: 'Нет, спасибо', action: onSkip || onClose, isError: false };
     }
     if (hasInput) {
       return { text: 'Далее', action: handleSubmitPhone, isError: phoneError };
     }
-    return { text: 'Пропустить', action: onSkip || onClose, isError: false };
+    return { text: 'Нет, спасибо', action: onSkip || onClose, isError: false };
   };
 
   const buttonConfig = getButtonConfig();
 
-  // Рендер уведомлений
+  // Закрытие уведомления
+  const handleCloseNotification = (id: string) => {
+    setNotifications((prev) => prev.filter((n) => n.id !== id));
+  };
+
+  // Рендер уведомлений - пиксель перфект по Figma
   const renderNotifications = () => (
     <>
       {notifications.map((notification, index) => (
         <div
           key={notification.id}
-          className="box-border absolute bg-white backdrop-blur-[7.5px] rounded-[20px]"
+          className="absolute bg-white rounded-[20px]"
           style={{
             width: '360px',
-            height: '85px',
+            height: '90px',
             left: '20px',
-            top: `${75 + index * 90}px`,
+            top: `${75 + index * 95}px`,
+            boxSizing: 'border-box',
+            backdropFilter: 'blur(7.5px)',
+            transition: 'top 0.3s ease-in-out',
           }}
           onClick={(e) => e.stopPropagation()}
         >
-          {/* Close button */}
+          {/* Close button - right: 37px from right, top: 9.5px */}
           <button
-            onClick={() => setNotifications((prev) => prev.filter((n) => n.id !== notification.id))}
-            className="absolute"
+            onClick={() => handleCloseNotification(notification.id)}
+            className="absolute flex items-center justify-center"
             style={{
-              right: '15px',
-              top: '15px',
+              right: '37px',
+              top: '9.5px',
               width: '16px',
               height: '16px',
-              opacity: 0.15,
+              background: 'none',
+              border: 'none',
+              padding: 0,
+              cursor: 'pointer',
             }}
           >
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path d="M12 4L4 12M4 4L12 12" stroke="#101010" strokeWidth="1.5" strokeLinecap="round" />
+              <circle cx="8" cy="8" r="8" fill="rgba(16, 16, 16, 0.15)" />
+              <path d="M10.5 5.5L5.5 10.5M5.5 5.5L10.5 10.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" />
             </svg>
           </button>
 
-          {/* Timer text */}
+          {/* Timer text - top: 15px from card */}
           <div
-            className="font-normal text-xs leading-[165%]"
+            className="absolute font-normal"
             style={{
-              position: 'absolute',
               width: '300px',
               height: '20px',
               left: '15px',
               top: '15px',
-              color: 'rgba(16, 16, 16, 0.5)',
+              fontFamily: 'TT Firs Neue, sans-serif',
+              fontSize: '12px',
+              lineHeight: '165%',
+              color: 'rgba(16, 16, 16, 0.25)',
               letterSpacing: '0.5px',
             }}
           >
-            {notification.title} {notification.timer}
+            Автоматически закроется через {notification.timer}
           </div>
 
-          {/* Content */}
+          {/* Content - top: 45px from card */}
           <div
-            className="font-normal text-sm leading-[105%]"
+            className="absolute font-normal"
             style={{
-              position: 'absolute',
               width: '330px',
               height: '30px',
               left: '15px',
-              top: '40px',
+              top: '45px',
+              fontFamily: 'TT Firs Neue, sans-serif',
+              fontSize: '14px',
+              lineHeight: '105%',
               color: '#101010',
               letterSpacing: '0.5px',
             }}
@@ -194,7 +230,7 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
             {notification.hasLink && (
               <>
                 {' '}
-                <a href="#" className="text-blue-600 underline">
+                <a href="#" className="text-[#007AFF] underline">
                   Подробнее об этом писали в медиа
                 </a>
               </>
@@ -212,23 +248,28 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
 
       {/* Карточка консультации */}
       <div
-        className="box-border absolute bg-white backdrop-blur-[7.5px] rounded-[20px]"
+        className="absolute bg-white rounded-[20px]"
         style={{
           width: '360px',
           height: '235px',
           left: '20px',
           top: '490px',
+          boxSizing: 'border-box',
+          backdropFilter: 'blur(7.5px)',
         }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Заголовок */}
         <div
-          className="absolute font-normal text-xl leading-[125%] flex items-center"
+          className="absolute font-normal flex items-center"
           style={{
             width: '330px',
             height: '25px',
             left: '15px',
             top: '15px',
+            fontFamily: 'TT Firs Neue, sans-serif',
+            fontSize: '20px',
+            lineHeight: '125%',
             color: '#101010',
             letterSpacing: '0.5px',
           }}
@@ -238,12 +279,15 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
 
         {/* Подзаголовок */}
         <div
-          className="absolute font-normal text-sm leading-[105%]"
+          className="absolute font-normal"
           style={{
             width: '330px',
             height: '30px',
             left: '15px',
             top: '50px',
+            fontFamily: 'TT Firs Neue, sans-serif',
+            fontSize: '14px',
+            lineHeight: '105%',
             color: 'rgba(16, 16, 16, 0.25)',
             letterSpacing: '0.5px',
           }}
@@ -253,7 +297,7 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
 
         {/* Поле ввода телефона */}
         <div
-          className="box-border absolute rounded-[10px]"
+          className="absolute rounded-[10px]"
           style={{
             left: '15px',
             right: '15px',
@@ -264,6 +308,7 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
               : isPhoneValid
                 ? '1px solid #101010'
                 : '1px solid rgba(16, 16, 16, 0.25)',
+            boxSizing: 'border-box',
           }}
         >
           <input
@@ -271,8 +316,11 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
             value={phoneNumber}
             onChange={handlePhoneChange}
             placeholder="Номер сотового телефона"
-            className="w-full h-full px-[15px] font-normal text-base leading-[125%] bg-transparent outline-none"
+            className="w-full h-full px-[15px] bg-transparent outline-none"
             style={{
+              fontFamily: 'TT Firs Neue, sans-serif',
+              fontSize: '16px',
+              lineHeight: '125%',
               color: phoneError ? '#FF3B30' : phoneNumber ? '#101010' : 'rgba(16, 16, 16, 0.25)',
               letterSpacing: '0.5px',
             }}
@@ -282,7 +330,7 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
         {/* Кнопка */}
         <button
           onClick={buttonConfig.action}
-          className="box-border absolute rounded-[10px] font-normal text-base leading-[315%] flex items-center justify-center text-center text-white"
+          className="absolute rounded-[10px] flex items-center justify-center text-white"
           style={{
             left: '15px',
             right: '15px',
@@ -290,6 +338,10 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
             height: '50px',
             background: '#101010',
             border: '1px solid rgba(16, 16, 16, 0.25)',
+            fontFamily: 'TT Firs Neue, sans-serif',
+            fontSize: '16px',
+            lineHeight: '315%',
+            boxSizing: 'border-box',
             letterSpacing: '0.5px',
             transition: 'background-color 0.2s ease',
           }}
@@ -303,43 +355,53 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
   // Экран выбора способа связи
   const renderContactMethod = () => (
     <>
-      {/* Подсказка вверху */}
-      <div
-        className="absolute font-normal text-sm leading-[105%] flex items-center justify-center text-center"
-        style={{
-          width: '240px',
-          height: '30px',
-          left: 'calc(50% - 240px/2)',
-          top: '75px',
-          color: 'rgba(16, 16, 16, 0.15)',
-          letterSpacing: '0.5px',
-        }}
-      >
-        Нажмите в открытое пустое место, чтобы выйти из этого режима
-      </div>
+      {/* Подсказка вверху - скрывается когда есть уведомления */}
+      {notifications.length === 0 && (
+        <div
+          className="absolute font-normal flex items-center justify-center text-center"
+          style={{
+            width: '240px',
+            height: '30px',
+            left: 'calc(50% - 120px)',
+            top: '75px',
+            fontFamily: 'TT Firs Neue, sans-serif',
+            fontSize: '14px',
+            lineHeight: '105%',
+            color: 'rgba(16, 16, 16, 0.15)',
+            letterSpacing: '0.5px',
+          }}
+        >
+          Нажмите в открытое пустое место, чтобы выйти из этого режима
+        </div>
+      )}
 
       {/* Карточка с уведомлением */}
       {notifications.length > 0 && renderNotifications()}
 
       {/* Карточка консультации */}
       <div
-        className="box-border absolute bg-white backdrop-blur-[7.5px] rounded-[20px]"
+        className="absolute bg-white rounded-[20px]"
         style={{
           width: '360px',
           height: '350px',
           left: '20px',
           top: '375px',
+          boxSizing: 'border-box',
+          backdropFilter: 'blur(7.5px)',
         }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Заголовок */}
         <div
-          className="absolute font-normal text-xl leading-[125%] flex items-center"
+          className="absolute font-normal flex items-center"
           style={{
             width: '330px',
             height: '25px',
             left: '15px',
             top: '15px',
+            fontFamily: 'TT Firs Neue, sans-serif',
+            fontSize: '20px',
+            lineHeight: '125%',
             color: '#101010',
             letterSpacing: '0.5px',
           }}
@@ -349,12 +411,15 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
 
         {/* Подзаголовок */}
         <div
-          className="absolute font-normal text-sm leading-[105%]"
+          className="absolute font-normal"
           style={{
             width: '330px',
             height: '30px',
             left: '15px',
             top: '55px',
+            fontFamily: 'TT Firs Neue, sans-serif',
+            fontSize: '14px',
+            lineHeight: '105%',
             color: 'rgba(16, 16, 16, 0.25)',
             letterSpacing: '0.5px',
           }}
@@ -373,18 +438,22 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
         >
           {/* Написать в Max (неактивна) */}
           <div
-            className="box-border relative rounded-[10px] cursor-pointer"
+            className="relative rounded-[10px] cursor-pointer"
             style={{
               height: '50px',
               border: '1px solid rgba(16, 16, 16, 0.25)',
               opacity: 0.25,
+              boxSizing: 'border-box',
             }}
           >
             <div
-              className="absolute font-normal text-base leading-[125%] flex items-center"
+              className="absolute font-normal flex items-center"
               style={{
                 left: '15px',
                 top: '15px',
+                fontFamily: 'TT Firs Neue, sans-serif',
+                fontSize: '16px',
+                lineHeight: '125%',
                 color: 'rgba(16, 16, 16, 0.5)',
                 letterSpacing: '0.5px',
               }}
@@ -404,18 +473,22 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
 
           {/* Написать в Telegram (активна) */}
           <div
-            className="box-border relative rounded-[10px] cursor-pointer"
+            className="relative rounded-[10px] cursor-pointer"
             style={{
               height: '50px',
               border: selectedMethod === 'telegram' ? '1px solid #101010' : '1px solid rgba(16, 16, 16, 0.25)',
+              boxSizing: 'border-box',
             }}
             onClick={() => handleSelectMethod('telegram')}
           >
             <div
-              className="absolute font-normal text-base leading-[125%] flex items-center"
+              className="absolute font-normal flex items-center"
               style={{
                 left: '15px',
                 top: '15px',
+                fontFamily: 'TT Firs Neue, sans-serif',
+                fontSize: '16px',
+                lineHeight: '125%',
                 color: selectedMethod === 'telegram' ? '#101010' : 'rgba(16, 16, 16, 0.5)',
                 letterSpacing: '0.5px',
               }}
@@ -447,18 +520,22 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
 
           {/* Перезвонить на номер телефона (активна) */}
           <div
-            className="box-border relative rounded-[10px] cursor-pointer"
+            className="relative rounded-[10px] cursor-pointer"
             style={{
               height: '50px',
               border: selectedMethod === 'phone' ? '1px solid #101010' : '1px solid rgba(16, 16, 16, 0.25)',
+              boxSizing: 'border-box',
             }}
             onClick={() => handleSelectMethod('phone')}
           >
             <div
-              className="absolute font-normal text-base leading-[125%] flex items-center"
+              className="absolute font-normal flex items-center"
               style={{
                 left: '15px',
                 top: '15px',
+                fontFamily: 'TT Firs Neue, sans-serif',
+                fontSize: '16px',
+                lineHeight: '125%',
                 color: '#101010',
                 letterSpacing: '0.5px',
               }}
@@ -502,11 +579,13 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
           {/* Кнопка Назад */}
           <button
             onClick={handleBack}
-            className="box-border rounded-[10px] flex items-center justify-center"
+            className="rounded-[10px] flex items-center justify-center"
             style={{
               width: '50px',
               height: '50px',
               border: '1px solid rgba(16, 16, 16, 0.15)',
+              background: 'white',
+              boxSizing: 'border-box',
             }}
           >
             <svg width="12" height="6" viewBox="0 0 12 6" fill="none" style={{ transform: 'rotate(90deg)' }}>
@@ -518,12 +597,16 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
           <button
             onClick={handleNextFromMethod}
             disabled={!selectedMethod}
-            className="box-border flex-1 rounded-[10px] font-normal text-base leading-[315%] flex items-center justify-center text-center text-white"
+            className="flex-1 rounded-[10px] flex items-center justify-center text-center text-white"
             style={{
               height: '50px',
               background: selectedMethod ? '#101010' : 'rgba(16, 16, 16, 0.25)',
               border: '1px solid rgba(16, 16, 16, 0.25)',
+              fontFamily: 'TT Firs Neue, sans-serif',
+              fontSize: '16px',
+              lineHeight: '315%',
               letterSpacing: '0.5px',
+              boxSizing: 'border-box',
             }}
           >
             Далее
@@ -536,43 +619,53 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
   // Экран ввода телефона после выбора метода
   const renderPhoneAfterMethod = () => (
     <>
-      {/* Подсказка вверху */}
-      <div
-        className="absolute font-normal text-sm leading-[105%] flex items-center justify-center text-center"
-        style={{
-          width: '240px',
-          height: '30px',
-          left: 'calc(50% - 240px/2)',
-          top: '75px',
-          color: 'rgba(16, 16, 16, 0.15)',
-          letterSpacing: '0.5px',
-        }}
-      >
-        Нажмите в открытое пустое место, чтобы выйти из этого режима
-      </div>
+      {/* Подсказка вверху - скрывается когда есть уведомления */}
+      {notifications.length === 0 && (
+        <div
+          className="absolute font-normal flex items-center justify-center text-center"
+          style={{
+            width: '240px',
+            height: '30px',
+            left: 'calc(50% - 120px)',
+            top: '75px',
+            fontFamily: 'TT Firs Neue, sans-serif',
+            fontSize: '14px',
+            lineHeight: '105%',
+            color: 'rgba(16, 16, 16, 0.15)',
+            letterSpacing: '0.5px',
+          }}
+        >
+          Нажмите в открытое пустое место, чтобы выйти из этого режима
+        </div>
+      )}
 
       {/* Карточка с уведомлением */}
       {notifications.length > 0 && renderNotifications()}
 
       {/* Карточка консультации */}
       <div
-        className="box-border absolute bg-white backdrop-blur-[7.5px] rounded-[20px]"
+        className="absolute bg-white rounded-[20px]"
         style={{
           width: '360px',
           height: '240px',
           left: '20px',
           top: '485px',
+          boxSizing: 'border-box',
+          backdropFilter: 'blur(7.5px)',
         }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Заголовок */}
         <div
-          className="absolute font-normal text-xl leading-[125%] flex items-center"
+          className="absolute font-normal flex items-center"
           style={{
             width: '330px',
             height: '25px',
             left: '15px',
             top: '15px',
+            fontFamily: 'TT Firs Neue, sans-serif',
+            fontSize: '20px',
+            lineHeight: '125%',
             color: '#101010',
             letterSpacing: '0.5px',
           }}
@@ -582,12 +675,15 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
 
         {/* Подзаголовок */}
         <div
-          className="absolute font-normal text-sm leading-[105%]"
+          className="absolute font-normal"
           style={{
             width: '330px',
             height: '30px',
             left: '15px',
             top: '55px',
+            fontFamily: 'TT Firs Neue, sans-serif',
+            fontSize: '14px',
+            lineHeight: '105%',
             color: 'rgba(16, 16, 16, 0.25)',
             letterSpacing: '0.5px',
           }}
@@ -597,13 +693,14 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
 
         {/* Поле ввода телефона */}
         <div
-          className="box-border absolute rounded-[10px]"
+          className="absolute rounded-[10px]"
           style={{
             left: '15px',
             right: '15px',
             top: '105px',
             height: '50px',
             border: isPhoneValid ? '1px solid #101010' : '1px solid rgba(16, 16, 16, 0.5)',
+            boxSizing: 'border-box',
           }}
         >
           <input
@@ -611,8 +708,11 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
             value={phoneNumber}
             onChange={handlePhoneChange}
             placeholder="Номер сотового телефона"
-            className="w-full h-full px-[15px] font-normal text-base leading-[125%] bg-transparent outline-none"
+            className="w-full h-full px-[15px] bg-transparent outline-none"
             style={{
+              fontFamily: 'TT Firs Neue, sans-serif',
+              fontSize: '16px',
+              lineHeight: '125%',
               color: phoneNumber ? '#101010' : 'rgba(16, 16, 16, 0.25)',
               letterSpacing: '0.5px',
             }}
@@ -632,11 +732,13 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
           {/* Кнопка Назад */}
           <button
             onClick={handleBack}
-            className="box-border rounded-[10px] flex items-center justify-center"
+            className="rounded-[10px] flex items-center justify-center"
             style={{
               width: '50px',
               height: '50px',
               border: '1px solid rgba(16, 16, 16, 0.15)',
+              background: 'white',
+              boxSizing: 'border-box',
             }}
           >
             <svg width="12" height="6" viewBox="0 0 12 6" fill="none" style={{ transform: 'rotate(90deg)' }}>
@@ -648,12 +750,16 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
           <button
             onClick={handleSubmitPhoneAfterMethod}
             disabled={!isPhoneValid}
-            className="box-border flex-1 rounded-[10px] font-normal text-base leading-[315%] flex items-center justify-center text-center text-white"
+            className="flex-1 rounded-[10px] flex items-center justify-center text-center text-white"
             style={{
               height: '50px',
               background: isPhoneValid ? '#101010' : 'rgba(16, 16, 16, 0.25)',
               border: '1px solid rgba(16, 16, 16, 0.25)',
+              fontFamily: 'TT Firs Neue, sans-serif',
+              fontSize: '16px',
+              lineHeight: '315%',
               letterSpacing: '0.5px',
+              boxSizing: 'border-box',
             }}
           >
             Далее

@@ -55,7 +55,7 @@ function ProvidersContent() {
 
   if (providers.length === 0) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-white">
+      <div className="min-h-screen flex items-center justify-center bg-[#F5F5F5]">
         <div className="text-center max-w-md px-4">
           <h1 className="text-2xl font-bold text-[#101010] mb-4">
             Провайдеры не найдены
@@ -75,7 +75,7 @@ function ProvidersContent() {
   }
 
   return (
-    <div className="min-h-screen bg-white py-8 px-4">
+    <div className="min-h-screen bg-[#F5F5F5] py-8 px-4">
       <div className="max-w-4xl mx-auto">
         {/* Заголовок */}
         <div className="mb-8">
@@ -102,7 +102,7 @@ function ProvidersContent() {
             <div
               key={provider.id}
               onClick={() => handleProviderClick(provider.id)}
-              className="border border-gray-200 rounded-[20px] p-6 hover:shadow-lg transition-all cursor-pointer"
+              className="bg-white rounded-[20px] p-6 hover:shadow-lg transition-all cursor-pointer"
             >
               <div className="flex items-center mb-4">
                 {provider.logo && (

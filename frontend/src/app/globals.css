@@ -88,7 +88,7 @@ body {
 }
 
 body {
-  background: #FFFFFF;
+  background: #F5F5F5;
   font-family: 'TT Firs Neue', sans-serif;
   /* Убираем подвал браузера на мобильных */
   -webkit-overflow-scrolling: touch;

@@ -48,7 +48,7 @@ export default function ConnectionTypeModal({
     <div
       className="fixed inset-0 z-[10000] flex items-end justify-center"
       style={{
-        background: 'rgba(255, 255, 255, 0.85)',
+        background: '#F5F5F5',
         backdropFilter: 'blur(12.5px)',
         paddingBottom: '155px',
       }}
@@ -87,7 +87,6 @@ export default function ConnectionTypeModal({
           width: '360px',
           height: '350px',
           background: '#FFFFFF',
-          border: '1px solid rgba(16, 16, 16, 0.15)',
           backdropFilter: 'blur(7.5px)',
           borderRadius: '20px',
           padding: '15px',

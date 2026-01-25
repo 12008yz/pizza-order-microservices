@@ -181,13 +181,13 @@ function AddressFormContent() {
   }
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-white overflow-hidden">
-      <div className="relative w-[400px] h-[870px] bg-white">
-        <div className="absolute left-0 right-[0.06%] top-[10%] bottom-[10%] bg-white" />
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-[#F5F5F5] overflow-hidden">
+      <div className="relative w-[400px] h-[870px] bg-[#F5F5F5]">
+        <div className="absolute left-0 right-[0.06%] top-[10%] bottom-[10%] bg-[#F5F5F5]" />
 
         {!showCookieBanner && <Header />}
 
-        <div className="absolute left-[5%] right-[5%] top-[29.74%] bottom-[16.67%] bg-white border border-[rgba(16,16,16,0.15)] backdrop-blur-[7.5px] rounded-[20px]" />
+        <div className="absolute left-[5%] right-[5%] top-[29.74%] bottom-[16.67%] bg-white backdrop-blur-[7.5px] rounded-[20px]" />
 
         <div className="absolute left-[8.75%] right-[8.75%] top-[31.26%] bottom-[59.77%] font-normal text-xl leading-[125%] text-[#101010] flex items-start" style={{ letterSpacing: '0.5px' }}>
           Маркетплейс тарифных планов, операторов на твоем адресе. Бесплатно заказать «wi-fi»

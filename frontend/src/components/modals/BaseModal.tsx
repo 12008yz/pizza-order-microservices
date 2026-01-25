@@ -29,7 +29,7 @@ export default function BaseModal({
     <div
       className="fixed inset-0 z-[10000] flex items-center justify-center"
       style={{
-        background: backdropBlur ? 'rgba(255, 255, 255, 0.85)' : 'rgba(0, 0, 0, 0.5)',
+        background: backdropBlur ? '#F5F5F5' : 'rgba(0, 0, 0, 0.5)',
         backdropFilter: backdropBlur ? 'blur(12.5px)' : 'none',
       }}
       onClick={handleBackdropClick}

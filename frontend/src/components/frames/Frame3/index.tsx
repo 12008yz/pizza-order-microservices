@@ -12,7 +12,7 @@ export default function Frame3() {
   const [showTechAccessModal, setShowTechAccessModal] = useState(false);
 
   return (
-    <div className="relative w-[400px] h-[870px] bg-white">
+    <div className="relative w-[400px] h-[870px] bg-[#F5F5F5]">
       {/* Notification Banner */}
       <NotificationBanner />
 

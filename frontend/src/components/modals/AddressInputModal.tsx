@@ -389,7 +389,7 @@ export default function AddressInputModal({
     <div
       className="fixed inset-0 z-[10000] flex items-center justify-center"
       style={{
-        background: '#FFFFFF',
+        background: '#F5F5F5',
         backdropFilter: 'blur(12.5px)',
       }}
       onClick={handleBackdropClick}
@@ -400,7 +400,7 @@ export default function AddressInputModal({
           position: 'relative',
           width: '400px',
           height: '870px',
-          background: '#FFFFFF',
+          background: '#F5F5F5',
         }}
       >
         {/* Подсказка сверху */}
@@ -437,7 +437,6 @@ export default function AddressInputModal({
             left: '20px',
             top: `${modalTop}px`,
             background: '#FFFFFF',
-            border: '1px solid rgba(16, 16, 16, 0.15)',
             backdropFilter: 'blur(7.5px)',
             borderRadius: '20px',
             transition: 'top 0.3s ease, height 0.3s ease',

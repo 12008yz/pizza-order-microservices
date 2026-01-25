@@ -135,7 +135,7 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
       {notifications.map((notification, index) => (
         <div
           key={notification.id}
-          className="box-border absolute bg-white border border-[rgba(16,16,16,0.15)] backdrop-blur-[7.5px] rounded-[20px]"
+          className="box-border absolute bg-white backdrop-blur-[7.5px] rounded-[20px]"
           style={{
             width: '360px',
             height: '85px',
@@ -212,7 +212,7 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
 
       {/* Карточка консультации */}
       <div
-        className="box-border absolute bg-white border border-[rgba(16,16,16,0.15)] backdrop-blur-[7.5px] rounded-[20px]"
+        className="box-border absolute bg-white backdrop-blur-[7.5px] rounded-[20px]"
         style={{
           width: '360px',
           height: '235px',
@@ -323,7 +323,7 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
 
       {/* Карточка консультации */}
       <div
-        className="box-border absolute bg-white border border-[rgba(16,16,16,0.15)] backdrop-blur-[7.5px] rounded-[20px]"
+        className="box-border absolute bg-white backdrop-blur-[7.5px] rounded-[20px]"
         style={{
           width: '360px',
           height: '350px',
@@ -556,7 +556,7 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
 
       {/* Карточка консультации */}
       <div
-        className="box-border absolute bg-white border border-[rgba(16,16,16,0.15)] backdrop-blur-[7.5px] rounded-[20px]"
+        className="box-border absolute bg-white backdrop-blur-[7.5px] rounded-[20px]"
         style={{
           width: '360px',
           height: '240px',
@@ -673,13 +673,13 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
 
   return (
     <div
-      className="fixed inset-0 z-[9999] flex items-center justify-center bg-white overflow-hidden"
+      className="fixed inset-0 z-[9999] flex items-center justify-center bg-[#F5F5F5] overflow-hidden"
     >
       {/* Main Container */}
-      <div className="relative w-[400px] h-[870px] bg-white">
+      <div className="relative w-[400px] h-[870px] bg-[#F5F5F5]">
         {/* Background - клик по нему переходит на тарифы */}
         <div
-          className="absolute left-0 right-[0.06%] top-0 bottom-0 bg-white cursor-pointer"
+          className="absolute left-0 right-[0.06%] top-0 bottom-0 bg-[#F5F5F5] cursor-pointer"
           onClick={handleBackgroundClick}
         />
 

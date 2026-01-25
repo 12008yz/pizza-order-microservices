@@ -41,7 +41,7 @@ export default function SortingModal({
     <div
       className="fixed inset-0 z-[10001] flex items-center justify-center"
       style={{
-        background: 'rgba(255, 255, 255, 0.85)',
+        background: '#F5F5F5',
         backdropFilter: 'blur(12.5px)',
       }}
       onClick={onClose}

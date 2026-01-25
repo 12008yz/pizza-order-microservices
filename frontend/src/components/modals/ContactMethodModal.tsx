@@ -17,7 +17,7 @@ export default function ContactMethodModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-white/85 backdrop-blur-[12.5px]">
+    <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-[#F5F5F5] backdrop-blur-[12.5px]">
       <div className="bg-white rounded-[20px] p-6 max-w-md">
         <h2 className="text-xl mb-4">Выбор способа связи</h2>
         <div className="space-y-2 mb-4">

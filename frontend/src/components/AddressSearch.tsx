@@ -186,7 +186,7 @@ export default function AddressSearch() {
               {availableProviders.map((provider) => (
                 <div
                   key={provider.id}
-                  className="border border-gray-200 rounded-lg p-4 hover:shadow-lg transition-shadow"
+                  className="bg-white rounded-lg p-4 hover:shadow-lg transition-shadow"
                 >
                   <div className="flex items-center mb-2">
                     {provider.logo && (

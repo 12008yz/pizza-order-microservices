@@ -29,7 +29,7 @@ export default function TariffCard({
 }: TariffCardProps) {
   return (
     <div
-      className="box-border bg-white border border-[rgba(16,16,16,0.15)] backdrop-blur-[7.5px] rounded-[20px] cursor-pointer transition-all hover:shadow-lg"
+      className="box-border bg-white backdrop-blur-[7.5px] rounded-[20px] cursor-pointer transition-all hover:shadow-lg"
       onClick={onClick}
       style={{
         padding: '20px',

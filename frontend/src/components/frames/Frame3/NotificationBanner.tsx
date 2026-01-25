@@ -40,7 +40,7 @@ export default function NotificationBanner({
 
   return (
     <div
-      className="absolute bg-white border border-[rgba(16,16,16,0.15)] backdrop-blur-[7.5px] rounded-[20px]"
+      className="absolute bg-white backdrop-blur-[7.5px] rounded-[20px]"
       style={{
         width: '360px',
         height: '85px',

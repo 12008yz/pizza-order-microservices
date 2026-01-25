@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
          // Удаляем потенциально опасные символы и ограничиваем длину
          const sanitized = str
             .trim()
-            .replace(/[<>\"']/g, '') // Удаляем HTML-символы
+            .replace(/[<>"']/g, '') // Удаляем HTML-символы
             .slice(0, maxLength);
          return sanitized || null;
       };

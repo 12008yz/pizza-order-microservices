@@ -2,14 +2,20 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { CaretDown, CaretRight, Check, X } from '@phosphor-icons/react';
+import { CaretRight, Check, X } from '@phosphor-icons/react';
 import { AddressProvider, useAddress, ConnectionType } from '../../../contexts/AddressContext';
 import ConnectionTypeModal from '../../modals/ConnectionTypeModal';
 import AddressInputModal from '../../modals/AddressInputModal';
 import PrivacyConsent from './PrivacyConsent';
 import Header from '../../layout/Header';
 import LoadingScreen from '../../LoadingScreen';
-import ConsultationFlow from '../Frame2/ConsultationFlow';
+import dynamic from 'next/dynamic';
+
+// Динамический импорт ConsultationFlow для code splitting
+const ConsultationFlow = dynamic(() => import('../Frame2/ConsultationFlow'), {
+  loading: () => <div>Загрузка...</div>, // Можно заменить на LoadingScreen
+  ssr: false, // Отключаем SSR для этого компонента
+});
 
 type FlowState = 'form' | 'loading' | 'consultation';
 type ContactMethod = 'max' | 'telegram' | 'phone';
@@ -20,7 +26,8 @@ function AddressFormContent() {
   const [showConnectionModal, setShowConnectionModal] = useState(false);
   const [showAddressModal, setShowAddressModal] = useState(false);
   const [addressModalStep, setAddressModalStep] = useState<'city' | 'street' | 'house'>('city');
-  const [submitError, setSubmitError] = useState<string | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [_submitError, setSubmitError] = useState<string | null>(null); // submitError не используется, но setSubmitError используется
   const [showCookieBanner, setShowCookieBanner] = useState(true);
   const [cookieTimer, setCookieTimer] = useState(7);
 
@@ -125,7 +132,7 @@ function AddressFormContent() {
     // Удаляем потенциально опасные символы и ограничиваем длину
     const sanitized = str
       .trim()
-      .replace(/[<>\"']/g, '') // Удаляем HTML-символы
+      .replace(/[<>"']/g, '') // Удаляем HTML-символы
       .slice(0, maxLength);
     return sanitized || undefined;
   };
@@ -212,12 +219,12 @@ function AddressFormContent() {
     await saveUserDataAndNavigate();
   };
 
-  const isFormValid =
-    addressData.connectionType &&
-    (addressData.cityId || addressData.city) &&
-    (addressData.streetId || addressData.street) &&
-    (addressData.buildingId || addressData.houseNumber) &&
-    addressData.privacyConsent;
+  // const isFormValid = // Не используется, закомментировано
+  //   addressData.connectionType &&
+  //   (addressData.cityId || addressData.city) &&
+  //   (addressData.streetId || addressData.street) &&
+  //   (addressData.buildingId || addressData.houseNumber) &&
+  //   addressData.privacyConsent;
 
   if (flowState === 'loading') {
     return <LoadingScreen progress={loadingProgress} />;

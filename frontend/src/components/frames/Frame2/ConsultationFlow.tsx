@@ -23,6 +23,8 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
   const [step, setStep] = useState<ConsultationStep>('phone-input');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [selectedMethod, setSelectedMethod] = useState<ContactMethod | null>(null);
+  const [phoneError, setPhoneError] = useState(false);
+  const [showSkipAfterError, setShowSkipAfterError] = useState(false);
   const [notifications, setNotifications] = useState<NotificationItem[]>([
     {
       id: 'privacy',
@@ -66,12 +68,19 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const formatted = formatPhoneNumber(e.target.value);
     setPhoneNumber(formatted);
+    // Сбрасываем ошибку и флаг "показать пропустить" при изменении ввода
+    setPhoneError(false);
+    setShowSkipAfterError(false);
   };
 
   const handleSubmitPhone = () => {
     if (phoneNumber.replace(/\D/g, '').length >= 11) {
       // Переходим к выбору способа связи
       setStep('contact-method');
+    } else {
+      // Показываем ошибку
+      setPhoneError(true);
+      setShowSkipAfterError(true);
     }
   };
 
@@ -105,6 +114,20 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
   };
 
   const isPhoneValid = phoneNumber.replace(/\D/g, '').length >= 11;
+  const hasInput = phoneNumber.length > 0;
+
+  // Определяем текст и поведение кнопки
+  const getButtonConfig = () => {
+    if (showSkipAfterError) {
+      return { text: 'Пропустить', action: onSkip || onClose, isError: false };
+    }
+    if (hasInput) {
+      return { text: 'Далее', action: handleSubmitPhone, isError: phoneError };
+    }
+    return { text: 'Пропустить', action: onSkip || onClose, isError: false };
+  };
+
+  const buttonConfig = getButtonConfig();
 
   // Рендер уведомлений
   const renderNotifications = () => (
@@ -219,11 +242,14 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
             height: '30px',
             left: '15px',
             top: '50px',
-            color: 'rgba(16, 16, 16, 0.25)',
+            color: phoneError ? '#FF3B30' : 'rgba(16, 16, 16, 0.25)',
             letterSpacing: '0.5px',
           }}
         >
-          Напишите номер вашего сотового телефона. Пожалуйста, проверьте правильность
+          {phoneError
+            ? 'Неправильный номер телефона. Проверьте и попробуйте снова'
+            : 'Напишите номер вашего сотового телефона. Пожалуйста, проверьте правильность'
+          }
         </div>
 
         {/* Поле ввода телефона */}
@@ -234,7 +260,11 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
             right: '15px',
             top: '95px',
             height: '50px',
-            border: isPhoneValid ? '1px solid #101010' : '1px solid rgba(16, 16, 16, 0.25)',
+            border: phoneError
+              ? '1px solid #FF3B30'
+              : isPhoneValid
+                ? '1px solid #101010'
+                : '1px solid rgba(16, 16, 16, 0.25)',
           }}
         >
           <input
@@ -244,7 +274,7 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
             placeholder="Номер сотового телефона"
             className="w-full h-full px-[15px] font-normal text-base leading-[125%] bg-transparent outline-none"
             style={{
-              color: phoneNumber ? '#101010' : 'rgba(16, 16, 16, 0.25)',
+              color: phoneError ? '#FF3B30' : phoneNumber ? '#101010' : 'rgba(16, 16, 16, 0.25)',
               letterSpacing: '0.5px',
             }}
           />
@@ -252,7 +282,7 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
 
         {/* Кнопка */}
         <button
-          onClick={isPhoneValid ? handleSubmitPhone : (onSkip || onClose)}
+          onClick={buttonConfig.action}
           className="box-border absolute rounded-[10px] font-normal text-base leading-[315%] flex items-center justify-center text-center text-white"
           style={{
             left: '15px',
@@ -262,9 +292,10 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
             background: '#101010',
             border: '1px solid rgba(16, 16, 16, 0.25)',
             letterSpacing: '0.5px',
+            transition: 'background-color 0.2s ease',
           }}
         >
-          {isPhoneValid ? 'Далее' : 'Нет, спасибо'}
+          {buttonConfig.text}
         </button>
       </div>
     </>

@@ -54,8 +54,40 @@ export default function AddressInputModal({
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
   const [buildingStructure, setBuildingStructure] = useState<{ entrances?: number; floors?: number; apartmentsPerFloor?: number } | null>(null);
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Обработка появления клавиатуры на мобильных устройствах
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleResize = () => {
+      if (window.visualViewport) {
+        const viewportHeight = window.visualViewport.height;
+        const windowHeight = window.innerHeight;
+        const keyboardH = windowHeight - viewportHeight;
+        setKeyboardHeight(keyboardH > 0 ? keyboardH : 0);
+      }
+    };
+
+    // Используем visualViewport API для определения высоты клавиатуры
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', handleResize);
+      window.visualViewport.addEventListener('scroll', handleResize);
+    }
+
+    // Fallback для устройств без visualViewport
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      if (window.visualViewport) {
+        window.visualViewport.removeEventListener('resize', handleResize);
+        window.visualViewport.removeEventListener('scroll', handleResize);
+      }
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [isOpen]);
 
   // Reset state when modal opens or step changes
   useEffect(() => {
@@ -65,6 +97,7 @@ export default function AddressInputModal({
       setSuggestions([]);
       setSelectedIndex(null);
       setBuildingStructure(null);
+      setKeyboardHeight(0);
       setTimeout(() => inputRef.current?.focus(), 100);
     }
   }, [isOpen, initialStep]);
@@ -345,10 +378,10 @@ export default function AddressInputModal({
   // Полная высота модалки с подсказками
   const modalHeight = baseHeight + extraHeight;
 
-  // Базовая позиция top модалки (ИСХОДНОЕ положение)
-  const baseTop = 242;
+  // Базовая позиция top модалки - ВНИЗУ экрана (485px от верха в контейнере 870px)
+  const baseTop = 485;
   // При появлении подсказок модалка расширяется ВВЕРХ (top уменьшается)
-  const modalTop = baseTop - extraHeight;
+  const modalTop = baseTop - extraHeight - keyboardHeight;
 
   return (
     <div
@@ -473,7 +506,7 @@ export default function AddressInputModal({
                     padding: '0 15px',
                     cursor: 'pointer',
                     transition: 'background-color 0.2s ease',
-                    backgroundColor: selectedIndex === index ? 'rgba(16, 16, 16, 0.05)' : 'transparent',
+                    backgroundColor: 'transparent',
                   }}
                 >
                   <span
@@ -527,7 +560,7 @@ export default function AddressInputModal({
             </div>
           )}
 
-          {/* Поле ввода - ФИКСИРОВАНО от низа модалки (240 - 105 - 50 = 85px) */}
+          {/* Поле ввода - ФИКСИРОВАНО от низа модалки */}
           <div
             style={{
               position: 'absolute',

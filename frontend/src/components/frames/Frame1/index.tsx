@@ -217,7 +217,7 @@ function AddressFormContent() {
               <span
                 className={`text-base leading-[125%] flex-1 ${addressData.connectionType ? 'text-[#101010]' : 'text-[rgba(16,16,16,0.5)]'
                   }`}
-                style={{ 
+                style={{
                   letterSpacing: '0.5px',
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
@@ -272,7 +272,7 @@ function AddressFormContent() {
               <span
                 className={`text-base leading-[125%] flex-1 ${addressData.city ? 'text-[#101010]' : 'text-[rgba(16,16,16,0.5)]'
                   }`}
-                style={{ 
+                style={{
                   letterSpacing: '0.5px',
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
@@ -323,7 +323,7 @@ function AddressFormContent() {
               <span
                 className={`text-base leading-[125%] flex-1 ${addressData.street ? 'text-[#101010]' : 'text-[rgba(16,16,16,0.5)]'
                   }`}
-                style={{ 
+                style={{
                   letterSpacing: '0.5px',
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
@@ -374,7 +374,7 @@ function AddressFormContent() {
               <span
                 className={`text-base leading-[125%] flex-1 ${addressData.houseNumber ? 'text-[#101010]' : 'text-[rgba(16,16,16,0.5)]'
                   }`}
-                style={{ 
+                style={{
                   letterSpacing: '0.5px',
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
@@ -428,7 +428,7 @@ function AddressFormContent() {
         </div>
 
         {showCookieBanner && (
-          <div 
+          <div
             className="absolute z-20 bg-white rounded-[20px]"
             style={{
               width: '360px',
@@ -439,7 +439,7 @@ function AddressFormContent() {
             }}
           >
             {/* Текст таймера */}
-            <div 
+            <div
               className="absolute font-normal"
               style={{
                 fontFamily: 'TT Firs Neue, sans-serif',
@@ -458,7 +458,7 @@ function AddressFormContent() {
             </div>
 
             {/* Основной текст */}
-            <div 
+            <div
               className="absolute font-normal"
               style={{
                 fontFamily: 'TT Firs Neue, sans-serif',

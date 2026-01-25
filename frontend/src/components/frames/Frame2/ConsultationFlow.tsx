@@ -233,7 +233,7 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
             letterSpacing: '0.5px',
           }}
         >
-          Бесплатная консультация
+          Консультация
         </div>
 
         {/* Подзаголовок */}
@@ -244,14 +244,11 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
             height: '30px',
             left: '15px',
             top: '50px',
-            color: phoneError ? '#FF3B30' : 'rgba(16, 16, 16, 0.25)',
+            color: 'rgba(16, 16, 16, 0.25)',
             letterSpacing: '0.5px',
           }}
         >
-          {phoneError
-            ? 'Неправильный номер телефона. Проверьте и попробуйте снова'
-            : 'Напишите номер вашего сотового телефона. Пожалуйста, проверьте правильность'
-          }
+          Напишите номер вашего сотового телефона. Пожалуйста, проверьте правильность
         </div>
 
         {/* Поле ввода телефона */}

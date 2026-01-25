@@ -28,6 +28,9 @@ function AddressFormContent() {
   const [flowState, setFlowState] = useState<FlowState>('form');
   const [loadingProgress, setLoadingProgress] = useState(0);
 
+  // Button press state for animation
+  const [isSubmitPressed, setIsSubmitPressed] = useState(false);
+
   // Закрытие баннера cookies через 7 секунд с обратным отсчетом
   useEffect(() => {
     if (showCookieBanner && cookieTimer > 0) {
@@ -99,6 +102,12 @@ function AddressFormContent() {
   const handleConsultationClose = () => {
     setFlowState('form');
     setLoadingProgress(0);
+  };
+
+  // Открытие консультации по клику на иконку самолёта в Header
+  const handleHeaderConsultationClick = () => {
+    setLoadingProgress(0);
+    setFlowState('loading');
   };
 
   // Функция сохранения данных пользователя и перехода на тарифы
@@ -185,7 +194,7 @@ function AddressFormContent() {
       <div className="relative w-[400px] h-[870px] bg-[#F5F5F5]">
         <div className="absolute left-0 right-[0.06%] top-[10%] bottom-[10%] bg-[#F5F5F5]" />
 
-        {!showCookieBanner && <Header />}
+        {!showCookieBanner && <Header onConsultationClick={handleHeaderConsultationClick} />}
 
         <div className="absolute left-[5%] right-[5%] top-[29.74%] bottom-[16.67%] bg-white backdrop-blur-[7.5px] rounded-[20px]" />
 
@@ -420,8 +429,17 @@ function AddressFormContent() {
         >
           <button
             onClick={handleSubmit}
-            className="box-border absolute left-0 right-0 top-0 bottom-0 rounded-[10px] flex items-center justify-center font-normal text-base leading-[315%] text-center text-white outline-none transition-colors bg-[#101010] hover:bg-gray-800 cursor-pointer"
-            style={{ letterSpacing: '0.5px' }}
+            onMouseDown={() => setIsSubmitPressed(true)}
+            onMouseUp={() => setIsSubmitPressed(false)}
+            onMouseLeave={() => setIsSubmitPressed(false)}
+            onTouchStart={() => setIsSubmitPressed(true)}
+            onTouchEnd={() => setIsSubmitPressed(false)}
+            className="box-border absolute left-0 right-0 top-0 bottom-0 rounded-[10px] flex items-center justify-center font-normal text-base leading-[315%] text-center text-white outline-none bg-[#101010] hover:bg-gray-800 cursor-pointer"
+            style={{
+              letterSpacing: '0.5px',
+              transform: isSubmitPressed ? 'scale(0.97)' : 'scale(1)',
+              transition: 'transform 0.15s ease-out',
+            }}
           >
             Показать всех операторов
           </button>

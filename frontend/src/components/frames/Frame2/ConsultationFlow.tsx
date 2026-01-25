@@ -24,6 +24,13 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
   const [selectedMethod, setSelectedMethod] = useState<ContactMethod | null>(null);
   const [phoneError, setPhoneError] = useState(false);
   const [showSkipAfterError, setShowSkipAfterError] = useState(false);
+
+  // Button press states for animations
+  const [isMainBtnPressed, setIsMainBtnPressed] = useState(false);
+  const [isBackBtnPressed, setIsBackBtnPressed] = useState(false);
+  const [isNextBtnPressed, setIsNextBtnPressed] = useState(false);
+  const [isPhoneNextBtnPressed, setIsPhoneNextBtnPressed] = useState(false);
+
   const [notifications, setNotifications] = useState<NotificationItem[]>([
     {
       id: 'privacy',
@@ -330,6 +337,11 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
         {/* Кнопка */}
         <button
           onClick={buttonConfig.action}
+          onMouseDown={() => setIsMainBtnPressed(true)}
+          onMouseUp={() => setIsMainBtnPressed(false)}
+          onMouseLeave={() => setIsMainBtnPressed(false)}
+          onTouchStart={() => setIsMainBtnPressed(true)}
+          onTouchEnd={() => setIsMainBtnPressed(false)}
           className="absolute rounded-[10px] flex items-center justify-center text-white"
           style={{
             left: '15px',
@@ -343,7 +355,8 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
             lineHeight: '315%',
             boxSizing: 'border-box',
             letterSpacing: '0.5px',
-            transition: 'background-color 0.2s ease',
+            transform: isMainBtnPressed ? 'scale(0.97)' : 'scale(1)',
+            transition: 'transform 0.15s ease-out',
           }}
         >
           {buttonConfig.text}
@@ -579,6 +592,11 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
           {/* Кнопка Назад */}
           <button
             onClick={handleBack}
+            onMouseDown={() => setIsBackBtnPressed(true)}
+            onMouseUp={() => setIsBackBtnPressed(false)}
+            onMouseLeave={() => setIsBackBtnPressed(false)}
+            onTouchStart={() => setIsBackBtnPressed(true)}
+            onTouchEnd={() => setIsBackBtnPressed(false)}
             className="rounded-[10px] flex items-center justify-center"
             style={{
               width: '50px',
@@ -586,6 +604,8 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
               border: '1px solid rgba(16, 16, 16, 0.15)',
               background: 'white',
               boxSizing: 'border-box',
+              transform: isBackBtnPressed ? 'scale(0.92)' : 'scale(1)',
+              transition: 'transform 0.15s ease-out',
             }}
           >
             <svg width="12" height="6" viewBox="0 0 12 6" fill="none" style={{ transform: 'rotate(90deg)' }}>
@@ -596,6 +616,11 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
           {/* Кнопка Далее */}
           <button
             onClick={handleNextFromMethod}
+            onMouseDown={() => setIsNextBtnPressed(true)}
+            onMouseUp={() => setIsNextBtnPressed(false)}
+            onMouseLeave={() => setIsNextBtnPressed(false)}
+            onTouchStart={() => setIsNextBtnPressed(true)}
+            onTouchEnd={() => setIsNextBtnPressed(false)}
             disabled={!selectedMethod}
             className="flex-1 rounded-[10px] flex items-center justify-center text-center text-white"
             style={{
@@ -607,6 +632,8 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
               lineHeight: '315%',
               letterSpacing: '0.5px',
               boxSizing: 'border-box',
+              transform: isNextBtnPressed && selectedMethod ? 'scale(0.97)' : 'scale(1)',
+              transition: 'transform 0.15s ease-out',
             }}
           >
             Далее
@@ -732,6 +759,11 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
           {/* Кнопка Назад */}
           <button
             onClick={handleBack}
+            onMouseDown={() => setIsBackBtnPressed(true)}
+            onMouseUp={() => setIsBackBtnPressed(false)}
+            onMouseLeave={() => setIsBackBtnPressed(false)}
+            onTouchStart={() => setIsBackBtnPressed(true)}
+            onTouchEnd={() => setIsBackBtnPressed(false)}
             className="rounded-[10px] flex items-center justify-center"
             style={{
               width: '50px',
@@ -739,6 +771,8 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
               border: '1px solid rgba(16, 16, 16, 0.15)',
               background: 'white',
               boxSizing: 'border-box',
+              transform: isBackBtnPressed ? 'scale(0.92)' : 'scale(1)',
+              transition: 'transform 0.15s ease-out',
             }}
           >
             <svg width="12" height="6" viewBox="0 0 12 6" fill="none" style={{ transform: 'rotate(90deg)' }}>
@@ -749,6 +783,11 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
           {/* Кнопка Далее */}
           <button
             onClick={handleSubmitPhoneAfterMethod}
+            onMouseDown={() => setIsPhoneNextBtnPressed(true)}
+            onMouseUp={() => setIsPhoneNextBtnPressed(false)}
+            onMouseLeave={() => setIsPhoneNextBtnPressed(false)}
+            onTouchStart={() => setIsPhoneNextBtnPressed(true)}
+            onTouchEnd={() => setIsPhoneNextBtnPressed(false)}
             disabled={!isPhoneValid}
             className="flex-1 rounded-[10px] flex items-center justify-center text-center text-white"
             style={{
@@ -760,6 +799,8 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
               lineHeight: '315%',
               letterSpacing: '0.5px',
               boxSizing: 'border-box',
+              transform: isPhoneNextBtnPressed && isPhoneValid ? 'scale(0.97)' : 'scale(1)',
+              transition: 'transform 0.15s ease-out',
             }}
           >
             Далее

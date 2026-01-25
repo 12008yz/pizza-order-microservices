@@ -35,11 +35,11 @@ router.get('/by-phone', getOrdersByPhone);
 // Расчет стоимости заявки - без авторизации
 router.post('/calculate', calculateOrderCost);
 
-// Детали заявки - без авторизации (можно добавить проверку прав)
-router.get('/:id', getOrderById);
+// Детали заявки - требует авторизации
+router.get('/:id', authenticateToken, getOrderById);
 
-// История статусов заявки - без авторизации
-router.get('/:id/status-history', getOrderStatusHistory);
+// История статусов заявки - требует авторизации
+router.get('/:id/status-history', authenticateToken, getOrderStatusHistory);
 
 // Обновление статуса (для админов) - требует авторизации и валидации
 router.put('/:id/status', authenticateToken, validateUpdateOrderStatus, updateOrderStatus);

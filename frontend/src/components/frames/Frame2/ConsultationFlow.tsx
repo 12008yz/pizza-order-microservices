@@ -43,7 +43,7 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
   // Таймер для уведомлений
   useEffect(() => {
     let intervalId: NodeJS.Timeout | null = null;
-    
+
     intervalId = setInterval(() => {
       setNotifications((prev) =>
         prev
@@ -174,7 +174,7 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
   // Рендер уведомлений - пиксель перфект по Figma (мемоизирован для оптимизации)
   const renderNotifications = useMemo(() => {
     if (notifications.length === 0) return null;
-    
+
     return (
       <>
         {notifications.map((notification, index) => (
@@ -250,8 +250,8 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
               {notification.hasLink && (
                 <>
                   {' '}
-                  <a 
-                    href="/privacy-policy" 
+                  <a
+                    href="/privacy-policy"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-[#007AFF] underline"

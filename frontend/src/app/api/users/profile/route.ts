@@ -49,9 +49,9 @@ export async function POST(request: NextRequest) {
       // Валидация connectionType и contactMethod
       const validConnectionTypes = ['apartment', 'private', 'office'];
       const validContactMethods = ['max', 'telegram', 'phone'];
-      
-      const connectionType = body.connectionType && validConnectionTypes.includes(body.connectionType) 
-         ? body.connectionType 
+
+      const connectionType = body.connectionType && validConnectionTypes.includes(body.connectionType)
+         ? body.connectionType
          : null;
       const contactMethod = body.contactMethod && validContactMethods.includes(body.contactMethod)
          ? body.contactMethod

@@ -4,7 +4,8 @@ import { AppError } from '../middleware/errorHandler';
 import jwt from 'jsonwebtoken';
 
 const authService = new AuthService();
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
+// JWT секрет должен быть установлен через переменные окружения
+const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-CHANGE-IN-PRODUCTION';
 
 /**
  * Регистрация админа или оператора

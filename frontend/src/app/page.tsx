@@ -9,26 +9,17 @@ export default function Home() {
   const [loadingProgress, setLoadingProgress] = useState(0);
 
   useEffect(() => {
-    let intervalId: NodeJS.Timeout;
-
-    // Быстрая симуляция загрузки
-    intervalId = setInterval(() => {
-      setLoadingProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(intervalId);
-          // Сразу показываем следующую страницу без задержки
-          setIsLoading(false);
-          return 100;
-        }
-        return prev + 5; // Увеличиваем шаг для более быстрой загрузки
-      });
-    }, 30); // Уменьшаем интервал для более плавной анимации
-
-    return () => {
-      if (intervalId) {
-        clearInterval(intervalId);
+    // Убрана искусственная задержка - показываем контент сразу после загрузки
+    // Проверяем, загружены ли критичные ресурсы (шрифты, изображения)
+    const checkResourcesLoaded = () => {
+      if (document.readyState === 'complete') {
+        setIsLoading(false);
+      } else {
+        window.addEventListener('load', () => setIsLoading(false));
       }
     };
+
+    checkResourcesLoaded();
   }, []);
 
   if (isLoading) {

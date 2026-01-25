@@ -5,10 +5,10 @@ services:
     container_name: tariff-auth-db
     environment:
       POSTGRES_USER: auth_user
-      POSTGRES_PASSWORD: auth_password
+      POSTGRES_PASSWORD: ${AUTH_DB_PASSWORD:-auth_password}
       POSTGRES_DB: auth_db
-    ports:
-      - "5432:5432"
+    # Порты БД закрыты для внешнего доступа (только внутренняя сеть)
+    # Для доступа из хоста используйте: docker exec -it tariff-auth-db psql -U auth_user -d auth_db
     volumes:
       - auth_db_data:/var/lib/postgresql/data
     networks:
@@ -25,10 +25,9 @@ services:
     container_name: tariff-user-db
     environment:
       POSTGRES_USER: user_user
-      POSTGRES_PASSWORD: user_password
+      POSTGRES_PASSWORD: ${USER_DB_PASSWORD:-user_password}
       POSTGRES_DB: user_db
-    ports:
-      - "5433:5432"
+    # Порты БД закрыты для внешнего доступа (только внутренняя сеть)
     volumes:
       - user_db_data:/var/lib/postgresql/data
     networks:
@@ -45,10 +44,9 @@ services:
     container_name: tariff-provider-db
     environment:
       POSTGRES_USER: provider_user
-      POSTGRES_PASSWORD: provider_password
+      POSTGRES_PASSWORD: ${PROVIDER_DB_PASSWORD:-provider_password}
       POSTGRES_DB: provider_db
-    ports:
-      - "5434:5432"
+    # Порты БД закрыты для внешнего доступа (только внутренняя сеть)
     volumes:
       - provider_db_data:/var/lib/postgresql/data
     networks:
@@ -65,10 +63,9 @@ services:
     container_name: tariff-orders-db
     environment:
       POSTGRES_USER: orders_user
-      POSTGRES_PASSWORD: orders_password
+      POSTGRES_PASSWORD: ${ORDERS_DB_PASSWORD:-orders_password}
       POSTGRES_DB: orders_db
-    ports:
-      - "5435:5432"
+    # Порты БД закрыты для внешнего доступа (только внутренняя сеть)
     volumes:
       - orders_db_data:/var/lib/postgresql/data
     networks:
@@ -85,10 +82,9 @@ services:
     container_name: tariff-locations-db
     environment:
       POSTGRES_USER: locations_user
-      POSTGRES_PASSWORD: locations_password
+      POSTGRES_PASSWORD: ${LOCATIONS_DB_PASSWORD:-locations_password}
       POSTGRES_DB: locations_db
-    ports:
-      - "5436:5432"
+    # Порты БД закрыты для внешнего доступа (только внутренняя сеть)
     volumes:
       - locations_db_data:/var/lib/postgresql/data
     networks:
@@ -105,10 +101,9 @@ services:
     container_name: tariff-availability-db
     environment:
       POSTGRES_USER: availability_user
-      POSTGRES_PASSWORD: availability_password
+      POSTGRES_PASSWORD: ${AVAILABILITY_DB_PASSWORD:-availability_password}
       POSTGRES_DB: availability_db
-    ports:
-      - "5437:5432"
+    # Порты БД закрыты для внешнего доступа (только внутренняя сеть)
     volumes:
       - availability_db_data:/var/lib/postgresql/data
     networks:
@@ -125,10 +120,9 @@ services:
     container_name: tariff-equipment-db
     environment:
       POSTGRES_USER: equipment_user
-      POSTGRES_PASSWORD: equipment_password
+      POSTGRES_PASSWORD: ${EQUIPMENT_DB_PASSWORD:-equipment_password}
       POSTGRES_DB: equipment_db
-    ports:
-      - "5438:5432"
+    # Порты БД закрыты для внешнего доступа (только внутренняя сеть)
     volumes:
       - equipment_db_data:/var/lib/postgresql/data
     networks:
@@ -145,10 +139,9 @@ services:
     container_name: tariff-notifications-db
     environment:
       POSTGRES_USER: notifications_user
-      POSTGRES_PASSWORD: notifications_password
+      POSTGRES_PASSWORD: ${NOTIFICATIONS_DB_PASSWORD:-notifications_password}
       POSTGRES_DB: notifications_db
-    ports:
-      - "5439:5432"
+    # Порты БД закрыты для внешнего доступа (только внутренняя сеть)
     volumes:
       - notifications_db_data:/var/lib/postgresql/data
     networks:
@@ -172,9 +165,10 @@ services:
       DB_PORT: 5432
       DB_NAME: auth_db
       DB_USER: auth_user
-      DB_PASSWORD: auth_password
-      JWT_SECRET: your-super-secret-jwt-key-change-in-production
-      JWT_REFRESH_SECRET: your-super-secret-refresh-key-change-in-production
+      DB_PASSWORD: ${AUTH_DB_PASSWORD:-auth_password}
+      JWT_SECRET: ${JWT_SECRET:-your-super-secret-jwt-key-change-in-production}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-your-super-secret-refresh-key-change-in-production}
+      INTERNAL_API_KEY: ${INTERNAL_API_KEY:-change-this-internal-api-key-in-production}
     ports:
       - "3001:3001"
     depends_on:
@@ -200,7 +194,7 @@ services:
       DB_PORT: 5432
       DB_NAME: user_db
       DB_USER: user_user
-      DB_PASSWORD: user_password
+      DB_PASSWORD: ${USER_DB_PASSWORD:-user_password}
       AUTH_SERVICE_URL: http://auth-service:3001
     ports:
       - "3002:3002"
@@ -229,7 +223,7 @@ services:
       DB_PORT: 5432
       DB_NAME: provider_db
       DB_USER: provider_user
-      DB_PASSWORD: provider_password
+      DB_PASSWORD: ${PROVIDER_DB_PASSWORD:-provider_password}
     ports:
       - "3003:3003"
     depends_on:
@@ -255,7 +249,8 @@ services:
       DB_PORT: 5432
       DB_NAME: orders_db
       DB_USER: orders_user
-      DB_PASSWORD: orders_password
+      DB_PASSWORD: ${ORDERS_DB_PASSWORD:-orders_password}
+      INTERNAL_API_KEY: ${INTERNAL_API_KEY:-change-this-internal-api-key-in-production}
       AUTH_SERVICE_URL: http://auth-service:3001
       USER_SERVICE_URL: http://user-service:3002
       PROVIDER_SERVICE_URL: http://provider-service:3003
@@ -298,7 +293,7 @@ services:
       DB_PORT: 5432
       DB_NAME: locations_db
       DB_USER: locations_user
-      DB_PASSWORD: locations_password
+      DB_PASSWORD: ${LOCATIONS_DB_PASSWORD:-locations_password}
       PROVIDER_SERVICE_URL: http://provider-service:3003
     ports:
       - "3005:3005"
@@ -325,7 +320,7 @@ services:
       DB_PORT: 5432
       DB_NAME: availability_db
       DB_USER: availability_user
-      DB_PASSWORD: availability_password
+      DB_PASSWORD: ${AVAILABILITY_DB_PASSWORD:-availability_password}
       LOCATION_SERVICE_URL: http://location-service:3005
       PROVIDER_SERVICE_URL: http://provider-service:3003
     ports:
@@ -357,7 +352,7 @@ services:
       DB_PORT: 5432
       DB_NAME: equipment_db
       DB_USER: equipment_user
-      DB_PASSWORD: equipment_password
+      DB_PASSWORD: ${EQUIPMENT_DB_PASSWORD:-equipment_password}
       PROVIDER_SERVICE_URL: http://provider-service:3003
     ports:
       - "3007:3007"
@@ -386,7 +381,7 @@ services:
       DB_PORT: 5432
       DB_NAME: notifications_db
       DB_USER: notifications_user
-      DB_PASSWORD: notifications_password
+      DB_PASSWORD: ${NOTIFICATIONS_DB_PASSWORD:-notifications_password}
       ORDER_SERVICE_URL: http://order-service:3004
     ports:
       - "3008:3008"

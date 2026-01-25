@@ -68,6 +68,10 @@ export class OrderService {
             phone: normalizedPhone,
             fullName: data.fullName,
             email: data.email,
+          }, {
+            headers: {
+              'X-Internal-Api-Key': process.env.INTERNAL_API_KEY || '',
+            },
           })
         : Promise.resolve(null),
       // Проверяем тариф

@@ -33,7 +33,25 @@ export const getOrderById = async (
   try {
     const { id } = req.params;
     const userId = req.user?.userId;
+    
+    // Проверяем авторизацию: либо пользователь авторизован, либо это админ/оператор
+    // Если не авторизован, можно получить доступ только если заказ связан с телефоном
+    // Для безопасности требуем авторизацию или проверку по телефону
+    if (!req.user) {
+      const error = new Error('Authentication required') as any;
+      error.statusCode = 401;
+      throw error;
+    }
+
     const order = await orderService.getOrderById(parseInt(id), userId || undefined);
+    
+    // Дополнительная проверка: если пользователь не админ, проверяем, что заказ принадлежит ему
+    if (req.user.userType !== 'admin' && order.userId !== userId) {
+      const error = new Error('Access denied') as any;
+      error.statusCode = 403;
+      throw error;
+    }
+
     res.status(200).json({
       success: true,
       data: order,
@@ -109,7 +127,13 @@ export const getAllOrders = async (
   next: NextFunction
 ) => {
   try {
-    // Только для админов (можно добавить проверку роли)
+    // Проверяем, что пользователь является админом или оператором
+    if (!req.user || req.user.userType !== 'admin') {
+      const error = new Error('Admin access required') as any;
+      error.statusCode = 403;
+      throw error;
+    }
+
     const { status, providerId, dateFrom, dateTo } = req.query;
     const orders = await orderService.getAllOrders({
       status: status as string | undefined,
@@ -199,6 +223,13 @@ export const assignOrder = async (
   next: NextFunction
 ) => {
   try {
+    // Проверяем, что пользователь является админом или оператором
+    if (!req.user || req.user.userType !== 'admin') {
+      const error = new Error('Admin access required') as any;
+      error.statusCode = 403;
+      throw error;
+    }
+
     const { id } = req.params;
     const { assignedTo } = req.body;
     const order = await orderService.assignOrder(parseInt(id), assignedTo);

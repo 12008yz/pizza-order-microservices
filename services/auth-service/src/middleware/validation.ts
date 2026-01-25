@@ -5,8 +5,12 @@ import { AppError } from './errorHandler';
 export const validateRegister = [
   body('email').isEmail().withMessage('Valid email is required'),
   body('password')
-    .isLength({ min: 6 })
-    .withMessage('Password must be at least 6 characters'),
+    .isLength({ min: 8 })
+    .withMessage('Password must be at least 8 characters')
+    .matches(/[0-9]/)
+    .withMessage('Password must contain at least one number')
+    .matches(/[!@#$%^&*(),.?":{}|<>]/)
+    .withMessage('Password must contain at least one special character'),
   body('name').trim().notEmpty().withMessage('Name is required'),
   (req: Request, res: Response, next: NextFunction) => {
     const errors = validationResult(req);

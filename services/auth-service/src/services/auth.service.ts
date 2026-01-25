@@ -6,8 +6,17 @@ import { RefreshToken } from '../models/RefreshToken';
 import { AppError } from '../middleware/errorHandler';
 import { logger } from '../utils/logger';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
-const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || 'your-refresh-secret-key';
+// JWT секреты должны быть установлены через переменные окружения
+// В production обязательно должны быть установлены, иначе будет использован слабый дефолтный ключ
+const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET;
+
+if (!JWT_SECRET || !JWT_REFRESH_SECRET) {
+  logger.warn('WARNING: JWT_SECRET or JWT_REFRESH_SECRET is not set. Using weak default keys. This is insecure in production!');
+}
+
+const JWT_SECRET_FINAL = JWT_SECRET || 'your-secret-key-CHANGE-IN-PRODUCTION';
+const JWT_REFRESH_SECRET_FINAL = JWT_REFRESH_SECRET || 'your-refresh-secret-key-CHANGE-IN-PRODUCTION';
 const JWT_EXPIRES_IN = '15m';
 const REFRESH_TOKEN_EXPIRES_IN = '7d';
 
@@ -171,7 +180,7 @@ export class AuthService {
   async refreshToken(token: string) {
     try {
       // Проверяем refresh token
-      const decoded = jwt.verify(token, JWT_REFRESH_SECRET) as {
+      const decoded = jwt.verify(token, JWT_REFRESH_SECRET_FINAL) as {
         userId: number;
         email: string;
         role: string;
@@ -252,11 +261,11 @@ export class AuthService {
       userType, // Добавляем тип пользователя
     };
 
-    const accessToken = jwt.sign(payload, JWT_SECRET, {
+    const accessToken = jwt.sign(payload, JWT_SECRET_FINAL, {
       expiresIn: JWT_EXPIRES_IN,
     });
 
-    const refreshToken = jwt.sign(payload, JWT_REFRESH_SECRET, {
+    const refreshToken = jwt.sign(payload, JWT_REFRESH_SECRET_FINAL, {
       expiresIn: REFRESH_TOKEN_EXPIRES_IN,
     });
 

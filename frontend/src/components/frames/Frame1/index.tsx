@@ -35,7 +35,7 @@ function AddressFormContent() {
   useEffect(() => {
     if (showCookieBanner && cookieTimer > 0) {
       let timerId: NodeJS.Timeout | null = null;
-      
+
       timerId = setInterval(() => {
         setCookieTimer((prev) => {
           if (prev <= 1) {
@@ -45,7 +45,7 @@ function AddressFormContent() {
           return prev - 1;
         });
       }, 1000);
-      
+
       return () => {
         if (timerId) clearInterval(timerId);
       };
@@ -56,7 +56,7 @@ function AddressFormContent() {
   useEffect(() => {
     if (flowState === 'loading') {
       let intervalId: NodeJS.Timeout | null = null;
-      
+
       intervalId = setInterval(() => {
         setLoadingProgress((prev) => {
           if (prev >= 100) {
@@ -154,7 +154,7 @@ function AddressFormContent() {
       // Если есть телефон, сохраняем данные пользователя в базу данных
       if (phone) {
         const normalizedPhone = phone.replace(/\D/g, ''); // Только цифры
-        
+
         // Валидация номера телефона - строго 11 цифр
         if (normalizedPhone.length !== 11) {
           console.error('Invalid phone number format');

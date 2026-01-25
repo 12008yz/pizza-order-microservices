@@ -139,12 +139,12 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
 
   const getButtonConfig = () => {
     if (showSkipAfterError) {
-      return { text: 'Нет, спасибо', action: onSkip || onClose, isError: false };
+      return { text: 'Пропустить', action: onSkip || onClose, isError: false };
     }
     if (hasInput) {
       return { text: 'Далее', action: handleSubmitPhone, isError: phoneError };
     }
-    return { text: 'Нет, спасибо', action: onSkip || onClose, isError: false };
+    return { text: 'Пропустить', action: onSkip || onClose, isError: false };
   };
 
   const buttonConfig = getButtonConfig();

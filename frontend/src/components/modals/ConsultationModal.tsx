@@ -19,7 +19,7 @@ export default function ConsultationModal({
   return (
     <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-white/85 backdrop-blur-[12.5px]">
       <div className="bg-white rounded-[20px] p-6 max-w-md">
-        <h2 className="text-xl mb-4">Бесплатная консультация</h2>
+        <h2 className="text-xl mb-4">Консультация</h2>
         <p className="text-gray-600 mb-4">Модальное окно в разработке</p>
         <button
           onClick={onClose}

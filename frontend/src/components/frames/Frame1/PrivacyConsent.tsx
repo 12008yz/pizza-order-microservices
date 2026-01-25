@@ -44,7 +44,7 @@ export default function PrivacyConsent() {
 
         {/* Текст */}
         <span className="text-sm leading-[105%] text-[#101010]">
-          Покажите своё согласие с условиями{' '}
+          Я полностью согласен с условиями{' '}
           <a
             href="/privacy-policy"
             target="_blank"

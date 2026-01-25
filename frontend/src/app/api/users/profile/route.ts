@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const USER_SERVICE_URL = process.env.USER_SERVICE_URL || 'http://localhost:3006';
+const USER_SERVICE_URL = process.env.USER_SERVICE_URL || 'http://localhost:3002';
 
 interface UserProfileData {
    phone: string;
    city?: string;
    street?: string;
    house?: string;
+   apartment?: string;
    connectionType?: string;
    contactMethod?: string;
 }
@@ -40,12 +41,11 @@ export async function POST(request: NextRequest) {
          city: body.city || null,
          street: body.street || null,
          house: body.house || null,
-         // Дополнительные данные можно сохранить в savedAddresses или других полях
-         savedAddresses: body.connectionType || body.contactMethod ? {
-            connectionType: body.connectionType,
-            contactMethod: body.contactMethod,
-            createdAt: new Date().toISOString(),
-         } : null,
+         apartment: body.apartment || null,
+         connectionType: body.connectionType || null,
+         contactMethod: body.contactMethod || null,
+         // savedAddresses оставляем для дополнительных данных, если нужно
+         savedAddresses: null,
       };
 
       // Отправляем запрос на user-service

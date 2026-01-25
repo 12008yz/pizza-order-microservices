@@ -18,13 +18,15 @@ export interface UserProfileAttributes {
   addressComment?: string | null; // комментарий к адресу (например, "может пользователь сам встретит", "ключи спрятаны под ковриком" и т.д.)
   currentProviderId?: number | null;
   currentTariffName?: string | null;
+  connectionType?: string | null; // Тип подключения (apartment, private, office)
+  contactMethod?: string | null; // Метод связи (max, telegram, phone)
   savedAddresses?: any | null; // JSON
   createdAt?: Date;
   updatedAt?: Date;
 }
 
 export interface UserProfileCreationAttributes
-  extends Optional<UserProfileAttributes, 'id' | 'userId' | 'address' | 'city' | 'postalCode' | 'street' | 'house' | 'building' | 'apartment' | 'entrance' | 'floor' | 'intercomCode' | 'addressComment' | 'currentProviderId' | 'currentTariffName' | 'savedAddresses'> {}
+  extends Optional<UserProfileAttributes, 'id' | 'userId' | 'address' | 'city' | 'postalCode' | 'street' | 'house' | 'building' | 'apartment' | 'entrance' | 'floor' | 'intercomCode' | 'addressComment' | 'currentProviderId' | 'currentTariffName' | 'connectionType' | 'contactMethod' | 'savedAddresses'> {}
 
 export class UserProfile
   extends Model<UserProfileAttributes, UserProfileCreationAttributes>
@@ -46,6 +48,8 @@ export class UserProfile
   public addressComment?: string | null;
   public currentProviderId?: number | null;
   public currentTariffName?: string | null;
+  public connectionType?: string | null;
+  public contactMethod?: string | null;
   public savedAddresses?: any | null;
 
   public readonly createdAt!: Date;
@@ -125,6 +129,16 @@ UserProfile.init(
     currentTariffName: {
       type: DataTypes.STRING,
       allowNull: true,
+    },
+    connectionType: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      comment: 'Тип подключения: apartment, private, office',
+    },
+    contactMethod: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      comment: 'Метод связи: max, telegram, phone',
     },
     savedAddresses: {
       type: DataTypes.JSONB,

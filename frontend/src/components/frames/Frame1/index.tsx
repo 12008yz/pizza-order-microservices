@@ -114,6 +114,7 @@ function AddressFormContent() {
           city: addressData.city,
           street: addressData.street,
           house: addressData.houseNumber,
+          apartment: addressData.apartmentNumber || undefined,
           connectionType: addressData.connectionType,
           contactMethod: method,
         };

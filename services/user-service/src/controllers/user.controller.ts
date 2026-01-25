@@ -45,7 +45,7 @@ export const createOrUpdateProfile = async (
   next: NextFunction
 ) => {
   try {
-    const { phone, city, street, house, savedAddresses } = req.body;
+    const { phone, city, street, house, apartment, connectionType, contactMethod, savedAddresses } = req.body;
 
     if (!phone) {
       return res.status(400).json({
@@ -68,6 +68,9 @@ export const createOrUpdateProfile = async (
       city: city || null,
       street: street || null,
       house: house || null,
+      apartment: apartment || null,
+      connectionType: connectionType || null,
+      contactMethod: contactMethod || null,
       savedAddresses: savedAddresses || null,
     };
 
@@ -133,7 +136,7 @@ export const updateProfileByPhone = async (
 ) => {
   try {
     const { phone } = req.params;
-    const { city, street, house, savedAddresses } = req.body;
+    const { city, street, house, apartment, connectionType, contactMethod, savedAddresses } = req.body;
 
     if (!phone) {
       return res.status(400).json({
@@ -148,6 +151,9 @@ export const updateProfileByPhone = async (
       city: city || undefined,
       street: street || undefined,
       house: house || undefined,
+      apartment: apartment || undefined,
+      connectionType: connectionType || undefined,
+      contactMethod: contactMethod || undefined,
       savedAddresses: savedAddresses || undefined,
     };
 

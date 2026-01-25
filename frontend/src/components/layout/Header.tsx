@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback, memo } from 'react';
 import { useRouter } from 'next/navigation';
 import Logo from '../common/Logo';
 
@@ -8,16 +8,16 @@ interface HeaderProps {
   onConsultationClick?: () => void;
 }
 
-export default function Header({ onConsultationClick }: HeaderProps) {
+function Header({ onConsultationClick }: HeaderProps) {
   const router = useRouter();
   const [isPlanePressed, setIsPlanePressed] = useState(false);
   const [isHomePressed, setIsHomePressed] = useState(false);
 
-  const handlePlaneClick = () => {
+  const handlePlaneClick = useCallback(() => {
     if (onConsultationClick) {
       onConsultationClick();
     }
-  };
+  }, [onConsultationClick]);
 
   return (
     <>
@@ -110,3 +110,5 @@ export default function Header({ onConsultationClick }: HeaderProps) {
     </>
   );
 }
+
+export default memo(Header);

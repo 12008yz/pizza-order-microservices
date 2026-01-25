@@ -1,9 +1,10 @@
 'use client';
 
+import { memo } from 'react';
 import { Check } from '@phosphor-icons/react';
 import { useAddress } from '../../../contexts/AddressContext';
 
-export default function PrivacyConsent() {
+function PrivacyConsent() {
   const { addressData, updatePrivacyConsent } = useAddress();
   const hasError = !!addressData.errors.privacyConsent;
 
@@ -60,3 +61,5 @@ export default function PrivacyConsent() {
     </div>
   );
 }
+
+export default memo(PrivacyConsent);

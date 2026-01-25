@@ -34,7 +34,9 @@ function AddressFormContent() {
   // Закрытие баннера cookies через 7 секунд с обратным отсчетом
   useEffect(() => {
     if (showCookieBanner && cookieTimer > 0) {
-      const timer = setInterval(() => {
+      let timerId: NodeJS.Timeout | null = null;
+      
+      timerId = setInterval(() => {
         setCookieTimer((prev) => {
           if (prev <= 1) {
             setShowCookieBanner(false);
@@ -43,17 +45,22 @@ function AddressFormContent() {
           return prev - 1;
         });
       }, 1000);
-      return () => clearInterval(timer);
+      
+      return () => {
+        if (timerId) clearInterval(timerId);
+      };
     }
   }, [showCookieBanner, cookieTimer]);
 
   // Эффект для загрузочного экрана
   useEffect(() => {
     if (flowState === 'loading') {
-      const interval = setInterval(() => {
+      let intervalId: NodeJS.Timeout | null = null;
+      
+      intervalId = setInterval(() => {
         setLoadingProgress((prev) => {
           if (prev >= 100) {
-            clearInterval(interval);
+            if (intervalId) clearInterval(intervalId);
             setFlowState('consultation');
             return 100;
           }
@@ -61,7 +68,9 @@ function AddressFormContent() {
         });
       }, 30);
 
-      return () => clearInterval(interval);
+      return () => {
+        if (intervalId) clearInterval(intervalId);
+      };
     }
   }, [flowState]);
 
@@ -110,22 +119,57 @@ function AddressFormContent() {
     setFlowState('loading');
   };
 
+  // Функция санитизации строковых данных для защиты от XSS
+  const sanitizeString = (str: string | undefined, maxLength: number = 200): string | undefined => {
+    if (!str) return undefined;
+    // Удаляем потенциально опасные символы и ограничиваем длину
+    const sanitized = str
+      .trim()
+      .replace(/[<>\"']/g, '') // Удаляем HTML-символы
+      .slice(0, maxLength);
+    return sanitized || undefined;
+  };
+
   // Функция сохранения данных пользователя и перехода на тарифы
   const saveUserDataAndNavigate = async (phone?: string, method?: ContactMethod) => {
     try {
+      // Санитизируем данные перед сохранением
+      const sanitizedAddressData = {
+        ...addressData,
+        city: sanitizeString(addressData.city, 100),
+        street: sanitizeString(addressData.street, 200),
+        houseNumber: sanitizeString(addressData.houseNumber, 20),
+        apartmentNumber: sanitizeString(addressData.apartmentNumber, 20),
+      };
+
       // Сохраняем данные в sessionStorage для отображения на странице тарифов
-      sessionStorage.setItem('addressData', JSON.stringify(addressData));
+      // Используем try-catch для защиты от ошибок при работе с sessionStorage
+      try {
+        sessionStorage.setItem('addressData', JSON.stringify(sanitizedAddressData));
+      } catch (error) {
+        console.warn('Failed to save to sessionStorage:', error);
+        // Продолжаем работу даже если sessionStorage недоступен
+      }
 
       // Если есть телефон, сохраняем данные пользователя в базу данных
       if (phone) {
+        const normalizedPhone = phone.replace(/\D/g, ''); // Только цифры
+        
+        // Валидация номера телефона - строго 11 цифр
+        if (normalizedPhone.length !== 11) {
+          console.error('Invalid phone number format');
+          router.push('/providers');
+          return;
+        }
+
         const userData = {
-          phone: phone.replace(/\D/g, ''), // Только цифры
-          city: addressData.city,
-          street: addressData.street,
-          house: addressData.houseNumber,
-          apartment: addressData.apartmentNumber || undefined,
-          connectionType: addressData.connectionType,
-          contactMethod: method,
+          phone: normalizedPhone,
+          city: sanitizeString(addressData.city, 100),
+          street: sanitizeString(addressData.street, 200),
+          house: sanitizeString(addressData.houseNumber, 20),
+          apartment: sanitizeString(addressData.apartmentNumber, 20) || undefined,
+          connectionType: addressData.connectionType || undefined,
+          contactMethod: method || undefined,
         };
 
         // Отправляем данные на сервер для сохранения в базе данных
@@ -158,13 +202,13 @@ function AddressFormContent() {
 
   // Обработка отправки данных консультации (с телефоном и методом связи)
   const handleConsultationSubmit = async (data: { phone?: string; method?: ContactMethod }) => {
-    console.log('Consultation submitted:', data);
+    // Убрали console.log для production
     await saveUserDataAndNavigate(data.phone, data.method);
   };
 
   // Обработка пропуска консультации ("Нет, спасибо")
   const handleConsultationSkip = async () => {
-    console.log('Consultation skipped');
+    // Убрали console.log для production
     await saveUserDataAndNavigate();
   };
 

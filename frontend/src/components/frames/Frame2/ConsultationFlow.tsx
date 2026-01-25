@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 
 type ContactMethod = 'max' | 'telegram' | 'phone';
 type ConsultationStep = 'phone-input' | 'contact-method' | 'phone-after-method';
@@ -42,7 +42,9 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
 
   // Таймер для уведомлений
   useEffect(() => {
-    const interval = setInterval(() => {
+    let intervalId: NodeJS.Timeout | null = null;
+    
+    intervalId = setInterval(() => {
       setNotifications((prev) =>
         prev
           .map((n) => ({ ...n, timer: n.timer - 1 }))
@@ -50,12 +52,15 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
       );
     }, 1000);
 
-    return () => clearInterval(interval);
+    return () => {
+      if (intervalId) clearInterval(intervalId);
+    };
   }, []);
 
-  // Форматирование номера телефона
-  const formatPhoneNumber = (value: string) => {
-    const digits = value.replace(/\D/g, '');
+  // Форматирование номера телефона с ограничением длины
+  const formatPhoneNumber = useCallback((value: string) => {
+    // Ограничиваем ввод до 11 цифр (максимум для российского номера)
+    const digits = value.replace(/\D/g, '').slice(0, 11);
 
     if (digits.length === 0) return '';
 
@@ -68,17 +73,19 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
     if (rest.length > 8) formatted += ' ' + rest.slice(8, 10);
 
     return formatted;
-  };
+  }, []);
 
-  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePhoneChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const formatted = formatPhoneNumber(e.target.value);
     setPhoneNumber(formatted);
     setPhoneError(false);
     setShowSkipAfterError(false);
-  };
+  }, [formatPhoneNumber]);
 
-  const handleSubmitPhone = () => {
-    if (phoneNumber.replace(/\D/g, '').length >= 11) {
+  const handleSubmitPhone = useCallback(() => {
+    const phoneDigits = phoneNumber.replace(/\D/g, '');
+    // Валидация: российский номер должен быть строго 11 цифр
+    if (phoneDigits.length === 11) {
       // Добавляем второе уведомление
       setNotifications((prev) => [
         ...prev,
@@ -95,19 +102,21 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
       setPhoneError(true);
       setShowSkipAfterError(true);
     }
-  };
+  }, [phoneNumber]);
 
-  const handleSubmitPhoneAfterMethod = () => {
-    if (phoneNumber.replace(/\D/g, '').length >= 11) {
+  const handleSubmitPhoneAfterMethod = useCallback(() => {
+    const phoneDigits = phoneNumber.replace(/\D/g, '');
+    // Валидация: российский номер должен быть строго 11 цифр
+    if (phoneDigits.length === 11) {
       onSubmit({ phone: phoneNumber, method: 'phone' });
     }
-  };
+  }, [phoneNumber, onSubmit]);
 
-  const handleSelectMethod = (method: ContactMethod) => {
+  const handleSelectMethod = useCallback((method: ContactMethod) => {
     setSelectedMethod(method);
-  };
+  }, []);
 
-  const handleNextFromMethod = () => {
+  const handleNextFromMethod = useCallback(() => {
     if (selectedMethod === 'phone') {
       // Добавляем уведомление о конфиденциальности при переходе на ввод телефона
       setNotifications((prev) => {
@@ -129,9 +138,9 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
     } else if (selectedMethod) {
       onSubmit({ phone: phoneNumber, method: selectedMethod });
     }
-  };
+  }, [selectedMethod, phoneNumber, onSubmit]);
 
-  const handleBack = () => {
+  const handleBack = useCallback(() => {
     if (step === 'phone-after-method') {
       setStep('contact-method');
     } else if (step === 'contact-method') {
@@ -139,12 +148,15 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
     } else {
       onClose();
     }
-  };
+  }, [step, onClose]);
 
-  const isPhoneValid = phoneNumber.replace(/\D/g, '').length >= 11;
+  const isPhoneValid = useMemo(() => {
+    const phoneDigits = phoneNumber.replace(/\D/g, '');
+    return phoneDigits.length === 11;
+  }, [phoneNumber]);
   const hasInput = phoneNumber.length > 0;
 
-  const getButtonConfig = () => {
+  const buttonConfig = useMemo(() => {
     if (showSkipAfterError) {
       return { text: 'Пропустить', action: onSkip || onClose, isError: false };
     }
@@ -152,106 +164,114 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
       return { text: 'Далее', action: handleSubmitPhone, isError: phoneError };
     }
     return { text: 'Пропустить', action: onSkip || onClose, isError: false };
-  };
-
-  const buttonConfig = getButtonConfig();
+  }, [showSkipAfterError, hasInput, phoneError, handleSubmitPhone, onSkip, onClose]);
 
   // Закрытие уведомления
-  const handleCloseNotification = (id: string) => {
+  const handleCloseNotification = useCallback((id: string) => {
     setNotifications((prev) => prev.filter((n) => n.id !== id));
-  };
+  }, []);
 
-  // Рендер уведомлений - пиксель перфект по Figma
-  const renderNotifications = () => (
-    <>
-      {notifications.map((notification, index) => (
-        <div
-          key={notification.id}
-          className="absolute bg-white rounded-[20px]"
-          style={{
-            width: '360px',
-            height: '90px',
-            left: '20px',
-            top: `${75 + index * 95}px`,
-            boxSizing: 'border-box',
-            backdropFilter: 'blur(7.5px)',
-            transition: 'top 0.3s ease-in-out',
-          }}
-          onClick={(e) => e.stopPropagation()}
-        >
-          {/* Close button - right: 37px from right, top: 9.5px */}
-          <button
-            onClick={() => handleCloseNotification(notification.id)}
-            className="absolute flex items-center justify-center"
-            style={{
-              right: '37px',
-              top: '9.5px',
-              width: '16px',
-              height: '16px',
-              background: 'none',
-              border: 'none',
-              padding: 0,
-              cursor: 'pointer',
-            }}
-          >
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <circle cx="8" cy="8" r="8" fill="rgba(16, 16, 16, 0.15)" />
-              <path d="M10.5 5.5L5.5 10.5M5.5 5.5L10.5 10.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" />
-            </svg>
-          </button>
-
-          {/* Timer text - top: 15px from card */}
+  // Рендер уведомлений - пиксель перфект по Figma (мемоизирован для оптимизации)
+  const renderNotifications = useMemo(() => {
+    if (notifications.length === 0) return null;
+    
+    return (
+      <>
+        {notifications.map((notification, index) => (
           <div
-            className="absolute font-normal"
+            key={notification.id}
+            className="absolute bg-white rounded-[20px]"
             style={{
-              width: '300px',
-              height: '20px',
-              left: '15px',
-              top: '15px',
-              fontFamily: 'TT Firs Neue, sans-serif',
-              fontSize: '12px',
-              lineHeight: '165%',
-              color: 'rgba(16, 16, 16, 0.25)',
-              letterSpacing: '0.5px',
+              width: '360px',
+              height: '90px',
+              left: '20px',
+              top: `${75 + index * 95}px`,
+              boxSizing: 'border-box',
+              backdropFilter: 'blur(7.5px)',
+              transition: 'top 0.3s ease-in-out',
             }}
+            onClick={(e) => e.stopPropagation()}
           >
-            Автоматически закроется через {notification.timer}
-          </div>
+            {/* Close button - right: 37px from right, top: 9.5px */}
+            <button
+              onClick={() => handleCloseNotification(notification.id)}
+              className="absolute flex items-center justify-center"
+              style={{
+                right: '37px',
+                top: '9.5px',
+                width: '16px',
+                height: '16px',
+                background: 'none',
+                border: 'none',
+                padding: 0,
+                cursor: 'pointer',
+              }}
+            >
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <circle cx="8" cy="8" r="8" fill="rgba(16, 16, 16, 0.15)" />
+                <path d="M10.5 5.5L5.5 10.5M5.5 5.5L10.5 10.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" />
+              </svg>
+            </button>
 
-          {/* Content - top: 45px from card */}
-          <div
-            className="absolute font-normal"
-            style={{
-              width: '330px',
-              height: '30px',
-              left: '15px',
-              top: '45px',
-              fontFamily: 'TT Firs Neue, sans-serif',
-              fontSize: '14px',
-              lineHeight: '105%',
-              color: '#101010',
-              letterSpacing: '0.5px',
-            }}
-          >
-            {notification.content}
-            {notification.hasLink && (
-              <>
-                {' '}
-                <a href="#" className="text-[#007AFF] underline">
-                  Подробнее об этом писали в медиа
-                </a>
-              </>
-            )}
+            {/* Timer text - top: 15px from card */}
+            <div
+              className="absolute font-normal"
+              style={{
+                width: '300px',
+                height: '20px',
+                left: '15px',
+                top: '15px',
+                fontFamily: 'TT Firs Neue, sans-serif',
+                fontSize: '12px',
+                lineHeight: '165%',
+                color: 'rgba(16, 16, 16, 0.25)',
+                letterSpacing: '0.5px',
+              }}
+            >
+              Автоматически закроется через {notification.timer}
+            </div>
+
+            {/* Content - top: 45px from card */}
+            <div
+              className="absolute font-normal"
+              style={{
+                width: '330px',
+                height: '30px',
+                left: '15px',
+                top: '45px',
+                fontFamily: 'TT Firs Neue, sans-serif',
+                fontSize: '14px',
+                lineHeight: '105%',
+                color: '#101010',
+                letterSpacing: '0.5px',
+              }}
+            >
+              {notification.content}
+              {notification.hasLink && (
+                <>
+                  {' '}
+                  <a 
+                    href="/privacy-policy" 
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[#007AFF] underline"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    Подробнее об этом писали в медиа
+                  </a>
+                </>
+              )}
+            </div>
           </div>
-        </div>
-      ))}
-    </>
-  );
+        ))}
+      </>
+    );
+  }, [notifications, handleCloseNotification]);
 
   // Экран ввода телефона
   const renderPhoneInput = () => (
     <>
-      {renderNotifications()}
+      {renderNotifications}
 
       {/* Карточка консультации */}
       <div
@@ -389,7 +409,7 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
       )}
 
       {/* Карточка с уведомлением */}
-      {notifications.length > 0 && renderNotifications()}
+      {renderNotifications}
 
       {/* Карточка консультации */}
       <div
@@ -667,7 +687,7 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
       )}
 
       {/* Карточка с уведомлением */}
-      {notifications.length > 0 && renderNotifications()}
+      {renderNotifications}
 
       {/* Карточка консультации */}
       <div

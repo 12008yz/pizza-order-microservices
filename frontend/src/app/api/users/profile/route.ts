@@ -27,23 +27,45 @@ export async function POST(request: NextRequest) {
       // Нормализуем номер телефона (только цифры)
       const normalizedPhone = body.phone.replace(/\D/g, '');
 
-      // Проверяем формат номера
-      if (normalizedPhone.length < 10 || normalizedPhone.length > 12) {
+      // Проверяем формат номера - строго 11 цифр
+      if (normalizedPhone.length !== 11) {
          return NextResponse.json(
             { error: 'Invalid phone number format' },
             { status: 400 }
          );
       }
 
-      // Формируем данные для сохранения
+      // Функция санитизации строковых данных
+      const sanitizeString = (str: string | undefined | null, maxLength: number = 200): string | null => {
+         if (!str || typeof str !== 'string') return null;
+         // Удаляем потенциально опасные символы и ограничиваем длину
+         const sanitized = str
+            .trim()
+            .replace(/[<>\"']/g, '') // Удаляем HTML-символы
+            .slice(0, maxLength);
+         return sanitized || null;
+      };
+
+      // Валидация connectionType и contactMethod
+      const validConnectionTypes = ['apartment', 'private', 'office'];
+      const validContactMethods = ['max', 'telegram', 'phone'];
+      
+      const connectionType = body.connectionType && validConnectionTypes.includes(body.connectionType) 
+         ? body.connectionType 
+         : null;
+      const contactMethod = body.contactMethod && validContactMethods.includes(body.contactMethod)
+         ? body.contactMethod
+         : null;
+
+      // Формируем данные для сохранения с санитизацией
       const profileData = {
          phone: normalizedPhone,
-         city: body.city || null,
-         street: body.street || null,
-         house: body.house || null,
-         apartment: body.apartment || null,
-         connectionType: body.connectionType || null,
-         contactMethod: body.contactMethod || null,
+         city: sanitizeString(body.city, 100),
+         street: sanitizeString(body.street, 200),
+         house: sanitizeString(body.house, 20),
+         apartment: sanitizeString(body.apartment, 20),
+         connectionType,
+         contactMethod,
          // savedAddresses оставляем для дополнительных данных, если нужно
          savedAddresses: null,
       };

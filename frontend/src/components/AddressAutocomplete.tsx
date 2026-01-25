@@ -372,20 +372,31 @@ export default function AddressAutocomplete({
             boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)',
           }}
         >
-          {suggestions.map((suggestion, index) => (
+          {suggestions.map((suggestion, index) => {
+            // Если подсказка только одна, её высота должна быть такой же, как у поля ввода
+            // Поле ввода имеет paddingTop: 15.5px + paddingBottom: 15.5px + высота текста ≈ 45-50px
+            const isSingleSuggestion = suggestions.length === 1;
+            const suggestionPadding = isSingleSuggestion ? '15.5px 15px' : '12px 15px';
+            
+            return (
             <div
               key={index}
               onClick={() => handleSelect(suggestion)}
-              className="px-[15px] py-3 hover:bg-gray-50 cursor-pointer border-b border-[rgba(16,16,16,0.05)] last:border-b-0 transition-colors"
+              className="hover:bg-gray-50 cursor-pointer border-b border-[rgba(16,16,16,0.05)] last:border-b-0 transition-colors"
               style={{
+                padding: suggestionPadding,
                 borderBottom: index < suggestions.length - 1 ? '0.5px solid rgba(16, 16, 16, 0.05)' : 'none',
+                minHeight: isSingleSuggestion ? '50px' : 'auto',
+                display: 'flex',
+                alignItems: 'center',
               }}
             >
               <div className="text-base leading-[125%] text-[#101010] font-normal">
                 {suggestion.formatted || suggestion.text}
               </div>
             </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>

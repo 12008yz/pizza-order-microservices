@@ -364,7 +364,8 @@ export default function AddressInputModal({
   const visibleSuggestions = suggestions.slice(0, 3);
 
   // Высота одной подсказки и отступы
-  const suggestionHeight = 40;
+  // Если подсказка только одна, её высота равна высоте поля ввода (50px)
+  const suggestionHeight = visibleSuggestions.length === 1 ? 50 : 40;
   const suggestionGap = 0;
 
   // Высота блока подсказок

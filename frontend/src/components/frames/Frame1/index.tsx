@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { CaretDown, CaretRight, Check } from '@phosphor-icons/react';
+import { CaretDown, CaretRight, Check, X } from '@phosphor-icons/react';
 import { AddressProvider, useAddress, ConnectionType } from '../../../contexts/AddressContext';
 import ConnectionTypeModal from '../../modals/ConnectionTypeModal';
 import AddressInputModal from '../../modals/AddressInputModal';
@@ -215,16 +215,23 @@ function AddressFormContent() {
               style={{ paddingTop: '15.5px', paddingBottom: '14px' }}
             >
               <span
-                className={`text-base leading-[125%] ${addressData.connectionType ? 'text-[#101010]' : 'text-[rgba(16,16,16,0.5)]'
+                className={`text-base leading-[125%] flex-1 ${addressData.connectionType ? 'text-[#101010]' : 'text-[rgba(16,16,16,0.5)]'
                   }`}
-                style={{ letterSpacing: '0.5px' }}
+                style={{ 
+                  letterSpacing: '0.5px',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                  minWidth: 0,
+                  marginRight: '8px'
+                }}
               >
                 {addressData.connectionType
                   ? getConnectionTypeLabel(addressData.connectionType)
                   : 'Подключение'}
               </span>
               <div
-                className={`w-4 h-4 rounded-full flex items-center justify-center ${addressData.connectionType
+                className={`w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 ${addressData.connectionType
                   ? 'bg-[#101010]'
                   : 'border border-[rgba(16,16,16,0.25)]'
                   }`}
@@ -263,14 +270,21 @@ function AddressFormContent() {
               style={{ paddingTop: '15.5px', paddingBottom: '14px' }}
             >
               <span
-                className={`text-base leading-[125%] ${addressData.city ? 'text-[#101010]' : 'text-[rgba(16,16,16,0.5)]'
+                className={`text-base leading-[125%] flex-1 ${addressData.city ? 'text-[#101010]' : 'text-[rgba(16,16,16,0.5)]'
                   }`}
-                style={{ letterSpacing: '0.5px' }}
+                style={{ 
+                  letterSpacing: '0.5px',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                  minWidth: 0,
+                  marginRight: '8px'
+                }}
               >
                 {addressData.city || 'Название населённого пункта'}
               </span>
               <div
-                className={`w-4 h-4 rounded-full flex items-center justify-center ${addressData.city ? 'bg-[#101010]' : 'border border-[rgba(16,16,16,0.25)]'
+                className={`w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 ${addressData.city ? 'bg-[#101010]' : 'border border-[rgba(16,16,16,0.25)]'
                   }`}
                 style={{ borderWidth: '0.5px' }}
               >
@@ -307,14 +321,21 @@ function AddressFormContent() {
               style={{ paddingTop: '15.5px', paddingBottom: '13.5px' }}
             >
               <span
-                className={`text-base leading-[125%] ${addressData.street ? 'text-[#101010]' : 'text-[rgba(16,16,16,0.5)]'
+                className={`text-base leading-[125%] flex-1 ${addressData.street ? 'text-[#101010]' : 'text-[rgba(16,16,16,0.5)]'
                   }`}
-                style={{ letterSpacing: '0.5px' }}
+                style={{ 
+                  letterSpacing: '0.5px',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                  minWidth: 0,
+                  marginRight: '8px'
+                }}
               >
                 {addressData.street || 'Улица'}
               </span>
               <div
-                className={`w-4 h-4 rounded-full flex items-center justify-center ${addressData.street ? 'bg-[#101010]' : 'border border-[rgba(16,16,16,0.25)]'
+                className={`w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 ${addressData.street ? 'bg-[#101010]' : 'border border-[rgba(16,16,16,0.25)]'
                   }`}
                 style={{ borderWidth: '0.5px' }}
               >
@@ -351,14 +372,21 @@ function AddressFormContent() {
               style={{ paddingTop: '15.5px', paddingBottom: '13.5px' }}
             >
               <span
-                className={`text-base leading-[125%] ${addressData.houseNumber ? 'text-[#101010]' : 'text-[rgba(16,16,16,0.5)]'
+                className={`text-base leading-[125%] flex-1 ${addressData.houseNumber ? 'text-[#101010]' : 'text-[rgba(16,16,16,0.5)]'
                   }`}
-                style={{ letterSpacing: '0.5px' }}
+                style={{ 
+                  letterSpacing: '0.5px',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                  minWidth: 0,
+                  marginRight: '8px'
+                }}
               >
                 {addressData.houseNumber || 'Номер дома'}
               </span>
               <div
-                className={`w-4 h-4 rounded-full flex items-center justify-center ${addressData.houseNumber ? 'bg-[#101010]' : 'border border-[rgba(16,16,16,0.25)]'
+                className={`w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 ${addressData.houseNumber ? 'bg-[#101010]' : 'border border-[rgba(16,16,16,0.25)]'
                   }`}
                 style={{ borderWidth: '0.5px' }}
               >
@@ -400,25 +428,77 @@ function AddressFormContent() {
         </div>
 
         {showCookieBanner && (
-          <div className="absolute w-[360px] h-[115px] left-5 top-[70px] z-20">
-            <div className="box-border absolute w-[360px] h-[115px] bg-white border border-[rgba(16,16,16,0.15)] backdrop-blur-[7.5px] rounded-[20px]" style={{ padding: '15px 20px 15px 18px' }}>
-              <div className="font-normal text-xs leading-[125%] text-[rgba(16,16,16,0.5)] mb-1" style={{ marginTop: '2px', letterSpacing: '0.5px' }}>
-                Автоматически закроется через {cookieTimer}
-              </div>
-              <div className="font-normal text-sm leading-[105%] text-[#101010]" style={{ letterSpacing: '0.5px' }}>
-                Если продолжаете использовать этот портал, вы выражаете согласие на использование
-                файлов куки в соответствии с условиями{' '}
-                <a
-                  href="/privacy-policy"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-600 underline"
-                >
-                  политики конфиденциальности
-                </a>
-                {' '}портала
-              </div>
+          <div 
+            className="absolute z-20 bg-white rounded-[20px]"
+            style={{
+              width: '360px',
+              height: '120px',
+              left: '20px',
+              top: '75px',
+              boxSizing: 'border-box',
+            }}
+          >
+            {/* Текст таймера */}
+            <div 
+              className="absolute font-normal"
+              style={{
+                fontFamily: 'TT Firs Neue, sans-serif',
+                fontStyle: 'normal',
+                fontWeight: 400,
+                fontSize: '12px',
+                lineHeight: '165%',
+                color: 'rgba(16, 16, 16, 0.25)',
+                width: '300px',
+                height: '20px',
+                left: '15px',
+                top: '15px',
+              }}
+            >
+              Автоматически закроется через {cookieTimer}
             </div>
+
+            {/* Основной текст */}
+            <div 
+              className="absolute font-normal"
+              style={{
+                fontFamily: 'TT Firs Neue, sans-serif',
+                fontStyle: 'normal',
+                fontWeight: 400,
+                fontSize: '14px',
+                lineHeight: '105%',
+                color: '#101010',
+                width: '330px',
+                height: '60px',
+                left: '15px',
+                top: '45px',
+              }}
+            >
+              Если продолжаете использовать этот портал, вы выражаете согласие на использование
+              файлов куки в соответствии с условиями{' '}
+              <a
+                href="/privacy-policy"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-600 underline"
+              >
+                политики конфиденциальности
+              </a>
+              {' '}портала
+            </div>
+
+            {/* Кнопка закрытия (X) */}
+            <button
+              onClick={() => setShowCookieBanner(false)}
+              className="absolute cursor-pointer flex items-center justify-center bg-transparent border-none outline-none"
+              style={{
+                width: '20px',
+                height: '20px',
+                right: '15px',
+                top: '15px',
+              }}
+            >
+              <X size={16} weight="regular" color="rgba(16, 16, 16, 0.5)" />
+            </button>
           </div>
         )}
 

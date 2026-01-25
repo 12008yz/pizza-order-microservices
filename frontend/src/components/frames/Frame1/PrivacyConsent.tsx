@@ -1,5 +1,6 @@
 'use client';
 
+import { Check } from '@phosphor-icons/react';
 import { useAddress } from '../../../contexts/AddressContext';
 
 export default function PrivacyConsent() {
@@ -37,15 +38,7 @@ export default function PrivacyConsent() {
           }}
         >
           {addressData.privacyConsent && (
-            <svg width="9" height="9" viewBox="0 0 12 12" fill="none">
-              <path
-                d="M2 6L5 9L10 3"
-                stroke="white"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+            <Check size={9} weight="bold" color="white" />
           )}
         </div>
 

@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { Check } from '@phosphor-icons/react';
 
 interface RadioOptionProps {
   label: string;
@@ -46,15 +47,7 @@ export default function RadioOption({ label, selected, onClick, className = '' }
         }}
       >
         {selected && (
-          <svg width="8" height="8" viewBox="0 0 12 12" fill="none">
-            <path
-              d="M2.5 6L5 8.5L9.5 3.5"
-              stroke="#FFFFFF"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
+          <Check size={8} weight="bold" color="#FFFFFF" />
         )}
       </div>
     </div>

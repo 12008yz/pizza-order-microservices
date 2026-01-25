@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { CaretDown, CaretRight, Check } from '@phosphor-icons/react';
 import { AddressProvider, useAddress, ConnectionType } from '../../../contexts/AddressContext';
 import ConnectionTypeModal from '../../modals/ConnectionTypeModal';
 import AddressInputModal from '../../modals/AddressInputModal';
@@ -230,30 +231,11 @@ function AddressFormContent() {
                   borderWidth: '0.5px',
                 }}
               >
-                <svg
-                  width="8"
-                  height="8"
-                  viewBox="0 0 12 12"
-                  fill="none"
-                >
-                  {addressData.connectionType ? (
-                    <path
-                      d="M2.5 6L5 8.5L9.5 3.5"
-                      stroke="#FFFFFF"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  ) : (
-                    <path
-                      d="M4.5 3L7.5 6L4.5 9"
-                      stroke="rgba(16, 16, 16, 0.25)"
-                      strokeWidth="1"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  )}
-                </svg>
+                {addressData.connectionType ? (
+                  <Check size={8} weight="bold" color="#FFFFFF" />
+                ) : (
+                  <CaretRight size={8} weight="regular" color="rgba(16, 16, 16, 0.25)" />
+                )}
               </div>
             </div>
           </div>
@@ -291,25 +273,11 @@ function AddressFormContent() {
                   }`}
                 style={{ borderWidth: '0.5px' }}
               >
-                <svg width="8" height="8" viewBox="0 0 12 12" fill="none">
-                  {addressData.city ? (
-                    <path
-                      d="M2.5 6L5 8.5L9.5 3.5"
-                      stroke="#FFFFFF"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  ) : (
-                    <path
-                      d="M4.5 3L7.5 6L4.5 9"
-                      stroke="rgba(16, 16, 16, 0.25)"
-                      strokeWidth="1"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  )}
-                </svg>
+                {addressData.city ? (
+                  <Check size={8} weight="bold" color="#FFFFFF" />
+                ) : (
+                  <CaretRight size={8} weight="regular" color="rgba(16, 16, 16, 0.25)" />
+                )}
               </div>
             </div>
           </div>
@@ -349,25 +317,11 @@ function AddressFormContent() {
                   }`}
                 style={{ borderWidth: '0.5px' }}
               >
-                <svg width="8" height="8" viewBox="0 0 12 12" fill="none">
-                  {addressData.street ? (
-                    <path
-                      d="M2.5 6L5 8.5L9.5 3.5"
-                      stroke="#FFFFFF"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  ) : (
-                    <path
-                      d="M4.5 3L7.5 6L4.5 9"
-                      stroke="rgba(16, 16, 16, 0.25)"
-                      strokeWidth="1"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  )}
-                </svg>
+                {addressData.street ? (
+                  <Check size={8} weight="bold" color="#FFFFFF" />
+                ) : (
+                  <CaretRight size={8} weight="regular" color="rgba(16, 16, 16, 0.25)" />
+                )}
               </div>
             </div>
           </div>
@@ -407,25 +361,11 @@ function AddressFormContent() {
                   }`}
                 style={{ borderWidth: '0.5px' }}
               >
-                <svg width="8" height="8" viewBox="0 0 12 12" fill="none">
-                  {addressData.houseNumber ? (
-                    <path
-                      d="M2.5 6L5 8.5L9.5 3.5"
-                      stroke="#FFFFFF"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  ) : (
-                    <path
-                      d="M4.5 3L7.5 6L4.5 9"
-                      stroke="rgba(16, 16, 16, 0.25)"
-                      strokeWidth="1"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  )}
-                </svg>
+                {addressData.houseNumber ? (
+                  <Check size={8} weight="bold" color="#FFFFFF" />
+                ) : (
+                  <CaretRight size={8} weight="regular" color="rgba(16, 16, 16, 0.25)" />
+                )}
               </div>
             </div>
           </div>

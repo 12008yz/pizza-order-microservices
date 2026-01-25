@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect } from 'react';
+import { X } from '@phosphor-icons/react';
 
 interface ToastProps {
   message: string;
@@ -52,15 +53,7 @@ export default function Toast({
         className="flex-shrink-0 w-5 h-5 flex items-center justify-center hover:bg-white/20 rounded transition-colors"
         style={{ cursor: 'pointer' }}
       >
-        <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-          <path
-            d="M1 1L11 11M11 1L1 11"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
+        <X size={12} weight="regular" />
       </button>
     </div>
   );

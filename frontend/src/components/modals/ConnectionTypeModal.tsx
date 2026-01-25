@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { Check, CaretLeft } from '@phosphor-icons/react';
 import { useAddress, ConnectionType } from '../../contexts/AddressContext';
 
 interface ConnectionTypeModalProps {
@@ -181,15 +182,7 @@ export default function ConnectionTypeModal({
                 }}
               >
                 {selectedType === type.value && (
-                  <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
-                    <path
-                      d="M1 4L3.5 6.5L9 1"
-                      stroke="white"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
+                  <Check size={10} weight="bold" color="white" />
                 )}
               </div>
             </div>
@@ -223,15 +216,7 @@ export default function ConnectionTypeModal({
               cursor: 'pointer',
             }}
           >
-            <svg width="12" height="20" viewBox="0 0 12 20" fill="none">
-              <path
-                d="M10 2L2 10L10 18"
-                stroke="#101010"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+            <CaretLeft size={20} weight="regular" color="#101010" />
           </button>
 
           {/* Кнопка "Далее" */}

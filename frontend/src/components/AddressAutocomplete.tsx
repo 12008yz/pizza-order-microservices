@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { CaretRight } from '@phosphor-icons/react';
 import { locationsService } from '../services/locations.service';
 import type { AddressSuggestion } from '../services/api/types';
 import { useAddress } from '../contexts/AddressContext';
@@ -352,21 +353,11 @@ export default function AddressAutocomplete({
                 borderWidth: '0.5px',
               }}
             >
-              <svg
-                width="8"
-                height="8"
-                viewBox="0 0 12 12"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M4.5 3L7.5 6L4.5 9"
-                  stroke={displayValue && !disabled ? '#FFFFFF' : 'rgba(16, 16, 16, 0.25)'}
-                  strokeWidth="1"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
+              <CaretRight 
+                size={8} 
+                weight="regular" 
+                color={displayValue && !disabled ? '#FFFFFF' : 'rgba(16, 16, 16, 0.25)'} 
+              />
             </div>
           )}
         </div>

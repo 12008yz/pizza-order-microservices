@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { X, Check, CaretLeft } from '@phosphor-icons/react';
 
 type ContactMethod = 'max' | 'telegram' | 'phone';
 type ConsultationStep = 'phone-input' | 'contact-method' | 'phone-after-method';
@@ -155,9 +156,7 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
               opacity: 0.15,
             }}
           >
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path d="M12 4L4 12M4 4L12 12" stroke="#101010" strokeWidth="1.5" strokeLinecap="round" />
-            </svg>
+            <X size={16} weight="regular" color="#101010" />
           </button>
 
           {/* Timer text */}
@@ -432,15 +431,7 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
               }}
             >
               {selectedMethod === 'telegram' && (
-                <svg width="8" height="8" viewBox="0 0 12 12" fill="none">
-                  <path
-                    d="M2.5 6L5 8.5L9.5 3.5"
-                    stroke="#FFFFFF"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
+                <Check size={8} weight="bold" color="#FFFFFF" />
               )}
             </div>
           </div>
@@ -475,15 +466,7 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
               }}
             >
               {selectedMethod === 'phone' && (
-                <svg width="8" height="8" viewBox="0 0 12 12" fill="none">
-                  <path
-                    d="M2.5 6L5 8.5L9.5 3.5"
-                    stroke="#FFFFFF"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
+                <Check size={8} weight="bold" color="#FFFFFF" />
               )}
             </div>
           </div>
@@ -509,9 +492,7 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
               border: '1px solid rgba(16, 16, 16, 0.15)',
             }}
           >
-            <svg width="12" height="6" viewBox="0 0 12 6" fill="none" style={{ transform: 'rotate(90deg)' }}>
-              <path d="M1 1L6 5L11 1" stroke="#101010" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
+            <CaretLeft size={12} weight="regular" color="#101010" />
           </button>
 
           {/* Кнопка Далее */}
@@ -638,9 +619,7 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
               border: '1px solid rgba(16, 16, 16, 0.15)',
             }}
           >
-            <svg width="12" height="6" viewBox="0 0 12 6" fill="none" style={{ transform: 'rotate(90deg)' }}>
-              <path d="M1 1L6 5L11 1" stroke="#101010" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
+            <CaretLeft size={12} weight="regular" color="#101010" />
           </button>
 
           {/* Кнопка Далее */}

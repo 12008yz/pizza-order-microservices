@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import CheckboxOption from '../../common/CheckboxOption';
 import RadioOption from '../../common/RadioOption';
 
@@ -59,6 +59,13 @@ export default function FilterWizard({ isOpen, onClose, onApply }: FilterWizardP
    // Button press states for animations
    const [isBackBtnPressed, setIsBackBtnPressed] = useState(false);
    const [isNextBtnPressed, setIsNextBtnPressed] = useState(false);
+
+   // Сбрасываем шаг на 1 при каждом открытии модалки
+   useEffect(() => {
+      if (isOpen) {
+         setStep(1);
+      }
+   }, [isOpen]);
 
    if (!isOpen) return null;
 

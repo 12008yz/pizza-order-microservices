@@ -1,21 +1,21 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  
+
   // Оптимизации производительности
   swcMinify: true, // Используем SWC для минификации (быстрее чем Terser)
   compress: true, // Включаем gzip сжатие
-  
+
   // Оптимизация изображений
   images: {
     formats: ['image/avif', 'image/webp'],
   },
-  
+
   // Оптимизация сборки
   // experimental: {
   //   optimizeCss: true, // Оптимизация CSS - отключено, требует critters
   // },
-  
+
   // Webpack оптимизации
   webpack: (config, { isServer, dev }) => {
     if (!isServer) {
@@ -68,7 +68,7 @@ const nextConfig = {
     }
     return config;
   },
-  
+
   // Переменные окружения доступны напрямую через process.env в API routes
   // NEXT_PUBLIC_ переменные доступны на клиенте
   async headers() {

@@ -10,7 +10,8 @@
   src: url('/fonts/TTFirsNeue-Thin.woff2') format('woff2');
   font-weight: 100;
   font-style: normal;
-  font-display: fallback; /* Не блокирует рендеринг, но подменяет шрифт когда загрузится */
+  font-display: fallback;
+  /* Не блокирует рендеринг, но подменяет шрифт когда загрузится */
 }
 
 @font-face {

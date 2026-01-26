@@ -27,7 +27,8 @@ services:
       POSTGRES_USER: user_user
       POSTGRES_PASSWORD: ${USER_DB_PASSWORD:-user_password}
       POSTGRES_DB: user_db
-    # Порты БД закрыты для внешнего доступа (только внутренняя сеть)
+    ports:
+      - "5433:5432" # Проброс порта для доступа через pgAdmin (5433 на хосте -> 5432 в контейнере)
     volumes:
       - user_db_data:/var/lib/postgresql/data
     networks:

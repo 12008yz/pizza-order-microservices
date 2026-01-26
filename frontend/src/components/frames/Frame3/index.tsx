@@ -282,12 +282,12 @@ export default function Frame3() {
         </div>
       </div>
 
-      {/* Контейнер для карточек с overflow:hidden чтобы скрыть вторую карточку */}
+      {/* Контейнер для карточек - показывает 15px второй карточки справа */}
       <div
         className="absolute overflow-hidden"
         style={{
           left: '20px',
-          right: '20px',
+          right: '5px', /* 20px - 15px = 5px, чтобы показать 15px второй карточки */
           top: '260px',
           bottom: '151px', /* 127px баннер + 24px отступ от баннера до низа карточки */
         }}
@@ -297,7 +297,7 @@ export default function Frame3() {
           ref={scrollRef}
           className="flex overflow-x-auto scrollbar-hide"
           style={{
-            gap: '20px',
+            gap: '5px',
             height: '100%',
             scrollSnapType: 'x mandatory',
             WebkitOverflowScrolling: 'touch',

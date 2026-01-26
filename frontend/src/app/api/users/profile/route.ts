@@ -85,20 +85,53 @@ export async function POST(request: NextRequest) {
             return NextResponse.json(result, { status: 201 });
          }
 
-         // Если пользователь уже существует, пробуем обновить
+         // Если пользователь уже существует, объединяем данные
          if (response.status === 409) {
-            // Получаем существующий профиль и обновляем
-            const updateResponse = await fetch(`${USER_SERVICE_URL}/api/users/profile/by-phone/${normalizedPhone}`, {
-               method: 'PUT',
-               headers: {
-                  'Content-Type': 'application/json',
-               },
-               body: JSON.stringify(profileData),
-            });
+            // Получаем существующий профиль
+            const getResponse = await fetch(`${USER_SERVICE_URL}/api/users/profile/by-phone/${normalizedPhone}`);
+            
+            if (getResponse.ok) {
+               const existingProfile = await getResponse.json();
+               
+               // Объединяем данные: новые данные имеют приоритет, но не перезаписывают существующие, если новые пустые
+               const mergedData = {
+                  phone: normalizedPhone,
+                  city: profileData.city || existingProfile.city || null,
+                  street: profileData.street || existingProfile.street || null,
+                  house: profileData.house || existingProfile.house || null,
+                  apartment: profileData.apartment || existingProfile.apartment || null,
+                  connectionType: profileData.connectionType || existingProfile.connectionType || null,
+                  contactMethod: profileData.contactMethod || existingProfile.contactMethod || null,
+                  savedAddresses: existingProfile.savedAddresses || null,
+               };
 
-            if (updateResponse.ok) {
-               const result = await updateResponse.json();
-               return NextResponse.json(result, { status: 200 });
+               // Обновляем профиль с объединенными данными
+               const updateResponse = await fetch(`${USER_SERVICE_URL}/api/users/profile/by-phone/${normalizedPhone}`, {
+                  method: 'PUT',
+                  headers: {
+                     'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify(mergedData),
+               });
+
+               if (updateResponse.ok) {
+                  const result = await updateResponse.json();
+                  return NextResponse.json(result, { status: 200 });
+               }
+            } else {
+               // Если не удалось получить существующий профиль, просто обновляем новыми данными
+               const updateResponse = await fetch(`${USER_SERVICE_URL}/api/users/profile/by-phone/${normalizedPhone}`, {
+                  method: 'PUT',
+                  headers: {
+                     'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify(profileData),
+               });
+
+               if (updateResponse.ok) {
+                  const result = await updateResponse.json();
+                  return NextResponse.json(result, { status: 200 });
+               }
             }
          }
 

@@ -152,9 +152,57 @@ function AddressFormContent() {
     return sanitized || undefined;
   };
 
+  // Функция сохранения номера телефона в базу данных (всегда вызывается при консультации)
+  const savePhoneToDatabase = async (phone: string, method?: ContactMethod) => {
+    if (!phone) return;
+
+    const normalizedPhone = phone.replace(/\D/g, ''); // Только цифры
+
+    // Валидация номера телефона - строго 11 цифр
+    if (normalizedPhone.length !== 11) {
+      console.error('Invalid phone number format');
+      return;
+    }
+
+    // Формируем данные для сохранения (включаем все доступные данные из формы)
+    const userData = {
+      phone: normalizedPhone,
+      city: sanitizeString(addressData.city, 100),
+      street: sanitizeString(addressData.street, 200),
+      house: sanitizeString(addressData.houseNumber, 20),
+      apartment: sanitizeString(addressData.apartmentNumber, 20) || undefined,
+      connectionType: addressData.connectionType || undefined,
+      contactMethod: method || undefined,
+    };
+
+    // Отправляем данные на сервер для сохранения в базе данных
+    // API автоматически объединит данные, если пользователь уже существует
+    try {
+      const response = await fetch('/api/users/profile', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(userData),
+      });
+
+      if (!response.ok) {
+        console.error('Failed to save user data:', await response.text());
+      }
+    } catch (error) {
+      console.error('Error saving user data:', error);
+      // Продолжаем даже если сохранение не удалось
+    }
+  };
+
   // Функция сохранения данных пользователя и перехода на тарифы
   const saveUserDataAndNavigate = async (phone?: string, method?: ContactMethod) => {
     try {
+      // Если есть телефон, всегда сохраняем его в базу данных (даже если форма не заполнена)
+      if (phone) {
+        await savePhoneToDatabase(phone, method);
+      }
+
       // Проверяем, заполнены ли все обязательные поля формы
       if (!validateForm()) {
         // Если форма не валидна, возвращаемся на форму
@@ -179,46 +227,6 @@ function AddressFormContent() {
       } catch (error) {
         console.warn('Failed to save to sessionStorage:', error);
         // Продолжаем работу даже если sessionStorage недоступен
-      }
-
-      // Если есть телефон, сохраняем данные пользователя в базу данных
-      if (phone) {
-        const normalizedPhone = phone.replace(/\D/g, ''); // Только цифры
-
-        // Валидация номера телефона - строго 11 цифр
-        if (normalizedPhone.length !== 11) {
-          console.error('Invalid phone number format');
-          router.push('/providers');
-          return;
-        }
-
-        const userData = {
-          phone: normalizedPhone,
-          city: sanitizeString(addressData.city, 100),
-          street: sanitizeString(addressData.street, 200),
-          house: sanitizeString(addressData.houseNumber, 20),
-          apartment: sanitizeString(addressData.apartmentNumber, 20) || undefined,
-          connectionType: addressData.connectionType || undefined,
-          contactMethod: method || undefined,
-        };
-
-        // Отправляем данные на сервер для сохранения в базе данных
-        try {
-          const response = await fetch('/api/users/profile', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(userData),
-          });
-
-          if (!response.ok) {
-            console.error('Failed to save user data:', await response.text());
-          }
-        } catch (error) {
-          console.error('Error saving user data:', error);
-          // Продолжаем даже если сохранение не удалось
-        }
       }
 
       // Переходим на страницу тарифов

@@ -1,13 +1,13 @@
 'use client';
 
 import React from 'react';
-import { Check } from '@phosphor-icons/react';
 
 interface CheckboxOptionProps {
   label: string;
   checked: boolean;
   onChange: () => void;
   className?: string;
+  style?: React.CSSProperties;
 }
 
 export default function CheckboxOption({
@@ -15,44 +15,52 @@ export default function CheckboxOption({
   checked,
   onChange,
   className = '',
+  style,
 }: CheckboxOptionProps) {
   return (
     <div
       onClick={onChange}
-      className={`relative w-full rounded-[10px] bg-white cursor-pointer flex items-center justify-between ${className}`}
+      className={`relative rounded-[10px] cursor-pointer ${className}`}
       style={{
-        border: checked
-          ? '1px solid #101010'
-          : '1px solid rgba(16, 16, 16, 0.25)',
-        padding: '0 15px',
-        paddingTop: '15.5px',
-        paddingBottom: '14px',
-        transition: 'border-color 0.2s ease',
+        height: '50px',
+        border: checked ? '1px solid #101010' : '1px solid rgba(16, 16, 16, 0.25)',
+        boxSizing: 'border-box',
+        ...style,
       }}
     >
-      <span
-        className="text-base leading-[125%]"
+      <div
+        className="absolute font-normal flex items-center"
         style={{
-          letterSpacing: '0.5px',
+          left: '15px',
+          top: '15px',
+          fontFamily: 'TT Firs Neue, sans-serif',
+          fontSize: '16px',
+          lineHeight: '125%',
           color: checked ? '#101010' : 'rgba(16, 16, 16, 0.5)',
+          letterSpacing: '0.5px',
         }}
       >
         {label}
-      </span>
-      
-      {/* Checkbox */}
+      </div>
       <div
-        className="w-4 h-4 rounded flex items-center justify-center flex-shrink-0"
+        className="absolute w-4 h-4 rounded-full flex items-center justify-center"
         style={{
-          borderWidth: '0.5px',
+          right: '15px',
+          top: '17px',
           background: checked ? '#101010' : 'transparent',
-          border: checked
-            ? 'none'
-            : '0.5px solid rgba(16, 16, 16, 0.25)',
+          border: checked ? 'none' : '1px solid rgba(16, 16, 16, 0.5)',
         }}
       >
         {checked && (
-          <Check size={12} weight="bold" color="#FFFFFF" />
+          <svg width="8" height="8" viewBox="0 0 12 12" fill="none">
+            <path
+              d="M2.5 6L5 8.5L9.5 3.5"
+              stroke="#FFFFFF"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
         )}
       </div>
     </div>

@@ -8,12 +8,48 @@ interface TariffCardProps {
   providerLogo?: string;
   tariffName: string;
   price: number;
+  connectionPrice?: number;
   speed?: number;
   services?: string[];
+  tvChannels?: number;
+  tvService?: string;
+  mobileMinutes?: number;
+  mobileGb?: number;
+  mobileSms?: number;
   rating?: number;
   reviewsCount?: number;
+  promoText?: string;
+  promoPrice?: number;
+  isFavorite?: boolean;
   onClick?: () => void;
+  onInfoClick?: () => void;
+  onFavoriteClick?: () => void;
 }
+
+// Круглая иконка с галочкой
+const CheckCircleIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="10" cy="10" r="9" stroke="#101010" strokeWidth="1.5" fill="none" />
+    <path d="M6 10L9 13L14 7" stroke="#101010" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
+// Круглая иконка с плюсом
+const PlusCircleIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="10" cy="10" r="9" stroke="#101010" strokeWidth="1.5" fill="none" />
+    <path d="M10 6V14M6 10H14" stroke="#101010" strokeWidth="1.5" strokeLinecap="round" />
+  </svg>
+);
+
+// Иконка info (i) в круге
+const InfoIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="10" cy="10" r="9" stroke="rgba(16, 16, 16, 0.5)" strokeWidth="1.5" fill="none" />
+    <path d="M10 9V14" stroke="rgba(16, 16, 16, 0.5)" strokeWidth="1.5" strokeLinecap="round" />
+    <circle cx="10" cy="6.5" r="1" fill="rgba(16, 16, 16, 0.5)" />
+  </svg>
+);
 
 export default function TariffCard({
   id,
@@ -21,64 +57,289 @@ export default function TariffCard({
   providerLogo,
   tariffName,
   price,
+  connectionPrice = 500,
   speed,
   services,
+  tvChannels,
+  tvService,
+  mobileMinutes,
+  mobileGb,
+  mobileSms,
   rating,
   reviewsCount,
+  promoText = '90 дней за 0 р.',
+  promoPrice,
+  isFavorite = false,
   onClick,
+  onInfoClick,
+  onFavoriteClick,
 }: TariffCardProps) {
   return (
     <div
-      className="box-border bg-white backdrop-blur-[7.5px] rounded-[20px] cursor-pointer transition-all hover:shadow-lg"
-      onClick={onClick}
+      className="relative bg-white rounded-[20px] flex flex-col"
       style={{
-        padding: '20px',
+        width: '360px',
+        minHeight: '452px',
+        boxSizing: 'border-box',
+        paddingBottom: '15px',
       }}
     >
-      {/* Provider Info */}
-      <div className="flex items-center mb-4">
-        {providerLogo && (
-          <img
-            src={providerLogo}
-            alt={providerName}
-            className="w-12 h-12 mr-3 object-contain"
-          />
-        )}
-        <div>
-          <h3 className="font-bold text-lg text-[#101010]">{providerName}</h3>
-          {rating && reviewsCount && (
-            <div className="text-sm text-[rgba(16,16,16,0.5)]">
-              ⭐ {rating.toFixed(1)} ({reviewsCount} отзывов)
-            </div>
-          )}
+      {/* Provider Name & Tariff Name */}
+      <div style={{ padding: '24px 20px 0 20px' }}>
+        {/* Provider Name */}
+        <div
+          style={{
+            fontFamily: 'TT Firs Neue, sans-serif',
+            fontWeight: 400,
+            fontSize: '14px',
+            lineHeight: '125%',
+            color: 'rgba(16, 16, 16, 0.5)',
+            marginBottom: '4px',
+          }}
+        >
+          {providerName}
+        </div>
+
+        {/* Tariff Name */}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+          }}
+        >
+          <span
+            style={{
+              fontFamily: 'TT Firs Neue, sans-serif',
+              fontWeight: 400,
+              fontSize: '18px',
+              lineHeight: '165%',
+              color: '#101010',
+            }}
+          >
+            {tariffName}
+          </span>
+          {/* Info Icon */}
+          <div
+            onClick={(e) => {
+              e.stopPropagation();
+              onInfoClick?.();
+            }}
+            style={{ cursor: 'pointer' }}
+          >
+            <InfoIcon />
+          </div>
         </div>
       </div>
 
-      {/* Tariff Name */}
-      <h4 className="font-normal text-xl text-[#101010] mb-2">{tariffName}</h4>
+      {/* Divider */}
+      <div style={{ padding: '16px 20px 0 20px' }}>
+        <div style={{ height: '1px', background: 'rgba(16, 16, 16, 0.1)' }} />
+      </div>
 
-      {/* Tariff Details */}
-      <div className="mb-4">
+      {/* Features Section */}
+      <div style={{ padding: '16px 20px', flex: 1 }}>
+        {/* Speed Feature */}
         {speed && (
-          <div className="text-sm text-[rgba(16,16,16,0.5)] mb-1">
-            Скорость: {speed} Мбит/с
+          <div style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '14px' }}>
+            <div style={{ marginRight: '12px', marginTop: '2px', flexShrink: 0 }}>
+              <CheckCircleIcon />
+            </div>
+            <div>
+              <div
+                style={{
+                  fontFamily: 'TT Firs Neue, sans-serif',
+                  fontWeight: 400,
+                  fontSize: '16px',
+                  lineHeight: '155%',
+                  color: '#101010',
+                }}
+              >
+                {speed} Мбит/сек
+              </div>
+              <div
+                style={{
+                  fontFamily: 'TT Firs Neue, sans-serif',
+                  fontWeight: 400,
+                  fontSize: '14px',
+                  lineHeight: '105%',
+                  color: 'rgba(16, 16, 16, 0.5)',
+                }}
+              >
+                Безлимитное соединение
+              </div>
+            </div>
           </div>
         )}
-        {services && services.length > 0 && (
-          <div className="text-sm text-[rgba(16,16,16,0.5)]">
-            Услуги: {services.join(', ')}
+
+        {/* TV Feature */}
+        {tvChannels && (
+          <div style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '14px' }}>
+            <div style={{ marginRight: '12px', marginTop: '2px', flexShrink: 0 }}>
+              <CheckCircleIcon />
+            </div>
+            <div>
+              <div
+                style={{
+                  fontFamily: 'TT Firs Neue, sans-serif',
+                  fontWeight: 400,
+                  fontSize: '16px',
+                  lineHeight: '155%',
+                  color: '#101010',
+                }}
+              >
+                {tvChannels} каналов{tvService && ` · кинотеатр «${tvService}»`}
+              </div>
+              <div
+                style={{
+                  fontFamily: 'TT Firs Neue, sans-serif',
+                  fontWeight: 400,
+                  fontSize: '13px',
+                  lineHeight: '115%',
+                  color: 'rgba(16, 16, 16, 0.5)',
+                }}
+              >
+                Телевидение
+              </div>
+            </div>
           </div>
         )}
+
+        {/* Mobile Feature */}
+        {(mobileMinutes || mobileGb || mobileSms) && (
+          <div style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '14px' }}>
+            <div style={{ marginRight: '12px', marginTop: '2px', flexShrink: 0 }}>
+              <CheckCircleIcon />
+            </div>
+            <div>
+              <div
+                style={{
+                  fontFamily: 'TT Firs Neue, sans-serif',
+                  fontWeight: 400,
+                  fontSize: '16px',
+                  lineHeight: '155%',
+                  color: '#101010',
+                }}
+              >
+                {mobileMinutes && `${mobileMinutes} мин`}
+                {mobileGb && ` · ${mobileGb} гигабайтов`}
+                {mobileSms && ` · ${mobileSms} смс`}
+              </div>
+              <div
+                style={{
+                  fontFamily: 'TT Firs Neue, sans-serif',
+                  fontWeight: 400,
+                  fontSize: '14px',
+                  lineHeight: '105%',
+                  color: 'rgba(16, 16, 16, 0.5)',
+                }}
+              >
+                Мобильное соединение
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Divider before Favorite */}
+        <div style={{ height: '1px', background: 'rgba(16, 16, 16, 0.1)', marginBottom: '14px' }} />
+
+        {/* Favorite Feature */}
+        <div
+          style={{ display: 'flex', alignItems: 'flex-start', cursor: 'pointer' }}
+          onClick={(e) => {
+            e.stopPropagation();
+            onFavoriteClick?.();
+          }}
+        >
+          <div style={{ marginRight: '12px', marginTop: '2px', flexShrink: 0 }}>
+            <PlusCircleIcon />
+          </div>
+          <div>
+            <div
+              style={{
+                fontFamily: 'TT Firs Neue, sans-serif',
+                fontWeight: 400,
+                fontSize: '16px',
+                lineHeight: '155%',
+                color: '#101010',
+              }}
+            >
+              Добавить в «Избранное»
+            </div>
+            <div
+              style={{
+                fontFamily: 'TT Firs Neue, sans-serif',
+                fontWeight: 400,
+                fontSize: '14px',
+                lineHeight: '105%',
+                color: 'rgba(16, 16, 16, 0.5)',
+              }}
+            >
+              Кнопка выше и справа от «Гигапоиск»
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* Price */}
-      <div className="flex items-baseline justify-between">
-        <div>
-          <span className="font-bold text-2xl text-[#101010]">{price}</span>
-          <span className="text-sm text-[rgba(16,16,16,0.5)] ml-1">₽/мес</span>
+      {/* Divider before Price */}
+      <div style={{ padding: '0 20px' }}>
+        <div style={{ height: '1px', background: 'rgba(16, 16, 16, 0.1)' }} />
+      </div>
+
+      {/* Price Section */}
+      <div style={{ padding: '16px 20px' }}>
+        {/* Price */}
+        <div
+          style={{
+            fontFamily: 'TT Firs Neue, sans-serif',
+            fontWeight: 400,
+            fontSize: '22px',
+            lineHeight: '115%',
+            color: '#101010',
+            marginBottom: '4px',
+          }}
+        >
+          {price} р./мес.
         </div>
-        <button className="px-4 py-2 bg-[#101010] text-white rounded-[10px] hover:bg-gray-800 transition-colors">
-          Подключить
+
+        {/* Connection Price */}
+        <div
+          style={{
+            fontFamily: 'TT Firs Neue, sans-serif',
+            fontWeight: 400,
+            fontSize: '14px',
+            lineHeight: '105%',
+            color: 'rgba(16, 16, 16, 0.5)',
+          }}
+        >
+          Подключение от оператора за {connectionPrice} р.
+        </div>
+      </div>
+
+      {/* CTA Button */}
+      <div style={{ padding: '0 20px 0 20px' }}>
+        <button
+          onClick={onClick}
+          style={{
+            boxSizing: 'border-box',
+            width: '100%',
+            height: '50px',
+            background: '#101010',
+            border: 'none',
+            borderRadius: '10px',
+            fontFamily: 'TT Firs Neue, sans-serif',
+            fontWeight: 400,
+            fontSize: '16px',
+            lineHeight: '100%',
+            color: '#FFFFFF',
+            textAlign: 'center',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          {promoText}
         </button>
       </div>
     </div>

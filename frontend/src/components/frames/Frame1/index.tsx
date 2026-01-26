@@ -116,6 +116,21 @@ function AddressFormContent() {
   };
 
   const handleConsultationClose = () => {
+    // Сохраняем текущие данные в sessionStorage при закрытии модалки
+    // чтобы они не потерялись при возврате на форму
+    try {
+      const sanitizedAddressData = {
+        ...addressData,
+        city: sanitizeString(addressData.city, 100),
+        street: sanitizeString(addressData.street, 200),
+        houseNumber: sanitizeString(addressData.houseNumber, 20),
+        apartmentNumber: sanitizeString(addressData.apartmentNumber, 20),
+      };
+      sessionStorage.setItem('addressData', JSON.stringify(sanitizedAddressData));
+    } catch (error) {
+      console.warn('Failed to save to sessionStorage:', error);
+    }
+    
     setFlowState('form');
     setLoadingProgress(0);
   };
@@ -140,6 +155,14 @@ function AddressFormContent() {
   // Функция сохранения данных пользователя и перехода на тарифы
   const saveUserDataAndNavigate = async (phone?: string, method?: ContactMethod) => {
     try {
+      // Проверяем, заполнены ли все обязательные поля формы
+      if (!validateForm()) {
+        // Если форма не валидна, возвращаемся на форму
+        setFlowState('form');
+        setLoadingProgress(0);
+        return;
+      }
+
       // Санитизируем данные перед сохранением
       const sanitizedAddressData = {
         ...addressData,
@@ -202,8 +225,13 @@ function AddressFormContent() {
       router.push('/providers');
     } catch (error) {
       console.error('Error in saveUserDataAndNavigate:', error);
-      // В случае ошибки всё равно переходим на страницу тарифов
-      router.push('/providers');
+      // В случае ошибки проверяем форму и возвращаемся на неё, если не заполнена
+      if (!validateForm()) {
+        setFlowState('form');
+        setLoadingProgress(0);
+      } else {
+        router.push('/providers');
+      }
     }
   };
 

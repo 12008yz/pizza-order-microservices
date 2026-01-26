@@ -2,6 +2,7 @@
 
 import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
+import dynamic from 'next/dynamic';
 import {
   HomeIcon,
   HeartIcon,
@@ -11,6 +12,12 @@ import {
   CheckCircleIcon,
   PlusCircleIcon,
 } from '../../common/icons';
+
+// Динамический импорт ConsultationFlow для code splitting
+const ConsultationFlow = dynamic(() => import('../Frame2/ConsultationFlow'), {
+  loading: () => <div>Загрузка...</div>,
+  ssr: false,
+});
 
 interface Tariff {
   id: number;
@@ -80,6 +87,8 @@ const tariffs: Tariff[] = [
   },
 ];
 
+type ContactMethod = 'max' | 'telegram' | 'phone';
+
 export default function Frame3() {
   const router = useRouter();
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -87,6 +96,25 @@ export default function Frame3() {
   const [isHeartPressed, setIsHeartPressed] = useState(false);
   const [isFunnelPressed, setIsFunnelPressed] = useState(false);
   const [isPlanePressed, setIsPlanePressed] = useState(false);
+  const [showConsultation, setShowConsultation] = useState(false);
+
+  const handleConsultationClose = () => {
+    setShowConsultation(false);
+  };
+
+  const handleConsultationSubmit = async (data: { phone?: string; method?: ContactMethod }) => {
+    // Здесь можно добавить логику сохранения данных консультации
+    console.log('Consultation data:', data);
+    setShowConsultation(false);
+  };
+
+  const handleConsultationSkip = async () => {
+    setShowConsultation(false);
+  };
+
+  const handlePlaneClick = () => {
+    setShowConsultation(true);
+  };
 
   return (
     <div
@@ -233,6 +261,7 @@ export default function Frame3() {
             left: '319.2px',
             top: '0.81px',
           }}
+          onClick={handlePlaneClick}
           onMouseDown={() => setIsPlanePressed(true)}
           onMouseUp={() => setIsPlanePressed(false)}
           onMouseLeave={() => setIsPlanePressed(false)}
@@ -282,14 +311,10 @@ export default function Frame3() {
               className="flex-shrink-0 flex flex-col"
               style={{
                 width: '360px',
-                height: '452px',
-                minHeight: '452px',
-                maxHeight: '452px',
                 background: '#FFFFFF',
                 borderRadius: '20px',
                 scrollSnapAlign: 'start',
                 boxSizing: 'border-box',
-                overflow: 'hidden',
               }}
             >
               {/* Group 7572 - Заголовок карточки */}
@@ -348,11 +373,19 @@ export default function Frame3() {
               <div
                 style={{
                   display: 'flex',
-                  alignItems: 'flex-start',
+                  alignItems: 'center',
                   padding: '12px 15px 8px 15px',
                 }}
               >
-                <div style={{ marginRight: '10px', marginTop: '2px' }}>
+                <div
+                  style={{
+                    marginRight: '10px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flexShrink: 0,
+                  }}
+                >
                   <CheckCircleIcon />
                 </div>
                 <div>
@@ -388,11 +421,19 @@ export default function Frame3() {
               <div
                 style={{
                   display: 'flex',
-                  alignItems: 'flex-start',
+                  alignItems: 'center',
                   padding: '8px 15px',
                 }}
               >
-                <div style={{ marginRight: '10px', marginTop: '2px' }}>
+                <div
+                  style={{
+                    marginRight: '10px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flexShrink: 0,
+                  }}
+                >
                   <CheckCircleIcon />
                 </div>
                 <div>
@@ -428,11 +469,19 @@ export default function Frame3() {
               <div
                 style={{
                   display: 'flex',
-                  alignItems: 'flex-start',
+                  alignItems: 'center',
                   padding: '8px 15px',
                 }}
               >
-                <div style={{ marginRight: '10px', marginTop: '2px' }}>
+                <div
+                  style={{
+                    marginRight: '10px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flexShrink: 0,
+                  }}
+                >
                   <CheckCircleIcon />
                 </div>
                 <div>
@@ -605,6 +654,15 @@ export default function Frame3() {
           scrollbar-width: none;
         }
       `}</style>
+
+      {/* Модалка консультации */}
+      {showConsultation && (
+        <ConsultationFlow
+          onClose={handleConsultationClose}
+          onSubmit={handleConsultationSubmit}
+          onSkip={handleConsultationSkip}
+        />
+      )}
     </div>
   );
 }

@@ -22,7 +22,7 @@ type ContactMethod = 'max' | 'telegram' | 'phone';
 
 function AddressFormContent() {
   const router = useRouter();
-  const { addressData, validateForm, clearErrors } = useAddress();
+  const { addressData, validateForm, clearErrors, clearAddress } = useAddress();
   const [showConnectionModal, setShowConnectionModal] = useState(false);
   const [showAddressModal, setShowAddressModal] = useState(false);
   const [addressModalStep, setAddressModalStep] = useState<'city' | 'street' | 'house'>('city');
@@ -117,7 +117,6 @@ function AddressFormContent() {
 
   const handleConsultationClose = () => {
     // Сохраняем текущие данные в sessionStorage при закрытии модалки
-    // чтобы они не потерялись при возврате на форму
     try {
       const sanitizedAddressData = {
         ...addressData,
@@ -127,12 +126,15 @@ function AddressFormContent() {
         apartmentNumber: sanitizeString(addressData.apartmentNumber, 20),
       };
       sessionStorage.setItem('addressData', JSON.stringify(sanitizedAddressData));
+      // Очищаем данные формы из sessionStorage
+      sessionStorage.removeItem('addressFormData');
     } catch (error) {
       console.warn('Failed to save to sessionStorage:', error);
     }
     
-    setFlowState('form');
-    setLoadingProgress(0);
+    // Очищаем форму и переходим на тарифы
+    clearAddress();
+    router.push('/providers');
   };
 
   // Открытие консультации по клику на иконку самолёта в Header
@@ -203,15 +205,7 @@ function AddressFormContent() {
         await savePhoneToDatabase(phone, method);
       }
 
-      // Проверяем, заполнены ли все обязательные поля формы
-      if (!validateForm()) {
-        // Если форма не валидна, возвращаемся на форму
-        setFlowState('form');
-        setLoadingProgress(0);
-        return;
-      }
-
-      // Санитизируем данные перед сохранением
+      // Санитизируем данные перед сохранением (даже если они неполные)
       const sanitizedAddressData = {
         ...addressData,
         city: sanitizeString(addressData.city, 100),
@@ -224,22 +218,22 @@ function AddressFormContent() {
       // Используем try-catch для защиты от ошибок при работе с sessionStorage
       try {
         sessionStorage.setItem('addressData', JSON.stringify(sanitizedAddressData));
+        // Очищаем данные формы из sessionStorage (addressFormData), так как данные уже отправлены
+        sessionStorage.removeItem('addressFormData');
       } catch (error) {
         console.warn('Failed to save to sessionStorage:', error);
         // Продолжаем работу даже если sessionStorage недоступен
       }
 
-      // Переходим на страницу тарифов
+      // Очищаем форму после отправки
+      clearAddress();
+
+      // Всегда переходим на страницу тарифов, даже если данные неполные
       router.push('/providers');
     } catch (error) {
       console.error('Error in saveUserDataAndNavigate:', error);
-      // В случае ошибки проверяем форму и возвращаемся на неё, если не заполнена
-      if (!validateForm()) {
-        setFlowState('form');
-        setLoadingProgress(0);
-      } else {
-        router.push('/providers');
-      }
+      // В случае ошибки все равно переходим на тарифы
+      router.push('/providers');
     }
   };
 

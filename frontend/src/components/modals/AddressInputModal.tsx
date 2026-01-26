@@ -156,10 +156,29 @@ export default function AddressInputModal({
             setSuggestions([]);
           }
         } else if (currentStep === 'street') {
-          if (addressData.cityId) {
+          let cityIdToUse = addressData.cityId;
+          
+          // Если cityId нет, но есть название города, пытаемся найти cityId
+          if (!cityIdToUse && addressData.city) {
+            try {
+              const citySearchResponse = await locationsService.autocomplete({
+                q: addressData.city,
+                limit: 1,
+              });
+              
+              if (citySearchResponse?.success && citySearchResponse.data && citySearchResponse.data.length > 0) {
+                cityIdToUse = citySearchResponse.data[0].cityId;
+              }
+            } catch (error) {
+              console.warn('Failed to find cityId by city name:', error);
+            }
+          }
+          
+          // Делаем запрос улиц, если есть cityId или хотя бы название города
+          if (cityIdToUse || addressData.city) {
             response = await locationsService.autocomplete({
               q: query,
-              cityId: addressData.cityId,
+              ...(cityIdToUse && { cityId: cityIdToUse }),
               limit: 10,
             });
           }
@@ -282,7 +301,7 @@ export default function AddressInputModal({
         clearTimeout(timeoutRef.current);
       }
     };
-  }, [query, currentStep, addressData.cityId, addressData.streetId, addressData.buildingId, addressData.entrance, addressData.floor]);
+  }, [query, currentStep, addressData.cityId, addressData.city, addressData.streetId, addressData.buildingId, addressData.entrance, addressData.floor]);
 
   const handleSelect = (index: number) => {
     setSelectedIndex(index);

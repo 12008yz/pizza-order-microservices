@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useCallback, useEffect, ReactNode } from 'react';
 
 export type ConnectionType = 'apartment' | 'private' | 'office' | '';
 
@@ -60,7 +60,46 @@ const defaultAddressData: AddressData = {
 const AddressContext = createContext<AddressContextType | undefined>(undefined);
 
 export const AddressProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  // Всегда начинаем с дефолтных данных для избежания ошибок гидратации
   const [addressData, setAddressData] = useState<AddressData>(defaultAddressData);
+  const [isHydrated, setIsHydrated] = useState(false);
+
+  // Загружаем данные из sessionStorage только на клиенте после монтирования
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
+    try {
+      const saved = sessionStorage.getItem('addressFormData');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        // Восстанавливаем данные, но не ошибки валидации
+        setAddressData({
+          ...parsed,
+          errors: {},
+        });
+      }
+    } catch (error) {
+      console.warn('Failed to load address data from sessionStorage:', error);
+    } finally {
+      setIsHydrated(true);
+    }
+  }, []);
+
+  // Сохраняем данные в sessionStorage при каждом изменении (только после гидратации)
+  useEffect(() => {
+    if (typeof window === 'undefined' || !isHydrated) return;
+    
+    try {
+      // Сохраняем только данные, без ошибок валидации
+      const dataToSave = {
+        ...addressData,
+        errors: {},
+      };
+      sessionStorage.setItem('addressFormData', JSON.stringify(dataToSave));
+    } catch (error) {
+      console.warn('Failed to save address data to sessionStorage:', error);
+    }
+  }, [addressData, isHydrated]);
 
   const updateConnectionType = useCallback((type: ConnectionType) => {
     setAddressData((prev) => ({

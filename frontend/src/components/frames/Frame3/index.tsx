@@ -12,8 +12,6 @@ import {
   PlusCircleIcon,
 } from '../../common/icons';
 
-
-
 interface Tariff {
   id: number;
   providerName: string;
@@ -92,14 +90,32 @@ export default function Frame3() {
 
   return (
     <div
-      className="relative w-[400px] h-[870px] bg-[#F5F5F5]"
-      style={{ fontFamily: 'TT Firs Neue, sans-serif' }}
+      className="relative w-full max-w-[400px] mx-auto bg-[#F5F5F5] overflow-hidden"
+      style={{
+        fontFamily: 'TT Firs Neue, sans-serif',
+        height: '100vh',
+        maxHeight: '870px',
+      }}
     >
-      {/* Header группа кнопок */}
-      <div className="absolute w-[360px] h-[40px] left-[20px] top-[75px]">
-        {/* Кнопка дом (слева) */}
+      {/* Header - Group 7545 */}
+      <div
+        className="absolute"
+        style={{
+          width: '360px',
+          height: '41.61px',
+          left: '20px',
+          top: '73px',
+        }}
+      >
+        {/* Group 7510 - Кнопка дом (слева) */}
         <div
-          className="absolute w-[40px] h-[40px] left-0 top-0 cursor-pointer"
+          className="absolute cursor-pointer"
+          style={{
+            width: '40.8px',
+            height: '40.8px',
+            left: '0px',
+            top: '0px',
+          }}
           onClick={() => router.push('/')}
           onMouseDown={() => setIsHomePressed(true)}
           onMouseUp={() => setIsHomePressed(false)}
@@ -108,8 +124,10 @@ export default function Frame3() {
           onTouchEnd={() => setIsHomePressed(false)}
         >
           <div
-            className="w-full h-full bg-white rounded-[100px] flex items-center justify-center"
+            className="w-full h-full flex items-center justify-center"
             style={{
+              background: '#FFFFFF',
+              borderRadius: '100px',
               transform: isHomePressed ? 'scale(0.92)' : 'scale(1)',
               transition: 'transform 0.15s ease-out',
             }}
@@ -118,35 +136,47 @@ export default function Frame3() {
           </div>
         </div>
 
-        {/* Логотип Гигапоиск */}
-        <div className="absolute left-[50px] top-[15px] flex items-center">
-          <div style={{ width: '140px', height: '10px' }}>
-            <svg
-              width="140"
-              height="10"
-              viewBox="0 0 230 14"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              preserveAspectRatio="xMidYMid meet"
-            >
-              <g clipPath="url(#clip0_13653_131_frame3)">
-                <path
-                  d="M0 13.8056V0.194444H22.5306V4.86111H5.93306V13.8056H0ZM49.0092 0.194444V13.8056H43.0761V6.02778L29.9708 13.8056H24.0377V0.194444H29.9708V7.97222L43.0761 0.194444H49.0092ZM50.5142 13.8056V0.194444H73.0448V4.86111H56.4473V13.8056H50.5142ZM84.0292 4.47222L81.288 7.97222H86.7705L84.0292 4.47222ZM80.6872 0.194444H87.3713L98.017 13.8056H91.3329L89.8121 11.8611H78.2464L76.7256 13.8056H70.0415L80.6872 0.194444ZM98.7731 13.8056V0.194444H123.744V13.8056H117.811V4.86111H104.706V13.8056H98.7731ZM131.454 0H145.16C148.784 0 151.732 3.24722 151.732 7C151.732 10.7528 148.784 14 145.16 14H131.454C127.831 14 124.883 10.7528 124.883 7C124.883 3.24722 127.831 0 131.454 0ZM143.94 5.05556H132.675C131.642 5.05556 130.797 5.93056 130.797 7C130.797 8.06944 131.642 8.94444 132.675 8.94444H143.94C144.973 8.94444 145.818 8.06944 145.818 7C145.818 5.93056 144.973 5.05556 143.94 5.05556ZM177.834 0.194444V13.8056H171.901V6.02778L158.796 13.8056H152.863V0.194444H158.796V7.97222L171.901 0.194444H177.834ZM203.38 8.75V13.8056H185.544C181.92 13.8056 178.972 10.7528 178.972 7C178.972 3.24722 181.92 0.194444 185.544 0.194444H203.38V5.25H186.764C185.732 5.25 184.887 5.93056 184.887 7C184.887 8.06944 185.732 8.75 186.764 8.75H203.38ZM204.88 13.8056V0.194444H210.813V7.66111L221.252 0.194444H229.852L220.332 7L229.852 13.8056H221.252L216.033 10.0722L210.813 13.8056H204.88Z"
-                  fill="#101010"
-                />
-              </g>
-              <defs>
-                <clipPath id="clip0_13653_131_frame3">
-                  <rect width="230" height="14" fill="white" />
-                </clipPath>
-              </defs>
-            </svg>
-          </div>
+        {/* Логотип Гигапоиск - гигапоиск 2 */}
+        <div
+          className="absolute flex items-center"
+          style={{
+            width: '142.79px',
+            height: '10.2px',
+            left: '48.61px',
+            top: '15.71px',
+          }}
+        >
+          <svg
+            width="143"
+            height="11"
+            viewBox="0 0 230 14"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            preserveAspectRatio="xMidYMid meet"
+          >
+            <g clipPath="url(#clip0_frame3_logo)">
+              <path
+                d="M0 13.8056V0.194444H22.5306V4.86111H5.93306V13.8056H0ZM49.0092 0.194444V13.8056H43.0761V6.02778L29.9708 13.8056H24.0377V0.194444H29.9708V7.97222L43.0761 0.194444H49.0092ZM50.5142 13.8056V0.194444H73.0448V4.86111H56.4473V13.8056H50.5142ZM84.0292 4.47222L81.288 7.97222H86.7705L84.0292 4.47222ZM80.6872 0.194444H87.3713L98.017 13.8056H91.3329L89.8121 11.8611H78.2464L76.7256 13.8056H70.0415L80.6872 0.194444ZM98.7731 13.8056V0.194444H123.744V13.8056H117.811V4.86111H104.706V13.8056H98.7731ZM131.454 0H145.16C148.784 0 151.732 3.24722 151.732 7C151.732 10.7528 148.784 14 145.16 14H131.454C127.831 14 124.883 10.7528 124.883 7C124.883 3.24722 127.831 0 131.454 0ZM143.94 5.05556H132.675C131.642 5.05556 130.797 5.93056 130.797 7C130.797 8.06944 131.642 8.94444 132.675 8.94444H143.94C144.973 8.94444 145.818 8.06944 145.818 7C145.818 5.93056 144.973 5.05556 143.94 5.05556ZM177.834 0.194444V13.8056H171.901V6.02778L158.796 13.8056H152.863V0.194444H158.796V7.97222L171.901 0.194444H177.834ZM203.38 8.75V13.8056H185.544C181.92 13.8056 178.972 10.7528 178.972 7C178.972 3.24722 181.92 0.194444 185.544 0.194444H203.38V5.25H186.764C185.732 5.25 184.887 5.93056 184.887 7C184.887 8.06944 185.732 8.75 186.764 8.75H203.38ZM204.88 13.8056V0.194444H210.813V7.66111L221.252 0.194444H229.852L220.332 7L229.852 13.8056H221.252L216.033 10.0722L210.813 13.8056H204.88Z"
+                fill="#101010"
+              />
+            </g>
+            <defs>
+              <clipPath id="clip0_frame3_logo">
+                <rect width="230" height="14" fill="white" />
+              </clipPath>
+            </defs>
+          </svg>
         </div>
 
-        {/* Кнопка избранное */}
+        {/* Group 7510 - Кнопка избранное (Heart) */}
         <div
-          className="absolute w-[40px] h-[40px] left-[230px] top-0 cursor-pointer"
+          className="absolute cursor-pointer"
+          style={{
+            width: '40.8px',
+            height: '40.8px',
+            left: '229.6px',
+            top: '0.41px',
+          }}
           onMouseDown={() => setIsHeartPressed(true)}
           onMouseUp={() => setIsHeartPressed(false)}
           onMouseLeave={() => setIsHeartPressed(false)}
@@ -154,8 +184,10 @@ export default function Frame3() {
           onTouchEnd={() => setIsHeartPressed(false)}
         >
           <div
-            className="w-full h-full bg-white rounded-[100px] flex items-center justify-center"
+            className="w-full h-full flex items-center justify-center"
             style={{
+              background: '#FFFFFF',
+              borderRadius: '100px',
               transform: isHeartPressed ? 'scale(0.92)' : 'scale(1)',
               transition: 'transform 0.15s ease-out',
             }}
@@ -164,9 +196,15 @@ export default function Frame3() {
           </div>
         </div>
 
-        {/* Кнопка фильтр */}
+        {/* Group 7511 - Кнопка фильтр (Funnel) */}
         <div
-          className="absolute w-[40px] h-[40px] left-[275px] top-0 cursor-pointer"
+          className="absolute cursor-pointer"
+          style={{
+            width: '40.8px',
+            height: '40.8px',
+            left: '274.6px',
+            top: '0.41px',
+          }}
           onMouseDown={() => setIsFunnelPressed(true)}
           onMouseUp={() => setIsFunnelPressed(false)}
           onMouseLeave={() => setIsFunnelPressed(false)}
@@ -174,8 +212,10 @@ export default function Frame3() {
           onTouchEnd={() => setIsFunnelPressed(false)}
         >
           <div
-            className="w-full h-full bg-white rounded-[100px] flex items-center justify-center"
+            className="w-full h-full flex items-center justify-center"
             style={{
+              background: '#FFFFFF',
+              borderRadius: '100px',
               transform: isFunnelPressed ? 'scale(0.92)' : 'scale(1)',
               transition: 'transform 0.15s ease-out',
             }}
@@ -184,9 +224,15 @@ export default function Frame3() {
           </div>
         </div>
 
-        {/* Кнопка самолёт (справа) */}
+        {/* Group 7509 - Кнопка самолёт (Plane) */}
         <div
-          className="absolute w-[40px] h-[40px] left-[320px] top-0 cursor-pointer"
+          className="absolute cursor-pointer"
+          style={{
+            width: '40.8px',
+            height: '40.8px',
+            left: '319.2px',
+            top: '0.81px',
+          }}
           onMouseDown={() => setIsPlanePressed(true)}
           onMouseUp={() => setIsPlanePressed(false)}
           onMouseLeave={() => setIsPlanePressed(false)}
@@ -194,8 +240,10 @@ export default function Frame3() {
           onTouchEnd={() => setIsPlanePressed(false)}
         >
           <div
-            className="w-full h-full bg-white rounded-[100px] flex items-center justify-center"
+            className="w-full h-full flex items-center justify-center"
             style={{
+              background: '#FFFFFF',
+              borderRadius: '100px',
               transform: isPlanePressed ? 'scale(0.92)' : 'scale(1)',
               transition: 'transform 0.15s ease-out',
             }}
@@ -205,237 +253,346 @@ export default function Frame3() {
         </div>
       </div>
 
-      {/* Горизонтальный скролл с карточками тарифов */}
+      {/* Контейнер для карточек с overflow:hidden чтобы скрыть вторую карточку */}
       <div
-        ref={scrollRef}
-        className="absolute left-[20px] right-0 top-[135px] flex gap-[20px] overflow-x-auto scrollbar-hide pr-[20px]"
+        className="absolute overflow-hidden"
         style={{
-          scrollSnapType: 'x mandatory',
-          WebkitOverflowScrolling: 'touch',
-          scrollbarWidth: 'none',
-          msOverflowStyle: 'none',
-          width: 'calc(100% + 340px)',
+          left: '20px',
+          right: '20px',
+          top: '260px',
+          bottom: '151px', /* 127px баннер + 24px отступ от баннера до низа карточки */
         }}
       >
-        {tariffs.map((tariff) => (
-          <div
-            key={tariff.id}
-            className="flex-shrink-0 w-[360px] bg-white rounded-[20px]"
-            style={{
-              scrollSnapAlign: 'start',
-            }}
-          >
-            {/* Заголовок карточки */}
-            <div className="relative px-[15px] pt-[15px] pb-[10px]">
-              <div className="flex justify-between items-start">
+        {/* Горизонтальный скролл с карточками */}
+        <div
+          ref={scrollRef}
+          className="flex overflow-x-auto scrollbar-hide"
+          style={{
+            gap: '20px',
+            height: '100%',
+            scrollSnapType: 'x mandatory',
+            WebkitOverflowScrolling: 'touch',
+            scrollbarWidth: 'none',
+            msOverflowStyle: 'none',
+          }}
+        >
+          {tariffs.map((tariff) => (
+            <div
+              key={tariff.id}
+              className="flex-shrink-0 flex flex-col"
+              style={{
+                width: '360px',
+                height: '452px',
+                minHeight: '452px',
+                maxHeight: '452px',
+                background: '#FFFFFF',
+                borderRadius: '20px',
+                scrollSnapAlign: 'start',
+                boxSizing: 'border-box',
+                overflow: 'hidden',
+              }}
+            >
+              {/* Group 7572 - Заголовок карточки */}
+              <div
+                style={{
+                  padding: '15px 15px 10px 15px',
+                }}
+              >
+                <div className="flex justify-between items-start">
+                  <div style={{ flex: 1 }}>
+                    {/* Ростелеком */}
+                    <div
+                      style={{
+                        fontFamily: 'TT Firs Neue, sans-serif',
+                        fontStyle: 'normal',
+                        fontWeight: 400,
+                        fontSize: '16px',
+                        lineHeight: '125%',
+                        color: 'rgba(16, 16, 16, 0.5)',
+                      }}
+                    >
+                      {tariff.providerName}
+                    </div>
+                    {/* Технологии выгоды. Тест-драйв. */}
+                    <div
+                      style={{
+                        fontFamily: 'TT Firs Neue, sans-serif',
+                        fontStyle: 'normal',
+                        fontWeight: 400,
+                        fontSize: '18px',
+                        lineHeight: '165%',
+                        color: '#101010',
+                        marginTop: '2px',
+                      }}
+                    >
+                      {tariff.tariffName}
+                    </div>
+                  </div>
+                  {/* Info icon */}
+                  <div style={{ marginTop: '5px', marginLeft: '10px' }}>
+                    <InfoIcon />
+                  </div>
+                </div>
+              </div>
+
+              {/* Line 8 - Разделитель */}
+              <div
+                style={{
+                  width: '100%',
+                  height: '1px',
+                  background: 'rgba(16, 16, 16, 0.1)',
+                }}
+              />
+
+              {/* Group 7448 - 100 Мбит/сек */}
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  padding: '12px 15px 8px 15px',
+                }}
+              >
+                <div style={{ marginRight: '10px', marginTop: '2px' }}>
+                  <CheckCircleIcon />
+                </div>
                 <div>
                   <div
-                    className="text-[rgba(16,16,16,0.5)]"
                     style={{
                       fontFamily: 'TT Firs Neue, sans-serif',
-                      fontSize: '16px',
+                      fontStyle: 'normal',
                       fontWeight: 400,
-                      lineHeight: '125%',
+                      fontSize: '16px',
+                      lineHeight: '155%',
+                      color: '#101010',
                     }}
                   >
-                    {tariff.providerName}
+                    {tariff.speed}
                   </div>
                   <div
-                    className="text-[#101010] mt-[5px]"
                     style={{
                       fontFamily: 'TT Firs Neue, sans-serif',
-                      fontSize: '18px',
+                      fontStyle: 'normal',
                       fontWeight: 400,
-                      lineHeight: '165%',
+                      fontSize: '14px',
+                      lineHeight: '105%',
+                      color: 'rgba(16, 16, 16, 0.5)',
+                      marginTop: '2px',
                     }}
                   >
-                    {tariff.tariffName}
+                    {tariff.speedDesc}
                   </div>
                 </div>
-                <div className="mt-[5px]">
-                  <InfoIcon />
-                </div>
               </div>
-            </div>
 
-            {/* Разделитель */}
-            <div className="mx-[15px] h-[1px] bg-[rgba(16,16,16,0.1)]" />
+              {/* Group 7498 - 135 каналов */}
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  padding: '8px 15px',
+                }}
+              >
+                <div style={{ marginRight: '10px', marginTop: '2px' }}>
+                  <CheckCircleIcon />
+                </div>
+                <div>
+                  <div
+                    style={{
+                      fontFamily: 'TT Firs Neue, sans-serif',
+                      fontStyle: 'normal',
+                      fontWeight: 400,
+                      fontSize: '16px',
+                      lineHeight: '155%',
+                      color: '#101010',
+                    }}
+                  >
+                    {tariff.channels}
+                  </div>
+                  <div
+                    style={{
+                      fontFamily: 'TT Firs Neue, sans-serif',
+                      fontStyle: 'normal',
+                      fontWeight: 400,
+                      fontSize: '13px',
+                      lineHeight: '115%',
+                      color: 'rgba(16, 16, 16, 0.5)',
+                      marginTop: '2px',
+                    }}
+                  >
+                    {tariff.channelsDesc}
+                  </div>
+                </div>
+              </div>
 
-            {/* Скорость */}
-            <div className="flex items-start px-[15px] py-[10px]">
-              <div className="mr-[10px] mt-[2px]">
-                <CheckCircleIcon />
-              </div>
-              <div>
-                <div
-                  className="text-[#101010]"
-                  style={{
-                    fontFamily: 'TT Firs Neue, sans-serif',
-                    fontSize: '16px',
-                    fontWeight: 400,
-                    lineHeight: '155%',
-                  }}
-                >
-                  {tariff.speed}
+              {/* Group 7499 - 1000 мин */}
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  padding: '8px 15px',
+                }}
+              >
+                <div style={{ marginRight: '10px', marginTop: '2px' }}>
+                  <CheckCircleIcon />
                 </div>
-                <div
-                  className="text-[rgba(16,16,16,0.5)]"
-                  style={{
-                    fontFamily: 'TT Firs Neue, sans-serif',
-                    fontSize: '14px',
-                    fontWeight: 400,
-                    lineHeight: '105%',
-                  }}
-                >
-                  {tariff.speedDesc}
+                <div>
+                  <div
+                    style={{
+                      fontFamily: 'TT Firs Neue, sans-serif',
+                      fontStyle: 'normal',
+                      fontWeight: 400,
+                      fontSize: '16px',
+                      lineHeight: '155%',
+                      color: '#101010',
+                    }}
+                  >
+                    {tariff.mobile}
+                  </div>
+                  <div
+                    style={{
+                      fontFamily: 'TT Firs Neue, sans-serif',
+                      fontStyle: 'normal',
+                      fontWeight: 400,
+                      fontSize: '14px',
+                      lineHeight: '105%',
+                      color: 'rgba(16, 16, 16, 0.5)',
+                      marginTop: '2px',
+                    }}
+                  >
+                    {tariff.mobileDesc}
+                  </div>
                 </div>
               </div>
-            </div>
 
-            {/* ТВ */}
-            <div className="flex items-start px-[15px] py-[5px]">
-              <div className="mr-[10px] mt-[2px]">
-                <CheckCircleIcon />
-              </div>
-              <div>
-                <div
-                  className="text-[#101010]"
-                  style={{
-                    fontFamily: 'TT Firs Neue, sans-serif',
-                    fontSize: '16px',
-                    fontWeight: 400,
-                    lineHeight: '155%',
-                  }}
-                >
-                  {tariff.channels}
+              {/* Line 10 - Разделитель перед избранным */}
+              <div
+                style={{
+                  width: '100%',
+                  height: '1px',
+                  background: 'rgba(16, 16, 16, 0.1)',
+                  marginTop: '4px',
+                }}
+              />
+
+              {/* Group 7565 - Добавить в избранное */}
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  padding: '12px 15px',
+                }}
+              >
+                <div style={{ marginRight: '10px', marginTop: '2px' }}>
+                  <PlusCircleIcon />
                 </div>
+                <div>
+                  <div
+                    style={{
+                      fontFamily: 'TT Firs Neue, sans-serif',
+                      fontStyle: 'normal',
+                      fontWeight: 400,
+                      fontSize: '16px',
+                      lineHeight: '155%',
+                      color: '#101010',
+                    }}
+                  >
+                    {tariff.favoriteLabel}
+                  </div>
+                  <div
+                    style={{
+                      fontFamily: 'TT Firs Neue, sans-serif',
+                      fontStyle: 'normal',
+                      fontWeight: 400,
+                      fontSize: '14px',
+                      lineHeight: '105%',
+                      color: 'rgba(16, 16, 16, 0.5)',
+                      marginTop: '2px',
+                    }}
+                  >
+                    {tariff.favoriteDesc}
+                  </div>
+                </div>
+              </div>
+
+              {/* Line 9 - Разделитель перед ценой */}
+              <div
+                style={{
+                  width: '100%',
+                  height: '1px',
+                  background: 'rgba(16, 16, 16, 0.1)',
+                }}
+              />
+
+              {/* Цена - 965 р./мес. */}
+              <div
+                style={{
+                  padding: '15px 15px 0 15px',
+                }}
+              >
                 <div
-                  className="text-[rgba(16,16,16,0.5)]"
                   style={{
                     fontFamily: 'TT Firs Neue, sans-serif',
-                    fontSize: '13px',
+                    fontStyle: 'normal',
                     fontWeight: 400,
+                    fontSize: '22px',
                     lineHeight: '115%',
+                    color: '#101010',
                   }}
                 >
-                  {tariff.channelsDesc}
+                  {tariff.price}
                 </div>
-              </div>
-            </div>
-
-            {/* Мобильное соединение */}
-            <div className="flex items-start px-[15px] py-[5px]">
-              <div className="mr-[10px] mt-[2px]">
-                <CheckCircleIcon />
-              </div>
-              <div>
+                {/* Подключение от оператора за 500 р. */}
                 <div
-                  className="text-[#101010]"
                   style={{
                     fontFamily: 'TT Firs Neue, sans-serif',
-                    fontSize: '16px',
+                    fontStyle: 'normal',
                     fontWeight: 400,
-                    lineHeight: '155%',
-                  }}
-                >
-                  {tariff.mobile}
-                </div>
-                <div
-                  className="text-[rgba(16,16,16,0.5)]"
-                  style={{
-                    fontFamily: 'TT Firs Neue, sans-serif',
                     fontSize: '14px',
-                    fontWeight: 400,
                     lineHeight: '105%',
+                    color: 'rgba(16, 16, 16, 0.5)',
+                    marginTop: '6px',
                   }}
                 >
-                  {tariff.mobileDesc}
+                  {tariff.connectionPrice}
                 </div>
               </div>
-            </div>
 
-            {/* Разделитель перед избранным */}
-            <div className="mx-[15px] h-[1px] bg-[rgba(16,16,16,0.1)] mt-[5px]" />
-
-            {/* Добавить в избранное */}
-            <div className="flex items-start px-[15px] py-[10px]">
-              <div className="mr-[10px] mt-[2px]">
-                <PlusCircleIcon />
-              </div>
-              <div>
-                <div
-                  className="text-[#101010]"
+              {/* Group 7377 - Кнопка промо */}
+              <div
+                style={{
+                  padding: '15.44px 15px 15px 15px',
+                }}
+              >
+                <button
                   style={{
+                    boxSizing: 'border-box',
+                    width: '100%',
+                    height: '50px',
+                    background: '#101010',
+                    border: '1px solid rgba(16, 16, 16, 0.1)',
+                    borderRadius: '10px',
                     fontFamily: 'TT Firs Neue, sans-serif',
+                    fontStyle: 'normal',
+                    fontWeight: 400,
                     fontSize: '16px',
-                    fontWeight: 400,
-                    lineHeight: '155%',
+                    lineHeight: '315%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    textAlign: 'center',
+                    color: '#FFFFFF',
+                    cursor: 'pointer',
+                    transition: 'background 0.2s ease',
                   }}
+                  onMouseEnter={(e) => (e.currentTarget.style.background = '#2a2a2a')}
+                  onMouseLeave={(e) => (e.currentTarget.style.background = '#101010')}
                 >
-                  {tariff.favoriteLabel}
-                </div>
-                <div
-                  className="text-[rgba(16,16,16,0.5)]"
-                  style={{
-                    fontFamily: 'TT Firs Neue, sans-serif',
-                    fontSize: '14px',
-                    fontWeight: 400,
-                    lineHeight: '105%',
-                  }}
-                >
-                  {tariff.favoriteDesc}
-                </div>
+                  {tariff.promoText}
+                </button>
               </div>
             </div>
-
-            {/* Разделитель перед ценой */}
-            <div className="mx-[15px] h-[1px] bg-[rgba(16,16,16,0.1)]" />
-
-            {/* Цена */}
-            <div className="px-[15px] pt-[15px]">
-              <div
-                className="text-[#101010]"
-                style={{
-                  fontFamily: 'TT Firs Neue, sans-serif',
-                  fontSize: '22px',
-                  fontWeight: 400,
-                  lineHeight: '115%',
-                }}
-              >
-                {tariff.price}
-              </div>
-              <div
-                className="text-[rgba(16,16,16,0.5)] mt-[5px]"
-                style={{
-                  fontFamily: 'TT Firs Neue, sans-serif',
-                  fontSize: '14px',
-                  fontWeight: 400,
-                  lineHeight: '105%',
-                }}
-              >
-                {tariff.connectionPrice}
-              </div>
-            </div>
-
-            {/* Кнопка промо */}
-            <div className="px-[15px] pt-[15px] pb-[15px]">
-              <button
-                className="w-full h-[50px] bg-[#101010] rounded-[10px] flex items-center justify-center text-white cursor-pointer hover:bg-[#2a2a2a] transition-colors"
-                style={{
-                  fontFamily: 'TT Firs Neue, sans-serif',
-                  fontSize: '16px',
-                  fontWeight: 400,
-                  lineHeight: '315%',
-                  border: '1px solid rgba(16, 16, 16, 0.1)',
-                }}
-              >
-                {tariff.promoText}
-              </button>
-            </div>
-          </div>
-        ))}
-        {/* Пустой элемент для правильного отступа в конце */}
-        <div className="flex-shrink-0 w-[20px]" />
+          ))}
+        </div>
       </div>
 
       {/* Стили для скрытия скроллбара */}

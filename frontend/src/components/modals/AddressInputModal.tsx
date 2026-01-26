@@ -357,6 +357,13 @@ export default function AddressInputModal({
     }
   };
 
+  const handleContainerClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    // Закрываем модалку при клике на пустое место внутри контейнера
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
+
   if (!isOpen) return null;
 
   const canProceed = selectedIndex !== null || query.trim().length > 0;
@@ -396,6 +403,7 @@ export default function AddressInputModal({
     >
       {/* Контейнер 400x870 */}
       <div
+        onClick={handleContainerClick}
         style={{
           position: 'relative',
           width: '400px',

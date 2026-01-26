@@ -1,0 +1,7 @@
+export { default as HomeIcon } from './HomeIcon';
+export { default as PlaneIcon } from './PlaneIcon';
+export { default as HeartIcon } from './HeartIcon';
+export { default as FunnelIcon } from './FunnelIcon';
+export { default as InfoIcon } from './InfoIcon';
+export { default as CheckCircleIcon } from './CheckCircleIcon';
+export { default as PlusCircleIcon } from './PlusCircleIcon';

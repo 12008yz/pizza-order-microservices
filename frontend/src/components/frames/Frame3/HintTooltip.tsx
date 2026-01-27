@@ -1,5 +1,7 @@
 'use client';
 
+import { useEffect } from 'react';
+
 interface HintTooltipProps {
    text: string;
    onAccept: () => void;
@@ -8,6 +10,13 @@ interface HintTooltipProps {
 }
 
 export default function HintTooltip({ text, onAccept, onDecline, position }: HintTooltipProps) {
+   // Автоматическое закрытие через 3 секунды
+   useEffect(() => {
+      const timer = setTimeout(() => {
+         onAccept();
+      }, 3000);
+      return () => clearTimeout(timer);
+   }, [onAccept]);
    // Позиционирование в зависимости от типа подсказки
    const getPositionStyles = () => {
       if (position === 'consultation') {

@@ -13,7 +13,10 @@ import {
   PlusCircleIcon,
   ArrowCircleRightIcon,
   HeartOutlineIcon,
+  HeartFilledIcon,
+  HeartHeaderFilledIcon,
 } from '../../common/icons';
+import FavoriteToast from './FavoriteToast';
 import FilterWizard from './FilterWizard';
 import HintTooltip from './HintTooltip';
 
@@ -179,6 +182,29 @@ export default function Frame3() {
     providers: ['beeline', 'domru', 'megafon', 'mts', 'rostelecom'],
     sortBy: 'price',
   });
+  const [favorites, setFavorites] = useState<Set<number>>(new Set());
+  const [showFavoriteToast, setShowFavoriteToast] = useState(false);
+  const [hasShownFavoriteToast, setHasShownFavoriteToast] = useState(false);
+
+  // Обработчик добавления/удаления из избранного
+  const handleFavoriteClick = (tariffId: number) => {
+    setFavorites((prev) => {
+      const newFavorites = new Set(prev);
+      if (newFavorites.has(tariffId)) {
+        newFavorites.delete(tariffId);
+      } else {
+        newFavorites.add(tariffId);
+        // Показываем уведомление только 1 раз
+        if (!hasShownFavoriteToast) {
+          setShowFavoriteToast(true);
+          setHasShownFavoriteToast(true);
+        }
+      }
+      return newFavorites;
+    });
+  };
+
+  const hasFavorites = favorites.size > 0;
 
   // Фильтрация и сортировка тарифов
   const filteredTariffs = useMemo(() => {
@@ -363,7 +389,7 @@ export default function Frame3() {
               transition: 'transform 0.15s ease-out',
             }}
           >
-            <HeartIcon />
+            {hasFavorites ? <HeartHeaderFilledIcon /> : <HeartIcon />}
           </div>
         </div>
 
@@ -436,6 +462,12 @@ export default function Frame3() {
         />
       )}
 
+      {/* Toast уведомление для избранного */}
+      <FavoriteToast
+        isVisible={showFavoriteToast}
+        onClose={() => setShowFavoriteToast(false)}
+      />
+
       {/* Кнопка скролла вправо - Group 7509 */}
       <div
         className="absolute cursor-pointer"
@@ -471,8 +503,7 @@ export default function Frame3() {
         style={{
           left: '20px',
           right: '5px',
-          top: '260px',
-          bottom: '151px',
+          top: '305px',
         }}
       >
         {/* Горизонтальный скролл с карточками */}
@@ -526,341 +557,250 @@ export default function Frame3() {
                   boxSizing: 'border-box',
                   overflow: 'hidden',
                   flexShrink: 0,
+                  display: 'flex',
+                  flexDirection: 'column',
                 }}
               >
-                {/* Провайдер */}
-                <div
-                  style={{
-                    position: 'absolute',
-                    left: '15px',
-                    top: '15px',
-                    fontFamily: 'TT Firs Neue, sans-serif',
-                    fontWeight: 400,
-                    fontSize: '16px',
-                    lineHeight: '125%',
-                    color: 'rgba(16, 16, 16, 0.5)',
-                  }}
-                >
-                  {tariff.providerName}
-                </div>
-
-                {/* Название тарифа */}
-                <div
-                  style={{
-                    position: 'absolute',
-                    left: '15px',
-                    right: '45px',
-                    top: '35px',
-                    fontFamily: 'TT Firs Neue, sans-serif',
-                    fontWeight: 400,
-                    fontSize: '18px',
-                    lineHeight: '165%',
-                    color: '#101010',
-                  }}
-                >
-                  {tariff.tariffName}
-                </div>
-
-                {/* Info icon */}
-                <div
-                  style={{
-                    position: 'absolute',
-                    right: '15px',
-                    top: '35px',
-                  }}
-                >
-                  <InfoIcon />
-                </div>
-
-                {/* Line 8 - Разделитель после заголовка */}
-                <div
-                  style={{
-                    position: 'absolute',
-                    left: '15px',
-                    right: '15px',
-                    top: '75px',
-                    height: '1px',
-                    background: 'rgba(16, 16, 16, 0.1)',
-                  }}
-                />
-
-                {/* Скорость - иконка */}
-                <div
-                  style={{
-                    position: 'absolute',
-                    left: '15px',
-                    top: '89px',
-                  }}
-                >
-                  <CheckCircleIcon />
-                </div>
-                {/* Скорость - текст */}
-                <div
-                  style={{
-                    position: 'absolute',
-                    left: '45px',
-                    right: '15px',
-                    top: '85px',
-                    fontFamily: 'TT Firs Neue, sans-serif',
-                    fontWeight: 400,
-                    fontSize: '16px',
-                    lineHeight: '155%',
-                    color: '#101010',
-                  }}
-                >
-                  {tariff.speed}
-                </div>
-                <div
-                  style={{
-                    position: 'absolute',
-                    left: '45px',
-                    right: '15px',
-                    top: '110px',
-                    fontFamily: 'TT Firs Neue, sans-serif',
-                    fontWeight: 400,
-                    fontSize: '14px',
-                    lineHeight: '105%',
-                    color: 'rgba(16, 16, 16, 0.5)',
-                  }}
-                >
-                  {tariff.speedDesc}
-                </div>
-
-                {/* Каналы - иконка */}
-                <div
-                  style={{
-                    position: 'absolute',
-                    left: '15px',
-                    top: '134px',
-                  }}
-                >
-                  <CheckCircleIcon />
-                </div>
-                {/* Каналы - текст */}
-                <div
-                  style={{
-                    position: 'absolute',
-                    left: '45px',
-                    right: '15px',
-                    top: '130px',
-                    fontFamily: 'TT Firs Neue, sans-serif',
-                    fontWeight: 400,
-                    fontSize: '16px',
-                    lineHeight: '155%',
-                    color: '#101010',
-                  }}
-                >
-                  {tariff.channels}
-                </div>
-                <div
-                  style={{
-                    position: 'absolute',
-                    left: '45px',
-                    right: '15px',
-                    top: '155px',
-                    fontFamily: 'TT Firs Neue, sans-serif',
-                    fontWeight: 400,
-                    fontSize: '14px',
-                    lineHeight: '105%',
-                    color: 'rgba(16, 16, 16, 0.5)',
-                  }}
-                >
-                  {tariff.channelsDesc}
-                </div>
-
-                {/* Мобильная связь - иконка */}
-                {tariff.mobile && (
+                {/* Заголовок */}
+                <div style={{ padding: '15px 15px 0 15px', flexShrink: 0 }}>
+                  {/* Провайдер */}
                   <div
                     style={{
-                      position: 'absolute',
-                      left: '15px',
-                      top: '179px',
+                      fontFamily: 'TT Firs Neue, sans-serif',
+                      fontWeight: 400,
+                      fontSize: '16px',
+                      lineHeight: '125%',
+                      color: 'rgba(16, 16, 16, 0.5)',
+                      marginBottom: '5px',
                     }}
                   >
-                    <CheckCircleIcon />
+                    {tariff.providerName}
                   </div>
-                )}
-                {/* Мобильная связь - текст */}
-                {tariff.mobile && (
-                  <>
+
+                  {/* Название тарифа с Info icon */}
+                  <div style={{ position: 'relative', display: 'flex', alignItems: 'flex-start' }}>
                     <div
                       style={{
-                        position: 'absolute',
-                        left: '45px',
-                        right: '15px',
-                        top: '175px',
+                        flex: 1,
+                        fontFamily: 'TT Firs Neue, sans-serif',
+                        fontWeight: 400,
+                        fontSize: '18px',
+                        lineHeight: '165%',
+                        color: '#101010',
+                        paddingRight: '30px',
+                      }}
+                    >
+                      {tariff.tariffName}
+                    </div>
+                    <div style={{ position: 'absolute', right: 0, top: 0 }}>
+                      <InfoIcon />
+                    </div>
+                  </div>
+
+                  {/* Line 8 - Разделитель после заголовка */}
+                  <div
+                    style={{
+                      marginTop: '15px',
+                      height: '1px',
+                      background: 'rgba(16, 16, 16, 0.1)',
+                    }}
+                  />
+                </div>
+
+                {/* Контентная область - заполняет оставшееся пространство */}
+                <div style={{ flex: 1, padding: '10px 15px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minHeight: 0 }}>
+
+                  {/* Список услуг */}
+                  <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', gap: '10px' }}>
+                    {/* Скорость */}
+                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', flexShrink: 0, marginTop: '2px' }}>
+                        <CheckCircleIcon />
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        <div
+                          style={{
+                            fontFamily: 'TT Firs Neue, sans-serif',
+                            fontWeight: 400,
+                            fontSize: '16px',
+                            lineHeight: '155%',
+                            color: '#101010',
+                          }}
+                        >
+                          {tariff.speed}
+                        </div>
+                        <div
+                          style={{
+                            fontFamily: 'TT Firs Neue, sans-serif',
+                            fontWeight: 400,
+                            fontSize: '14px',
+                            lineHeight: '105%',
+                            color: 'rgba(16, 16, 16, 0.5)',
+                            marginTop: '2px',
+                          }}
+                        >
+                          {tariff.speedDesc}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Каналы */}
+                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', flexShrink: 0, marginTop: '2px' }}>
+                        <CheckCircleIcon />
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        <div
+                          style={{
+                            fontFamily: 'TT Firs Neue, sans-serif',
+                            fontWeight: 400,
+                            fontSize: '16px',
+                            lineHeight: '155%',
+                            color: '#101010',
+                          }}
+                        >
+                          {tariff.channels}
+                        </div>
+                        <div
+                          style={{
+                            fontFamily: 'TT Firs Neue, sans-serif',
+                            fontWeight: 400,
+                            fontSize: '14px',
+                            lineHeight: '105%',
+                            color: 'rgba(16, 16, 16, 0.5)',
+                            marginTop: '2px',
+                          }}
+                        >
+                          {tariff.channelsDesc}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Мобильная связь */}
+                    {tariff.mobile && (
+                      <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', flexShrink: 0, marginTop: '2px' }}>
+                          <CheckCircleIcon />
+                        </div>
+                        <div style={{ flex: 1 }}>
+                          <div
+                            style={{
+                              fontFamily: 'TT Firs Neue, sans-serif',
+                              fontWeight: 400,
+                              fontSize: '16px',
+                              lineHeight: '155%',
+                              color: '#101010',
+                            }}
+                          >
+                            {tariff.mobile}
+                          </div>
+                          <div
+                            style={{
+                              fontFamily: 'TT Firs Neue, sans-serif',
+                              fontWeight: 400,
+                              fontSize: '14px',
+                              lineHeight: '105%',
+                              color: 'rgba(16, 16, 16, 0.5)',
+                              marginTop: '2px',
+                            }}
+                          >
+                            {tariff.mobileDesc}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Футер с ценой и кнопками */}
+                <div style={{ padding: '15px', flexShrink: 0 }}>
+                  {/* Line 9 - Разделитель перед ценой */}
+                  <div
+                    style={{
+                      marginBottom: '15px',
+                      height: '1px',
+                      background: 'rgba(16, 16, 16, 0.1)',
+                    }}
+                  />
+
+                  {/* Цена */}
+                  <div
+                    style={{
+                      fontFamily: 'TT Firs Neue, sans-serif',
+                      fontWeight: 400,
+                      fontSize: '22px',
+                      lineHeight: '115%',
+                      color: '#101010',
+                      marginBottom: '8px',
+                    }}
+                  >
+                    {tariff.price}
+                  </div>
+
+                  {/* Подключение */}
+                  <div
+                    style={{
+                      fontFamily: 'TT Firs Neue, sans-serif',
+                      fontWeight: 400,
+                      fontSize: '14px',
+                      lineHeight: '105%',
+                      color: 'rgba(16, 16, 16, 0.5)',
+                      marginBottom: '15px',
+                    }}
+                  >
+                    {tariff.connectionPrice}
+                  </div>
+
+                  {/* Кнопки */}
+                  <div style={{ display: 'flex', gap: '10px' }}>
+                    {/* Кнопка избранное (сердечко) */}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleFavoriteClick(tariff.id);
+                      }}
+                      style={{
+                        width: '50px',
+                        height: '50px',
+                        background: 'transparent',
+                        border: '1px solid rgba(16, 16, 16, 0.1)',
+                        borderRadius: '10px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        cursor: 'pointer',
+                        boxSizing: 'border-box',
+                        transition: 'transform 0.15s ease-out',
+                        flexShrink: 0,
+                      }}
+                    >
+                      {favorites.has(tariff.id) ? <HeartFilledIcon /> : <HeartOutlineIcon />}
+                    </button>
+
+                    {/* Кнопка промо */}
+                    <button
+                      style={{
+                        flex: 1,
+                        height: '50px',
+                        background: '#101010',
+                        border: '1px solid rgba(16, 16, 16, 0.25)',
+                        borderRadius: '10px',
                         fontFamily: 'TT Firs Neue, sans-serif',
                         fontWeight: 400,
                         fontSize: '16px',
-                        lineHeight: '155%',
-                        color: '#101010',
+                        lineHeight: '315%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        textAlign: 'center',
+                        color: '#FFFFFF',
+                        cursor: 'pointer',
                       }}
                     >
-                      {tariff.mobile}
-                    </div>
-                    <div
-                      style={{
-                        position: 'absolute',
-                        left: '45px',
-                        right: '15px',
-                        top: '200px',
-                        fontFamily: 'TT Firs Neue, sans-serif',
-                        fontWeight: 400,
-                        fontSize: '14px',
-                        lineHeight: '105%',
-                        color: 'rgba(16, 16, 16, 0.5)',
-                      }}
-                    >
-                      {tariff.mobileDesc}
-                    </div>
-                  </>
-                )}
-
-                {/* Line 10 - Разделитель перед избранным */}
-                <div
-                  style={{
-                    position: 'absolute',
-                    left: '15px',
-                    right: '15px',
-                    top: '225px',
-                    height: '1px',
-                    background: 'rgba(16, 16, 16, 0.1)',
-                  }}
-                />
-
-                {/* Избранное - иконка */}
-                <div
-                  style={{
-                    position: 'absolute',
-                    left: '15px',
-                    top: '239px',
-                  }}
-                >
-                  <PlusCircleIcon />
+                      {tariff.promoText}
+                    </button>
+                  </div>
                 </div>
-                {/* Избранное - текст */}
-                <div
-                  style={{
-                    position: 'absolute',
-                    left: '45px',
-                    right: '15px',
-                    top: '235px',
-                    fontFamily: 'TT Firs Neue, sans-serif',
-                    fontWeight: 400,
-                    fontSize: '16px',
-                    lineHeight: '155%',
-                    color: '#101010',
-                  }}
-                >
-                  {tariff.favoriteLabel}
-                </div>
-                <div
-                  style={{
-                    position: 'absolute',
-                    left: '45px',
-                    right: '15px',
-                    top: '260px',
-                    fontFamily: 'TT Firs Neue, sans-serif',
-                    fontWeight: 400,
-                    fontSize: '14px',
-                    lineHeight: '105%',
-                    color: 'rgba(16, 16, 16, 0.5)',
-                  }}
-                >
-                  {tariff.favoriteDesc}
-                </div>
-
-                {/* Line 9 - Разделитель перед ценой */}
-                <div
-                  style={{
-                    position: 'absolute',
-                    left: '15px',
-                    right: '15px',
-                    top: '285px',
-                    height: '1px',
-                    background: 'rgba(16, 16, 16, 0.1)',
-                  }}
-                />
-
-                {/* Цена */}
-                <div
-                  style={{
-                    position: 'absolute',
-                    left: '15px',
-                    top: '297px',
-                    fontFamily: 'TT Firs Neue, sans-serif',
-                    fontWeight: 400,
-                    fontSize: '22px',
-                    lineHeight: '115%',
-                    color: '#101010',
-                  }}
-                >
-                  {tariff.price}
-                </div>
-
-                {/* Подключение */}
-                <div
-                  style={{
-                    position: 'absolute',
-                    left: '15px',
-                    right: '15px',
-                    top: '325px',
-                    fontFamily: 'TT Firs Neue, sans-serif',
-                    fontWeight: 400,
-                    fontSize: '14px',
-                    lineHeight: '105%',
-                    color: 'rgba(16, 16, 16, 0.5)',
-                  }}
-                >
-                  {tariff.connectionPrice}
-                </div>
-
-                {/* Кнопка избранное (сердечко) */}
-                <button
-                  style={{
-                    position: 'absolute',
-                    left: '15px',
-                    top: '355px',
-                    width: '50px',
-                    height: '50px',
-                    background: 'transparent',
-                    border: '1px solid rgba(16, 16, 16, 0.1)',
-                    borderRadius: '10px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    cursor: 'pointer',
-                    boxSizing: 'border-box',
-                  }}
-                >
-                  <HeartOutlineIcon />
-                </button>
-
-                {/* Кнопка промо */}
-                <button
-                  style={{
-                    position: 'absolute',
-                    left: '70px',
-                    right: '15px',
-                    top: '355px',
-                    height: '50px',
-                    background: '#101010',
-                    border: '1px solid rgba(16, 16, 16, 0.25)',
-                    borderRadius: '10px',
-                    fontFamily: 'TT Firs Neue, sans-serif',
-                    fontWeight: 400,
-                    fontSize: '16px',
-                    lineHeight: '315%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    textAlign: 'center',
-                    color: '#FFFFFF',
-                    cursor: 'pointer',
-                  }}
-                >
-                  {tariff.promoText}
-                </button>
               </div>
             ))
           )}

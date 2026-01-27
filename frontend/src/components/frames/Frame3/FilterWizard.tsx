@@ -185,7 +185,7 @@ export default function FilterWizard({ isOpen, onClose, onApply }: FilterWizardP
                      color: '#101010',
                   }}
                >
-                  Просеивание
+                  Фильтрация
                </div>
                <div
                   style={{

@@ -7,3 +7,5 @@ export { default as CheckCircleIcon } from './CheckCircleIcon';
 export { default as PlusCircleIcon } from './PlusCircleIcon';
 export { default as ArrowCircleRightIcon } from './ArrowCircleRightIcon';
 export { default as HeartOutlineIcon } from './HeartOutlineIcon';
+export { default as HeartFilledIcon } from './HeartFilledIcon';
+export { default as HeartHeaderFilledIcon } from './HeartHeaderFilledIcon';

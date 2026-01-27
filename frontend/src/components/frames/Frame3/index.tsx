@@ -238,19 +238,21 @@ function Frame3Content() {
 
   // Помечаем, что избранные инициализированы после первого рендера на клиенте
   useEffect(() => {
-    // Перезагружаем из localStorage на клиенте (для SSR)
-    try {
-      const storedFavorites = localStorage.getItem(FAVORITES_STORAGE_KEY);
-      if (storedFavorites) {
-        const parsedFavorites = JSON.parse(storedFavorites);
-        if (Array.isArray(parsedFavorites)) {
-          setFavorites(new Set(parsedFavorites));
+    // Перезагружаем из localStorage на клиенте (для SSR и синхронизации)
+    if (typeof window !== 'undefined') {
+      try {
+        const storedFavorites = localStorage.getItem(FAVORITES_STORAGE_KEY);
+        if (storedFavorites) {
+          const parsedFavorites = JSON.parse(storedFavorites);
+          if (Array.isArray(parsedFavorites)) {
+            setFavorites(new Set(parsedFavorites));
+          }
         }
+      } catch (error) {
+        console.warn('Failed to load favorites from localStorage:', error);
       }
-    } catch (error) {
-      console.warn('Failed to load favorites from localStorage:', error);
+      setFavoritesInitialized(true);
     }
-    setFavoritesInitialized(true);
   }, []);
 
   // Сохранение избранных в localStorage при изменении (только после инициализации)
@@ -284,7 +286,8 @@ function Frame3Content() {
     });
   };
 
-  const hasFavorites = favorites.size > 0;
+  // Вычисляем наличие избранных тарифов
+  const hasFavorites = useMemo(() => favorites.size > 0, [favorites.size]);
 
   // Обработчик открытия режима избранного
   const handleHeartClick = () => {
@@ -339,6 +342,16 @@ function Frame3Content() {
 
     return result;
   }, [filters, showFavoritesMode, favorites]);
+
+  // Сброс скролла в начало при изменении фильтров или режима избранного
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTo({
+        left: 0,
+        behavior: 'smooth',
+      });
+    }
+  }, [filters, showFavoritesMode]);
 
   const handleConsultationClose = () => {
     setShowConsultation(false);
@@ -597,8 +610,9 @@ function Frame3Content() {
                 transform: isHeartPressed ? 'scale(0.92)' : 'scale(1)',
                 transition: 'transform 0.15s ease-out',
               }}
+              suppressHydrationWarning
             >
-              {hasFavorites ? <HeartHeaderFilledIcon /> : <HeartIcon />}
+              {favoritesInitialized && hasFavorites ? <HeartHeaderFilledIcon /> : <HeartIcon />}
             </div>
           </div>
 
@@ -1076,8 +1090,9 @@ function Frame3Content() {
                         transition: 'transform 0.15s ease-out',
                         flexShrink: 0,
                       }}
+                      suppressHydrationWarning
                     >
-                      {favorites.has(tariff.id) ? <HeartFilledIcon /> : <HeartOutlineIcon />}
+                      {favoritesInitialized && favorites.has(tariff.id) ? <HeartFilledIcon /> : <HeartOutlineIcon />}
                     </button>
 
                     {/* Кнопка промо */}

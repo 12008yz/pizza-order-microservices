@@ -11,8 +11,11 @@ import {
   InfoIcon,
   CheckCircleIcon,
   PlusCircleIcon,
+  ArrowCircleRightIcon,
+  HeartOutlineIcon,
 } from '../../common/icons';
 import FilterWizard from './FilterWizard';
+import HintTooltip from './HintTooltip';
 
 // Динамический импорт ConsultationFlow для code splitting
 const ConsultationFlow = dynamic(() => import('../Frame2/ConsultationFlow'), {
@@ -158,6 +161,8 @@ interface FilterState {
   sortBy: string;
 }
 
+type HintStep = 'none' | 'consultation' | 'filter';
+
 export default function Frame3() {
   const router = useRouter();
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -165,8 +170,10 @@ export default function Frame3() {
   const [isHeartPressed, setIsHeartPressed] = useState(false);
   const [isFunnelPressed, setIsFunnelPressed] = useState(false);
   const [isPlanePressed, setIsPlanePressed] = useState(false);
+  const [isArrowPressed, setIsArrowPressed] = useState(false);
   const [showConsultation, setShowConsultation] = useState(false);
   const [showFilterWizard, setShowFilterWizard] = useState(false);
+  const [hintStep, setHintStep] = useState<HintStep>('consultation');
   const [filters, setFilters] = useState<FilterState>({
     services: ['internet', 'internet_mobile', 'internet_tv', 'internet_tv_mobile'],
     providers: ['beeline', 'domru', 'megafon', 'mts', 'rostelecom'],
@@ -227,6 +234,29 @@ export default function Frame3() {
 
   const handleFilterApply = (newFilters: FilterState) => {
     setFilters(newFilters);
+  };
+
+  // Обработчики подсказок
+  const handleHintAccept = () => {
+    if (hintStep === 'consultation') {
+      setHintStep('filter');
+    } else if (hintStep === 'filter') {
+      setHintStep('none');
+    }
+  };
+
+  const handleHintDecline = () => {
+    setHintStep('none');
+  };
+
+  // Скролл к следующей карточке
+  const handleScrollRight = () => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollBy({
+        left: 365,
+        behavior: 'smooth',
+      });
+    }
   };
 
   return (
@@ -393,6 +423,45 @@ export default function Frame3() {
           >
             <PlaneIcon />
           </div>
+        </div>
+      </div>
+
+      {/* HintTooltip - модальное окно подсказки */}
+      {hintStep !== 'none' && (
+        <HintTooltip
+          text={hintStep === 'consultation' ? 'Консультация, это здесь' : 'Фильтрация, это здесь'}
+          position={hintStep}
+          onAccept={handleHintAccept}
+          onDecline={handleHintDecline}
+        />
+      )}
+
+      {/* Кнопка скролла вправо - Group 7509 */}
+      <div
+        className="absolute cursor-pointer"
+        style={{
+          width: '40px',
+          height: '40px',
+          right: '20px',
+          top: '255px',
+        }}
+        onClick={handleScrollRight}
+        onMouseDown={() => setIsArrowPressed(true)}
+        onMouseUp={() => setIsArrowPressed(false)}
+        onMouseLeave={() => setIsArrowPressed(false)}
+        onTouchStart={() => setIsArrowPressed(true)}
+        onTouchEnd={() => setIsArrowPressed(false)}
+      >
+        <div
+          className="w-full h-full flex items-center justify-center"
+          style={{
+            background: '#FFFFFF',
+            borderRadius: '100px',
+            transform: isArrowPressed ? 'scale(0.92)' : 'scale(1)',
+            transition: 'transform 0.15s ease-out',
+          }}
+        >
+          <ArrowCircleRightIcon />
         </div>
       </div>
 
@@ -746,11 +815,32 @@ export default function Frame3() {
                   {tariff.connectionPrice}
                 </div>
 
-                {/* Кнопка промо */}
+                {/* Кнопка избранное (сердечко) */}
                 <button
                   style={{
                     position: 'absolute',
                     left: '15px',
+                    top: '355px',
+                    width: '50px',
+                    height: '50px',
+                    background: 'transparent',
+                    border: '1px solid rgba(16, 16, 16, 0.1)',
+                    borderRadius: '10px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                    boxSizing: 'border-box',
+                  }}
+                >
+                  <HeartOutlineIcon />
+                </button>
+
+                {/* Кнопка промо */}
+                <button
+                  style={{
+                    position: 'absolute',
+                    left: '70px',
                     right: '15px',
                     top: '355px',
                     height: '50px',

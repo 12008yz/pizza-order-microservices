@@ -5,3 +5,5 @@ export { default as FunnelIcon } from './FunnelIcon';
 export { default as InfoIcon } from './InfoIcon';
 export { default as CheckCircleIcon } from './CheckCircleIcon';
 export { default as PlusCircleIcon } from './PlusCircleIcon';
+export { default as ArrowCircleRightIcon } from './ArrowCircleRightIcon';
+export { default as HeartOutlineIcon } from './HeartOutlineIcon';

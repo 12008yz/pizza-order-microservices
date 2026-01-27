@@ -1,6 +1,6 @@
 interface ArrowCircleRightIconProps {
-  color?: string;
-  isAnimating?: boolean;
+   color?: string;
+   isAnimating?: boolean;
 }
 
 export default function ArrowCircleRightIcon({ color = '#101010', isAnimating = false }: ArrowCircleRightIconProps) {

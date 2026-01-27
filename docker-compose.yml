@@ -47,7 +47,8 @@ services:
       POSTGRES_USER: provider_user
       POSTGRES_PASSWORD: ${PROVIDER_DB_PASSWORD:-provider_password}
       POSTGRES_DB: provider_db
-    # Порты БД закрыты для внешнего доступа (только внутренняя сеть)
+    ports:
+      - "5434:5432" # Проброс порта для доступа с хоста (5434 на хосте -> 5432 в контейнере)
     volumes:
       - provider_db_data:/var/lib/postgresql/data
     networks:

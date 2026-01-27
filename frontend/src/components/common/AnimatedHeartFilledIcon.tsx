@@ -13,13 +13,13 @@ export default function AnimatedHeartFilledIcon() {
       mountedRef.current = true;
       setIsAnimating(true);
       setShowWave(true);
-      
+
       // Пульсация сердечка
       setPulseScale(1.3);
       setTimeout(() => setPulseScale(1), 200);
       setTimeout(() => setPulseScale(1.15), 400);
       setTimeout(() => setPulseScale(1), 600);
-      
+
       // Убираем волну через 0.8 секунды
       setTimeout(() => {
         setShowWave(false);
@@ -76,7 +76,7 @@ export default function AnimatedHeartFilledIcon() {
           />
         </>
       )}
-      
+
       {/* Само сердечко */}
       <svg
         width="24"

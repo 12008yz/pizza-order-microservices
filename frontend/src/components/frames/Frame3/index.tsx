@@ -23,6 +23,7 @@ import HintTooltip from './HintTooltip';
 import AddressInputModal from '../../modals/AddressInputModal';
 import { AddressProvider, useAddress } from '../../../contexts/AddressContext';
 import AnimatedHeartFilledIcon from '../../common/AnimatedHeartFilledIcon';
+import { tariffsService } from '../../../services/tariffs.service';
 
 // Динамический импорт ConsultationFlow для code splitting
 const ConsultationFlow = dynamic(() => import('../Frame2/ConsultationFlow'), {
@@ -52,113 +53,116 @@ interface Tariff {
   popularity: number;
 }
 
-const tariffs: Tariff[] = [
-  {
-    id: 1,
-    providerName: 'Ростелеком',
-    providerId: 'rostelecom',
-    tariffName: 'Технологии выгоды. Тест-драйв.',
-    speed: '100 Мбит/сек',
-    speedValue: 100,
+// Интерфейс для данных из API
+interface ApiTariff {
+  id: number;
+  name: string;
+  description: string;
+  providerId: number;
+  speed: number;
+  price: number | string;
+  connectionPrice: number | string;
+  technology: string;
+  hasTV: boolean;
+  tvChannels: number | null;
+  hasMobile: boolean;
+  mobileMinutes: number | null;
+  mobileGB: number | null;
+  mobileSMS: number | null;
+  promoPrice: number | null;
+  promoMonths: number | null;
+  promoText: string | null;
+  favoriteLabel: string | null;
+  favoriteDesc: string | null;
+  popularity: number;
+  provider?: {
+    id: number;
+    name: string;
+    slug: string;
+    logo?: string;
+  };
+}
+
+// Маппинг ID провайдеров на их slug (fallback если провайдер не загружен из API)
+const providerIdToSlugMap: Record<number, string> = {
+  1: 'rostelecom',
+  2: 'mts',
+  3: 'beeline',
+  4: 'megafon',
+  5: 'domru',
+  6: 'ttk',
+  7: 'akado',
+  8: 'netbynet',
+};
+
+// Функция преобразования данных из API в формат компонента
+function transformApiTariffToComponent(apiTariff: ApiTariff): Tariff {
+  const priceValue = typeof apiTariff.price === 'string' ? parseFloat(apiTariff.price) : apiTariff.price;
+  const connectionPriceValue = typeof apiTariff.connectionPrice === 'string'
+    ? parseFloat(apiTariff.connectionPrice)
+    : apiTariff.connectionPrice;
+
+  // Определяем slug провайдера
+  const providerSlug = apiTariff.provider?.slug || providerIdToSlugMap[apiTariff.providerId] || `provider_${apiTariff.providerId}`;
+
+  // Определяем тип услуги
+  let serviceType = 'internet';
+  if (apiTariff.hasTV && apiTariff.hasMobile) {
+    serviceType = 'internet_tv_mobile';
+  } else if (apiTariff.hasTV) {
+    serviceType = 'internet_tv';
+  } else if (apiTariff.hasMobile) {
+    serviceType = 'internet_mobile';
+  }
+
+  // Формируем строку для мобильной связи
+  let mobile = '';
+  if (apiTariff.hasMobile && apiTariff.mobileMinutes !== null) {
+    const parts = [];
+    if (apiTariff.mobileMinutes) parts.push(`${apiTariff.mobileMinutes} мин`);
+    if (apiTariff.mobileGB !== null) {
+      if (apiTariff.mobileGB >= 999) {
+        parts.push('безлимит гигабайтов');
+      } else {
+        parts.push(`${apiTariff.mobileGB} гигабайтов`);
+      }
+    }
+    if (apiTariff.mobileSMS) parts.push(`${apiTariff.mobileSMS} смс`);
+    mobile = parts.join(' · ');
+  }
+
+  // Формируем строку для каналов
+  const channels = apiTariff.hasTV && apiTariff.tvChannels
+    ? `${apiTariff.tvChannels} каналов`
+    : '';
+
+  // Формируем строку для цены подключения
+  const connectionPriceText = connectionPriceValue === 0
+    ? 'Подключение от оператора за 0 р.'
+    : `Подключение от оператора за ${connectionPriceValue} р.`;
+
+  return {
+    id: apiTariff.id,
+    providerName: apiTariff.provider?.name || 'Неизвестный провайдер',
+    providerId: providerSlug,
+    tariffName: apiTariff.name,
+    speed: `${apiTariff.speed} Мбит/сек`,
+    speedValue: apiTariff.speed,
     speedDesc: 'Безлимитное соединение в квартире',
-    channels: '135 каналов',
-    channelsDesc: 'Телевидение',
-    mobile: '1000 мин · 40 гигабайтов · 50 смс',
-    mobileDesc: 'Мобильное соединение',
-    favoriteLabel: 'Кинотеатр «Wink»',
-    favoriteDesc: 'Дополнительное приложение',
-    price: '965 р./мес.',
-    priceValue: 965,
-    connectionPrice: 'Подключение от оператора за 500 р.',
-    promoText: '90 дней за 0 р.',
-    serviceType: 'internet_tv_mobile',
-    popularity: 95,
-  },
-  {
-    id: 2,
-    providerName: 'МТС',
-    providerId: 'mts',
-    tariffName: 'Домашний интернет + ТВ',
-    speed: '200 Мбит/сек',
-    speedValue: 200,
-    speedDesc: 'Безлимитное соединение в квартире',
-    channels: '180 каналов',
-    channelsDesc: 'Телевидение',
-    mobile: '800 мин · 30 гигабайтов · 100 смс',
-    mobileDesc: 'Мобильное соединение',
-    favoriteLabel: 'KION',
-    favoriteDesc: 'Дополнительное приложение',
-    price: '890 р./мес.',
-    priceValue: 890,
-    connectionPrice: 'Подключение от оператора за 0 р.',
-    promoText: '30 дней за 1 р.',
-    serviceType: 'internet_tv_mobile',
-    popularity: 90,
-  },
-  {
-    id: 3,
-    providerName: 'Билайн',
-    providerId: 'beeline',
-    tariffName: 'Всё в одном',
-    speed: '300 Мбит/сек',
-    speedValue: 300,
-    speedDesc: 'Безлимитное соединение в квартире',
-    channels: '200 каналов',
-    channelsDesc: 'Телевидение',
-    mobile: '1500 мин · 50 гигабайтов · 200 смс',
-    mobileDesc: 'Мобильное соединение',
-    favoriteLabel: 'Wink',
-    favoriteDesc: 'Дополнительное приложение',
-    price: '1100 р./мес.',
-    priceValue: 1100,
-    connectionPrice: 'Подключение от оператора за 300 р.',
-    promoText: '60 дней за 0 р.',
-    serviceType: 'internet_tv_mobile',
-    popularity: 85,
-  },
-  {
-    id: 4,
-    providerName: 'ДОМ.RU',
-    providerId: 'domru',
-    tariffName: 'Интернет + ТВ Стартовый',
-    speed: '150 Мбит/сек',
-    speedValue: 150,
-    speedDesc: 'Безлимитное соединение в квартире',
-    channels: '100 каналов',
-    channelsDesc: 'Телевидение',
-    mobile: '',
-    mobileDesc: '',
-    favoriteLabel: '',
-    favoriteDesc: '',
-    price: '650 р./мес.',
-    priceValue: 650,
-    connectionPrice: 'Подключение от оператора за 0 р.',
-    promoText: '14 дней за 0 р.',
-    serviceType: 'internet_tv',
-    popularity: 80,
-  },
-  {
-    id: 5,
-    providerName: 'Мегафон',
-    providerId: 'megafon',
-    tariffName: 'Объединяй! Максимум',
-    speed: '500 Мбит/сек',
-    speedValue: 500,
-    speedDesc: 'Безлимитное соединение в квартире',
-    channels: '250 каналов',
-    channelsDesc: 'Телевидение',
-    mobile: '2000 мин · безлимит гигабайтов · 500 смс',
-    mobileDesc: 'Мобильное соединение',
-    favoriteLabel: '',
-    favoriteDesc: '',
-    price: '1500 р./мес.',
-    priceValue: 1500,
-    connectionPrice: 'Подключение от оператора за 0 р.',
-    promoText: '30 дней за 0 р.',
-    serviceType: 'internet_tv_mobile',
-    popularity: 75,
-  },
-];
+    channels,
+    channelsDesc: apiTariff.hasTV ? 'Телевидение' : '',
+    mobile,
+    mobileDesc: apiTariff.hasMobile ? 'Мобильное соединение' : '',
+    favoriteLabel: apiTariff.favoriteLabel || '',
+    favoriteDesc: apiTariff.favoriteDesc || '',
+    price: `${priceValue} р./мес.`,
+    priceValue,
+    connectionPrice: connectionPriceText,
+    promoText: apiTariff.promoText || '',
+    serviceType,
+    popularity: apiTariff.popularity || 0,
+  };
+}
 
 type ContactMethod = 'max' | 'telegram' | 'phone';
 
@@ -177,11 +181,16 @@ function Frame3Content() {
   const router = useRouter();
   const { addressData, updateApartmentNumber } = useAddress();
   const scrollRef = useRef<HTMLDivElement>(null);
-  
+
+  // Состояние для тарифов из API
+  const [tariffs, setTariffs] = useState<Tariff[]>([]);
+  const [tariffsLoading, setTariffsLoading] = useState(true);
+  const [tariffsError, setTariffsError] = useState<string | null>(null);
+
   // Проверка заполненности всех обязательных полей при монтировании
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    
+
     // Проверяем данные из sessionStorage
     try {
       const storedData = sessionStorage.getItem('addressData');
@@ -193,7 +202,7 @@ function Frame3Content() {
         const hasStreet = parsedData.streetId || parsedData.street;
         const hasHouseNumber = parsedData.buildingId || parsedData.houseNumber;
         const hasPrivacyConsent = parsedData.privacyConsent;
-        
+
         // Если хотя бы одно обязательное поле не заполнено, редиректим на главную
         if (!hasConnectionType || !hasCity || !hasStreet || !hasHouseNumber || !hasPrivacyConsent) {
           router.push('/');
@@ -206,7 +215,7 @@ function Frame3Content() {
         const hasStreet = addressData.streetId || addressData.street;
         const hasHouseNumber = addressData.buildingId || addressData.houseNumber;
         const hasPrivacyConsent = addressData.privacyConsent;
-        
+
         // Если хотя бы одно обязательное поле не заполнено, редиректим на главную
         if (!hasConnectionType || !hasCity || !hasStreet || !hasHouseNumber || !hasPrivacyConsent) {
           router.push('/');
@@ -282,6 +291,43 @@ function Frame3Content() {
   const [favoritesInitialized, setFavoritesInitialized] = useState(false);
   const [recentlyAddedFavorites, setRecentlyAddedFavorites] = useState<Set<number>>(new Set());
 
+  // Загрузка тарифов из API
+  useEffect(() => {
+    const loadTariffs = async () => {
+      try {
+        setTariffsLoading(true);
+        setTariffsError(null);
+        const response = await tariffsService.getTariffs();
+
+        if (response.success && response.data) {
+          const transformedTariffs = response.data.map((apiTariff: any) =>
+            transformApiTariffToComponent(apiTariff as ApiTariff)
+          );
+
+          // Удаляем дубликаты по ID (на случай если API вернет дубликаты)
+          const uniqueTariffs = transformedTariffs.reduce((acc: Tariff[], current: Tariff) => {
+            const existingTariff = acc.find(t => t.id === current.id);
+            if (!existingTariff) {
+              acc.push(current);
+            }
+            return acc;
+          }, []);
+
+          setTariffs(uniqueTariffs);
+        } else {
+          setTariffsError(response.error || 'Не удалось загрузить тарифы');
+        }
+      } catch (error: any) {
+        console.error('Failed to load tariffs:', error);
+        setTariffsError(error.message || 'Ошибка при загрузке тарифов');
+      } finally {
+        setTariffsLoading(false);
+      }
+    };
+
+    loadTariffs();
+  }, []);
+
   // Помечаем, что избранные инициализированы после первого рендера на клиенте
   useEffect(() => {
     // Перезагружаем из localStorage на клиенте (для SSR и синхронизации)
@@ -291,7 +337,23 @@ function Frame3Content() {
         if (storedFavorites) {
           const parsedFavorites = JSON.parse(storedFavorites);
           if (Array.isArray(parsedFavorites)) {
-            setFavorites(new Set(parsedFavorites));
+            // Фильтруем только те ID, которые существуют в текущих тарифах
+            const validFavorites = parsedFavorites.filter((id: number) =>
+              tariffs.some(t => t.id === id)
+            );
+
+            // Если есть невалидные ID, обновляем localStorage
+            if (validFavorites.length !== parsedFavorites.length) {
+              if (validFavorites.length === 0) {
+                localStorage.removeItem(FAVORITES_STORAGE_KEY);
+                setFavorites(new Set());
+              } else {
+                localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(validFavorites));
+                setFavorites(new Set(validFavorites));
+              }
+            } else {
+              setFavorites(new Set(parsedFavorites));
+            }
           }
         }
       } catch (error) {
@@ -299,7 +361,7 @@ function Frame3Content() {
       }
       setFavoritesInitialized(true);
     }
-  }, []);
+  }, [tariffs.length]); // Зависимость от количества тарифов, чтобы очистить невалидные ID после загрузки
 
   // Сохранение избранных в localStorage при изменении (только после инициализации)
   useEffect(() => {
@@ -352,8 +414,11 @@ function Frame3Content() {
     });
   };
 
-  // Вычисляем наличие избранных тарифов
-  const hasFavorites = useMemo(() => favorites.size > 0, [favorites.size]);
+  // Вычисляем наличие избранных тарифов (только валидные ID, которые есть в текущих тарифах)
+  const hasFavorites = useMemo(() => {
+    const validFavorites = Array.from(favorites).filter(id => tariffs.some(t => t.id === id));
+    return validFavorites.length > 0;
+  }, [favorites.size, tariffs.length]);
 
   // Обработчик открытия режима избранного
   const handleHeartClick = () => {
@@ -372,6 +437,11 @@ function Frame3Content() {
 
   // Тарифы для отображения в зависимости от режима
   const displayedTariffs = useMemo(() => {
+    // Если тарифы еще загружаются, возвращаем пустой массив (показывается индикатор загрузки)
+    if (tariffsLoading) {
+      return [];
+    }
+
     let result = tariffs;
 
     // В режиме избранного показываем только избранные тарифы
@@ -406,8 +476,17 @@ function Frame3Content() {
       }
     });
 
-    return result;
-  }, [filters, showFavoritesMode, favorites]);
+    // Удаляем дубликаты по ID на всякий случай (защита от дубликатов после фильтрации)
+    const uniqueResult = result.reduce((acc: Tariff[], current: Tariff) => {
+      const existingTariff = acc.find(t => t.id === current.id);
+      if (!existingTariff) {
+        acc.push(current);
+      }
+      return acc;
+    }, []);
+
+    return uniqueResult;
+  }, [filters, showFavoritesMode, favorites, tariffs, tariffsLoading]);
 
   // Сброс скролла в начало при изменении фильтров или режима избранного
   useEffect(() => {
@@ -539,7 +618,7 @@ function Frame3Content() {
       // Анимация клика
       setArrowClicked(true);
       setTimeout(() => setArrowClicked(false), 400);
-      
+
       scrollRef.current.scrollBy({
         left: 365,
         behavior: 'smooth',
@@ -1003,7 +1082,41 @@ function Frame3Content() {
             msOverflowStyle: 'none',
           }}
         >
-          {displayedTariffs.length === 0 ? (
+          {tariffsLoading ? (
+            <div
+              style={{
+                width: '360px',
+                background: '#FFFFFF',
+                borderRadius: '20px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '40px',
+                textAlign: 'center',
+              }}
+            >
+              <p style={{ color: 'rgba(16, 16, 16, 0.5)', fontSize: '16px' }}>
+                Загрузка тарифов...
+              </p>
+            </div>
+          ) : tariffsError ? (
+            <div
+              style={{
+                width: '360px',
+                background: '#FFFFFF',
+                borderRadius: '20px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '40px',
+                textAlign: 'center',
+              }}
+            >
+              <p style={{ color: 'rgba(255, 0, 0, 0.7)', fontSize: '16px' }}>
+                {tariffsError}
+              </p>
+            </div>
+          ) : !tariffsLoading && displayedTariffs.length === 0 ? (
             <div
               style={{
                 width: '360px',
@@ -1029,9 +1142,9 @@ function Frame3Content() {
               </div>
             </div>
           ) : (
-            displayedTariffs.map((tariff) => (
+            displayedTariffs.map((tariff, index) => (
               <div
-                key={tariff.id}
+                key={`tariff-${tariff.id}-${tariff.providerId}-${index}`}
                 className="flex-shrink-0"
                 style={{
                   position: 'relative',
@@ -1292,7 +1405,7 @@ function Frame3Content() {
                       }}
                       suppressHydrationWarning
                     >
-                      {favoritesInitialized && favorites.has(tariff.id) ? (
+                      {favorites.has(tariff.id) ? (
                         recentlyAddedFavorites.has(tariff.id) ? (
                           <AnimatedHeartFilledIcon />
                         ) : (

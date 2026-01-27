@@ -59,11 +59,22 @@ export interface Tariff {
   name: string;
   description?: string;
   speed: number;
-  price: number;
-  currency: string;
-  period: string; // 'month', 'year', etc.
-  features?: string[];
-  active?: boolean;
+  price: number | string;
+  connectionPrice: number | string;
+  technology: 'fiber' | 'dsl' | 'cable' | 'wireless' | 'mobile';
+  hasTV: boolean;
+  tvChannels?: number | null;
+  hasMobile: boolean;
+  mobileMinutes?: number | null;
+  mobileGB?: number | null;
+  mobileSMS?: number | null;
+  promoPrice?: number | null;
+  promoMonths?: number | null;
+  promoText?: string | null;
+  favoriteLabel?: string | null;
+  favoriteDesc?: string | null;
+  popularity?: number;
+  isActive?: boolean;
   createdAt?: string;
   updatedAt?: string;
   provider?: Provider;

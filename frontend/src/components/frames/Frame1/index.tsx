@@ -140,7 +140,7 @@ function AddressFormContent() {
     } catch (error) {
       console.warn('Failed to save to sessionStorage:', error);
     }
-    
+
     // Очищаем форму и переходим на тарифы
     clearAddress();
     router.push('/providers');
@@ -394,7 +394,7 @@ function AddressFormContent() {
               <div
                 className={`w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 ${addressData.city ? 'bg-[#101010]' : 'border border-[rgba(16,16,16,0.25)]'
                   }`}
-                style={{ 
+                style={{
                   borderWidth: '0.5px',
                   transition: 'background-color 0.2s ease, border-color 0.2s ease',
                 }}
@@ -448,7 +448,7 @@ function AddressFormContent() {
               <div
                 className={`w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 ${addressData.street ? 'bg-[#101010]' : 'border border-[rgba(16,16,16,0.25)]'
                   }`}
-                style={{ 
+                style={{
                   borderWidth: '0.5px',
                   transition: 'background-color 0.2s ease, border-color 0.2s ease',
                 }}
@@ -502,7 +502,7 @@ function AddressFormContent() {
               <div
                 className={`w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 ${addressData.houseNumber ? 'bg-[#101010]' : 'border border-[rgba(16,16,16,0.25)]'
                   }`}
-                style={{ 
+                style={{
                   borderWidth: '0.5px',
                   transition: 'background-color 0.2s ease, border-color 0.2s ease',
                 }}

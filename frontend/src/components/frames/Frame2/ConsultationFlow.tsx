@@ -863,7 +863,7 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
       }}
     >
       {/* Main Container */}
-      <div 
+      <div
         className="relative w-[400px] h-[870px] bg-[#F5F5F5]"
         style={{
           transform: isAnimating ? 'scale(1)' : 'scale(0.95)',

@@ -4,6 +4,7 @@
   "description": "Provider and Tariff Management Service",
   "main": "dist/index.js",
   "scripts": {
+    "predev": "sequelize-cli db:migrate && sequelize-cli db:seed:all",
     "dev": "tsx watch src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
@@ -38,6 +39,3 @@
     "tsx": "^4.7.0"
   }
 }
-
-
-

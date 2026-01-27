@@ -59,7 +59,7 @@ export default function FilterWizard({ isOpen, onClose, onApply }: FilterWizardP
    // Button press states for animations
    const [isBackBtnPressed, setIsBackBtnPressed] = useState(false);
    const [isNextBtnPressed, setIsNextBtnPressed] = useState(false);
-   
+
    // Анимация появления/исчезновения
    const [isAnimating, setIsAnimating] = useState(false);
    const [shouldRender, setShouldRender] = useState(false);

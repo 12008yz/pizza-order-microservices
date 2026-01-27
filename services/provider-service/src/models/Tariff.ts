@@ -26,6 +26,14 @@ export interface TariffAttributes {
   // Акции
   promoPrice: number | null;       // Акционная цена
   promoMonths: number | null;      // На сколько месяцев
+  promoText: string | null;        // Текст промо-акции (например: "90 дней за 0 р.")
+
+  // Дополнительные сервисы
+  favoriteLabel: string | null;    // Название дополнительного сервиса (например: "Кинотеатр «Wink»")
+  favoriteDesc: string | null;    // Описание дополнительного сервиса
+
+  // Популярность
+  popularity: number;              // Популярность тарифа для сортировки
 
   // Статус
   isActive: boolean;
@@ -35,12 +43,11 @@ export interface TariffAttributes {
 }
 
 export interface TariffCreationAttributes
-  extends Optional<TariffAttributes, 'id' | 'isActive' | 'hasTV' | 'hasMobile' | 'tvChannels' | 'mobileMinutes' | 'mobileGB' | 'mobileSMS' | 'promoPrice' | 'promoMonths' | 'connectionPrice'> {}
+  extends Optional<TariffAttributes, 'id' | 'isActive' | 'hasTV' | 'hasMobile' | 'tvChannels' | 'mobileMinutes' | 'mobileGB' | 'mobileSMS' | 'promoPrice' | 'promoMonths' | 'connectionPrice' | 'promoText' | 'favoriteLabel' | 'favoriteDesc' | 'popularity'> { }
 
 export class Tariff
   extends Model<TariffAttributes, TariffCreationAttributes>
-  implements TariffAttributes
-{
+  implements TariffAttributes {
   public id!: number;
   public name!: string;
   public description!: string;
@@ -57,6 +64,10 @@ export class Tariff
   public mobileSMS!: number | null;
   public promoPrice!: number | null;
   public promoMonths!: number | null;
+  public promoText!: string | null;
+  public favoriteLabel!: string | null;
+  public favoriteDesc!: string | null;
+  public popularity!: number;
   public isActive!: boolean;
 
   public readonly createdAt!: Date;
@@ -134,6 +145,23 @@ Tariff.init(
     promoMonths: {
       type: DataTypes.INTEGER,
       allowNull: true,
+    },
+    promoText: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+    },
+    favoriteLabel: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+    },
+    favoriteDesc: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+    },
+    popularity: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      defaultValue: 0,
     },
     isActive: {
       type: DataTypes.BOOLEAN,

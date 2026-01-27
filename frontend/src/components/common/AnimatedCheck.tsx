@@ -8,10 +8,10 @@ interface AnimatedCheckProps {
   strokeWidth?: number;
 }
 
-export default function AnimatedCheck({ 
-  size = 8, 
+export default function AnimatedCheck({
+  size = 8,
   color = '#FFFFFF',
-  strokeWidth = 1.5 
+  strokeWidth = 1.5
 }: AnimatedCheckProps) {
   const [isAnimating, setIsAnimating] = useState(false);
   const [pathLength, setPathLength] = useState(0);
@@ -23,7 +23,7 @@ export default function AnimatedCheck({
       const length = pathRef.current.getTotalLength();
       setPathLength(length);
       mountedRef.current = true;
-      
+
       // Запускаем анимацию после небольшой задержки для плавности
       requestAnimationFrame(() => {
         setIsAnimating(true);

@@ -199,19 +199,19 @@ export default function AddressInputModal({
           const queryParts = query.trim().split(/\s+/);
           const hasApartment = queryParts.length >= 2;
           const searchQuery = hasApartment ? queryParts[0] : query;
-          
+
           let dbSuggestions: any[] = [];
           let apartmentSuggestions: any[] = [];
-          
+
           // Определяем streetId для загрузки домов
           let streetIdToUse = addressData.streetId;
-          
+
           // Если streetId не установлен, но есть название улицы, пытаемся найти streetId
           if (!streetIdToUse && addressData.street) {
             try {
               // Ищем улицу через autocomplete
               const streetSearchQuery = addressData.street.trim();
-              
+
               // Если есть cityId, используем его для более точного поиска
               let cityIdToUse = addressData.cityId;
               if (!cityIdToUse && addressData.city) {
@@ -228,20 +228,20 @@ export default function AddressInputModal({
                   console.warn('Failed to find cityId:', error);
                 }
               }
-              
+
               const streetSearchResponse = await locationsService.autocomplete({
                 q: streetSearchQuery,
                 ...(cityIdToUse && { cityId: cityIdToUse }),
                 limit: 10,
               });
-              
+
               if (streetSearchResponse?.success && streetSearchResponse.data && streetSearchResponse.data.length > 0) {
                 // Ищем точное совпадение или первое подходящее
-                const exactMatch = streetSearchResponse.data.find((item: any) => 
+                const exactMatch = streetSearchResponse.data.find((item: any) =>
                   item.text?.toLowerCase().trim() === streetSearchQuery.toLowerCase() ||
                   item.formatted?.toLowerCase().trim() === streetSearchQuery.toLowerCase()
                 );
-                
+
                 streetIdToUse = exactMatch?.streetId || streetSearchResponse.data[0].streetId;
                 console.log(`Found streetId: ${streetIdToUse} for street: "${addressData.street}"`, {
                   exactMatch: !!exactMatch,
@@ -258,7 +258,7 @@ export default function AddressInputModal({
               console.warn('Failed to find streetId by street name:', error);
             }
           }
-          
+
           if (!streetIdToUse) {
             // Если streetId не установлен и не удалось найти, не можем загрузить дома из БД
             console.warn('streetId is not set and cannot be found, cannot load buildings from DB');
@@ -274,25 +274,25 @@ export default function AddressInputModal({
               const filteredBuildings = searchQuery.trim() === ''
                 ? buildingsResponse.data
                 : buildingsResponse.data.filter((building: any) => {
-                    const buildingNum = (building.number?.toString() || '').toLowerCase();
-                    const queryLower = searchQuery.toLowerCase().trim();
-                    // Если запрос - одна цифра, ищем дома, начинающиеся с этой цифры
-                    if (queryLower.length === 1 && /^\d$/.test(queryLower)) {
-                      return buildingNum.startsWith(queryLower);
-                    }
-                    // Иначе ищем вхождение
-                    return buildingNum.includes(queryLower);
-                  });
-              
+                  const buildingNum = (building.number?.toString() || '').toLowerCase();
+                  const queryLower = searchQuery.toLowerCase().trim();
+                  // Если запрос - одна цифра, ищем дома, начинающиеся с этой цифры
+                  if (queryLower.length === 1 && /^\d$/.test(queryLower)) {
+                    return buildingNum.startsWith(queryLower);
+                  }
+                  // Иначе ищем вхождение
+                  return buildingNum.includes(queryLower);
+                });
+
               console.log(`Found ${filteredBuildings.length} buildings for query "${searchQuery}"`);
-              
+
               // Если введен только номер дома (без квартиры), запрашиваем квартиры для всех найденных домов
               if (!hasApartment && filteredBuildings.length > 0) {
                 // Если введена только одна цифра, увеличиваем лимит домов для загрузки квартир
                 const buildingsLimit = searchQuery.trim().length === 1 && /^\d$/.test(searchQuery.trim())
                   ? 20  // Для одной цифры загружаем квартиры для большего количества домов
                   : 10; // Для обычного запроса ограничиваем до 10 домов
-                
+
                 // Запрашиваем квартиры для каждого найденного дома
                 for (const building of filteredBuildings.slice(0, buildingsLimit)) {
                   try {
@@ -300,7 +300,7 @@ export default function AddressInputModal({
                       buildingId: building.id,
                       limit: 100,
                     });
-                    
+
                     if (apartmentsResponse?.success && apartmentsResponse.data) {
                       const houseNumber = building.number + (building.building ? ` ${building.building}` : '');
                       // Формируем подсказки в формате "д. 5 кв. 1" (с точками)
@@ -319,10 +319,10 @@ export default function AddressInputModal({
                     console.warn(`Failed to load apartments for building ${building.id}:`, error);
                   }
                 }
-                
+
                 console.log(`Loaded ${apartmentSuggestions.length} apartment suggestions`);
               }
-              
+
               // Если не нашли квартиры, показываем просто дома
               if (apartmentSuggestions.length === 0) {
                 dbSuggestions = filteredBuildings.map((building: any) => {
@@ -342,12 +342,12 @@ export default function AddressInputModal({
               console.warn('Failed to load buildings or no buildings found');
             }
           }
-          
+
           // Если введен формат "1 2", создаем подсказку "д. 1 кв. 2"
           if (hasApartment && queryParts.length >= 2) {
             const houseNum = queryParts[0].trim();
             const apartmentNum = queryParts[1].trim();
-            
+
             // Создаем подсказку в формате "д. 1 кв. 2" (без запятой, с точкой после "кв")
             const combinedSuggestion = {
               id: `manual-${houseNum}-${apartmentNum}`,
@@ -356,7 +356,7 @@ export default function AddressInputModal({
               buildingId: undefined,
               isManual: true, // Флаг для ручного ввода
             };
-            
+
             // Добавляем подсказку в начало списка
             setSuggestions([combinedSuggestion, ...apartmentSuggestions, ...dbSuggestions]);
           } else {
@@ -391,7 +391,7 @@ export default function AddressInputModal({
           }
         } else if (currentStep === 'apartment') {
           let dbSuggestions: any[] = [];
-          
+
           if (addressData.buildingId) {
             const apartmentsResponse = await locationsService.getApartments({
               buildingId: addressData.buildingId,
@@ -416,7 +416,7 @@ export default function AddressInputModal({
               }));
             }
           }
-          
+
           // Если введен номер квартиры (например, "5"), создаем подсказку "кв. 5"
           // даже если данных нет в БД
           if (query.trim() && /^\d+$/.test(query.trim())) {
@@ -429,7 +429,7 @@ export default function AddressInputModal({
               apartmentNumber: apartmentNum,
               isManual: true,
             };
-            
+
             // Добавляем ручную подсказку в начало списка
             setSuggestions([manualSuggestion, ...dbSuggestions]);
           } else {
@@ -497,17 +497,17 @@ export default function AddressInputModal({
         const buildingId = selected.buildingId;
         const apartmentId = selected.apartmentId;
         const apartmentNum = selected.apartmentNumber;
-        
+
         // Получаем номер дома из подсказки (формат "д. 5 кв. 9")
         const houseMatch = value.match(/д\.\s*([^\s]+(?:\s+[^\s]+)?)\s+кв\./);
         const houseNum = houseMatch ? houseMatch[1].trim() : value.replace(/\s+кв\.\s+\d+.*$/, '').replace(/^д\.\s*/, '').trim();
-        
+
         updateHouseNumber(buildingId, houseNum, undefined);
         updateApartmentNumber(apartmentId, apartmentNum);
         onComplete();
         return;
       }
-      
+
       const buildingId = selected?.buildingId || undefined;
       // Парсим ввод: "дом квартира" или "дом, квартира" или просто "дом"
       // Поддерживаем форматы: "д. 5 кв. 9", "д. 5, кв 10", "5, 10", "д. 5, 10", "5, кв 10", "50 2", "д. 50, кв 2"
@@ -526,7 +526,7 @@ export default function AddressInputModal({
         // Убираем префиксы "д.", "дом", "кв", "квартира" и оставляем только номер
         const cleanHouse = parts[0].replace(/^(д\.?|дом)\s*/i, '').trim();
         const cleanApartment = parts[1]?.replace(/^(кв\.?|квартира)\s*/i, '').trim();
-        
+
         houseNum = cleanHouse;
         apartmentNum = cleanApartment || undefined;
       } else {
@@ -542,10 +542,10 @@ export default function AddressInputModal({
             // Если есть минимум 2 части через пробел, считаем что это дом и квартира
             const firstPart = spaceParts[0].replace(/^(д\.?|дом)\s*/i, '').trim();
             const secondPart = spaceParts[1].replace(/^(кв\.?|квартира)\s*/i, '').trim();
-            
+
             // Проверяем, что обе части похожи на числа (не слишком длинные и содержат цифры)
-            if (firstPart.length <= 10 && secondPart.length <= 10 && 
-                /\d/.test(firstPart) && /\d/.test(secondPart)) {
+            if (firstPart.length <= 10 && secondPart.length <= 10 &&
+              /\d/.test(firstPart) && /\d/.test(secondPart)) {
               houseNum = firstPart;
               apartmentNum = secondPart;
             } else {

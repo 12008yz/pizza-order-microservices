@@ -18,7 +18,7 @@ export default function FavoriteToast({ isVisible, onClose }: FavoriteToastProps
          requestAnimationFrame(() => {
             setIsAnimating(true);
          });
-         
+
          const timer = setTimeout(() => {
             // Начинаем анимацию исчезновения
             setIsAnimating(false);

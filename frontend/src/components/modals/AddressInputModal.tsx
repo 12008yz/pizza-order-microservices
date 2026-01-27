@@ -595,20 +595,49 @@ export default function AddressInputModal({
     }
   };
 
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [shouldRender, setShouldRender] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      setShouldRender(true);
+      // Анимация появления
+      requestAnimationFrame(() => {
+        setIsAnimating(true);
+      });
+    } else {
+      // Анимация исчезновения
+      setIsAnimating(false);
+      setTimeout(() => {
+        setShouldRender(false);
+      }, 300);
+    }
+  }, [isOpen]);
+
   const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget) {
-      onClose();
+      // Анимация исчезновения
+      setIsAnimating(false);
+      setTimeout(() => {
+        setShouldRender(false);
+        onClose();
+      }, 300);
     }
   };
 
   const handleContainerClick = (e: React.MouseEvent<HTMLDivElement>) => {
     // Закрываем модалку при клике на пустое место внутри контейнера
     if (e.target === e.currentTarget) {
-      onClose();
+      // Анимация исчезновения
+      setIsAnimating(false);
+      setTimeout(() => {
+        setShouldRender(false);
+        onClose();
+      }, 300);
     }
   };
 
-  if (!isOpen) return null;
+  if (!shouldRender) return null;
 
   const canProceed = selectedIndex !== null || query.trim().length > 0;
   const hasSuggestions = suggestions.length > 0;
@@ -642,6 +671,8 @@ export default function AddressInputModal({
       style={{
         background: '#F5F5F5',
         backdropFilter: 'blur(12.5px)',
+        opacity: isAnimating ? 1 : 0,
+        transition: 'opacity 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
       }}
       onClick={handleBackdropClick}
     >
@@ -673,6 +704,9 @@ export default function AddressInputModal({
             justifyContent: 'center',
             textAlign: 'center',
             color: 'rgba(16, 16, 16, 0.15)',
+            opacity: isAnimating ? 1 : 0,
+            transform: isAnimating ? 'translateY(0)' : 'translateY(-10px)',
+            transition: 'opacity 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
           }}
         >
           Нажмите в открытое пустое место, чтобы выйти из этого режима
@@ -691,8 +725,10 @@ export default function AddressInputModal({
             background: '#FFFFFF',
             backdropFilter: 'blur(7.5px)',
             borderRadius: '20px',
-            transition: 'top 0.3s ease, height 0.3s ease',
+            transition: 'top 0.3s ease, height 0.3s ease, opacity 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
             overflow: 'hidden',
+            opacity: isAnimating ? 1 : 0,
+            transform: isAnimating ? 'translateY(0)' : 'translateY(100px)',
           }}
         >
           {/* Заголовок - фиксирован сверху */}

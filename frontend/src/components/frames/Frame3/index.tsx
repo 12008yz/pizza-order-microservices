@@ -22,6 +22,7 @@ import FilterWizard from './FilterWizard';
 import HintTooltip from './HintTooltip';
 import AddressInputModal from '../../modals/AddressInputModal';
 import { AddressProvider, useAddress } from '../../../contexts/AddressContext';
+import AnimatedHeartFilledIcon from '../../common/AnimatedHeartFilledIcon';
 
 // Динамический импорт ConsultationFlow для code splitting
 const ConsultationFlow = dynamic(() => import('../Frame2/ConsultationFlow'), {
@@ -176,11 +177,55 @@ function Frame3Content() {
   const router = useRouter();
   const { addressData, updateApartmentNumber } = useAddress();
   const scrollRef = useRef<HTMLDivElement>(null);
+  
+  // Проверка заполненности всех обязательных полей при монтировании
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
+    // Проверяем данные из sessionStorage
+    try {
+      const storedData = sessionStorage.getItem('addressData');
+      if (storedData) {
+        const parsedData = JSON.parse(storedData);
+        // Проверяем обязательные поля
+        const hasConnectionType = parsedData.connectionType;
+        const hasCity = parsedData.cityId || parsedData.city;
+        const hasStreet = parsedData.streetId || parsedData.street;
+        const hasHouseNumber = parsedData.buildingId || parsedData.houseNumber;
+        const hasPrivacyConsent = parsedData.privacyConsent;
+        
+        // Если хотя бы одно обязательное поле не заполнено, редиректим на главную
+        if (!hasConnectionType || !hasCity || !hasStreet || !hasHouseNumber || !hasPrivacyConsent) {
+          router.push('/');
+          return;
+        }
+      } else {
+        // Если данных нет в sessionStorage, проверяем addressData из контекста
+        const hasConnectionType = addressData.connectionType;
+        const hasCity = addressData.cityId || addressData.city;
+        const hasStreet = addressData.streetId || addressData.street;
+        const hasHouseNumber = addressData.buildingId || addressData.houseNumber;
+        const hasPrivacyConsent = addressData.privacyConsent;
+        
+        // Если хотя бы одно обязательное поле не заполнено, редиректим на главную
+        if (!hasConnectionType || !hasCity || !hasStreet || !hasHouseNumber || !hasPrivacyConsent) {
+          router.push('/');
+          return;
+        }
+      }
+    } catch (error) {
+      console.warn('Failed to check address data:', error);
+      // В случае ошибки редиректим на главную для безопасности
+      router.push('/');
+    }
+  }, [router, addressData]);
   const [isHomePressed, setIsHomePressed] = useState(false);
   const [isHeartPressed, setIsHeartPressed] = useState(false);
   const [isFunnelPressed, setIsFunnelPressed] = useState(false);
   const [isPlanePressed, setIsPlanePressed] = useState(false);
+  const [clickedButton, setClickedButton] = useState<string | null>(null);
   const [isArrowPressed, setIsArrowPressed] = useState(false);
+  const [arrowClicked, setArrowClicked] = useState(false);
   const [isClearFilterPressed, setIsClearFilterPressed] = useState(false);
   const [showConsultation, setShowConsultation] = useState(false);
   const [showFilterWizard, setShowFilterWizard] = useState(false);
@@ -235,6 +280,7 @@ function Frame3Content() {
   const [showFavoriteToast, setShowFavoriteToast] = useState(false);
   const [hasShownFavoriteToast, setHasShownFavoriteToast] = useState(false);
   const [favoritesInitialized, setFavoritesInitialized] = useState(false);
+  const [recentlyAddedFavorites, setRecentlyAddedFavorites] = useState<Set<number>>(new Set());
 
   // Помечаем, что избранные инициализированы после первого рендера на клиенте
   useEffect(() => {
@@ -274,8 +320,28 @@ function Frame3Content() {
       const newFavorites = new Set(prev);
       if (newFavorites.has(tariffId)) {
         newFavorites.delete(tariffId);
+        // Убираем из недавно добавленных при удалении
+        setRecentlyAddedFavorites((prevRecent) => {
+          const newRecent = new Set(prevRecent);
+          newRecent.delete(tariffId);
+          return newRecent;
+        });
       } else {
         newFavorites.add(tariffId);
+        // Добавляем в недавно добавленные для анимации
+        setRecentlyAddedFavorites((prevRecent) => {
+          const newRecent = new Set(prevRecent);
+          newRecent.add(tariffId);
+          return newRecent;
+        });
+        // Убираем из недавно добавленных через 1 секунду
+        setTimeout(() => {
+          setRecentlyAddedFavorites((prevRecent) => {
+            const newRecent = new Set(prevRecent);
+            newRecent.delete(tariffId);
+            return newRecent;
+          });
+        }, 1000);
         // Показываем уведомление только 1 раз
         if (!hasShownFavoriteToast) {
           setShowFavoriteToast(true);
@@ -470,6 +536,10 @@ function Frame3Content() {
   // Скролл к следующей карточке
   const handleScrollRight = () => {
     if (scrollRef.current) {
+      // Анимация клика
+      setArrowClicked(true);
+      setTimeout(() => setArrowClicked(false), 400);
+      
       scrollRef.current.scrollBy({
         left: 365,
         behavior: 'smooth',
@@ -534,7 +604,11 @@ function Frame3Content() {
               left: '0px',
               top: '0px',
             }}
-            onClick={() => router.push('/')}
+            onClick={() => {
+              setClickedButton('home');
+              setTimeout(() => setClickedButton(null), 300);
+              router.push('/');
+            }}
             onMouseDown={() => setIsHomePressed(true)}
             onMouseUp={() => setIsHomePressed(false)}
             onMouseLeave={() => setIsHomePressed(false)}
@@ -542,15 +616,37 @@ function Frame3Content() {
             onTouchEnd={() => setIsHomePressed(false)}
           >
             <div
-              className="w-full h-full flex items-center justify-center"
+              className="w-full h-full flex items-center justify-center relative overflow-hidden"
               style={{
                 background: '#FFFFFF',
                 borderRadius: '100px',
-                transform: isHomePressed ? 'scale(0.92)' : 'scale(1)',
-                transition: 'transform 0.15s ease-out',
+                transform: isHomePressed ? 'scale(0.85)' : 'scale(1)',
+                transition: 'transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)',
               }}
             >
-              <HomeIcon />
+              {/* Ripple эффект */}
+              {clickedButton === 'home' && (
+                <div
+                  style={{
+                    position: 'absolute',
+                    width: '100%',
+                    height: '100%',
+                    borderRadius: '100px',
+                    background: 'rgba(16, 16, 16, 0.1)',
+                    animation: 'ripple 0.4s ease-out',
+                  }}
+                />
+              )}
+              <div
+                style={{
+                  position: 'relative',
+                  zIndex: 1,
+                  transition: 'transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                  transform: isHomePressed ? 'rotate(-5deg) scale(0.95)' : 'rotate(0deg) scale(1)',
+                }}
+              >
+                <HomeIcon color={clickedButton === 'home' ? '#4A90E2' : '#101010'} />
+              </div>
             </div>
           </div>
 
@@ -595,7 +691,11 @@ function Frame3Content() {
               left: '229.6px',
               top: '0.41px',
             }}
-            onClick={handleHeartClick}
+            onClick={() => {
+              setClickedButton('heart');
+              setTimeout(() => setClickedButton(null), 300);
+              handleHeartClick();
+            }}
             onMouseDown={() => setIsHeartPressed(true)}
             onMouseUp={() => setIsHeartPressed(false)}
             onMouseLeave={() => setIsHeartPressed(false)}
@@ -603,16 +703,42 @@ function Frame3Content() {
             onTouchEnd={() => setIsHeartPressed(false)}
           >
             <div
-              className="w-full h-full flex items-center justify-center"
+              className="w-full h-full flex items-center justify-center relative overflow-hidden"
               style={{
                 background: '#FFFFFF',
                 borderRadius: '100px',
-                transform: isHeartPressed ? 'scale(0.92)' : 'scale(1)',
-                transition: 'transform 0.15s ease-out',
+                transform: isHeartPressed ? 'scale(0.85)' : 'scale(1)',
+                transition: 'transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)',
               }}
               suppressHydrationWarning
             >
-              {favoritesInitialized && hasFavorites ? <HeartHeaderFilledIcon /> : <HeartIcon />}
+              {/* Ripple эффект */}
+              {clickedButton === 'heart' && (
+                <div
+                  style={{
+                    position: 'absolute',
+                    width: '100%',
+                    height: '100%',
+                    borderRadius: '100px',
+                    background: 'rgba(255, 48, 48, 0.15)',
+                    animation: 'ripple 0.4s ease-out',
+                  }}
+                />
+              )}
+              <div
+                style={{
+                  position: 'relative',
+                  zIndex: 1,
+                  transition: 'transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                  transform: isHeartPressed ? 'scale(1.1) rotate(5deg)' : 'scale(1) rotate(0deg)',
+                }}
+              >
+                {favoritesInitialized && hasFavorites ? (
+                  <HeartHeaderFilledIcon />
+                ) : (
+                  <HeartIcon />
+                )}
+              </div>
             </div>
           </div>
 
@@ -625,7 +751,11 @@ function Frame3Content() {
               left: '274.6px',
               top: '0.41px',
             }}
-            onClick={handleFilterClick}
+            onClick={() => {
+              setClickedButton('funnel');
+              setTimeout(() => setClickedButton(null), 300);
+              handleFilterClick();
+            }}
             onMouseDown={() => setIsFunnelPressed(true)}
             onMouseUp={() => setIsFunnelPressed(false)}
             onMouseLeave={() => setIsFunnelPressed(false)}
@@ -633,15 +763,37 @@ function Frame3Content() {
             onTouchEnd={() => setIsFunnelPressed(false)}
           >
             <div
-              className="w-full h-full flex items-center justify-center"
+              className="w-full h-full flex items-center justify-center relative overflow-hidden"
               style={{
                 background: '#FFFFFF',
                 borderRadius: '100px',
-                transform: isFunnelPressed ? 'scale(0.92)' : 'scale(1)',
-                transition: 'transform 0.15s ease-out',
+                transform: isFunnelPressed ? 'scale(0.85)' : 'scale(1)',
+                transition: 'transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)',
               }}
             >
-              <FunnelIcon />
+              {/* Ripple эффект */}
+              {clickedButton === 'funnel' && (
+                <div
+                  style={{
+                    position: 'absolute',
+                    width: '100%',
+                    height: '100%',
+                    borderRadius: '100px',
+                    background: 'rgba(139, 69, 19, 0.15)',
+                    animation: 'ripple 0.4s ease-out',
+                  }}
+                />
+              )}
+              <div
+                style={{
+                  position: 'relative',
+                  zIndex: 1,
+                  transition: 'transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                  transform: isFunnelPressed ? 'scale(1.1) rotate(-10deg)' : 'scale(1) rotate(0deg)',
+                }}
+              >
+                <FunnelIcon />
+              </div>
             </div>
           </div>
 
@@ -654,7 +806,11 @@ function Frame3Content() {
               left: '319.2px',
               top: '0.81px',
             }}
-            onClick={handlePlaneClick}
+            onClick={() => {
+              setClickedButton('plane');
+              setTimeout(() => setClickedButton(null), 300);
+              handlePlaneClick();
+            }}
             onMouseDown={() => setIsPlanePressed(true)}
             onMouseUp={() => setIsPlanePressed(false)}
             onMouseLeave={() => setIsPlanePressed(false)}
@@ -662,15 +818,37 @@ function Frame3Content() {
             onTouchEnd={() => setIsPlanePressed(false)}
           >
             <div
-              className="w-full h-full flex items-center justify-center"
+              className="w-full h-full flex items-center justify-center relative overflow-hidden"
               style={{
                 background: '#FFFFFF',
                 borderRadius: '100px',
-                transform: isPlanePressed ? 'scale(0.92)' : 'scale(1)',
-                transition: 'transform 0.15s ease-out',
+                transform: isPlanePressed ? 'scale(0.85)' : 'scale(1)',
+                transition: 'transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)',
               }}
             >
-              <PlaneIcon />
+              {/* Ripple эффект */}
+              {clickedButton === 'plane' && (
+                <div
+                  style={{
+                    position: 'absolute',
+                    width: '100%',
+                    height: '100%',
+                    borderRadius: '100px',
+                    background: 'rgba(34, 139, 34, 0.15)',
+                    animation: 'ripple 0.4s ease-out',
+                  }}
+                />
+              )}
+              <div
+                style={{
+                  position: 'relative',
+                  zIndex: 1,
+                  transition: 'transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                  transform: isPlanePressed ? 'scale(1.1) rotate(15deg)' : 'scale(1) rotate(0deg)',
+                }}
+              >
+                <PlaneIcon color={clickedButton === 'plane' ? '#228B22' : '#101010'} />
+              </div>
             </div>
           </div>
         </div>
@@ -767,15 +945,37 @@ function Frame3Content() {
           onTouchEnd={() => setIsArrowPressed(false)}
         >
           <div
-            className="w-full h-full flex items-center justify-center"
+            className="w-full h-full flex items-center justify-center relative overflow-hidden"
             style={{
               background: '#FFFFFF',
               borderRadius: '100px',
-              transform: isArrowPressed ? 'scale(0.92)' : 'scale(1)',
-              transition: 'transform 0.15s ease-out',
+              transform: isArrowPressed ? 'scale(0.85)' : 'scale(1)',
+              transition: 'transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)',
             }}
           >
-            <ArrowCircleRightIcon />
+            {/* Ripple эффект */}
+            {arrowClicked && (
+              <div
+                style={{
+                  position: 'absolute',
+                  width: '100%',
+                  height: '100%',
+                  borderRadius: '100px',
+                  background: 'rgba(16, 16, 16, 0.1)',
+                  animation: 'ripple 0.4s ease-out',
+                }}
+              />
+            )}
+            <div
+              style={{
+                position: 'relative',
+                zIndex: 1,
+                transition: 'transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                transform: isArrowPressed ? 'scale(1.1) rotate(-5deg)' : arrowClicked ? 'scale(1.15)' : 'scale(1)',
+              }}
+            >
+              <ArrowCircleRightIcon color={arrowClicked ? '#4A90E2' : '#101010'} isAnimating={arrowClicked} />
+            </div>
           </div>
         </div>
       </div>
@@ -1092,7 +1292,15 @@ function Frame3Content() {
                       }}
                       suppressHydrationWarning
                     >
-                      {favoritesInitialized && favorites.has(tariff.id) ? <HeartFilledIcon /> : <HeartOutlineIcon />}
+                      {favoritesInitialized && favorites.has(tariff.id) ? (
+                        recentlyAddedFavorites.has(tariff.id) ? (
+                          <AnimatedHeartFilledIcon />
+                        ) : (
+                          <HeartFilledIcon />
+                        )
+                      ) : (
+                        <HeartOutlineIcon />
+                      )}
                     </button>
 
                     {/* Кнопка промо */}
@@ -1129,7 +1337,7 @@ function Frame3Content() {
         </div>
       </div>
 
-      {/* Стили для скрытия скроллбара */}
+      {/* Стили для скрытия скроллбара и анимации ripple */}
       <style jsx>{`
         .scrollbar-hide::-webkit-scrollbar {
           display: none;
@@ -1137,6 +1345,16 @@ function Frame3Content() {
         .scrollbar-hide {
           -ms-overflow-style: none;
           scrollbar-width: none;
+        }
+        @keyframes ripple {
+          0% {
+            transform: scale(0);
+            opacity: 1;
+          }
+          100% {
+            transform: scale(2);
+            opacity: 0;
+          }
         }
       `}</style>
 

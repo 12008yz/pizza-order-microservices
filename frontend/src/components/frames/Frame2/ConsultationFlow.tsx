@@ -24,6 +24,15 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
   const [selectedMethod, setSelectedMethod] = useState<ContactMethod | null>(null);
   const [phoneError, setPhoneError] = useState(false);
   const [showSkipAfterError, setShowSkipAfterError] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [shouldRender, setShouldRender] = useState(true);
+
+  useEffect(() => {
+    // Анимация появления
+    requestAnimationFrame(() => {
+      setIsAnimating(true);
+    });
+  }, []);
 
   // Button press states for animations
   const [isMainBtnPressed, setIsMainBtnPressed] = useState(false);
@@ -831,19 +840,36 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
   );
 
   const handleBackgroundClick = useCallback(() => {
-    if (onSkip) {
-      onSkip();
-    } else {
-      onClose();
-    }
+    // Анимация исчезновения
+    setIsAnimating(false);
+    setTimeout(() => {
+      setShouldRender(false);
+      if (onSkip) {
+        onSkip();
+      } else {
+        onClose();
+      }
+    }, 300);
   }, [onSkip, onClose]);
+
+  if (!shouldRender) return null;
 
   return (
     <div
       className="fixed inset-0 z-[9999] flex items-center justify-center bg-[#F5F5F5] overflow-hidden"
+      style={{
+        opacity: isAnimating ? 1 : 0,
+        transition: 'opacity 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
+      }}
     >
       {/* Main Container */}
-      <div className="relative w-[400px] h-[870px] bg-[#F5F5F5]">
+      <div 
+        className="relative w-[400px] h-[870px] bg-[#F5F5F5]"
+        style={{
+          transform: isAnimating ? 'scale(1)' : 'scale(0.95)',
+          transition: 'transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
+        }}
+      >
         {/* Background - клик по нему переходит на тарифы */}
         <div
           className="absolute left-0 right-[0.06%] top-0 bottom-0 bg-[#F5F5F5] cursor-pointer"

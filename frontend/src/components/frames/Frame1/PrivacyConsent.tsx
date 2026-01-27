@@ -1,8 +1,8 @@
 'use client';
 
 import { memo } from 'react';
-import { Check } from '@phosphor-icons/react';
 import { useAddress } from '../../../contexts/AddressContext';
+import AnimatedCheck from '../../common/AnimatedCheck';
 
 function PrivacyConsent() {
   const { addressData, updatePrivacyConsent } = useAddress();
@@ -36,10 +36,11 @@ function PrivacyConsent() {
             boxSizing: 'border-box',
             width: '15px',
             height: '15px',
+            transition: 'background-color 0.2s ease, border-color 0.2s ease',
           }}
         >
           {addressData.privacyConsent && (
-            <Check size={9} weight="bold" color="white" />
+            <AnimatedCheck key={`privacy-${addressData.privacyConsent}`} size={9} color="white" strokeWidth={1.5} />
           )}
         </div>
 

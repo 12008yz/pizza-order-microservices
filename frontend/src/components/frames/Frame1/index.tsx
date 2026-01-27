@@ -2,13 +2,14 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { CaretRight, Check, X } from '@phosphor-icons/react';
+import { CaretRight, X } from '@phosphor-icons/react';
 import { AddressProvider, useAddress, ConnectionType } from '../../../contexts/AddressContext';
 import ConnectionTypeModal from '../../modals/ConnectionTypeModal';
 import AddressInputModal from '../../modals/AddressInputModal';
 import PrivacyConsent from './PrivacyConsent';
 import Header from '../../layout/Header';
 import LoadingScreen from '../../LoadingScreen';
+import AnimatedCheck from '../../common/AnimatedCheck';
 import dynamic from 'next/dynamic';
 
 // Динамический импорт ConsultationFlow для code splitting
@@ -116,6 +117,14 @@ function AddressFormContent() {
   };
 
   const handleConsultationClose = () => {
+    // Проверяем, заполнены ли все обязательные поля
+    clearErrors();
+    if (!validateForm()) {
+      // Если форма не валидна, возвращаемся на форму
+      setFlowState('form');
+      return;
+    }
+
     // Сохраняем текущие данные в sessionStorage при закрытии модалки
     try {
       const sanitizedAddressData = {
@@ -200,12 +209,20 @@ function AddressFormContent() {
   // Функция сохранения данных пользователя и перехода на тарифы
   const saveUserDataAndNavigate = async (phone?: string, method?: ContactMethod) => {
     try {
-      // Если есть телефон, всегда сохраняем его в базу данных (даже если форма не заполнена)
+      // Проверяем, заполнены ли все обязательные поля
+      clearErrors();
+      if (!validateForm()) {
+        // Если форма не валидна, возвращаемся на форму
+        setFlowState('form');
+        return;
+      }
+
+      // Если есть телефон, сохраняем его в базу данных
       if (phone) {
         await savePhoneToDatabase(phone, method);
       }
 
-      // Санитизируем данные перед сохранением (даже если они неполные)
+      // Санитизируем данные перед сохранением
       const sanitizedAddressData = {
         ...addressData,
         city: sanitizeString(addressData.city, 100),
@@ -228,12 +245,12 @@ function AddressFormContent() {
       // Очищаем форму после отправки
       clearAddress();
 
-      // Всегда переходим на страницу тарифов, даже если данные неполные
+      // Переходим на страницу тарифов только если все поля заполнены
       router.push('/providers');
     } catch (error) {
       console.error('Error in saveUserDataAndNavigate:', error);
-      // В случае ошибки все равно переходим на тарифы
-      router.push('/providers');
+      // В случае ошибки возвращаемся на форму
+      setFlowState('form');
     }
   };
 
@@ -327,10 +344,11 @@ function AddressFormContent() {
                   }`}
                 style={{
                   borderWidth: '0.5px',
+                  transition: 'background-color 0.2s ease, border-color 0.2s ease',
                 }}
               >
                 {addressData.connectionType ? (
-                  <Check size={8} weight="bold" color="#FFFFFF" />
+                  <AnimatedCheck key={`connection-${addressData.connectionType}`} size={8} color="#FFFFFF" strokeWidth={1.5} />
                 ) : (
                   <CaretRight size={8} weight="regular" color="rgba(16, 16, 16, 0.25)" />
                 )}
@@ -376,10 +394,13 @@ function AddressFormContent() {
               <div
                 className={`w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 ${addressData.city ? 'bg-[#101010]' : 'border border-[rgba(16,16,16,0.25)]'
                   }`}
-                style={{ borderWidth: '0.5px' }}
+                style={{ 
+                  borderWidth: '0.5px',
+                  transition: 'background-color 0.2s ease, border-color 0.2s ease',
+                }}
               >
                 {addressData.city ? (
-                  <Check size={8} weight="bold" color="#FFFFFF" />
+                  <AnimatedCheck key={`city-${addressData.city}`} size={8} color="#FFFFFF" strokeWidth={1.5} />
                 ) : (
                   <CaretRight size={8} weight="regular" color="rgba(16, 16, 16, 0.25)" />
                 )}
@@ -427,10 +448,13 @@ function AddressFormContent() {
               <div
                 className={`w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 ${addressData.street ? 'bg-[#101010]' : 'border border-[rgba(16,16,16,0.25)]'
                   }`}
-                style={{ borderWidth: '0.5px' }}
+                style={{ 
+                  borderWidth: '0.5px',
+                  transition: 'background-color 0.2s ease, border-color 0.2s ease',
+                }}
               >
                 {addressData.street ? (
-                  <Check size={8} weight="bold" color="#FFFFFF" />
+                  <AnimatedCheck key={`street-${addressData.street}`} size={8} color="#FFFFFF" strokeWidth={1.5} />
                 ) : (
                   <CaretRight size={8} weight="regular" color="rgba(16, 16, 16, 0.25)" />
                 )}
@@ -478,10 +502,13 @@ function AddressFormContent() {
               <div
                 className={`w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 ${addressData.houseNumber ? 'bg-[#101010]' : 'border border-[rgba(16,16,16,0.25)]'
                   }`}
-                style={{ borderWidth: '0.5px' }}
+                style={{ 
+                  borderWidth: '0.5px',
+                  transition: 'background-color 0.2s ease, border-color 0.2s ease',
+                }}
               >
                 {addressData.houseNumber ? (
-                  <Check size={8} weight="bold" color="#FFFFFF" />
+                  <AnimatedCheck key={`house-${addressData.houseNumber}`} size={8} color="#FFFFFF" strokeWidth={1.5} />
                 ) : (
                   <CaretRight size={8} weight="regular" color="rgba(16, 16, 16, 0.25)" />
                 )}

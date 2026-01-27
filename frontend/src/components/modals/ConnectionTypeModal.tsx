@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Check, CaretLeft } from '@phosphor-icons/react';
 import { useAddress, ConnectionType } from '../../contexts/AddressContext';
 
@@ -23,8 +23,26 @@ export default function ConnectionTypeModal({
 }: ConnectionTypeModalProps) {
   const { addressData, updateConnectionType } = useAddress();
   const [selectedType, setSelectedType] = useState<ConnectionType>(addressData.connectionType);
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [shouldRender, setShouldRender] = useState(false);
 
-  if (!isOpen) return null;
+  useEffect(() => {
+    if (isOpen) {
+      setShouldRender(true);
+      // Анимация появления
+      requestAnimationFrame(() => {
+        setIsAnimating(true);
+      });
+    } else {
+      // Анимация исчезновения
+      setIsAnimating(false);
+      setTimeout(() => {
+        setShouldRender(false);
+      }, 300);
+    }
+  }, [isOpen]);
+
+  if (!shouldRender) return null;
 
   const handleSelect = (type: ConnectionType) => {
     setSelectedType(type);
@@ -40,7 +58,12 @@ export default function ConnectionTypeModal({
 
   const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget) {
-      onClose();
+      // Анимация исчезновения
+      setIsAnimating(false);
+      setTimeout(() => {
+        setShouldRender(false);
+        onClose();
+      }, 300);
     }
   };
 
@@ -51,6 +74,8 @@ export default function ConnectionTypeModal({
         background: '#F5F5F5',
         backdropFilter: 'blur(12.5px)',
         paddingBottom: '155px',
+        opacity: isAnimating ? 1 : 0,
+        transition: 'opacity 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
       }}
       onClick={handleBackdropClick}
     >
@@ -61,7 +86,7 @@ export default function ConnectionTypeModal({
           width: '240px',
           height: '30px',
           left: '50%',
-          transform: 'translateX(-50%)',
+          transform: isAnimating ? 'translateX(-50%) translateY(0)' : 'translateX(-50%) translateY(-10px)',
           top: '75px',
           fontFamily: 'TT Firs Neue, sans-serif',
           fontStyle: 'normal',
@@ -73,6 +98,8 @@ export default function ConnectionTypeModal({
           justifyContent: 'center',
           textAlign: 'center',
           color: 'rgba(16, 16, 16, 0.15)',
+          opacity: isAnimating ? 1 : 0,
+          transition: 'opacity 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
         }}
       >
         Нажмите в открытое пустое место, чтобы выйти из этого режима
@@ -90,6 +117,9 @@ export default function ConnectionTypeModal({
           backdropFilter: 'blur(7.5px)',
           borderRadius: '20px',
           padding: '15px',
+          transform: isAnimating ? 'translateY(0)' : 'translateY(100px)',
+          opacity: isAnimating ? 1 : 0,
+          transition: 'opacity 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
         }}
       >
         {/* Заголовок */}

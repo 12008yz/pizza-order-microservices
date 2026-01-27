@@ -59,15 +59,30 @@ export default function FilterWizard({ isOpen, onClose, onApply }: FilterWizardP
    // Button press states for animations
    const [isBackBtnPressed, setIsBackBtnPressed] = useState(false);
    const [isNextBtnPressed, setIsNextBtnPressed] = useState(false);
+   
+   // Анимация появления/исчезновения
+   const [isAnimating, setIsAnimating] = useState(false);
+   const [shouldRender, setShouldRender] = useState(false);
 
    // Сбрасываем шаг на 1 при каждом открытии модалки
    useEffect(() => {
       if (isOpen) {
          setStep(1);
+         setShouldRender(true);
+         // Анимация появления
+         requestAnimationFrame(() => {
+            setIsAnimating(true);
+         });
+      } else {
+         // Анимация исчезновения
+         setIsAnimating(false);
+         setTimeout(() => {
+            setShouldRender(false);
+         }, 300);
       }
    }, [isOpen]);
 
-   if (!isOpen) return null;
+   if (!shouldRender) return null;
 
    const handleServiceToggle = (serviceId: string) => {
       const service = serviceOptions.find((s) => s.id === serviceId);
@@ -109,7 +124,12 @@ export default function FilterWizard({ isOpen, onClose, onApply }: FilterWizardP
 
    const handleBackdropClick = (e: React.MouseEvent) => {
       if (e.target === e.currentTarget) {
-         onClose();
+         // Анимация исчезновения
+         setIsAnimating(false);
+         setTimeout(() => {
+            setShouldRender(false);
+            onClose();
+         }, 300);
       }
    };
 
@@ -135,6 +155,8 @@ export default function FilterWizard({ isOpen, onClose, onApply }: FilterWizardP
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
+            opacity: isAnimating ? 1 : 0,
+            transition: 'opacity 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
          }}
       >
          {/* Подсказка сверху */}
@@ -144,7 +166,7 @@ export default function FilterWizard({ isOpen, onClose, onApply }: FilterWizardP
                width: '240px',
                top: '75px',
                left: '50%',
-               transform: 'translateX(-50%)',
+               transform: isAnimating ? 'translateX(-50%) translateY(0)' : 'translateX(-50%) translateY(-10px)',
                fontFamily: 'TT Firs Neue, sans-serif',
                fontStyle: 'normal',
                fontWeight: 400,
@@ -152,6 +174,8 @@ export default function FilterWizard({ isOpen, onClose, onApply }: FilterWizardP
                lineHeight: '105%',
                textAlign: 'center',
                color: 'rgba(16, 16, 16, 0.25)',
+               opacity: isAnimating ? 1 : 0,
+               transition: 'opacity 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
             }}
          >
             Нажмите в открытое пустое место, чтобы выйти из этого режима
@@ -165,12 +189,14 @@ export default function FilterWizard({ isOpen, onClose, onApply }: FilterWizardP
                width: '360px',
                height: cardStyles.height,
                left: '50%',
-               transform: 'translateX(-50%)',
+               transform: isAnimating ? 'translateX(-50%) translateY(0)' : 'translateX(-50%) translateY(20px)',
                top: cardStyles.top,
                background: '#FFFFFF',
                borderRadius: '20px',
                display: 'flex',
                flexDirection: 'column',
+               opacity: isAnimating ? 1 : 0,
+               transition: 'opacity 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
             }}
          >
             {/* Заголовок */}

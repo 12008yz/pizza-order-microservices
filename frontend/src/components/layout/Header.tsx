@@ -13,6 +13,7 @@ function Header({ onConsultationClick }: HeaderProps) {
   const router = useRouter();
   const [isPlanePressed, setIsPlanePressed] = useState(false);
   const [isHomePressed, setIsHomePressed] = useState(false);
+  const [clickedButton, setClickedButton] = useState<string | null>(null);
 
   const handlePlaneClick = useCallback(() => {
     if (onConsultationClick) {
@@ -25,7 +26,11 @@ function Header({ onConsultationClick }: HeaderProps) {
       {/* Group 7510 - Кнопка дом (слева) */}
       <div
         className="absolute w-10 h-10 left-5 top-[65px] cursor-pointer z-10"
-        onClick={() => router.push('/')}
+        onClick={() => {
+          setClickedButton('home');
+          setTimeout(() => setClickedButton(null), 300);
+          router.push('/');
+        }}
         onMouseDown={() => setIsHomePressed(true)}
         onMouseUp={() => setIsHomePressed(false)}
         onMouseLeave={() => setIsHomePressed(false)}
@@ -44,17 +49,33 @@ function Header({ onConsultationClick }: HeaderProps) {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            transform: isHomePressed ? 'scale(0.92)' : 'scale(1)',
-            transition: 'transform 0.15s ease-out',
+            transform: isHomePressed ? 'scale(0.85)' : 'scale(1)',
+            transition: 'transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)',
+            overflow: 'hidden',
           }}
         >
+          {/* Ripple эффект */}
+          {clickedButton === 'home' && (
+            <div
+              style={{
+                position: 'absolute',
+                width: '100%',
+                height: '100%',
+                borderRadius: '100px',
+                background: 'rgba(16, 16, 16, 0.1)',
+                animation: 'ripple 0.4s ease-out',
+              }}
+            />
+          )}
           <div
             style={{
-              transform: isHomePressed ? 'scale(0.9)' : 'scale(1)',
-              transition: 'transform 0.15s ease-out',
+              position: 'relative',
+              zIndex: 1,
+              transform: isHomePressed ? 'rotate(-5deg) scale(0.95)' : 'rotate(0deg) scale(1)',
+              transition: 'transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)',
             }}
           >
-            <HomeIcon />
+            <HomeIcon color={clickedButton === 'home' ? '#4A90E2' : '#101010'} />
           </div>
         </div>
       </div>
@@ -65,7 +86,11 @@ function Header({ onConsultationClick }: HeaderProps) {
       {/* Group 7509 - Кнопка самолет (справа) */}
       <div
         className="absolute w-10 h-10 right-5 top-[65px] cursor-pointer z-10"
-        onClick={handlePlaneClick}
+        onClick={() => {
+          setClickedButton('plane');
+          setTimeout(() => setClickedButton(null), 300);
+          handlePlaneClick();
+        }}
         onMouseDown={() => setIsPlanePressed(true)}
         onMouseUp={() => setIsPlanePressed(false)}
         onMouseLeave={() => setIsPlanePressed(false)}
@@ -84,20 +109,49 @@ function Header({ onConsultationClick }: HeaderProps) {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            transform: isPlanePressed ? 'scale(0.92)' : 'scale(1)',
-            transition: 'transform 0.15s ease-out',
+            transform: isPlanePressed ? 'scale(0.85)' : 'scale(1)',
+            transition: 'transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)',
+            overflow: 'hidden',
           }}
         >
+          {/* Ripple эффект */}
+          {clickedButton === 'plane' && (
+            <div
+              style={{
+                position: 'absolute',
+                width: '100%',
+                height: '100%',
+                borderRadius: '100px',
+                background: 'rgba(34, 139, 34, 0.15)',
+                animation: 'ripple 0.4s ease-out',
+              }}
+            />
+          )}
           <div
             style={{
-              transform: isPlanePressed ? 'scale(0.9)' : 'scale(1)',
-              transition: 'transform 0.15s ease-out',
+              position: 'relative',
+              zIndex: 1,
+              transform: isPlanePressed ? 'scale(1.1) rotate(15deg)' : 'scale(1) rotate(0deg)',
+              transition: 'transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)',
             }}
           >
-            <PlaneIcon />
+            <PlaneIcon color={clickedButton === 'plane' ? '#228B22' : '#101010'} />
           </div>
         </div>
       </div>
+      {/* Стили для анимации ripple */}
+      <style jsx>{`
+        @keyframes ripple {
+          0% {
+            transform: scale(0);
+            opacity: 1;
+          }
+          100% {
+            transform: scale(2);
+            opacity: 0;
+          }
+        }
+      `}</style>
     </>
   );
 }

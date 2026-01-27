@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useMemo } from 'react';
+import { useState, useRef, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import {
@@ -59,13 +59,13 @@ const tariffs: Tariff[] = [
     tariffName: 'Технологии выгоды. Тест-драйв.',
     speed: '100 Мбит/сек',
     speedValue: 100,
-    speedDesc: 'Безлимитное соединение',
-    channels: '135 каналов · кинотеатр «Wink»',
+    speedDesc: 'Безлимитное соединение в квартире',
+    channels: '135 каналов',
     channelsDesc: 'Телевидение',
     mobile: '1000 мин · 40 гигабайтов · 50 смс',
     mobileDesc: 'Мобильное соединение',
-    favoriteLabel: 'Добавить в «Избранное»',
-    favoriteDesc: 'Кнопка выше и справа от «Гигапоиск»',
+    favoriteLabel: 'Кинотеатр «Wink»',
+    favoriteDesc: 'Дополнительное приложение',
     price: '965 р./мес.',
     priceValue: 965,
     connectionPrice: 'Подключение от оператора за 500 р.',
@@ -80,13 +80,13 @@ const tariffs: Tariff[] = [
     tariffName: 'Домашний интернет + ТВ',
     speed: '200 Мбит/сек',
     speedValue: 200,
-    speedDesc: 'Безлимитное соединение',
-    channels: '180 каналов · KION',
+    speedDesc: 'Безлимитное соединение в квартире',
+    channels: '180 каналов',
     channelsDesc: 'Телевидение',
     mobile: '800 мин · 30 гигабайтов · 100 смс',
     mobileDesc: 'Мобильное соединение',
-    favoriteLabel: 'Добавить в «Избранное»',
-    favoriteDesc: 'Кнопка выше и справа от «Гигапоиск»',
+    favoriteLabel: 'KION',
+    favoriteDesc: 'Дополнительное приложение',
     price: '890 р./мес.',
     priceValue: 890,
     connectionPrice: 'Подключение от оператора за 0 р.',
@@ -101,13 +101,13 @@ const tariffs: Tariff[] = [
     tariffName: 'Всё в одном',
     speed: '300 Мбит/сек',
     speedValue: 300,
-    speedDesc: 'Безлимитное соединение',
-    channels: '200 каналов · Wink',
+    speedDesc: 'Безлимитное соединение в квартире',
+    channels: '200 каналов',
     channelsDesc: 'Телевидение',
     mobile: '1500 мин · 50 гигабайтов · 200 смс',
     mobileDesc: 'Мобильное соединение',
-    favoriteLabel: 'Добавить в «Избранное»',
-    favoriteDesc: 'Кнопка выше и справа от «Гигапоиск»',
+    favoriteLabel: 'Wink',
+    favoriteDesc: 'Дополнительное приложение',
     price: '1100 р./мес.',
     priceValue: 1100,
     connectionPrice: 'Подключение от оператора за 300 р.',
@@ -122,13 +122,13 @@ const tariffs: Tariff[] = [
     tariffName: 'Интернет + ТВ Стартовый',
     speed: '150 Мбит/сек',
     speedValue: 150,
-    speedDesc: 'Безлимитное соединение',
+    speedDesc: 'Безлимитное соединение в квартире',
     channels: '100 каналов',
     channelsDesc: 'Телевидение',
     mobile: '',
     mobileDesc: '',
-    favoriteLabel: 'Добавить в «Избранное»',
-    favoriteDesc: 'Кнопка выше и справа от «Гигапоиск»',
+    favoriteLabel: '',
+    favoriteDesc: '',
     price: '650 р./мес.',
     priceValue: 650,
     connectionPrice: 'Подключение от оператора за 0 р.',
@@ -143,13 +143,13 @@ const tariffs: Tariff[] = [
     tariffName: 'Объединяй! Максимум',
     speed: '500 Мбит/сек',
     speedValue: 500,
-    speedDesc: 'Безлимитное соединение',
+    speedDesc: 'Безлимитное соединение в квартире',
     channels: '250 каналов',
     channelsDesc: 'Телевидение',
     mobile: '2000 мин · безлимит гигабайтов · 500 смс',
     mobileDesc: 'Мобильное соединение',
-    favoriteLabel: 'Добавить в «Избранное»',
-    favoriteDesc: 'Кнопка выше и справа от «Гигапоиск»',
+    favoriteLabel: '',
+    favoriteDesc: '',
     price: '1500 р./мес.',
     priceValue: 1500,
     connectionPrice: 'Подключение от оператора за 0 р.',
@@ -169,6 +169,9 @@ interface FilterState {
 
 type HintStep = 'none' | 'consultation' | 'filter';
 
+// Константа для ключа localStorage
+const FAVORITES_STORAGE_KEY = 'favorites_tariffs';
+
 function Frame3Content() {
   const router = useRouter();
   const { addressData, updateApartmentNumber } = useAddress();
@@ -182,6 +185,9 @@ function Frame3Content() {
   const [showConsultation, setShowConsultation] = useState(false);
   const [showFilterWizard, setShowFilterWizard] = useState(false);
   const [hintStep, setHintStep] = useState<HintStep>('consultation');
+
+  // Состояние для режима избранного
+  const [showFavoritesMode, setShowFavoritesMode] = useState(false);
 
   // Начальные значения фильтров
   const defaultFilters: FilterState = {
@@ -207,9 +213,58 @@ function Frame3Content() {
   const handleClearFilters = () => {
     setFilters(defaultFilters);
   };
-  const [favorites, setFavorites] = useState<Set<number>>(new Set());
+
+  // Загрузка избранных из localStorage при монтировании
+  const [favorites, setFavorites] = useState<Set<number>>(() => {
+    // Инициализация из localStorage при первом рендере (только на клиенте)
+    if (typeof window !== 'undefined') {
+      try {
+        const storedFavorites = localStorage.getItem(FAVORITES_STORAGE_KEY);
+        if (storedFavorites) {
+          const parsedFavorites = JSON.parse(storedFavorites);
+          if (Array.isArray(parsedFavorites)) {
+            return new Set(parsedFavorites);
+          }
+        }
+      } catch (error) {
+        console.warn('Failed to load favorites from localStorage:', error);
+      }
+    }
+    return new Set();
+  });
   const [showFavoriteToast, setShowFavoriteToast] = useState(false);
   const [hasShownFavoriteToast, setHasShownFavoriteToast] = useState(false);
+  const [favoritesInitialized, setFavoritesInitialized] = useState(false);
+
+  // Помечаем, что избранные инициализированы после первого рендера на клиенте
+  useEffect(() => {
+    // Перезагружаем из localStorage на клиенте (для SSR)
+    try {
+      const storedFavorites = localStorage.getItem(FAVORITES_STORAGE_KEY);
+      if (storedFavorites) {
+        const parsedFavorites = JSON.parse(storedFavorites);
+        if (Array.isArray(parsedFavorites)) {
+          setFavorites(new Set(parsedFavorites));
+        }
+      }
+    } catch (error) {
+      console.warn('Failed to load favorites from localStorage:', error);
+    }
+    setFavoritesInitialized(true);
+  }, []);
+
+  // Сохранение избранных в localStorage при изменении (только после инициализации)
+  useEffect(() => {
+    // Не сохраняем до инициализации, чтобы не перезаписать данные пустым массивом
+    if (!favoritesInitialized) return;
+
+    try {
+      const favoritesArray = Array.from(favorites);
+      localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(favoritesArray));
+    } catch (error) {
+      console.warn('Failed to save favorites to localStorage:', error);
+    }
+  }, [favorites, favoritesInitialized]);
 
   // Обработчик добавления/удаления из избранного
   const handleFavoriteClick = (tariffId: number) => {
@@ -231,19 +286,42 @@ function Frame3Content() {
 
   const hasFavorites = favorites.size > 0;
 
-  // Фильтрация и сортировка тарифов
-  const filteredTariffs = useMemo(() => {
-    const result = tariffs.filter((tariff) => {
-      // Фильтр по провайдерам
-      if (!filters.providers.includes(tariff.providerId)) {
-        return false;
-      }
-      // Фильтр по типу услуги
-      if (!filters.services.includes(tariff.serviceType)) {
-        return false;
-      }
-      return true;
-    });
+  // Обработчик открытия режима избранного
+  const handleHeartClick = () => {
+    if (hasFavorites) {
+      setShowFavoritesMode(true);
+    }
+  };
+
+  // Обработчик закрытия режима избранного (клик на пустое место)
+  const handleFavoritesModeBackgroundClick = (e: React.MouseEvent) => {
+    // Закрываем только если клик был именно на фон, а не на дочерний элемент
+    if (e.target === e.currentTarget) {
+      setShowFavoritesMode(false);
+    }
+  };
+
+  // Тарифы для отображения в зависимости от режима
+  const displayedTariffs = useMemo(() => {
+    let result = tariffs;
+
+    // В режиме избранного показываем только избранные тарифы
+    if (showFavoritesMode) {
+      result = tariffs.filter((tariff) => favorites.has(tariff.id));
+    } else {
+      // Обычный режим - фильтруем по настройкам
+      result = tariffs.filter((tariff) => {
+        // Фильтр по провайдерам
+        if (!filters.providers.includes(tariff.providerId)) {
+          return false;
+        }
+        // Фильтр по типу услуги
+        if (!filters.services.includes(tariff.serviceType)) {
+          return false;
+        }
+        return true;
+      });
+    }
 
     // Сортировка
     result.sort((a, b) => {
@@ -260,7 +338,7 @@ function Frame3Content() {
     });
 
     return result;
-  }, [filters]);
+  }, [filters, showFavoritesMode, favorites]);
 
   const handleConsultationClose = () => {
     setShowConsultation(false);
@@ -394,167 +472,198 @@ function Frame3Content() {
         height: '100vh',
         maxHeight: '870px',
       }}
+      onClick={showFavoritesMode ? handleFavoritesModeBackgroundClick : undefined}
     >
-      {/* Header - Group 7545 */}
-      <div
-        className="absolute"
-        style={{
-          width: '360px',
-          height: '41.61px',
-          left: '20px',
-          top: '73px',
-        }}
-      >
-        {/* Group 7510 - Кнопка дом (слева) */}
+      {/* Режим избранного: текст вместо Header */}
+      {showFavoritesMode ? (
         <div
-          className="absolute cursor-pointer"
+          className="absolute"
           style={{
-            width: '40.8px',
-            height: '40.8px',
-            left: '0px',
-            top: '0px',
+            width: '240px',
+            height: '30px',
+            left: 'calc(50% - 240px/2)',
+            top: '75px',
           }}
-          onClick={() => router.push('/')}
-          onMouseDown={() => setIsHomePressed(true)}
-          onMouseUp={() => setIsHomePressed(false)}
-          onMouseLeave={() => setIsHomePressed(false)}
-          onTouchStart={() => setIsHomePressed(true)}
-          onTouchEnd={() => setIsHomePressed(false)}
         >
           <div
-            className="w-full h-full flex items-center justify-center"
             style={{
-              background: '#FFFFFF',
-              borderRadius: '100px',
-              transform: isHomePressed ? 'scale(0.92)' : 'scale(1)',
-              transition: 'transform 0.15s ease-out',
+              fontFamily: 'TT Firs Neue, sans-serif',
+              fontWeight: 400,
+              fontSize: '14px',
+              lineHeight: '105%',
+              display: 'flex',
+              alignItems: 'center',
+              textAlign: 'center',
+              justifyContent: 'center',
+              color: 'rgba(16, 16, 16, 0.25)',
             }}
           >
-            <HomeIcon />
+            Нажмите в открытое пустое место, чтобы выйти из этого режима
           </div>
         </div>
-
-        {/* Логотип Гигапоиск - гигапоиск 2 */}
+      ) : (
+        /* Header - Group 7545 */
         <div
-          className="absolute flex items-center"
+          className="absolute"
           style={{
-            width: '142.79px',
-            height: '10.2px',
-            left: '48.61px',
-            top: '15.71px',
+            width: '360px',
+            height: '41.61px',
+            left: '20px',
+            top: '73px',
           }}
         >
-          <svg
-            width="143"
-            height="11"
-            viewBox="0 0 230 14"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            preserveAspectRatio="xMidYMid meet"
-          >
-            <g clipPath="url(#clip0_frame3_logo)">
-              <path
-                d="M0 13.8056V0.194444H22.5306V4.86111H5.93306V13.8056H0ZM49.0092 0.194444V13.8056H43.0761V6.02778L29.9708 13.8056H24.0377V0.194444H29.9708V7.97222L43.0761 0.194444H49.0092ZM50.5142 13.8056V0.194444H73.0448V4.86111H56.4473V13.8056H50.5142ZM84.0292 4.47222L81.288 7.97222H86.7705L84.0292 4.47222ZM80.6872 0.194444H87.3713L98.017 13.8056H91.3329L89.8121 11.8611H78.2464L76.7256 13.8056H70.0415L80.6872 0.194444ZM98.7731 13.8056V0.194444H123.744V13.8056H117.811V4.86111H104.706V13.8056H98.7731ZM131.454 0H145.16C148.784 0 151.732 3.24722 151.732 7C151.732 10.7528 148.784 14 145.16 14H131.454C127.831 14 124.883 10.7528 124.883 7C124.883 3.24722 127.831 0 131.454 0ZM143.94 5.05556H132.675C131.642 5.05556 130.797 5.93056 130.797 7C130.797 8.06944 131.642 8.94444 132.675 8.94444H143.94C144.973 8.94444 145.818 8.06944 145.818 7C145.818 5.93056 144.973 5.05556 143.94 5.05556ZM177.834 0.194444V13.8056H171.901V6.02778L158.796 13.8056H152.863V0.194444H158.796V7.97222L171.901 0.194444H177.834ZM203.38 8.75V13.8056H185.544C181.92 13.8056 178.972 10.7528 178.972 7C178.972 3.24722 181.92 0.194444 185.544 0.194444H203.38V5.25H186.764C185.732 5.25 184.887 5.93056 184.887 7C184.887 8.06944 185.732 8.75 186.764 8.75H203.38ZM204.88 13.8056V0.194444H210.813V7.66111L221.252 0.194444H229.852L220.332 7L229.852 13.8056H221.252L216.033 10.0722L210.813 13.8056H204.88Z"
-                fill="#101010"
-              />
-            </g>
-            <defs>
-              <clipPath id="clip0_frame3_logo">
-                <rect width="230" height="14" fill="white" />
-              </clipPath>
-            </defs>
-          </svg>
-        </div>
-
-        {/* Group 7510 - Кнопка избранное (Heart) */}
-        <div
-          className="absolute cursor-pointer"
-          style={{
-            width: '40.8px',
-            height: '40.8px',
-            left: '229.6px',
-            top: '0.41px',
-          }}
-          onMouseDown={() => setIsHeartPressed(true)}
-          onMouseUp={() => setIsHeartPressed(false)}
-          onMouseLeave={() => setIsHeartPressed(false)}
-          onTouchStart={() => setIsHeartPressed(true)}
-          onTouchEnd={() => setIsHeartPressed(false)}
-        >
+          {/* Group 7510 - Кнопка дом (слева) */}
           <div
-            className="w-full h-full flex items-center justify-center"
+            className="absolute cursor-pointer"
             style={{
-              background: '#FFFFFF',
-              borderRadius: '100px',
-              transform: isHeartPressed ? 'scale(0.92)' : 'scale(1)',
-              transition: 'transform 0.15s ease-out',
+              width: '40.8px',
+              height: '40.8px',
+              left: '0px',
+              top: '0px',
             }}
+            onClick={() => router.push('/')}
+            onMouseDown={() => setIsHomePressed(true)}
+            onMouseUp={() => setIsHomePressed(false)}
+            onMouseLeave={() => setIsHomePressed(false)}
+            onTouchStart={() => setIsHomePressed(true)}
+            onTouchEnd={() => setIsHomePressed(false)}
           >
-            {hasFavorites ? <HeartHeaderFilledIcon /> : <HeartIcon />}
+            <div
+              className="w-full h-full flex items-center justify-center"
+              style={{
+                background: '#FFFFFF',
+                borderRadius: '100px',
+                transform: isHomePressed ? 'scale(0.92)' : 'scale(1)',
+                transition: 'transform 0.15s ease-out',
+              }}
+            >
+              <HomeIcon />
+            </div>
           </div>
-        </div>
 
-        {/* Group 7511 - Кнопка фильтр (Funnel) */}
-        <div
-          className="absolute cursor-pointer"
-          style={{
-            width: '40.8px',
-            height: '40.8px',
-            left: '274.6px',
-            top: '0.41px',
-          }}
-          onClick={handleFilterClick}
-          onMouseDown={() => setIsFunnelPressed(true)}
-          onMouseUp={() => setIsFunnelPressed(false)}
-          onMouseLeave={() => setIsFunnelPressed(false)}
-          onTouchStart={() => setIsFunnelPressed(true)}
-          onTouchEnd={() => setIsFunnelPressed(false)}
-        >
+          {/* Логотип Гигапоиск - гигапоиск 2 */}
           <div
-            className="w-full h-full flex items-center justify-center"
+            className="absolute flex items-center"
             style={{
-              background: '#FFFFFF',
-              borderRadius: '100px',
-              transform: isFunnelPressed ? 'scale(0.92)' : 'scale(1)',
-              transition: 'transform 0.15s ease-out',
+              width: '142.79px',
+              height: '10.2px',
+              left: '48.61px',
+              top: '15.71px',
             }}
           >
-            <FunnelIcon />
+            <svg
+              width="143"
+              height="11"
+              viewBox="0 0 230 14"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              preserveAspectRatio="xMidYMid meet"
+            >
+              <g clipPath="url(#clip0_frame3_logo)">
+                <path
+                  d="M0 13.8056V0.194444H22.5306V4.86111H5.93306V13.8056H0ZM49.0092 0.194444V13.8056H43.0761V6.02778L29.9708 13.8056H24.0377V0.194444H29.9708V7.97222L43.0761 0.194444H49.0092ZM50.5142 13.8056V0.194444H73.0448V4.86111H56.4473V13.8056H50.5142ZM84.0292 4.47222L81.288 7.97222H86.7705L84.0292 4.47222ZM80.6872 0.194444H87.3713L98.017 13.8056H91.3329L89.8121 11.8611H78.2464L76.7256 13.8056H70.0415L80.6872 0.194444ZM98.7731 13.8056V0.194444H123.744V13.8056H117.811V4.86111H104.706V13.8056H98.7731ZM131.454 0H145.16C148.784 0 151.732 3.24722 151.732 7C151.732 10.7528 148.784 14 145.16 14H131.454C127.831 14 124.883 10.7528 124.883 7C124.883 3.24722 127.831 0 131.454 0ZM143.94 5.05556H132.675C131.642 5.05556 130.797 5.93056 130.797 7C130.797 8.06944 131.642 8.94444 132.675 8.94444H143.94C144.973 8.94444 145.818 8.06944 145.818 7C145.818 5.93056 144.973 5.05556 143.94 5.05556ZM177.834 0.194444V13.8056H171.901V6.02778L158.796 13.8056H152.863V0.194444H158.796V7.97222L171.901 0.194444H177.834ZM203.38 8.75V13.8056H185.544C181.92 13.8056 178.972 10.7528 178.972 7C178.972 3.24722 181.92 0.194444 185.544 0.194444H203.38V5.25H186.764C185.732 5.25 184.887 5.93056 184.887 7C184.887 8.06944 185.732 8.75 186.764 8.75H203.38ZM204.88 13.8056V0.194444H210.813V7.66111L221.252 0.194444H229.852L220.332 7L229.852 13.8056H221.252L216.033 10.0722L210.813 13.8056H204.88Z"
+                  fill="#101010"
+                />
+              </g>
+              <defs>
+                <clipPath id="clip0_frame3_logo">
+                  <rect width="230" height="14" fill="white" />
+                </clipPath>
+              </defs>
+            </svg>
           </div>
-        </div>
 
-        {/* Group 7509 - Кнопка самолёт (Plane) */}
-        <div
-          className="absolute cursor-pointer"
-          style={{
-            width: '40.8px',
-            height: '40.8px',
-            left: '319.2px',
-            top: '0.81px',
-          }}
-          onClick={handlePlaneClick}
-          onMouseDown={() => setIsPlanePressed(true)}
-          onMouseUp={() => setIsPlanePressed(false)}
-          onMouseLeave={() => setIsPlanePressed(false)}
-          onTouchStart={() => setIsPlanePressed(true)}
-          onTouchEnd={() => setIsPlanePressed(false)}
-        >
+          {/* Group 7510 - Кнопка избранное (Heart) */}
           <div
-            className="w-full h-full flex items-center justify-center"
+            className="absolute cursor-pointer"
             style={{
-              background: '#FFFFFF',
-              borderRadius: '100px',
-              transform: isPlanePressed ? 'scale(0.92)' : 'scale(1)',
-              transition: 'transform 0.15s ease-out',
+              width: '40.8px',
+              height: '40.8px',
+              left: '229.6px',
+              top: '0.41px',
             }}
+            onClick={handleHeartClick}
+            onMouseDown={() => setIsHeartPressed(true)}
+            onMouseUp={() => setIsHeartPressed(false)}
+            onMouseLeave={() => setIsHeartPressed(false)}
+            onTouchStart={() => setIsHeartPressed(true)}
+            onTouchEnd={() => setIsHeartPressed(false)}
           >
-            <PlaneIcon />
+            <div
+              className="w-full h-full flex items-center justify-center"
+              style={{
+                background: '#FFFFFF',
+                borderRadius: '100px',
+                transform: isHeartPressed ? 'scale(0.92)' : 'scale(1)',
+                transition: 'transform 0.15s ease-out',
+              }}
+            >
+              {hasFavorites ? <HeartHeaderFilledIcon /> : <HeartIcon />}
+            </div>
+          </div>
+
+          {/* Group 7511 - Кнопка фильтр (Funnel) */}
+          <div
+            className="absolute cursor-pointer"
+            style={{
+              width: '40.8px',
+              height: '40.8px',
+              left: '274.6px',
+              top: '0.41px',
+            }}
+            onClick={handleFilterClick}
+            onMouseDown={() => setIsFunnelPressed(true)}
+            onMouseUp={() => setIsFunnelPressed(false)}
+            onMouseLeave={() => setIsFunnelPressed(false)}
+            onTouchStart={() => setIsFunnelPressed(true)}
+            onTouchEnd={() => setIsFunnelPressed(false)}
+          >
+            <div
+              className="w-full h-full flex items-center justify-center"
+              style={{
+                background: '#FFFFFF',
+                borderRadius: '100px',
+                transform: isFunnelPressed ? 'scale(0.92)' : 'scale(1)',
+                transition: 'transform 0.15s ease-out',
+              }}
+            >
+              <FunnelIcon />
+            </div>
+          </div>
+
+          {/* Group 7509 - Кнопка самолёт (Plane) */}
+          <div
+            className="absolute cursor-pointer"
+            style={{
+              width: '40.8px',
+              height: '40.8px',
+              left: '319.2px',
+              top: '0.81px',
+            }}
+            onClick={handlePlaneClick}
+            onMouseDown={() => setIsPlanePressed(true)}
+            onMouseUp={() => setIsPlanePressed(false)}
+            onMouseLeave={() => setIsPlanePressed(false)}
+            onTouchStart={() => setIsPlanePressed(true)}
+            onTouchEnd={() => setIsPlanePressed(false)}
+          >
+            <div
+              className="w-full h-full flex items-center justify-center"
+              style={{
+                background: '#FFFFFF',
+                borderRadius: '100px',
+                transform: isPlanePressed ? 'scale(0.92)' : 'scale(1)',
+                transition: 'transform 0.15s ease-out',
+              }}
+            >
+              <PlaneIcon />
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* HintTooltip - модальное окно подсказки */}
-      {hintStep !== 'none' && (
+      {hintStep !== 'none' && !showFavoritesMode && (
         <HintTooltip
           text={hintStep === 'consultation' ? 'Консультация, это здесь' : 'Фильтрация, это здесь'}
           position={hintStep}
@@ -569,8 +678,8 @@ function Frame3Content() {
         onClose={() => setShowFavoriteToast(false)}
       />
 
-      {/* Кнопка отмены фильтрации - слева от карточки, показывается только когда фильтр активен */}
-      {isFilterActive && (
+      {/* Кнопка отмены фильтрации - слева от карточки, показывается только когда фильтр активен и не в режиме избранного */}
+      {isFilterActive && !showFavoritesMode && (
         <div
           className="absolute cursor-pointer"
           style={{
@@ -600,32 +709,60 @@ function Frame3Content() {
         </div>
       )}
 
-      {/* Кнопка скролла вправо - Group 7509 */}
+      {/* Контейнер для кнопок управления справа - Group 7509 */}
       <div
-        className="absolute cursor-pointer"
+        className="absolute flex items-center"
         style={{
-          width: '40px',
-          height: '40px',
           right: '20px',
           top: '255px',
+          gap: '5px',
         }}
-        onClick={handleScrollRight}
-        onMouseDown={() => setIsArrowPressed(true)}
-        onMouseUp={() => setIsArrowPressed(false)}
-        onMouseLeave={() => setIsArrowPressed(false)}
-        onTouchStart={() => setIsArrowPressed(true)}
-        onTouchEnd={() => setIsArrowPressed(false)}
       >
+        {/* Кнопка сердечко - показывается только в режиме избранного */}
+        {showFavoritesMode && (
+          <div
+            style={{
+              width: '40px',
+              height: '40px',
+              background: '#FFFFFF',
+              borderRadius: '100px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <HeartFilledIcon />
+          </div>
+        )}
+
+        {/* Кнопка скролла вправо */}
         <div
-          className="w-full h-full flex items-center justify-center"
+          className="cursor-pointer"
           style={{
-            background: '#FFFFFF',
-            borderRadius: '100px',
-            transform: isArrowPressed ? 'scale(0.92)' : 'scale(1)',
-            transition: 'transform 0.15s ease-out',
+            width: '40px',
+            height: '40px',
           }}
+          onClick={(e) => {
+            e.stopPropagation();
+            handleScrollRight();
+          }}
+          onMouseDown={() => setIsArrowPressed(true)}
+          onMouseUp={() => setIsArrowPressed(false)}
+          onMouseLeave={() => setIsArrowPressed(false)}
+          onTouchStart={() => setIsArrowPressed(true)}
+          onTouchEnd={() => setIsArrowPressed(false)}
         >
-          <ArrowCircleRightIcon />
+          <div
+            className="w-full h-full flex items-center justify-center"
+            style={{
+              background: '#FFFFFF',
+              borderRadius: '100px',
+              transform: isArrowPressed ? 'scale(0.92)' : 'scale(1)',
+              transition: 'transform 0.15s ease-out',
+            }}
+          >
+            <ArrowCircleRightIcon />
+          </div>
         </div>
       </div>
 
@@ -637,6 +774,7 @@ function Frame3Content() {
           right: '5px',
           top: '305px',
         }}
+        onClick={(e) => e.stopPropagation()}
       >
         {/* Горизонтальный скролл с карточками */}
         <div
@@ -651,7 +789,7 @@ function Frame3Content() {
             msOverflowStyle: 'none',
           }}
         >
-          {filteredTariffs.length === 0 ? (
+          {displayedTariffs.length === 0 ? (
             <div
               style={{
                 width: '360px',
@@ -671,11 +809,13 @@ function Frame3Content() {
                   color: 'rgba(16, 16, 16, 0.5)',
                 }}
               >
-                Нет тарифов по выбранным фильтрам. Попробуйте изменить параметры фильтрации.
+                {showFavoritesMode
+                  ? 'Нет избранных тарифов. Добавьте тарифы в избранное.'
+                  : 'Нет тарифов по выбранным фильтрам. Попробуйте изменить параметры фильтрации.'}
               </div>
             </div>
           ) : (
-            filteredTariffs.map((tariff) => (
+            displayedTariffs.map((tariff) => (
               <div
                 key={tariff.id}
                 className="flex-shrink-0"
@@ -834,6 +974,40 @@ function Frame3Content() {
                             }}
                           >
                             {tariff.mobileDesc}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Дополнительное приложение (Кинотеатр) */}
+                    {tariff.favoriteLabel && (
+                      <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', flexShrink: 0, marginTop: '2px' }}>
+                          <CheckCircleIcon />
+                        </div>
+                        <div style={{ flex: 1 }}>
+                          <div
+                            style={{
+                              fontFamily: 'TT Firs Neue, sans-serif',
+                              fontWeight: 400,
+                              fontSize: '16px',
+                              lineHeight: '155%',
+                              color: '#101010',
+                            }}
+                          >
+                            {tariff.favoriteLabel}
+                          </div>
+                          <div
+                            style={{
+                              fontFamily: 'TT Firs Neue, sans-serif',
+                              fontWeight: 400,
+                              fontSize: '14px',
+                              lineHeight: '105%',
+                              color: 'rgba(16, 16, 16, 0.5)',
+                              marginTop: '2px',
+                            }}
+                          >
+                            {tariff.favoriteDesc}
                           </div>
                         </div>
                       </div>

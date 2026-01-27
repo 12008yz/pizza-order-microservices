@@ -29,42 +29,22 @@ module.exports = {
 
     const apartments = [];
 
-    // Для каждого дома создаем по 1-2 квартиры
-    buildings.forEach((building, index) => {
-      const apartmentNumber = (index + 1).toString();
-      apartments.push({
-        number: apartmentNumber,
-        buildingId: building.id,
-        floor: (index % 5) + 1, // Этаж от 1 до 5
-        createdAt: new Date(),
-        updatedAt: new Date()
-      });
-
-      // Для некоторых домов добавляем вторую квартиру
-      if (index % 2 === 0 && apartments.length < 20) {
+    // Для каждого дома создаем несколько квартир (2, 3, 4, 5 и т.д.)
+    buildings.forEach((building, buildingIndex) => {
+      // Создаем от 4 до 10 квартир для каждого дома
+      const apartmentsCount = 4 + (buildingIndex % 7); // От 4 до 10 квартир
+      
+      for (let aptNum = 2; aptNum <= apartmentsCount + 1; aptNum++) {
         apartments.push({
-          number: `${apartmentNumber}А`,
+          number: aptNum.toString(),
           buildingId: building.id,
-          floor: (index % 5) + 1,
+          floor: ((aptNum - 2) % 5) + 1, // Этаж от 1 до 5
+          entrance: Math.floor((aptNum - 2) / 5) + 1, // Подъезд
           createdAt: new Date(),
           updatedAt: new Date()
         });
       }
     });
-
-    // Добавляем еще квартир до 20
-    if (apartments.length < 20 && buildings.length > 0) {
-      const firstBuilding = buildings[0];
-      for (let i = apartments.length + 1; i <= 20; i++) {
-        apartments.push({
-          number: i.toString(),
-          buildingId: firstBuilding.id,
-          floor: (i % 9) + 1,
-          createdAt: new Date(),
-          updatedAt: new Date()
-        });
-      }
-    }
 
     if (apartments.length > 0) {
       await queryInterface.bulkInsert('apartments', apartments.slice(0, 20));

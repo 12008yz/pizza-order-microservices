@@ -16,7 +16,7 @@ export interface PaginatedResponse<T> {
 }
 
 export interface AddressSuggestion {
-  id?: number; // Вспомогательное поле для React key и идентификации
+  id?: number | string; // Вспомогательное поле для React key и идентификации
   text: string;
   formatted?: string;
   regionId?: number;
@@ -25,12 +25,16 @@ export interface AddressSuggestion {
   streetId?: number;
   buildingId?: number;
   apartmentId?: number;
+  apartmentNumber?: string; // Номер квартиры (для подсказок квартир)
   entrance?: number; // Номер подъезда
   floor?: number; // Номер этажа
   // Поля для структуры дома (используются при выборе дома)
   entrances?: number;
   floors?: number;
   apartmentsPerFloor?: number;
+  // Флаги для специальных типов подсказок
+  isManual?: boolean; // Ручной ввод (например, "д. 1, кв 2")
+  isApartmentSuggestion?: boolean; // Подсказка квартиры из БД
 }
 
 export interface Provider {

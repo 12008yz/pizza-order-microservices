@@ -29,8 +29,8 @@ export default function FilterModal({ isOpen, onClose }: FilterModalProps) {
           className="bg-white rounded-[20px] p-6 max-w-md w-full"
           onClick={(e) => e.stopPropagation()}
         >
-          <h2 className="text-xl font-normal mb-4">Просеивание</h2>
-          
+          <h2 className="text-xl font-normal mb-4">Фильтрация</h2>
+
           <div className="flex flex-col gap-3">
             <button
               onClick={() => setShowProvidersModal(true)}
@@ -38,7 +38,7 @@ export default function FilterModal({ isOpen, onClose }: FilterModalProps) {
             >
               Выбрать операторов
             </button>
-            
+
             <button
               onClick={() => setShowServicesModal(true)}
               className="px-4 py-3 border border-[rgba(16,16,16,0.25)] rounded-[10px] text-left hover:bg-gray-50 transition-colors"

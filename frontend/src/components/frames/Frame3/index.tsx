@@ -15,6 +15,7 @@ import {
   HeartOutlineIcon,
   HeartFilledIcon,
   HeartHeaderFilledIcon,
+  ClearFilterIcon,
 } from '../../common/icons';
 import FavoriteToast from './FavoriteToast';
 import FilterWizard from './FilterWizard';
@@ -174,14 +175,31 @@ export default function Frame3() {
   const [isFunnelPressed, setIsFunnelPressed] = useState(false);
   const [isPlanePressed, setIsPlanePressed] = useState(false);
   const [isArrowPressed, setIsArrowPressed] = useState(false);
+  const [isClearFilterPressed, setIsClearFilterPressed] = useState(false);
   const [showConsultation, setShowConsultation] = useState(false);
   const [showFilterWizard, setShowFilterWizard] = useState(false);
   const [hintStep, setHintStep] = useState<HintStep>('consultation');
-  const [filters, setFilters] = useState<FilterState>({
+
+  // Начальные значения фильтров
+  const defaultFilters: FilterState = {
     services: ['internet', 'internet_mobile', 'internet_tv', 'internet_tv_mobile'],
     providers: ['beeline', 'domru', 'megafon', 'mts', 'rostelecom'],
     sortBy: 'price',
-  });
+  };
+
+  const [filters, setFilters] = useState<FilterState>(defaultFilters);
+
+  // Проверка, активен ли фильтр (отличается от начальных значений)
+  const isFilterActive =
+    filters.services.length !== defaultFilters.services.length ||
+    filters.providers.length !== defaultFilters.providers.length ||
+    !filters.services.every(s => defaultFilters.services.includes(s)) ||
+    !filters.providers.every(p => defaultFilters.providers.includes(p));
+
+  // Сброс фильтров к начальным значениям
+  const handleClearFilters = () => {
+    setFilters(defaultFilters);
+  };
   const [favorites, setFavorites] = useState<Set<number>>(new Set());
   const [showFavoriteToast, setShowFavoriteToast] = useState(false);
   const [hasShownFavoriteToast, setHasShownFavoriteToast] = useState(false);
@@ -468,6 +486,37 @@ export default function Frame3() {
         onClose={() => setShowFavoriteToast(false)}
       />
 
+      {/* Кнопка отмены фильтрации - слева от карточки, показывается только когда фильтр активен */}
+      {isFilterActive && (
+        <div
+          className="absolute cursor-pointer"
+          style={{
+            width: '40px',
+            height: '40px',
+            left: '20px',
+            top: '255px',
+          }}
+          onClick={handleClearFilters}
+          onMouseDown={() => setIsClearFilterPressed(true)}
+          onMouseUp={() => setIsClearFilterPressed(false)}
+          onMouseLeave={() => setIsClearFilterPressed(false)}
+          onTouchStart={() => setIsClearFilterPressed(true)}
+          onTouchEnd={() => setIsClearFilterPressed(false)}
+        >
+          <div
+            className="w-full h-full flex items-center justify-center"
+            style={{
+              background: '#FFFFFF',
+              borderRadius: '100px',
+              transform: isClearFilterPressed ? 'scale(0.92)' : 'scale(1)',
+              transition: 'transform 0.15s ease-out',
+            }}
+          >
+            <ClearFilterIcon />
+          </div>
+        </div>
+      )}
+
       {/* Кнопка скролла вправо - Group 7509 */}
       <div
         className="absolute cursor-pointer"
@@ -563,38 +612,35 @@ export default function Frame3() {
               >
                 {/* Заголовок */}
                 <div style={{ padding: '15px 15px 0 15px', flexShrink: 0 }}>
-                  {/* Провайдер */}
+                  {/* Провайдер с Info icon */}
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '5px' }}>
+                    <div
+                      style={{
+                        fontFamily: 'TT Firs Neue, sans-serif',
+                        fontWeight: 400,
+                        fontSize: '16px',
+                        lineHeight: '125%',
+                        color: 'rgba(16, 16, 16, 0.5)',
+                      }}
+                    >
+                      {tariff.providerName}
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                      <InfoIcon />
+                    </div>
+                  </div>
+
+                  {/* Название тарифа */}
                   <div
                     style={{
                       fontFamily: 'TT Firs Neue, sans-serif',
                       fontWeight: 400,
-                      fontSize: '16px',
-                      lineHeight: '125%',
-                      color: 'rgba(16, 16, 16, 0.5)',
-                      marginBottom: '5px',
+                      fontSize: '18px',
+                      lineHeight: '165%',
+                      color: '#101010',
                     }}
                   >
-                    {tariff.providerName}
-                  </div>
-
-                  {/* Название тарифа с Info icon */}
-                  <div style={{ position: 'relative', display: 'flex', alignItems: 'flex-start' }}>
-                    <div
-                      style={{
-                        flex: 1,
-                        fontFamily: 'TT Firs Neue, sans-serif',
-                        fontWeight: 400,
-                        fontSize: '18px',
-                        lineHeight: '165%',
-                        color: '#101010',
-                        paddingRight: '30px',
-                      }}
-                    >
-                      {tariff.tariffName}
-                    </div>
-                    <div style={{ position: 'absolute', right: 0, top: 0 }}>
-                      <InfoIcon />
-                    </div>
+                    {tariff.tariffName}
                   </div>
 
                   {/* Line 8 - Разделитель после заголовка */}

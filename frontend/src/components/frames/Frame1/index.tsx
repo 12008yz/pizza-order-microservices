@@ -497,7 +497,11 @@ function AddressFormContent() {
                   marginRight: '8px'
                 }}
               >
-                {addressData.houseNumber || 'Номер дома'}
+                {addressData.houseNumber
+                  ? (addressData.apartmentNumber
+                    ? `д. ${addressData.houseNumber} кв. ${addressData.apartmentNumber}`
+                    : addressData.houseNumber)
+                  : 'Номер дома'}
               </span>
               <div
                 className={`w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 ${addressData.houseNumber ? 'bg-[#101010]' : 'border border-[rgba(16,16,16,0.25)]'
@@ -508,7 +512,7 @@ function AddressFormContent() {
                 }}
               >
                 {addressData.houseNumber ? (
-                  <AnimatedCheck key={`house-${addressData.houseNumber}`} size={8} color="#FFFFFF" strokeWidth={1.5} />
+                  <AnimatedCheck key={`house-${addressData.houseNumber}-${addressData.apartmentNumber ?? ''}`} size={8} color="#FFFFFF" strokeWidth={1.5} />
                 ) : (
                   <CaretRight size={8} weight="regular" color="rgba(16, 16, 16, 0.25)" />
                 )}

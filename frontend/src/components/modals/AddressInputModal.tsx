@@ -550,27 +550,23 @@ export default function AddressInputModal({
     if (selectedIndex === null && !query.trim()) return;
 
     const selected = selectedIndex !== null ? suggestions[selectedIndex] : null;
-    
-    // Если выбрана опция "Нет в списке моего адреса", используем введенный текст
-    const value = selected?.isNotInList ? query.trim() : (selected?.formatted || selected?.text || query.trim());
+    const isNotInList = !!selected?.isNotInList;
+    // Если выбрана опция "Нет в списке моего адреса", используем ровно то, что ввёл пользователь
+    const value = isNotInList ? query.trim() : (selected?.formatted || selected?.text || query.trim());
 
     if (currentStep === 'city') {
-      // Если выбрана опция "Нет в списке", используем введенный текст без cityId
-      updateCity(selected?.isNotInList ? undefined : (selected?.cityId || undefined), value, selected?.isNotInList ? undefined : selected?.regionId);
-      // НЕ закрываем модалку и НЕ очищаем подсказки при выборе "Нет в списке"
-      if (!selected?.isNotInList) {
-        onComplete();
-      }
+      // Для "нет в списке" пишем только строку, без cityId/regionId
+      updateCity(isNotInList ? undefined : (selected?.cityId || undefined), value, isNotInList ? undefined : selected?.regionId);
+      // Всегда завершаем шаг, в т.ч. для "нет в списке"
+      onComplete();
     } else if (currentStep === 'street') {
-      // Если выбрана опция "Нет в списке", используем введенный текст без streetId
-      updateStreet(selected?.isNotInList ? undefined : (selected?.streetId || undefined), value);
-      // НЕ закрываем модалку и НЕ очищаем подсказки при выборе "Нет в списке"
-      if (!selected?.isNotInList) {
-        onComplete();
-      }
+      // Для "нет в списке" пишем только строку, без streetId
+      updateStreet(isNotInList ? undefined : (selected?.streetId || undefined), value);
+      // Всегда завершаем шаг
+      onComplete();
     } else if (currentStep === 'house') {
-      // Если выбрана опция "Нет в списке моего адреса", используем введенный текст
-      if (selected?.isNotInList) {
+      // Если выбрана опция "Нет в списке моего адреса", используем введённый текст
+      if (isNotInList) {
         const inputValue = query.trim();
         let houseNum = inputValue;
         let apartmentNum: string | undefined = undefined;
@@ -607,7 +603,8 @@ export default function AddressInputModal({
         if (apartmentNum) {
           updateApartmentNumber(undefined, apartmentNum);
         }
-        // НЕ закрываем модалку и НЕ очищаем подсказки при выборе "Нет в списке"
+        // Завершаем шаг, модалка закрывается
+        onComplete();
         return;
       }
       
@@ -734,8 +731,8 @@ export default function AddressInputModal({
   }, [isOpen]);
 
   const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    // Закрываем модалку ТОЛЬКО при клике по полупрозрачному фону
     if (e.target === e.currentTarget) {
-      // Анимация исчезновения
       setIsAnimating(false);
       setTimeout(() => {
         setShouldRender(false);
@@ -745,9 +742,8 @@ export default function AddressInputModal({
   };
 
   const handleContainerClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    // Закрываем модалку при клике на пустое место внутри контейнера
+    // Клик по пустому месту внутри "экрана" (а не по внутренним элементам) тоже закрывает модалку
     if (e.target === e.currentTarget) {
-      // Анимация исчезновения
       setIsAnimating(false);
       setTimeout(() => {
         setShouldRender(false);
@@ -798,9 +794,8 @@ export default function AddressInputModal({
       }}
       onClick={handleBackdropClick}
     >
-      {/* Контейнер 400x870 */}
+      {/* Контейнер 400x870 (клики внутри не закрывают модалку) */}
       <div
-        onClick={handleContainerClick}
         style={{
           position: 'relative',
           width: '400px',

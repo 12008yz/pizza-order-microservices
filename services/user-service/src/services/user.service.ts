@@ -33,7 +33,9 @@ export class UserService {
 
     if (!profile) {
       profile = await UserProfile.create({ phone, userId: null });
-      logger.info(`Created profile for phone: ${phone}`);
+      logger.info('Created profile for user (phone masked)', {
+        phoneSuffix: phone.slice(-2),
+      });
     }
 
     return profile;
@@ -49,10 +51,14 @@ export class UserService {
 
     if (!profile) {
       profile = await UserProfile.create({ phone, userId: null, ...data });
-      logger.info(`Created and updated profile for phone: ${phone}`);
+      logger.info('Created and updated profile for user (phone masked)', {
+        phoneSuffix: phone.slice(-2),
+      });
     } else {
       await profile.update(data);
-      logger.info(`Updated profile for phone: ${phone}`);
+      logger.info('Updated profile for user (phone masked)', {
+        phoneSuffix: phone.slice(-2),
+      });
     }
 
     return profile;

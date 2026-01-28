@@ -24,6 +24,18 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// В продакшене проверяем наличие ключа шифрования чувствительных данных
+if (process.env.NODE_ENV === 'production') {
+  if (!process.env.DATA_ENCRYPTION_KEY) {
+    logger.error(
+      'DATA_ENCRYPTION_KEY is not set in production. Sensitive data encryption cannot work securely.'
+    );
+    throw new Error(
+      'DATA_ENCRYPTION_KEY must be set in production for secure handling of sensitive user data'
+    );
+  }
+}
+
 // Все маршруты требуют авторизации (только для операторов/админов)
 // User Service используется только для управления профилями операторов
 app.use('/api/users', userRoutes);

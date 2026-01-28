@@ -66,7 +66,10 @@ export class AuthService {
     // Сохраняем refresh token
     await this.saveRefreshToken(admin.id, tokens.refreshToken, 'admin');
 
-    logger.info(`Admin registered: ${admin.email}, role: ${admin.role}`);
+    logger.info('Admin registered', {
+      emailHash: Buffer.from(admin.email).toString('base64'),
+      role: admin.role,
+    });
 
     return {
       user: {
@@ -131,7 +134,10 @@ export class AuthService {
     // Сохраняем refresh token
     await this.saveRefreshToken(admin.id, tokens.refreshToken, 'admin');
 
-    logger.info(`Admin logged in: ${admin.email}, role: ${admin.role}`);
+    logger.info('Admin logged in', {
+      emailHash: Buffer.from(admin.email).toString('base64'),
+      role: admin.role,
+    });
 
     return {
       user: {
@@ -324,7 +330,9 @@ export class AuthService {
       
       if (Object.keys(updateData).length > 0) {
         await user.update(updateData);
-        logger.info(`User updated by phone: ${normalizedPhone}`);
+        logger.info('User updated by phone (phone masked)', {
+          phoneSuffix: normalizedPhone.slice(-2),
+        });
       }
     } else {
       // Создаем нового пользователя
@@ -336,7 +344,9 @@ export class AuthService {
         name: fullName || null,
         role: 'user',
       });
-      logger.info(`User created by phone: ${normalizedPhone}`);
+      logger.info('User created by phone (phone masked)', {
+        phoneSuffix: normalizedPhone.slice(-2),
+      });
     }
 
     return user;

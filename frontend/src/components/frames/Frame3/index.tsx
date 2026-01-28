@@ -180,6 +180,7 @@ function Frame3Content() {
   const router = useRouter();
   const { addressData } = useAddress();
   const scrollRef = useRef<HTMLDivElement>(null);
+  const clickGuardRef = useRef(false);
 
   // Состояние для тарифов из API
   const [tariffs, setTariffs] = useState<Tariff[]>([]);
@@ -241,6 +242,20 @@ function Frame3Content() {
 
   // Состояние для режима избранного
   const [showFavoritesMode, setShowFavoritesMode] = useState(false);
+
+  // Универсальная защита от «дублей» кликов по кнопкам
+  const withClickGuard = <T extends any[]>(handler: (...args: T) => void) =>
+    (...args: T) => {
+      if (clickGuardRef.current) return;
+      clickGuardRef.current = true;
+      try {
+        handler(...args);
+      } finally {
+        setTimeout(() => {
+          clickGuardRef.current = false;
+        }, 400);
+      }
+    };
 
   // Начальные значения фильтров
   const defaultFilters: FilterState = {
@@ -534,7 +549,7 @@ function Frame3Content() {
     } catch (error) {
       console.warn('Failed to save selected tariff:', error);
     }
-    
+
     // Переходим на страницу выбора оборудования
     router.push('/equipment');
   };
@@ -624,11 +639,11 @@ function Frame3Content() {
               left: '0px',
               top: '0px',
             }}
-            onClick={() => {
+            onClick={withClickGuard(() => {
               setClickedButton('home');
               setTimeout(() => setClickedButton(null), 300);
               router.push('/');
-            }}
+            })}
             onMouseDown={() => setIsHomePressed(true)}
             onMouseUp={() => setIsHomePressed(false)}
             onMouseLeave={() => setIsHomePressed(false)}
@@ -711,11 +726,11 @@ function Frame3Content() {
               left: '229.6px',
               top: '0.41px',
             }}
-            onClick={() => {
+            onClick={withClickGuard(() => {
               setClickedButton('heart');
               setTimeout(() => setClickedButton(null), 300);
               handleHeartClick();
-            }}
+            })}
             onMouseDown={() => setIsHeartPressed(true)}
             onMouseUp={() => setIsHeartPressed(false)}
             onMouseLeave={() => setIsHeartPressed(false)}
@@ -771,11 +786,15 @@ function Frame3Content() {
               left: '274.6px',
               top: '0.41px',
             }}
-            onClick={() => {
+            onClick={withClickGuard(() => {
+              // Если мастер фильтра уже открыт, игнорируем клики,
+              // чтобы не ломать иконку и состояние
+              if (showFilterWizard) return;
+
               setClickedButton('funnel');
               setTimeout(() => setClickedButton(null), 300);
               handleFilterClick();
-            }}
+            })}
             onMouseDown={() => setIsFunnelPressed(true)}
             onMouseUp={() => setIsFunnelPressed(false)}
             onMouseLeave={() => setIsFunnelPressed(false)}
@@ -826,11 +845,11 @@ function Frame3Content() {
               left: '319.2px',
               top: '0.81px',
             }}
-            onClick={() => {
+            onClick={withClickGuard(() => {
               setClickedButton('plane');
               setTimeout(() => setClickedButton(null), 300);
               handlePlaneClick();
-            }}
+            })}
             onMouseDown={() => setIsPlanePressed(true)}
             onMouseUp={() => setIsPlanePressed(false)}
             onMouseLeave={() => setIsPlanePressed(false)}
@@ -900,7 +919,7 @@ function Frame3Content() {
             left: '20px',
             top: '255px',
           }}
-          onClick={handleClearFilters}
+          onClick={withClickGuard(handleClearFilters)}
           onMouseDown={() => setIsClearFilterPressed(true)}
           onMouseUp={() => setIsClearFilterPressed(false)}
           onMouseLeave={() => setIsClearFilterPressed(false)}
@@ -966,10 +985,10 @@ function Frame3Content() {
                 width: '28px',
                 height: '28px',
               }}
-              onClick={(e) => {
+              onClick={withClickGuard((e) => {
                 e.stopPropagation();
                 handleScrollRight();
-              }}
+              })}
               onMouseDown={() => setIsArrowPressed(true)}
               onMouseUp={() => setIsArrowPressed(false)}
               onMouseLeave={() => setIsArrowPressed(false)}
@@ -1007,8 +1026,8 @@ function Frame3Content() {
                     transform: isArrowPressed
                       ? 'scale(1.1) rotate(-5deg)'
                       : arrowClicked
-                      ? 'scale(1.15)'
-                      : 'scale(1)',
+                        ? 'scale(1.15)'
+                        : 'scale(1)',
                   }}
                 >
                   {/* Те же цвета и поведение, что и у обычной стрелки */}
@@ -1028,10 +1047,10 @@ function Frame3Content() {
               width: '40px',
               height: '40px',
             }}
-            onClick={(e) => {
+            onClick={withClickGuard((e) => {
               e.stopPropagation();
               handleScrollRight();
-            }}
+            })}
             onMouseDown={() => setIsArrowPressed(true)}
             onMouseUp={() => setIsArrowPressed(false)}
             onMouseLeave={() => setIsArrowPressed(false)}
@@ -1498,7 +1517,12 @@ function Frame3Content() {
       {/* Мастер фильтрации */}
       <FilterWizard
         isOpen={showFilterWizard}
-        onClose={() => setShowFilterWizard(false)}
+        onClose={() => {
+          setShowFilterWizard(false);
+          // На всякий случай сбрасываем визуальное "нажатие" фильтра
+          setIsFunnelPressed(false);
+          setClickedButton(prev => (prev === 'funnel' ? null : prev));
+        }}
         onApply={handleFilterApply}
       />
     </div>

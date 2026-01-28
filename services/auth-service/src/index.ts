@@ -21,6 +21,23 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// В продакшене строго проверяем наличие критичных секретов
+if (process.env.NODE_ENV === 'production') {
+  const missing: string[] = [];
+  if (!process.env.JWT_SECRET) missing.push('JWT_SECRET');
+  if (!process.env.JWT_REFRESH_SECRET) missing.push('JWT_REFRESH_SECRET');
+
+  if (missing.length > 0) {
+    logger.error('Critical security environment variables are missing in production', {
+      missing,
+    });
+    // Немедленно останавливаем сервис, чтобы не запускаться с небезопасной конфигурацией
+    throw new Error(
+      `Missing required security env vars in production: ${missing.join(', ')}`
+    );
+  }
+}
+
 // Routes
 app.use('/api/auth', authRoutes);
 

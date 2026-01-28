@@ -59,6 +59,7 @@ export default function AddressInputModal({
   const [keyboardHeight, setKeyboardHeight] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Обработка появления клавиатуры на мобильных устройствах
   useEffect(() => {
@@ -715,40 +716,47 @@ export default function AddressInputModal({
   const [shouldRender, setShouldRender] = useState(false);
 
   useEffect(() => {
+    // Если идёт отложенное закрытие — сбрасываем таймер при новом open
+    if (closeTimeoutRef.current) {
+      clearTimeout(closeTimeoutRef.current);
+      closeTimeoutRef.current = null;
+    }
+
     if (isOpen) {
+      // Модалка открывается или переоткрывается
       setShouldRender(true);
-      // Анимация появления
+      // Старт анимации появления по следующему кадру
       requestAnimationFrame(() => {
         setIsAnimating(true);
       });
     } else {
-      // Анимация исчезновения
+      // Запускаем анимацию закрытия и откладываем полное размонтирование
       setIsAnimating(false);
-      setTimeout(() => {
+      closeTimeoutRef.current = setTimeout(() => {
         setShouldRender(false);
+        closeTimeoutRef.current = null;
       }, 300);
     }
-  }, [isOpen]);
+
+    return () => {
+      if (closeTimeoutRef.current) {
+        clearTimeout(closeTimeoutRef.current);
+        closeTimeoutRef.current = null;
+      }
+    };
+  }, [isOpen, closeTimeoutRef]);
 
   const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
     // Закрываем модалку ТОЛЬКО при клике по полупрозрачному фону
     if (e.target === e.currentTarget) {
-      setIsAnimating(false);
-      setTimeout(() => {
-        setShouldRender(false);
-        onClose();
-      }, 300);
+      onClose(); // родитель переключит isOpen=false, а анимацию/shouldRender обработает useEffect выше
     }
   };
 
   const handleContainerClick = (e: React.MouseEvent<HTMLDivElement>) => {
     // Клик по пустому месту внутри "экрана" (а не по внутренним элементам) тоже закрывает модалку
     if (e.target === e.currentTarget) {
-      setIsAnimating(false);
-      setTimeout(() => {
-        setShouldRender(false);
-        onClose();
-      }, 300);
+      onClose(); // всё остальное делает эффект по isOpen
     }
   };
 
@@ -794,8 +802,9 @@ export default function AddressInputModal({
       }}
       onClick={handleBackdropClick}
     >
-      {/* Контейнер 400x870 (клики внутри не закрывают модалку) */}
+      {/* Контейнер 400x870 (клик по пустому месту внутри экрана закрывает модалку) */}
       <div
+        onClick={handleContainerClick}
         style={{
           position: 'relative',
           width: '400px',

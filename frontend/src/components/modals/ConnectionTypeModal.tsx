@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Check, CaretLeft } from '@phosphor-icons/react';
 import { useAddress, ConnectionType } from '../../contexts/AddressContext';
 
@@ -25,21 +25,36 @@ export default function ConnectionTypeModal({
   const [selectedType, setSelectedType] = useState<ConnectionType>(addressData.connectionType);
   const [isAnimating, setIsAnimating] = useState(false);
   const [shouldRender, setShouldRender] = useState(false);
+  const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  useEffect(() => {
+  use_effect: useEffect(() => {
+    // Если был запущен таймер закрытия – сбрасываем его при новом изменении isOpen
+    if (closeTimeoutRef.current) {
+      clearTimeout(closeTimeoutRef.current);
+      closeTimeoutRef.current = null;
+    }
+
     if (isOpen) {
+      // Открываем модалку
       setShouldRender(true);
-      // Анимация появления
       requestAnimationFrame(() => {
         setIsAnimating(true);
       });
     } else {
-      // Анимация исчезновения
+      // Запускаем анимацию закрытия и откладываем размонтирование
       setIsAnimating(false);
-      setTimeout(() => {
+      closeTimeoutRef.current = setTimeout(() => {
         setShouldRender(false);
+        closeTimeoutRef.current = null;
       }, 300);
     }
+
+    return () => {
+      if (closeTimeoutRef.current) {
+        clearTimeout(closeTimeoutRef.current);
+        closeTimeoutRef.current = null;
+      }
+    };
   }, [isOpen]);
 
   if (!shouldRender) return null;
@@ -57,13 +72,16 @@ export default function ConnectionTypeModal({
   };
 
   const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    // Закрываем модалку только при клике по полупрозрачному фону
     if (e.target === e.currentTarget) {
-      // Анимация исчезновения
-      setIsAnimating(false);
-      setTimeout(() => {
-        setShouldRender(false);
-        onClose();
-      }, 300);
+      onClose(); // наружу, дальше эффект по isOpen сам доведёт анимацию до конца
+    }
+  };
+
+  const handleContainerClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    // Клик по пустому месту внутри "экрана" (мимо белого блока) тоже закрывает модалку
+    if (e.target === e.currentTarget) {
+      onClose();
     }
   };
 
@@ -107,7 +125,7 @@ export default function ConnectionTypeModal({
 
       {/* Основной контейнер модалки */}
       <div
-        onClick={(e) => e.stopPropagation()}
+        onClick={handleContainerClick}
         style={{
           boxSizing: 'border-box',
           position: 'relative',
@@ -117,6 +135,7 @@ export default function ConnectionTypeModal({
           backdropFilter: 'blur(7.5px)',
           borderRadius: '20px',
           padding: '15px',
+          overflow: 'hidden',
           transform: isAnimating ? 'translateY(0)' : 'translateY(100px)',
           opacity: isAnimating ? 1 : 0,
           transition: 'opacity 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',

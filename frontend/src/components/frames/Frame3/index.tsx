@@ -325,37 +325,35 @@ function Frame3Content() {
 
   // Помечаем, что избранные инициализированы после первого рендера на клиенте
   useEffect(() => {
-    // Перезагружаем из localStorage на клиенте (для SSR и синхронизации)
-    if (typeof window !== 'undefined') {
-      try {
-        const storedFavorites = localStorage.getItem(FAVORITES_STORAGE_KEY);
-        if (storedFavorites) {
-          const parsedFavorites = JSON.parse(storedFavorites);
-          if (Array.isArray(parsedFavorites)) {
-            // Фильтруем только те ID, которые существуют в текущих тарифах
-            const validFavorites = parsedFavorites.filter((id: number) =>
-              tariffs.some(t => t.id === id)
-            );
+    if (typeof window === 'undefined') return;
 
-            // Если есть невалидные ID, обновляем localStorage
-            if (validFavorites.length !== parsedFavorites.length) {
-              if (validFavorites.length === 0) {
-                localStorage.removeItem(FAVORITES_STORAGE_KEY);
-                setFavorites(new Set());
-              } else {
-                localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(validFavorites));
-                setFavorites(new Set(validFavorites));
-              }
-            } else {
-              setFavorites(new Set(parsedFavorites));
-            }
-          }
-        }
-      } catch (error) {
-        console.warn('Failed to load favorites from localStorage:', error);
-      }
+    // Если тарифы ещё не загружены, просто помечаем, что инициализация завершена,
+    // и используем значения, которые уже пришли из initialState выше
+    if (tariffs.length === 0) {
       setFavoritesInitialized(true);
+      return;
     }
+
+    try {
+      const storedFavorites = localStorage.getItem(FAVORITES_STORAGE_KEY);
+      if (storedFavorites) {
+        const parsedFavorites = JSON.parse(storedFavorites);
+        if (Array.isArray(parsedFavorites)) {
+          // Фильтруем только те ID, которые существуют в текущих тарифах
+          const validFavorites = parsedFavorites.filter((id: number) =>
+            tariffs.some(t => t.id === id)
+          );
+
+          // Обновляем localStorage и состояние, но больше не затираем всё при пустом массиве
+          localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(validFavorites));
+          setFavorites(new Set(validFavorites));
+        }
+      }
+    } catch (error) {
+      console.warn('Failed to load favorites from localStorage:', error);
+    }
+
+    setFavoritesInitialized(true);
   }, [tariffs.length]); // Зависимость от количества тарифов, чтобы очистить невалидные ID после загрузки
 
   // Сохранение избранных в localStorage при изменении (только после инициализации)
@@ -925,81 +923,155 @@ function Frame3Content() {
 
       {/* Контейнер для кнопок управления справа - Group 7509 */}
       <div
-        className="absolute flex items-center"
+        className="absolute"
         style={{
           right: '20px',
           top: '255px',
-          gap: '5px',
         }}
       >
-        {/* Кнопка сердечко - показывается только в режиме избранного */}
-        {showFavoritesMode && (
+        {showFavoritesMode ? (
+          // Общий "пилюлеобразный" контейнер для избранного + стрелки
           <div
+            className="flex items-center"
             style={{
-              width: '40px',
+              width: '76px',
               height: '40px',
               background: '#FFFFFF',
               borderRadius: '100px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
+              padding: '0 8px',
+              boxSizing: 'border-box',
+              justifyContent: 'space-between',
+              // Чуть уменьшаем расстояние между сердцем и стрелкой
+              gap: '2px',
             }}
+            onClick={(e) => e.stopPropagation()}
           >
-            <HeartFilledIcon />
-          </div>
-        )}
-
-        {/* Кнопка скролла вправо */}
-        <div
-          className="cursor-pointer"
-          style={{
-            width: '40px',
-            height: '40px',
-          }}
-          onClick={(e) => {
-            e.stopPropagation();
-            handleScrollRight();
-          }}
-          onMouseDown={() => setIsArrowPressed(true)}
-          onMouseUp={() => setIsArrowPressed(false)}
-          onMouseLeave={() => setIsArrowPressed(false)}
-          onTouchStart={() => setIsArrowPressed(true)}
-          onTouchEnd={() => setIsArrowPressed(false)}
-        >
-          <div
-            className="w-full h-full flex items-center justify-center relative overflow-hidden"
-            style={{
-              background: '#FFFFFF',
-              borderRadius: '100px',
-              transform: isArrowPressed ? 'scale(0.85)' : 'scale(1)',
-              transition: 'transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)',
-            }}
-          >
-            {/* Ripple эффект */}
-            {arrowClicked && (
-              <div
-                style={{
-                  position: 'absolute',
-                  width: '100%',
-                  height: '100%',
-                  borderRadius: '100px',
-                  background: 'rgba(16, 16, 16, 0.1)',
-                  animation: 'ripple 0.4s ease-out',
-                }}
-              />
-            )}
+            {/* Сердечко избранного */}
             <div
               style={{
-                position: 'relative',
-                zIndex: 1,
-                transition: 'transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)',
-                transform: isArrowPressed ? 'scale(1.1) rotate(-5deg)' : arrowClicked ? 'scale(1.15)' : 'scale(1)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '24px',
+                height: '24px',
               }}
             >
-              <ArrowCircleRightIcon color={arrowClicked ? '#4A90E2' : '#101010'} isAnimating={arrowClicked} />
+              <HeartFilledIcon />
+            </div>
+
+            {/* Кнопка скролла вправо внутри общей "таблетки" */}
+            <div
+              className="cursor-pointer"
+              style={{
+                width: '28px',
+                height: '28px',
+              }}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleScrollRight();
+              }}
+              onMouseDown={() => setIsArrowPressed(true)}
+              onMouseUp={() => setIsArrowPressed(false)}
+              onMouseLeave={() => setIsArrowPressed(false)}
+              onTouchStart={() => setIsArrowPressed(true)}
+              onTouchEnd={() => setIsArrowPressed(false)}
+            >
+              <div
+                className="w-full h-full flex items-center justify-center relative overflow-hidden"
+                style={{
+                  // Анимация как в обычном режиме стрелки
+                  background: '#FFFFFF',
+                  borderRadius: '100px',
+                  transform: isArrowPressed ? 'scale(0.85)' : 'scale(1)',
+                  transition: 'transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                }}
+              >
+                {/* Ripple эффект */}
+                {arrowClicked && (
+                  <div
+                    style={{
+                      position: 'absolute',
+                      width: '100%',
+                      height: '100%',
+                      borderRadius: '999px',
+                      background: 'rgba(16, 16, 16, 0.1)',
+                      animation: 'ripple 0.4s ease-out',
+                    }}
+                  />
+                )}
+                <div
+                  style={{
+                    position: 'relative',
+                    zIndex: 1,
+                    transition: 'transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                    transform: isArrowPressed
+                      ? 'scale(1.1) rotate(-5deg)'
+                      : arrowClicked
+                      ? 'scale(1.15)'
+                      : 'scale(1)',
+                  }}
+                >
+                  {/* Те же цвета и поведение, что и у обычной стрелки */}
+                  <ArrowCircleRightIcon
+                    color={arrowClicked ? '#4A90E2' : '#101010'}
+                    isAnimating={arrowClicked}
+                  />
+                </div>
+              </div>
             </div>
           </div>
-        </div>
+        ) : (
+          // Обычная одиночная круглая стрелка
+          <div
+            className="cursor-pointer"
+            style={{
+              width: '40px',
+              height: '40px',
+            }}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleScrollRight();
+            }}
+            onMouseDown={() => setIsArrowPressed(true)}
+            onMouseUp={() => setIsArrowPressed(false)}
+            onMouseLeave={() => setIsArrowPressed(false)}
+            onTouchStart={() => setIsArrowPressed(true)}
+            onTouchEnd={() => setIsArrowPressed(false)}
+          >
+            <div
+              className="w-full h-full flex items-center justify-center relative overflow-hidden"
+              style={{
+                background: '#FFFFFF',
+                borderRadius: '100px',
+                transform: isArrowPressed ? 'scale(0.85)' : 'scale(1)',
+                transition: 'transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)',
+              }}
+            >
+              {arrowClicked && (
+                <div
+                  style={{
+                    position: 'absolute',
+                    width: '100%',
+                    height: '100%',
+                    borderRadius: '100px',
+                    background: 'rgba(16, 16, 16, 0.1)',
+                    animation: 'ripple 0.4s ease-out',
+                  }}
+                />
+              )}
+              <div
+                style={{
+                  position: 'relative',
+                  zIndex: 1,
+                  transition: 'transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                  transform: isArrowPressed ? 'scale(1.1) rotate(-5deg)' : arrowClicked ? 'scale(1.15)' : 'scale(1)',
+                }}
+              >
+                <ArrowCircleRightIcon color={arrowClicked ? '#4A90E2' : '#101010'} isAnimating={arrowClicked} />
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Контейнер для карточек - показывает 15px второй карточки справа */}

@@ -20,7 +20,6 @@ import {
 import FavoriteToast from './FavoriteToast';
 import FilterWizard from './FilterWizard';
 import HintTooltip from './HintTooltip';
-import AddressInputModal from '../../modals/AddressInputModal';
 import { AddressProvider, useAddress } from '../../../contexts/AddressContext';
 import AnimatedHeartFilledIcon from '../../common/AnimatedHeartFilledIcon';
 import { tariffsService } from '../../../services/tariffs.service';
@@ -179,7 +178,7 @@ const FAVORITES_STORAGE_KEY = 'favorites_tariffs';
 
 function Frame3Content() {
   const router = useRouter();
-  const { addressData, updateApartmentNumber } = useAddress();
+  const { addressData } = useAddress();
   const scrollRef = useRef<HTMLDivElement>(null);
 
   // Состояние для тарифов из API
@@ -251,10 +250,6 @@ function Frame3Content() {
   };
 
   const [filters, setFilters] = useState<FilterState>(defaultFilters);
-
-  // Состояние для модалки выбора квартиры
-  const [showApartmentModal, setShowApartmentModal] = useState(false);
-  const [selectedTariffId, setSelectedTariffId] = useState<number | null>(null);
 
   // Проверка, активен ли фильтр (отличается от начальных значений)
   const isFilterActive =
@@ -523,81 +518,29 @@ function Frame3Content() {
     setFilters(newFilters);
   };
 
-  // Обработчик клика на кнопку тарифа - открывает модалку выбора квартиры
+  // Обработчик клика на кнопку тарифа - переходит на Frame4 (оборудование)
   const handleTariffSelect = (tariffId: number) => {
-    setSelectedTariffId(tariffId);
-    setShowApartmentModal(true);
-  };
-
-  // Функция санитизации строковых данных для защиты от XSS
-  const sanitizeString = (str: string | undefined, maxLength: number = 200): string | undefined => {
-    if (!str) return undefined;
-    // Удаляем потенциально опасные символы и ограничиваем длину
-    const sanitized = str
-      .trim()
-      .replace(/[<>"']/g, '') // Удаляем HTML-символы
-      .slice(0, maxLength);
-    return sanitized || undefined;
-  };
-
-  // Обработчик выбора квартиры
-  const handleApartmentComplete = async () => {
-    // Сохраняем квартиру в базу данных
+    // Сохраняем выбранный тариф в sessionStorage
     try {
-      // Получаем данные из sessionStorage для отправки на сервер
-      const addressDataStr = sessionStorage.getItem('addressData');
-      let userData: any = {};
-
-      if (addressDataStr) {
-        const storedData = JSON.parse(addressDataStr);
-        userData = {
-          city: sanitizeString(storedData.city, 100),
-          street: sanitizeString(storedData.street, 200),
-          house: sanitizeString(storedData.houseNumber, 20),
-          apartment: sanitizeString(addressData.apartmentNumber, 20) || undefined,
-          connectionType: storedData.connectionType || undefined,
-        };
-      } else {
-        // Если нет данных в sessionStorage, отправляем только квартиру
-        userData = {
-          apartment: sanitizeString(addressData.apartmentNumber, 20) || undefined,
-        };
-      }
-
-      // Отправляем данные на сервер для сохранения в базе данных
-      const response = await fetch('/api/users/profile', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(userData),
-      });
-
-      if (!response.ok) {
-        console.error('Failed to save apartment data:', await response.text());
+      const selectedTariff = tariffs.find(t => t.id === tariffId);
+      if (selectedTariff) {
+        sessionStorage.setItem('selectedTariff', JSON.stringify({
+          id: selectedTariff.id,
+          providerName: selectedTariff.providerName,
+          providerId: selectedTariff.providerId,
+          tariffName: selectedTariff.tariffName,
+          price: selectedTariff.price,
+          priceValue: selectedTariff.priceValue,
+        }));
       }
     } catch (error) {
-      console.error('Error saving apartment data:', error);
-      // Продолжаем даже если сохранение не удалось
+      console.warn('Failed to save selected tariff:', error);
     }
-
-    // Сохраняем квартиру в sessionStorage
-    try {
-      const addressDataStr = sessionStorage.getItem('addressData');
-      if (addressDataStr) {
-        const storedData = JSON.parse(addressDataStr);
-        storedData.apartmentNumber = addressData.apartmentNumber;
-        storedData.apartmentId = addressData.apartmentId;
-        sessionStorage.setItem('addressData', JSON.stringify(storedData));
-      }
-    } catch (error) {
-      console.warn('Failed to save apartment to sessionStorage:', error);
-    }
-
-    setShowApartmentModal(false);
-    // Здесь можно добавить логику оформления заказа
-    console.log('Selected tariff:', selectedTariffId, 'Apartment:', addressData.apartmentNumber);
+    
+    // Переходим на страницу выбора оборудования
+    router.push('/equipment');
   };
+
 
   // Обработчики подсказок
   const handleHintAccept = () => {
@@ -1485,14 +1428,6 @@ function Frame3Content() {
         isOpen={showFilterWizard}
         onClose={() => setShowFilterWizard(false)}
         onApply={handleFilterApply}
-      />
-
-      {/* Модалка выбора квартиры */}
-      <AddressInputModal
-        isOpen={showApartmentModal}
-        onClose={() => setShowApartmentModal(false)}
-        onComplete={handleApartmentComplete}
-        initialStep="apartment"
       />
     </div>
   );

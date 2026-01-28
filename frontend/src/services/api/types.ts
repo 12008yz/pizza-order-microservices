@@ -35,6 +35,7 @@ export interface AddressSuggestion {
   // Флаги для специальных типов подсказок
   isManual?: boolean; // Ручной ввод (например, "д. 1, кв 2")
   isApartmentSuggestion?: boolean; // Подсказка квартиры из БД
+  isNotInList?: boolean; // Опция "Нет в списке моего адреса"
 }
 
 export interface Provider {

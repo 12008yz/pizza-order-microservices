@@ -53,6 +53,7 @@ export default function AddressInputModal({
   const [query, setQuery] = useState('');
   const [suggestions, setSuggestions] = useState<AddressSuggestion[]>([]);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const [scrollOffset, setScrollOffset] = useState(0); // Позиция скролла в подсказках
   const [loading, setLoading] = useState(false);
   const [buildingStructure, setBuildingStructure] = useState<{ entrances?: number; floors?: number; apartmentsPerFloor?: number } | null>(null);
   const [keyboardHeight, setKeyboardHeight] = useState(0);
@@ -97,6 +98,7 @@ export default function AddressInputModal({
       setQuery('');
       setSuggestions([]);
       setSelectedIndex(null);
+      setScrollOffset(0);
       setBuildingStructure(null);
       setKeyboardHeight(0);
       setTimeout(() => inputRef.current?.focus(), 100);
@@ -142,19 +144,27 @@ export default function AddressInputModal({
             limit: 10,
           });
 
+          let citySuggestions: any[] = [];
           if (response?.success && response.data) {
-            setSuggestions(response.data.map((item: any) => ({
+            citySuggestions = response.data.map((item: any) => ({
               id: item.cityId,
               text: item.text || item.formatted,
               formatted: item.formatted,
               cityId: item.cityId,
               regionId: item.regionId,
               region: item.region,
-            })));
-          } else {
-            // Нет данных в БД - позволяем ввести вручную
-            setSuggestions([]);
+            }));
           }
+          
+          // Добавляем опцию "Нет в списке моего адреса" в конец списка
+          const notInListOption = {
+            id: 'not-in-list-city',
+            text: 'Нет в списке моего адреса',
+            formatted: 'Нет в списке моего адреса',
+            isNotInList: true,
+          };
+          setSuggestions([...citySuggestions, notInListOption]);
+          setScrollOffset(0);
         } else if (currentStep === 'street') {
           let cityIdToUse = addressData.cityId;
 
@@ -183,17 +193,25 @@ export default function AddressInputModal({
             });
           }
 
+          let streetSuggestions: any[] = [];
           if (response?.success && response.data) {
-            setSuggestions(response.data.map((item: any) => ({
+            streetSuggestions = response.data.map((item: any) => ({
               id: item.streetId,
               text: item.text || item.formatted,
               formatted: item.formatted,
               streetId: item.streetId,
-            })));
-          } else {
-            // Нет данных в БД - позволяем ввести вручную
-            setSuggestions([]);
+            }));
           }
+          
+          // Добавляем опцию "Нет в списке моего адреса" в конец списка
+          const notInListOption = {
+            id: 'not-in-list-street',
+            text: 'Нет в списке моего адреса',
+            formatted: 'Нет в списке моего адреса',
+            isNotInList: true,
+          };
+          setSuggestions([...streetSuggestions, notInListOption]);
+          setScrollOffset(0);
         } else if (currentStep === 'house') {
           // Проверяем, содержит ли запрос пробел (формат "1 2" для дома и квартиры)
           const queryParts = query.trim().split(/\s+/);
@@ -357,11 +375,26 @@ export default function AddressInputModal({
               isManual: true, // Флаг для ручного ввода
             };
 
-            // Добавляем подсказку в начало списка
-            setSuggestions([combinedSuggestion, ...apartmentSuggestions, ...dbSuggestions]);
+            // Добавляем опцию "Нет в списке моего адреса" в конец списка
+            const notInListOption = {
+              id: 'not-in-list-house',
+              text: 'Нет в списке моего адреса',
+              formatted: 'Нет в списке моего адреса',
+              isNotInList: true,
+            };
+            setSuggestions([combinedSuggestion, ...apartmentSuggestions, ...dbSuggestions, notInListOption]);
+            setScrollOffset(0);
           } else {
-            // Показываем подсказки квартир (если есть) или дома
-            setSuggestions([...apartmentSuggestions, ...dbSuggestions]);
+            // Добавляем опцию "Нет в списке моего адреса" в конец списка
+            const notInListOption = {
+              id: 'not-in-list-house',
+              text: 'Нет в списке моего адреса',
+              formatted: 'Нет в списке моего адреса',
+              isNotInList: true,
+            };
+            // Показываем подсказки квартир (если есть) или дома, затем опцию "Нет в списке"
+            setSuggestions([...apartmentSuggestions, ...dbSuggestions, notInListOption]);
+            setScrollOffset(0);
           }
         } else if (currentStep === 'entrance') {
           // Генерируем список подъездов на основе структуры дома
@@ -438,11 +471,13 @@ export default function AddressInputModal({
           }
         }
         setSelectedIndex(null);
+        setScrollOffset(0);
       } catch (error) {
         console.error('Autocomplete error:', error);
         // При ошибке API просто очищаем подсказки - пользователь может ввести данные вручную
         setSuggestions([]);
         setSelectedIndex(null);
+        setScrollOffset(0);
       } finally {
         setLoading(false);
       }
@@ -456,26 +491,58 @@ export default function AddressInputModal({
   }, [query, currentStep, addressData.cityId, addressData.city, addressData.streetId, addressData.buildingId, addressData.entrance, addressData.floor]);
 
   const handleSelect = (index: number) => {
-    setSelectedIndex(index);
+    // index - это индекс в visibleSuggestions (0-2)
+    // Реальный индекс в полном массиве suggestions = scrollOffset + index
+    const realIndex = scrollOffset + index;
+    if (realIndex < suggestions.length) {
+      setSelectedIndex(realIndex);
+    }
   };
 
   const handleScrollUp = () => {
-    if (suggestions.length > 0) {
-      if (selectedIndex === null || selectedIndex === 0) {
-        setSelectedIndex(suggestions.length - 1);
-      } else {
-        setSelectedIndex(selectedIndex - 1);
+    if (suggestions.length === 0) return;
+    
+    // Если ничего не выбрано, выбираем последнюю подсказку
+    if (selectedIndex === null) {
+      setSelectedIndex(suggestions.length - 1);
+      // Если последняя подсказка не видна, скроллим к ней
+      const lastIndex = suggestions.length - 1;
+      const maxVisible = 3;
+      if (lastIndex >= scrollOffset + maxVisible) {
+        setScrollOffset(Math.max(0, lastIndex - maxVisible + 1));
       }
+      return;
+    }
+    
+    // Переходим к предыдущей подсказке
+    const newIndex = Math.max(0, selectedIndex - 1);
+    setSelectedIndex(newIndex);
+    
+    // Если новая выбранная подсказка не видна, скроллим к ней
+    const maxVisible = 3;
+    if (newIndex < scrollOffset) {
+      setScrollOffset(newIndex);
     }
   };
 
   const handleScrollDown = () => {
-    if (suggestions.length > 0) {
-      if (selectedIndex === null || selectedIndex === suggestions.length - 1) {
-        setSelectedIndex(0);
-      } else {
-        setSelectedIndex(selectedIndex + 1);
-      }
+    if (suggestions.length === 0) return;
+    
+    // Если ничего не выбрано, выбираем первую подсказку
+    if (selectedIndex === null) {
+      setSelectedIndex(0);
+      setScrollOffset(0);
+      return;
+    }
+    
+    // Переходим к следующей подсказке
+    const newIndex = Math.min(suggestions.length - 1, selectedIndex + 1);
+    setSelectedIndex(newIndex);
+    
+    // Если новая выбранная подсказка не видна, скроллим к ней
+    const maxVisible = 3;
+    if (newIndex >= scrollOffset + maxVisible) {
+      setScrollOffset(newIndex - maxVisible + 1);
     }
   };
 
@@ -483,15 +550,67 @@ export default function AddressInputModal({
     if (selectedIndex === null && !query.trim()) return;
 
     const selected = selectedIndex !== null ? suggestions[selectedIndex] : null;
-    const value = selected?.formatted || selected?.text || query.trim();
+    
+    // Если выбрана опция "Нет в списке моего адреса", используем введенный текст
+    const value = selected?.isNotInList ? query.trim() : (selected?.formatted || selected?.text || query.trim());
 
     if (currentStep === 'city') {
-      updateCity(selected?.cityId || undefined, value, selected?.regionId);
-      onComplete();
+      // Если выбрана опция "Нет в списке", используем введенный текст без cityId
+      updateCity(selected?.isNotInList ? undefined : (selected?.cityId || undefined), value, selected?.isNotInList ? undefined : selected?.regionId);
+      // НЕ закрываем модалку и НЕ очищаем подсказки при выборе "Нет в списке"
+      if (!selected?.isNotInList) {
+        onComplete();
+      }
     } else if (currentStep === 'street') {
-      updateStreet(selected?.streetId || undefined, value);
-      onComplete();
+      // Если выбрана опция "Нет в списке", используем введенный текст без streetId
+      updateStreet(selected?.isNotInList ? undefined : (selected?.streetId || undefined), value);
+      // НЕ закрываем модалку и НЕ очищаем подсказки при выборе "Нет в списке"
+      if (!selected?.isNotInList) {
+        onComplete();
+      }
     } else if (currentStep === 'house') {
+      // Если выбрана опция "Нет в списке моего адреса", используем введенный текст
+      if (selected?.isNotInList) {
+        const inputValue = query.trim();
+        let houseNum = inputValue;
+        let apartmentNum: string | undefined = undefined;
+
+        // Парсим ввод для определения дома и квартиры
+        const formatWithKv = inputValue.match(/д\.\s*([^\s]+(?:\s+[^\s]+)?)\s+кв\.\s*(\d+)/i);
+        if (formatWithKv) {
+          houseNum = formatWithKv[1].trim();
+          apartmentNum = formatWithKv[2].trim();
+        } else if (inputValue.includes(',')) {
+          const parts = inputValue.split(',').map(p => p.trim());
+          const cleanHouse = parts[0].replace(/^(д\.?|дом)\s*/i, '').trim();
+          const cleanApartment = parts[1]?.replace(/^(кв\.?|квартира)\s*/i, '').trim();
+          houseNum = cleanHouse;
+          apartmentNum = cleanApartment || undefined;
+        } else {
+          const spaceParts = inputValue.trim().split(/\s+/);
+          if (spaceParts.length >= 2) {
+            const firstPart = spaceParts[0].replace(/^(д\.?|дом)\s*/i, '').trim();
+            const secondPart = spaceParts[1].replace(/^(кв\.?|квартира)\s*/i, '').trim();
+            if (firstPart.length <= 10 && secondPart.length <= 10 &&
+              /\d/.test(firstPart) && /\d/.test(secondPart)) {
+              houseNum = firstPart;
+              apartmentNum = secondPart;
+            } else {
+              houseNum = inputValue.replace(/^(д\.?|дом)\s*/i, '').trim();
+            }
+          } else {
+            houseNum = inputValue.replace(/^(д\.?|дом)\s*/i, '').trim();
+          }
+        }
+
+        updateHouseNumber(undefined, houseNum, undefined);
+        if (apartmentNum) {
+          updateApartmentNumber(undefined, apartmentNum);
+        }
+        // НЕ закрываем модалку и НЕ очищаем подсказки при выборе "Нет в списке"
+        return;
+      }
+      
       // Если выбрана подсказка с квартирой из БД
       if (selected?.isApartmentSuggestion && selected.buildingId && selected.apartmentNumber) {
         const buildingId = selected.buildingId;
@@ -641,16 +760,19 @@ export default function AddressInputModal({
 
   const canProceed = selectedIndex !== null || query.trim().length > 0;
   const hasSuggestions = suggestions.length > 0;
-  const visibleSuggestions = suggestions.slice(0, 3);
+  
+  // Всегда показываем максимум 3 подсказки, начиная с scrollOffset
+  const maxVisible = 3;
+  const visibleSuggestions = suggestions.slice(scrollOffset, scrollOffset + maxVisible);
 
   // Высота одной подсказки и отступы
-  // Если подсказка только одна, её высота равна высоте поля ввода (50px)
-  const suggestionHeight = visibleSuggestions.length === 1 ? 50 : 40;
+  // Если всего одна подсказка в массиве, её высота равна высоте поля ввода (50px), иначе 40px
+  const suggestionHeight = suggestions.length === 1 ? 50 : 40;
   const suggestionGap = 0;
 
-  // Высота блока подсказок
-  const suggestionsBlockHeight = visibleSuggestions.length > 0
-    ? visibleSuggestions.length * suggestionHeight + (visibleSuggestions.length - 1) * suggestionGap
+  // Высота блока подсказок — по количеству ВИДИМЫХ подсказок (без пустоты внутри)
+  const suggestionsBlockHeight = hasSuggestions
+    ? visibleSuggestions.length * suggestionHeight + Math.max(0, visibleSuggestions.length - 1) * suggestionGap
     : 0;
 
   // Базовая высота модалки (без подсказок)
@@ -775,69 +897,77 @@ export default function AddressInputModal({
                 left: '15px',
                 bottom: '139px',
                 width: '330px',
+                height: `${suggestionsBlockHeight}px`,
                 boxSizing: 'border-box',
                 border: '1px solid rgba(16, 16, 16, 0.25)',
                 borderRadius: '10px',
                 overflow: 'hidden',
               }}
             >
-              {visibleSuggestions.map((suggestion, index) => (
-                <div
-                  key={suggestion.id || index}
-                  onClick={() => handleSelect(index)}
-                  style={{
-                    boxSizing: 'border-box',
-                    width: '100%',
-                    height: `${suggestionHeight}px`,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    padding: '0 15px',
-                    cursor: 'pointer',
-                    transition: 'background-color 0.2s ease',
-                    backgroundColor: 'transparent',
-                  }}
-                >
-                  <span
-                    style={{
-                      fontFamily: 'TT Firs Neue, sans-serif',
-                      fontStyle: 'normal',
-                      fontWeight: 400,
-                      fontSize: '14px',
-                      lineHeight: '125%',
-                      letterSpacing: '1.2px',
-                      color: selectedIndex === index ? '#101010' : 'rgba(16, 16, 16, 0.5)',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      whiteSpace: 'nowrap',
-                    }}
-                  >
-                    {suggestion.formatted || suggestion.text}
-                  </span>
-
-                  {/* Radio кнопка */}
+              {visibleSuggestions.map((suggestion, index) => {
+                // index - это индекс в visibleSuggestions (0-2)
+                // Реальный индекс в suggestions = scrollOffset + index
+                const realIndex = scrollOffset + index;
+                const isSelected = selectedIndex === realIndex;
+                
+                return (
                   <div
+                    key={suggestion.id || index}
+                    onClick={() => handleSelect(index)}
                     style={{
                       boxSizing: 'border-box',
-                      width: '16px',
-                      height: '16px',
-                      borderRadius: '50%',
-                      background: selectedIndex === index ? '#101010' : 'transparent',
-                      border: selectedIndex === index
-                        ? 'none'
-                        : '1px solid rgba(16, 16, 16, 0.5)',
+                      width: '100%',
+                      height: `${suggestionHeight}px`,
                       display: 'flex',
                       alignItems: 'center',
-                      justifyContent: 'center',
-                      flexShrink: 0,
+                      justifyContent: 'space-between',
+                      padding: '0 15px',
+                      cursor: 'pointer',
+                      transition: 'background-color 0.2s ease',
+                      backgroundColor: 'transparent',
                     }}
                   >
-                    {selectedIndex === index && (
-                      <Check size={10} weight="bold" color="white" />
-                    )}
+                    <span
+                      style={{
+                        fontFamily: 'TT Firs Neue, sans-serif',
+                        fontStyle: 'normal',
+                        fontWeight: 400,
+                        fontSize: '14px',
+                        lineHeight: '125%',
+                        letterSpacing: '1.2px',
+                        color: isSelected ? '#101010' : 'rgba(16, 16, 16, 0.5)',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
+                      {suggestion.formatted || suggestion.text}
+                    </span>
+
+                    {/* Radio кнопка */}
+                    <div
+                      style={{
+                        boxSizing: 'border-box',
+                        width: '16px',
+                        height: '16px',
+                        borderRadius: '50%',
+                        background: isSelected ? '#101010' : 'transparent',
+                        border: isSelected
+                          ? 'none'
+                          : '1px solid rgba(16, 16, 16, 0.5)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        flexShrink: 0,
+                      }}
+                    >
+                      {isSelected && (
+                        <Check size={10} weight="bold" color="white" />
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
 
@@ -905,7 +1035,7 @@ export default function AddressInputModal({
                 alignItems: 'center',
                 justifyContent: 'center',
                 cursor: hasSuggestions ? 'pointer' : 'default',
-                opacity: 0.25,
+                opacity: hasSuggestions ? 1 : 0.25,
               }}
             >
               <CaretUp size={12} weight="regular" color="#101010" />
@@ -926,7 +1056,7 @@ export default function AddressInputModal({
                 alignItems: 'center',
                 justifyContent: 'center',
                 cursor: hasSuggestions ? 'pointer' : 'default',
-                opacity: 0.25,
+                opacity: hasSuggestions ? 1 : 0.25,
               }}
             >
               <CaretDown size={12} weight="regular" color="#101010" />

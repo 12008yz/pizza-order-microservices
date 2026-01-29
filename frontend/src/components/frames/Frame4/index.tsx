@@ -2,10 +2,36 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { RouterNeedStep, RouterPurchaseStep, RouterOperatorStep, RouterConfigStep } from './steps';
-import type { RouterNeedOption, RouterPurchaseOption, RouterOperatorOption, RouterConfigOption, EquipmentState } from './types';
+import {
+  RouterNeedStep,
+  RouterPurchaseStep,
+  RouterOperatorStep,
+  RouterConfigStep,
+  TvBoxNeedStep,
+  TvBoxTvCountStep,
+  TvBoxPurchaseStep,
+  TvBoxOperatorStep,
+} from './steps';
+import type {
+  RouterNeedOption,
+  RouterPurchaseOption,
+  RouterOperatorOption,
+  RouterConfigOption,
+  EquipmentState,
+  TvBoxNeedOption,
+  TvCountOption,
+  TvBoxPurchaseOption,
+  TvBoxOperatorOption,
+} from './types';
 import { AddressProvider } from '../../../contexts/AddressContext';
 import { useEquipment } from '../../../contexts/EquipmentContext';
+
+const defaultTvBox = {
+  need: null as TvBoxNeedOption | null,
+  tvCount: null as TvCountOption | null,
+  purchaseOption: null as TvBoxPurchaseOption | null,
+  operatorId: null as TvBoxOperatorOption | null,
+};
 
 const defaultEquipmentState: EquipmentState = {
   router: {
@@ -14,28 +40,50 @@ const defaultEquipmentState: EquipmentState = {
     operator: null,
     config: null,
   },
+  tvBox: defaultTvBox,
 };
 
-// Конфигурация карточек для разных шагов
-const cardConfig = {
+type Step =
+  | 'router_need'
+  | 'router_purchase'
+  | 'router_operator'
+  | 'router_config'
+  | 'tvbox_need'
+  | 'tvbox_tvcount'
+  | 'tvbox_purchase'
+  | 'tvbox_operator';
+
+// Конфигурация карточек для разных шагов (высота подстраивается под контент)
+const cardConfig: Record<Step, { height: number; top: number }> = {
   router_need: { height: 405, top: 320 },
   router_purchase: { height: 350, top: 375 },
   router_operator: { height: 460, top: 265 },
   router_config: { height: 295, top: 430 },
+  tvbox_need: { height: 405, top: 320 },
+  // 4 строки опций + заголовок + кнопки — увеличиваем высоту, чтобы всё помещалось
+  tvbox_tvcount: { height: 430, top: 315 },
+  tvbox_purchase: { height: 350, top: 375 },
+  tvbox_operator: { height: 460, top: 265 },
 };
 
 function Frame4Content() {
   const router = useRouter();
   const { equipmentState: savedEquipment, setEquipmentState: saveEquipment } = useEquipment();
 
-  const [equipmentState, setEquipmentState] = useState<EquipmentState>(
-    () => savedEquipment ?? defaultEquipmentState
-  );
+  const [equipmentState, setEquipmentState] = useState<EquipmentState>(() => ({
+    ...defaultEquipmentState,
+    ...savedEquipment,
+    tvBox: { ...defaultTvBox, ...savedEquipment?.tvBox },
+  }));
 
   // Инициализация из сохранённого выбора при монтировании
   useEffect(() => {
     if (savedEquipment) {
-      setEquipmentState(savedEquipment);
+      setEquipmentState((prev) => ({
+        ...prev,
+        ...savedEquipment,
+        tvBox: { ...defaultTvBox, ...savedEquipment.tvBox },
+      }));
     }
   }, []);
 
@@ -44,9 +92,7 @@ function Frame4Content() {
     saveEquipment(equipmentState);
   }, [equipmentState, saveEquipment]);
 
-  const [currentStep, setCurrentStep] = useState<
-    'router_need' | 'router_purchase' | 'router_operator' | 'router_config'
-  >('router_need');
+  const [currentStep, setCurrentStep] = useState<Step>('router_need');
 
   const handleRouterNeedSelect = (option: RouterNeedOption) => {
     setEquipmentState((prev) => ({
@@ -88,6 +134,34 @@ function Frame4Content() {
     }));
   };
 
+  const handleTvBoxNeedSelect = (option: TvBoxNeedOption) => {
+    setEquipmentState((prev) => ({
+      ...prev,
+      tvBox: { ...prev.tvBox!, need: option },
+    }));
+  };
+
+  const handleTvBoxTvCountSelect = (count: TvCountOption) => {
+    setEquipmentState((prev) => ({
+      ...prev,
+      tvBox: { ...prev.tvBox!, tvCount: count },
+    }));
+  };
+
+  const handleTvBoxPurchaseSelect = (option: TvBoxPurchaseOption) => {
+    setEquipmentState((prev) => ({
+      ...prev,
+      tvBox: { ...prev.tvBox!, purchaseOption: option },
+    }));
+  };
+
+  const handleTvBoxOperatorSelect = (operator: TvBoxOperatorOption) => {
+    setEquipmentState((prev) => ({
+      ...prev,
+      tvBox: { ...prev.tvBox!, operatorId: operator },
+    }));
+  };
+
   const handleNext = () => {
     if (currentStep === 'router_need') {
       const { need } = equipmentState.router;
@@ -99,16 +173,32 @@ function Frame4Content() {
       } else if (need === 'own') {
         setCurrentStep('router_config');
       } else {
-        // no_thanks — сохраняем выбор и переходим к вводу данных (Frame5)
-        saveEquipment(equipmentState);
-        router.push('/order');
+        // no_thanks — переходим к выбору ТВ
+        setCurrentStep('tvbox_need');
       }
     } else if (currentStep === 'router_purchase') {
-      saveEquipment(equipmentState);
-      router.push('/order');
+      setCurrentStep('tvbox_need');
     } else if (currentStep === 'router_operator') {
       setCurrentStep('router_config');
     } else if (currentStep === 'router_config') {
+      setCurrentStep('tvbox_need');
+    } else if (currentStep === 'tvbox_need') {
+      const need = equipmentState.tvBox?.need;
+
+      if (need === 'need') {
+        setCurrentStep('tvbox_tvcount');
+      } else if (need === 'have_from_operator') {
+        setCurrentStep('tvbox_operator');
+      } else {
+        // have_own | smart_tv — сохраняем и на /order
+        saveEquipment(equipmentState);
+        router.push('/order');
+      }
+    } else if (currentStep === 'tvbox_tvcount') {
+      setCurrentStep('tvbox_purchase');
+    } else if (currentStep === 'tvbox_purchase') {
+      setCurrentStep('tvbox_operator');
+    } else if (currentStep === 'tvbox_operator') {
       saveEquipment(equipmentState);
       router.push('/order');
     }
@@ -122,11 +212,22 @@ function Frame4Content() {
     } else if (currentStep === 'router_operator') {
       setCurrentStep('router_need');
     } else if (currentStep === 'router_config') {
-      // Возвращаемся к нужному шагу в зависимости от выбора
       if (equipmentState.router.need === 'from_operator') {
         setCurrentStep('router_operator');
       } else {
         setCurrentStep('router_need');
+      }
+    } else if (currentStep === 'tvbox_need') {
+      setCurrentStep('router_config');
+    } else if (currentStep === 'tvbox_tvcount') {
+      setCurrentStep('tvbox_need');
+    } else if (currentStep === 'tvbox_purchase') {
+      setCurrentStep('tvbox_tvcount');
+    } else if (currentStep === 'tvbox_operator') {
+      if (equipmentState.tvBox?.need === 'have_from_operator') {
+        setCurrentStep('tvbox_need');
+      } else {
+        setCurrentStep('tvbox_purchase');
       }
     }
   };
@@ -241,6 +342,42 @@ function Frame4Content() {
               <RouterConfigStep
                 selected={equipmentState.router.config || null}
                 onSelect={handleRouterConfigSelect}
+                onNext={handleNext}
+                onBack={handleBack}
+              />
+            )}
+
+            {currentStep === 'tvbox_need' && (
+              <TvBoxNeedStep
+                selected={equipmentState.tvBox?.need ?? null}
+                onSelect={handleTvBoxNeedSelect}
+                onNext={handleNext}
+                onBack={handleBack}
+              />
+            )}
+
+            {currentStep === 'tvbox_tvcount' && (
+              <TvBoxTvCountStep
+                selected={equipmentState.tvBox?.tvCount ?? null}
+                onSelect={handleTvBoxTvCountSelect}
+                onNext={handleNext}
+                onBack={handleBack}
+              />
+            )}
+
+            {currentStep === 'tvbox_purchase' && (
+              <TvBoxPurchaseStep
+                selected={equipmentState.tvBox?.purchaseOption ?? null}
+                onSelect={handleTvBoxPurchaseSelect}
+                onNext={handleNext}
+                onBack={handleBack}
+              />
+            )}
+
+            {currentStep === 'tvbox_operator' && (
+              <TvBoxOperatorStep
+                selected={equipmentState.tvBox?.operatorId ?? null}
+                onSelect={handleTvBoxOperatorSelect}
                 onNext={handleNext}
                 onBack={handleBack}
               />

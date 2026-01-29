@@ -1,48 +1,225 @@
 'use client';
 
 import React from 'react';
-import StepHeader from '../components/StepHeader';
+import type { RouterConfigOption } from '../types';
 
 interface RouterConfigStepProps {
+  selected: RouterConfigOption | null;
+  onSelect: (option: RouterConfigOption) => void;
   onNext: () => void;
   onBack: () => void;
 }
 
-export default function RouterConfigStep({ onNext, onBack }: RouterConfigStepProps) {
+const options: { value: RouterConfigOption; label: string }[] = [
+  { value: 'no_config', label: 'Настройка не требуется' },
+  { value: 'with_config', label: 'Настройка за 200 р.' },
+];
+
+export default function RouterConfigStep({
+  selected,
+  onSelect,
+  onNext,
+  onBack,
+}: RouterConfigStepProps) {
   return (
-    <div className="p-6">
-      <StepHeader
-        title="Роутер"
-        description="Настройка роутера под вашего оператора. Здесь можно добавить поля для ввода данных или инструкции."
-      />
-      <div className="mb-8 text-[rgba(16,16,16,0.5)]" style={{ fontFamily: 'TT Firs Neue, sans-serif', fontSize: '14px' }}>
-        (Форма настройки — заглушка)
-      </div>
-      <div className="flex gap-3">
-        <button
-          type="button"
-          onClick={onBack}
-          className="flex-1 py-3 rounded-[10px] border border-[rgba(16,16,16,0.25)]"
+    <>
+      {/* Group 7539 - Заголовок */}
+      <div
+        style={{
+          position: 'absolute',
+          width: '330px',
+          height: '70px',
+          left: '15px',
+          top: '15px',
+        }}
+      >
+        {/* Роутер */}
+        <div
           style={{
+            position: 'absolute',
+            width: '330px',
+            height: '25px',
+            left: '0px',
+            top: '0px',
             fontFamily: 'TT Firs Neue, sans-serif',
-            fontSize: '16px',
+            fontStyle: 'normal',
+            fontWeight: 400,
+            fontSize: '20px',
+            lineHeight: '125%',
+            display: 'flex',
+            alignItems: 'center',
             color: '#101010',
           }}
         >
-          Назад
-        </button>
-        <button
-          type="button"
-          onClick={onNext}
-          className="flex-1 py-3 rounded-[10px] bg-[#101010] text-white"
+          Роутер
+        </div>
+
+        {/* Описание */}
+        <div
           style={{
+            position: 'absolute',
+            width: '330px',
+            height: '30px',
+            left: '0px',
+            top: '40px',
             fontFamily: 'TT Firs Neue, sans-serif',
-            fontSize: '16px',
+            fontStyle: 'normal',
+            fontWeight: 400,
+            fontSize: '14px',
+            lineHeight: '105%',
+            color: 'rgba(16, 16, 16, 0.25)',
           }}
         >
-          Готово
-        </button>
+          Мы подготовили все возможные варианты.
+          <br />
+          Пожалуйста, проверьте правильность
+        </div>
       </div>
-    </div>
+
+      {/* Опции - 2 варианта */}
+      {options.map((option, index) => {
+        const isSelected = selected === option.value;
+        const topPosition = 100 + index * 55; // 100px от верха карточки, шаг 55px
+
+        return (
+          <div
+            key={option.value}
+            onClick={() => onSelect(option.value)}
+            style={{
+              position: 'absolute',
+              left: '15px',
+              right: '15px',
+              top: `${topPosition}px`,
+              height: '50px',
+              boxSizing: 'border-box',
+              border: isSelected
+                ? '1px solid rgba(16, 16, 16, 0.5)'
+                : '1px solid rgba(16, 16, 16, 0.25)',
+              borderRadius: '10px',
+              cursor: 'pointer',
+            }}
+          >
+            {/* Label */}
+            <div
+              style={{
+                position: 'absolute',
+                left: '15px',
+                top: '15px',
+                fontFamily: 'TT Firs Neue, sans-serif',
+                fontStyle: 'normal',
+                fontWeight: 400,
+                fontSize: '16px',
+                lineHeight: '125%',
+                display: 'flex',
+                alignItems: 'center',
+                color: isSelected ? '#101010' : 'rgba(16, 16, 16, 0.5)',
+              }}
+            >
+              {option.label}
+            </div>
+
+            {/* Radio circle */}
+            <div
+              style={{
+                position: 'absolute',
+                width: '16px',
+                height: '16px',
+                right: '15px',
+                top: '17px',
+                boxSizing: 'border-box',
+                borderRadius: '50%',
+                border: isSelected ? 'none' : '1px solid rgba(16, 16, 16, 0.5)',
+                background: isSelected ? '#101010' : 'transparent',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              {isSelected && (
+                <svg width="8" height="6" viewBox="0 0 8 6" fill="none">
+                  <path
+                    d="M1 3L3 5L7 1"
+                    stroke="#FFFFFF"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              )}
+            </div>
+          </div>
+        );
+      })}
+
+      {/* Group 7507 - Кнопка назад */}
+      <div
+        onClick={onBack}
+        style={{
+          position: 'absolute',
+          left: '15px',
+          bottom: '15px',
+          width: '50px',
+          height: '50px',
+          boxSizing: 'border-box',
+          border: '1px solid rgba(16, 16, 16, 0.25)',
+          borderRadius: '10px',
+          cursor: 'pointer',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        {/* Vector - стрелка назад */}
+        <svg
+          width="6"
+          height="12"
+          viewBox="0 0 6 12"
+          fill="none"
+        >
+          <path
+            d="M5 1L1 6L5 11"
+            stroke="#101010"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      </div>
+
+      {/* Group 7377 - Кнопка "Далее" */}
+      <div
+        onClick={onNext}
+        style={{
+          position: 'absolute',
+          left: '70px',
+          right: '15px',
+          bottom: '15px',
+          height: '50px',
+          background: '#101010',
+          border: '1px solid rgba(16, 16, 16, 0.25)',
+          borderRadius: '10px',
+          cursor: 'pointer',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <span
+          style={{
+            fontFamily: 'TT Firs Neue, sans-serif',
+            fontStyle: 'normal',
+            fontWeight: 400,
+            fontSize: '16px',
+            lineHeight: '315%',
+            display: 'flex',
+            alignItems: 'center',
+            textAlign: 'center',
+            color: '#FFFFFF',
+          }}
+        >
+          Далее
+        </span>
+      </div>
+    </>
   );
 }

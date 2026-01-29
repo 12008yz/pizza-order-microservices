@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import './globals.css'
+import AppProviders from '../components/providers/AppProviders'
 
 export const metadata: Metadata = {
   title: 'Агрегатор интернет-провайдеров',
@@ -46,7 +47,9 @@ export default function RootLayout({
         {/* Preconnect для ускорения загрузки */}
         <link rel="preconnect" href="/fonts" />
       </head>
-      <body>{children}</body>
+      <body>
+        <AppProviders>{children}</AppProviders>
+      </body>
     </html>
   )
 }

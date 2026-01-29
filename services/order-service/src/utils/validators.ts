@@ -36,6 +36,10 @@ export const createOrderSchema = Joi.object({
   utmContent: Joi.string().max(100).allow(null, '').optional(),
   utmTerm: Joi.string().max(100).allow(null, '').optional(),
   routerOption: Joi.string().valid('none', 'purchase', 'rent').allow(null, '').optional(),
+  routerNeed: Joi.string().valid('need', 'from_operator', 'own', 'no_thanks').allow(null, '').optional(),
+  routerPurchase: Joi.string().valid('buy', 'installment', 'rent').allow(null, '').optional(),
+  routerOperator: Joi.string().valid('beeline', 'domru', 'megafon', 'mts', 'rostelecom').allow(null, '').optional(),
+  routerConfig: Joi.string().valid('no_config', 'with_config').allow(null, '').optional(),
   tvSettopOption: Joi.string().valid('none', 'purchase', 'rent').allow(null, '').optional(),
   simCardOption: Joi.string().valid('none', 'purchase', 'rent').allow(null, '').optional(),
 });

@@ -96,6 +96,11 @@ export interface Order {
   status: string;
   totalPrice?: number;
   notes?: string;
+  routerOption?: string | null;
+  routerNeed?: string | null;
+  routerPurchase?: string | null;
+  routerOperator?: string | null;
+  routerConfig?: string | null;
   createdAt?: string;
   updatedAt?: string;
   provider?: Provider;

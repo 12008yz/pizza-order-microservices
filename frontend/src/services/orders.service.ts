@@ -1,17 +1,32 @@
 import { apiClient } from './api/client';
 import type { Order, ApiResponse } from './api/types';
 
+/** Детальные поля выбора роутера (Frame4) */
+export type RouterNeed = 'need' | 'from_operator' | 'own' | 'no_thanks';
+export type RouterPurchase = 'buy' | 'installment' | 'rent';
+export type RouterOperator = 'beeline' | 'domru' | 'megafon' | 'mts' | 'rostelecom';
+export type RouterConfig = 'no_config' | 'with_config';
+
 export interface CreateOrderData {
   providerId: number;
   tariffId: number;
+  fullName: string;
   phone: string;
   email?: string;
-  address: string;
+  /** Адрес (для API передаётся как addressString) */
+  address?: string;
+  addressString?: string;
   city?: string;
   street?: string;
   building?: string;
   apartment?: string;
   notes?: string;
+  /** Вариант роутера для расчёта цены: none | purchase | rent (можно не указывать, если заданы routerNeed/routerPurchase) */
+  routerOption?: 'none' | 'purchase' | 'rent' | null;
+  routerNeed?: RouterNeed | null;
+  routerPurchase?: RouterPurchase | null;
+  routerOperator?: RouterOperator | null;
+  routerConfig?: RouterConfig | null;
 }
 
 export interface GetOrdersParams {
@@ -40,7 +55,11 @@ class OrdersService {
    * Создать заказ
    */
   async createOrder(data: CreateOrderData): Promise<ApiResponse<Order>> {
-    return apiClient.post<Order>('/api/orders', data);
+    const body = {
+      ...data,
+      addressString: data.addressString ?? data.address ?? '',
+    };
+    return apiClient.post<Order>('/api/orders', body);
   }
 
   /**

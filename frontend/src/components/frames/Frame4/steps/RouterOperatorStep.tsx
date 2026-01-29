@@ -1,81 +1,341 @@
 'use client';
 
-import React from 'react';
-import RadioOption from '../../../common/RadioOption';
-import StepHeader from '../components/StepHeader';
-import OperatorWarningBanner from '../components/OperatorWarningBanner';
-
-interface OperatorOption {
-  id: number;
-  name: string;
-}
+import React, { useState, useEffect } from 'react';
+import type { RouterOperatorOption } from '../types';
 
 interface RouterOperatorStepProps {
-  operators: OperatorOption[];
-  selectedId: number | null;
-  onChange: (operatorId: number) => void;
+  selected: RouterOperatorOption | null;
+  onSelect: (operator: RouterOperatorOption) => void;
   onNext: () => void;
   onBack: () => void;
 }
 
-const DEFAULT_OPERATORS: OperatorOption[] = [
-  { id: 1, name: 'Ростелеком' },
-  { id: 2, name: 'МТС' },
-  { id: 3, name: 'Билайн' },
-  { id: 4, name: 'ДОМ.RU' },
-  { id: 5, name: 'Мегафон' },
+const operators: { value: RouterOperatorOption; label: string }[] = [
+  { value: 'beeline', label: 'Билайн' },
+  { value: 'domru', label: 'ДОМ.RU' },
+  { value: 'megafon', label: 'Мегафон' },
+  { value: 'mts', label: 'МТС' },
+  { value: 'rostelecom', label: 'Ростелеком' },
 ];
 
 export default function RouterOperatorStep({
-  operators = DEFAULT_OPERATORS,
-  selectedId,
-  onChange,
+  selected,
+  onSelect,
   onNext,
   onBack,
 }: RouterOperatorStepProps) {
+  const [showBanner, setShowBanner] = useState(false);
+  const [countdown, setCountdown] = useState(7);
+
+  // Показываем баннер когда выбран оператор
+  useEffect(() => {
+    if (selected) {
+      setShowBanner(true);
+      setCountdown(7);
+    }
+  }, [selected]);
+
+  // Таймер обратного отсчёта для баннера
+  useEffect(() => {
+    if (showBanner && countdown > 0) {
+      const timer = setTimeout(() => {
+        setCountdown(countdown - 1);
+      }, 1000);
+      return () => clearTimeout(timer);
+    } else if (countdown === 0) {
+      setShowBanner(false);
+    }
+  }, [showBanner, countdown]);
+
+  const handleCloseBanner = () => {
+    setShowBanner(false);
+  };
+
+  const isNextDisabled = selected === null;
+
   return (
-    <div className="p-6">
-      <StepHeader
-        title="Роутер"
-        description="От какого оператора у вас роутер?"
-      />
-      <OperatorWarningBanner className="mb-6" />
-      <div className="space-y-3 mb-8">
-        {operators.map((opt) => (
-          <RadioOption
-            key={opt.id}
-            label={opt.name}
-            selected={selectedId === opt.id}
-            onClick={() => onChange(opt.id)}
-          />
-        ))}
-      </div>
-      <div className="flex gap-3">
-        <button
-          type="button"
-          onClick={onBack}
-          className="flex-1 py-3 rounded-[10px] border border-[rgba(16,16,16,0.25)]"
+    <>
+      {/* Group 7549 - Заголовок */}
+      <div
+        style={{
+          position: 'absolute',
+          width: '330px',
+          height: '70px',
+          left: '15px',
+          top: '15px',
+        }}
+      >
+        {/* Роутер */}
+        <div
           style={{
+            position: 'absolute',
+            width: '330px',
+            height: '25px',
+            left: '0px',
+            top: '0px',
             fontFamily: 'TT Firs Neue, sans-serif',
-            fontSize: '16px',
+            fontStyle: 'normal',
+            fontWeight: 400,
+            fontSize: '20px',
+            lineHeight: '125%',
+            display: 'flex',
+            alignItems: 'center',
             color: '#101010',
           }}
         >
-          Назад
-        </button>
-        <button
-          type="button"
-          onClick={onNext}
-          disabled={selectedId === null}
-          className="flex-1 py-3 rounded-[10px] bg-[#101010] text-white disabled:opacity-50 disabled:cursor-not-allowed"
+          Роутер
+        </div>
+
+        {/* Описание */}
+        <div
+          style={{
+            position: 'absolute',
+            width: '330px',
+            height: '30px',
+            left: '0px',
+            top: '40px',
+            fontFamily: 'TT Firs Neue, sans-serif',
+            fontStyle: 'normal',
+            fontWeight: 400,
+            fontSize: '14px',
+            lineHeight: '105%',
+            color: 'rgba(16, 16, 16, 0.25)',
+          }}
+        >
+          Мы подготовили все возможные варианты.
+          <br />
+          Пожалуйста, проверьте правильность
+        </div>
+      </div>
+
+      {/* Опции операторов - 5 вариантов */}
+      {operators.map((option, index) => {
+        const isSelected = selected === option.value;
+        const topPosition = 105 + index * 55; // 105px от верха карточки, шаг 55px
+
+        return (
+          <div
+            key={option.value}
+            onClick={() => onSelect(option.value)}
+            style={{
+              position: 'absolute',
+              left: '15px',
+              right: '15px',
+              top: `${topPosition}px`,
+              height: '50px',
+              boxSizing: 'border-box',
+              border: isSelected
+                ? '1px solid rgba(16, 16, 16, 0.5)'
+                : '1px solid rgba(16, 16, 16, 0.25)',
+              borderRadius: '10px',
+              cursor: 'pointer',
+            }}
+          >
+            {/* Label */}
+            <div
+              style={{
+                position: 'absolute',
+                left: '15px',
+                top: '15px',
+                fontFamily: 'TT Firs Neue, sans-serif',
+                fontStyle: 'normal',
+                fontWeight: 400,
+                fontSize: '16px',
+                lineHeight: '125%',
+                display: 'flex',
+                alignItems: 'center',
+                color: isSelected ? '#101010' : 'rgba(16, 16, 16, 0.5)',
+              }}
+            >
+              {option.label}
+            </div>
+
+            {/* Radio circle */}
+            <div
+              style={{
+                position: 'absolute',
+                width: '16px',
+                height: '16px',
+                right: '15px',
+                top: '17px',
+                boxSizing: 'border-box',
+                borderRadius: '50%',
+                border: isSelected ? 'none' : '1px solid rgba(16, 16, 16, 0.5)',
+                background: isSelected ? '#101010' : 'transparent',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              {isSelected && (
+                <svg width="8" height="6" viewBox="0 0 8 6" fill="none">
+                  <path
+                    d="M1 3L3 5L7 1"
+                    stroke="#FFFFFF"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              )}
+            </div>
+          </div>
+        );
+      })}
+
+      {/* Group 7507 - Кнопка назад */}
+      <div
+        onClick={onBack}
+        style={{
+          position: 'absolute',
+          left: '15px',
+          bottom: '15px',
+          width: '50px',
+          height: '50px',
+          boxSizing: 'border-box',
+          border: '1px solid rgba(16, 16, 16, 0.25)',
+          borderRadius: '10px',
+          cursor: 'pointer',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        {/* Vector - стрелка назад */}
+        <svg
+          width="6"
+          height="12"
+          viewBox="0 0 6 12"
+          fill="none"
+        >
+          <path
+            d="M5 1L1 6L5 11"
+            stroke="#101010"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      </div>
+
+      {/* Group 7377 - Кнопка "Далее" */}
+      <div
+        onClick={isNextDisabled ? undefined : onNext}
+        style={{
+          position: 'absolute',
+          left: '70px',
+          right: '15px',
+          bottom: '15px',
+          height: '50px',
+          background: '#101010',
+          border: '1px solid rgba(16, 16, 16, 0.25)',
+          borderRadius: '10px',
+          cursor: isNextDisabled ? 'not-allowed' : 'pointer',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          opacity: isNextDisabled ? 0.1 : 1,
+        }}
+      >
+        <span
           style={{
             fontFamily: 'TT Firs Neue, sans-serif',
+            fontStyle: 'normal',
+            fontWeight: 400,
             fontSize: '16px',
+            lineHeight: '315%',
+            display: 'flex',
+            alignItems: 'center',
+            textAlign: 'center',
+            color: '#FFFFFF',
           }}
         >
           Далее
-        </button>
+        </span>
       </div>
-    </div>
+
+      {/* Group 7508 - Баннер предупреждения */}
+      {showBanner && (
+        <div
+          style={{
+            position: 'absolute',
+            width: '360px',
+            height: '120px',
+            left: '0px',
+            top: '-210px', // Позиция относительно карточки (карточка top 265, баннер top 75 => 75-265=-190)
+            background: '#FFFFFF',
+            borderRadius: '20px',
+            zIndex: 10,
+          }}
+        >
+          {/* Автоматически закроется через X */}
+          <div
+            style={{
+              position: 'absolute',
+              width: '300px',
+              height: '20px',
+              left: '15px',
+              top: '15px',
+              fontFamily: 'TT Firs Neue, sans-serif',
+              fontStyle: 'normal',
+              fontWeight: 400,
+              fontSize: '14px',
+              lineHeight: '145%',
+              color: 'rgba(16, 16, 16, 0.25)',
+            }}
+          >
+            Автоматически закроется через {countdown}
+          </div>
+
+          {/* Текст предупреждения */}
+          <div
+            style={{
+              position: 'absolute',
+              width: '330px',
+              height: '60px',
+              left: '15px',
+              top: '45px',
+              fontFamily: 'TT Firs Neue, sans-serif',
+              fontStyle: 'normal',
+              fontWeight: 400,
+              fontSize: '14px',
+              lineHeight: '105%',
+              color: '#101010',
+            }}
+          >
+            Внимание, оборудование этого провайдера технически прошито только на свои сети. Поэтому, подключить его невозможно.{' '}
+            <span style={{ textDecoration: 'underline', cursor: 'pointer' }}>
+              Подробнее об этом писали в медиа
+            </span>
+          </div>
+
+          {/* Кнопка закрытия (X) */}
+          <div
+            onClick={handleCloseBanner}
+            style={{
+              position: 'absolute',
+              width: '16px',
+              height: '16px',
+              right: '15px',
+              top: '15px',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+              <path
+                d="M1 1L9 9M9 1L1 9"
+                stroke="rgba(16, 16, 16, 0.25)"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </div>
+        </div>
+      )}
+    </>
   );
 }

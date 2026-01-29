@@ -1,10 +1,20 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { RouterNeedStep, RouterPurchaseStep } from './steps';
-import type { RouterNeedOption, RouterPurchaseOption, EquipmentState } from './types';
+import { RouterNeedStep, RouterPurchaseStep, RouterOperatorStep, RouterConfigStep } from './steps';
+import type { RouterNeedOption, RouterPurchaseOption, RouterOperatorOption, RouterConfigOption, EquipmentState } from './types';
 import { AddressProvider } from '../../../contexts/AddressContext';
+import { useEquipment } from '../../../contexts/EquipmentContext';
+
+const defaultEquipmentState: EquipmentState = {
+  router: {
+    need: 'need',
+    purchase: 'buy',
+    operator: null,
+    config: null,
+  },
+};
 
 // Конфигурация карточек для разных шагов
 const cardConfig = {
@@ -16,13 +26,23 @@ const cardConfig = {
 
 function Frame4Content() {
   const router = useRouter();
+  const { equipmentState: savedEquipment, setEquipmentState: saveEquipment } = useEquipment();
 
-  const [equipmentState, setEquipmentState] = useState<EquipmentState>({
-    router: {
-      need: 'need', // По умолчанию выбрано "Да, мне это необходимо"
-      purchase: 'buy', // По умолчанию выбрано "Покупка"
-    },
-  });
+  const [equipmentState, setEquipmentState] = useState<EquipmentState>(
+    () => savedEquipment ?? defaultEquipmentState
+  );
+
+  // Инициализация из сохранённого выбора при монтировании
+  useEffect(() => {
+    if (savedEquipment) {
+      setEquipmentState(savedEquipment);
+    }
+  }, []);
+
+  // Всегда сохраняем выбор в контекст (и в sessionStorage) при изменении
+  useEffect(() => {
+    saveEquipment(equipmentState);
+  }, [equipmentState, saveEquipment]);
 
   const [currentStep, setCurrentStep] = useState<
     'router_need' | 'router_purchase' | 'router_operator' | 'router_config'
@@ -48,6 +68,26 @@ function Frame4Content() {
     }));
   };
 
+  const handleRouterOperatorSelect = (operator: RouterOperatorOption) => {
+    setEquipmentState((prev) => ({
+      ...prev,
+      router: {
+        ...prev.router,
+        operator: operator,
+      },
+    }));
+  };
+
+  const handleRouterConfigSelect = (config: RouterConfigOption) => {
+    setEquipmentState((prev) => ({
+      ...prev,
+      router: {
+        ...prev.router,
+        config: config,
+      },
+    }));
+  };
+
   const handleNext = () => {
     if (currentStep === 'router_need') {
       const { need } = equipmentState.router;
@@ -59,12 +99,18 @@ function Frame4Content() {
       } else if (need === 'own') {
         setCurrentStep('router_config');
       } else {
-        // no_thanks - завершаем flow роутера
-        console.log('Router flow completed:', equipmentState);
+        // no_thanks — сохраняем выбор и переходим к вводу данных (Frame5)
+        saveEquipment(equipmentState);
+        router.push('/order');
       }
     } else if (currentStep === 'router_purchase') {
-      // Завершаем flow после выбора способа покупки
-      console.log('Router flow completed:', equipmentState);
+      saveEquipment(equipmentState);
+      router.push('/order');
+    } else if (currentStep === 'router_operator') {
+      setCurrentStep('router_config');
+    } else if (currentStep === 'router_config') {
+      saveEquipment(equipmentState);
+      router.push('/order');
     }
   };
 
@@ -76,7 +122,12 @@ function Frame4Content() {
     } else if (currentStep === 'router_operator') {
       setCurrentStep('router_need');
     } else if (currentStep === 'router_config') {
-      setCurrentStep('router_need');
+      // Возвращаемся к нужному шагу в зависимости от выбора
+      if (equipmentState.router.need === 'from_operator') {
+        setCurrentStep('router_operator');
+      } else {
+        setCurrentStep('router_need');
+      }
     }
   };
 
@@ -172,6 +223,24 @@ function Frame4Content() {
               <RouterPurchaseStep
                 selected={equipmentState.router.purchase || null}
                 onSelect={handleRouterPurchaseSelect}
+                onNext={handleNext}
+                onBack={handleBack}
+              />
+            )}
+
+            {currentStep === 'router_operator' && (
+              <RouterOperatorStep
+                selected={equipmentState.router.operator || null}
+                onSelect={handleRouterOperatorSelect}
+                onNext={handleNext}
+                onBack={handleBack}
+              />
+            )}
+
+            {currentStep === 'router_config' && (
+              <RouterConfigStep
+                selected={equipmentState.router.config || null}
+                onSelect={handleRouterConfigSelect}
                 onNext={handleNext}
                 onBack={handleBack}
               />

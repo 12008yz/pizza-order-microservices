@@ -33,6 +33,10 @@ export interface CreateOrderData {
   utmContent?: string | null;
   utmTerm?: string | null;
   routerOption?: string | null;
+  routerNeed?: string | null;
+  routerPurchase?: string | null;
+  routerOperator?: string | null;
+  routerConfig?: string | null;
   tvSettopOption?: string | null;
   simCardOption?: string | null;
 }

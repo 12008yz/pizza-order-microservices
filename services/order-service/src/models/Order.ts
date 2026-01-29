@@ -49,8 +49,12 @@ export interface OrderAttributes {
   utmTerm: string | null;
 
   // Оборудование
-  routerOption: string | null;     // Вариант роутера: 'purchase', 'rent', 'installment', 'none'
-  routerPrice: number | null;      // Цена роутера
+  routerOption: string | null;     // Вариант роутера для расчёта цены: 'purchase', 'rent', 'none'
+  routerNeed: string | null;       // Нужен ли роутер: 'need', 'from_operator', 'own', 'no_thanks'
+  routerPurchase: string | null;   // Способ получения: 'buy', 'installment', 'rent'
+  routerOperator: string | null;    // Оператор роутера: 'beeline', 'domru', 'megafon', 'mts', 'rostelecom'
+  routerConfig: string | null;      // Настройка: 'no_config', 'with_config'
+  routerPrice: number | null;       // Цена роутера
   tvSettopOption: string | null;   // Вариант ТВ-приставки: 'purchase', 'rent', 'none'
   tvSettopPrice: number | null;    // Цена ТВ-приставки
   simCardOption: string | null;    // Вариант SIM-карты: 'purchase', 'none'
@@ -70,7 +74,7 @@ export interface OrderAttributes {
 }
 
 export interface OrderCreationAttributes
-  extends Optional<OrderAttributes, 'id' | 'userId' | 'email' | 'status' | 'regionId' | 'cityId' | 'streetId' | 'buildingId' | 'apartmentId' | 'addressString' | 'entrance' | 'floor' | 'intercom' | 'preferredDate' | 'preferredTimeFrom' | 'preferredTimeTo' | 'comment' | 'source' | 'utmSource' | 'utmMedium' | 'utmCampaign' | 'utmContent' | 'utmTerm' | 'assignedTo' | 'internalComment'> {}
+  extends Optional<OrderAttributes, 'id' | 'userId' | 'email' | 'status' | 'regionId' | 'cityId' | 'streetId' | 'buildingId' | 'apartmentId' | 'addressString' | 'entrance' | 'floor' | 'intercom' | 'preferredDate' | 'preferredTimeFrom' | 'preferredTimeTo' | 'comment' | 'source' | 'utmSource' | 'utmMedium' | 'utmCampaign' | 'utmContent' | 'utmTerm' | 'routerOption' | 'routerNeed' | 'routerPurchase' | 'routerOperator' | 'routerConfig' | 'routerPrice' | 'tvSettopOption' | 'tvSettopPrice' | 'simCardOption' | 'simCardPrice' | 'totalMonthlyPrice' | 'totalConnectionPrice' | 'totalEquipmentPrice' | 'assignedTo' | 'internalComment'> {}
 
 export class Order
   extends Model<OrderAttributes, OrderCreationAttributes>
@@ -108,6 +112,10 @@ export class Order
   public utmContent!: string | null;
   public utmTerm!: string | null;
   public routerOption!: string | null;
+  public routerNeed!: string | null;
+  public routerPurchase!: string | null;
+  public routerOperator!: string | null;
+  public routerConfig!: string | null;
   public routerPrice!: number | null;
   public tvSettopOption!: string | null;
   public tvSettopPrice!: number | null;
@@ -270,7 +278,27 @@ Order.init(
     routerOption: {
       type: DataTypes.STRING,
       allowNull: true,
-      comment: 'Вариант роутера: purchase, rent, installment, none',
+      comment: 'Вариант роутера для расчёта: purchase, rent, none',
+    },
+    routerNeed: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      comment: 'Нужен ли роутер: need, from_operator, own, no_thanks',
+    },
+    routerPurchase: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      comment: 'Способ получения: buy, installment, rent',
+    },
+    routerOperator: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      comment: 'Оператор роутера: beeline, domru, megafon, mts, rostelecom',
+    },
+    routerConfig: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      comment: 'Настройка: no_config, with_config',
     },
     routerPrice: {
       type: DataTypes.DECIMAL(10, 2),

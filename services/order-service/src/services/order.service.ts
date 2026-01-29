@@ -22,6 +22,24 @@ import {
   OrderItemCalculation,
 } from '../types/order.types';
 
+/**
+ * Вычисляет routerOption для расчёта цены из детальных полей роутера.
+ * routerOption: 'none' | 'purchase' | 'rent'
+ */
+function deriveRouterOption(data: {
+  routerOption?: string | null;
+  routerNeed?: string | null;
+  routerPurchase?: string | null;
+}): string | null {
+  if (data.routerOption != null && data.routerOption !== '') {
+    return data.routerOption;
+  }
+  if (data.routerNeed === 'need' && data.routerPurchase) {
+    return data.routerPurchase === 'rent' ? 'rent' : 'purchase';
+  }
+  return 'none';
+}
+
 const PROVIDER_SERVICE_URL = process.env.PROVIDER_SERVICE_URL || 'http://localhost:3003';
 const LOCATION_SERVICE_URL = process.env.LOCATION_SERVICE_URL || 'http://localhost:3005';
 const AVAILABILITY_SERVICE_URL = process.env.AVAILABILITY_SERVICE_URL || 'http://localhost:3006';
@@ -141,12 +159,15 @@ export class OrderService {
       });
     }
 
+    // Вычисляем routerOption для расчёта цены из routerNeed/routerPurchase при необходимости
+    const routerOptionForCost = deriveRouterOption(data);
+
     // Рассчитываем стоимость перед созданием заявки (если указаны опции оборудования)
     let calculation = null;
-    if (data.routerOption || data.tvSettopOption || data.simCardOption) {
+    if (routerOptionForCost !== 'none' || data.tvSettopOption || data.simCardOption) {
       calculation = await this.calculateOrderCost({
         tariffId: data.tariffId,
-        routerOption: data.routerOption,
+        routerOption: routerOptionForCost,
         tvSettopOption: data.tvSettopOption,
         simCardOption: data.simCardOption,
       });
@@ -159,6 +180,7 @@ export class OrderService {
       const order = await Order.create(
         {
           ...data,
+          routerOption: routerOptionForCost,
           userId: userId || null,
           status: 'new',
           ...(calculation || {}),

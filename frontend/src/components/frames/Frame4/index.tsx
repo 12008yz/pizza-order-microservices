@@ -1,129 +1,196 @@
 'use client';
 
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { HomeIcon } from '../../common/icons';
-import { AddressProvider, useAddress } from '../../../contexts/AddressContext';
+import { RouterNeedStep, RouterPurchaseStep } from './steps';
+import type { RouterNeedOption, RouterPurchaseOption, EquipmentState } from './types';
+import { AddressProvider } from '../../../contexts/AddressContext';
+
+// Конфигурация карточек для разных шагов
+const cardConfig = {
+  router_need: { height: 405, top: 320 },
+  router_purchase: { height: 350, top: 375 },
+  router_operator: { height: 460, top: 265 },
+  router_config: { height: 295, top: 430 },
+};
 
 function Frame4Content() {
   const router = useRouter();
-  const { addressData } = useAddress();
+
+  const [equipmentState, setEquipmentState] = useState<EquipmentState>({
+    router: {
+      need: 'need', // По умолчанию выбрано "Да, мне это необходимо"
+      purchase: 'buy', // По умолчанию выбрано "Покупка"
+    },
+  });
+
+  const [currentStep, setCurrentStep] = useState<
+    'router_need' | 'router_purchase' | 'router_operator' | 'router_config'
+  >('router_need');
+
+  const handleRouterNeedSelect = (option: RouterNeedOption) => {
+    setEquipmentState((prev) => ({
+      ...prev,
+      router: {
+        ...prev.router,
+        need: option,
+      },
+    }));
+  };
+
+  const handleRouterPurchaseSelect = (option: RouterPurchaseOption) => {
+    setEquipmentState((prev) => ({
+      ...prev,
+      router: {
+        ...prev.router,
+        purchase: option,
+      },
+    }));
+  };
+
+  const handleNext = () => {
+    if (currentStep === 'router_need') {
+      const { need } = equipmentState.router;
+
+      if (need === 'need') {
+        setCurrentStep('router_purchase');
+      } else if (need === 'from_operator') {
+        setCurrentStep('router_operator');
+      } else if (need === 'own') {
+        setCurrentStep('router_config');
+      } else {
+        // no_thanks - завершаем flow роутера
+        console.log('Router flow completed:', equipmentState);
+      }
+    } else if (currentStep === 'router_purchase') {
+      // Завершаем flow после выбора способа покупки
+      console.log('Router flow completed:', equipmentState);
+    }
+  };
+
+  const handleBack = () => {
+    if (currentStep === 'router_need') {
+      router.push('/providers');
+    } else if (currentStep === 'router_purchase') {
+      setCurrentStep('router_need');
+    } else if (currentStep === 'router_operator') {
+      setCurrentStep('router_need');
+    } else if (currentStep === 'router_config') {
+      setCurrentStep('router_need');
+    }
+  };
+
+  const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.target === e.currentTarget) {
+      router.push('/providers');
+    }
+  };
+
+  const currentCardConfig = cardConfig[currentStep];
 
   return (
     <div
-      className="relative w-full max-w-[400px] mx-auto bg-[#F5F5F5] overflow-hidden"
       style={{
-        fontFamily: 'TT Firs Neue, sans-serif',
-        height: '100vh',
-        maxHeight: '870px',
+        position: 'relative',
+        width: '400px',
+        height: '870px',
+        background: '#FFFFFF',
+        margin: '0 auto',
+        overflow: 'hidden',
       }}
     >
-      {/* Header */}
+      {/* Group 7499 */}
       <div
-        className="absolute"
         style={{
-          width: '360px',
-          height: '41.61px',
-          left: '20px',
-          top: '73px',
+          position: 'absolute',
+          width: '400px',
+          height: '745px',
+          left: 'calc(50% - 400px/2)',
+          top: '0px',
         }}
       >
-        {/* Кнопка дом (слева) */}
+        {/* ace - серый фон */}
         <div
-          className="absolute cursor-pointer"
+          onClick={handleBackdropClick}
           style={{
-            width: '40.8px',
-            height: '40.8px',
-            left: '0px',
-            top: '0px',
+            position: 'absolute',
+            left: '0%',
+            right: '0%',
+            top: '0%',
+            bottom: '0%',
+            background: '#F5F5F5',
           }}
-          onClick={() => router.push('/')}
         >
+          {/* Нажмите в открытое пустое место, чтобы выйти из этого режима */}
           <div
-            className="w-full h-full flex items-center justify-center"
             style={{
-              background: '#FFFFFF',
-              borderRadius: '100px',
+              position: 'absolute',
+              width: '240px',
+              height: '30px',
+              left: 'calc(50% - 240px/2)',
+              top: '75px',
+              fontFamily: 'TT Firs Neue, sans-serif',
+              fontStyle: 'normal',
+              fontWeight: 400,
+              fontSize: '14px',
+              lineHeight: '105%',
+              display: 'flex',
+              alignItems: 'center',
+              textAlign: 'center',
+              justifyContent: 'center',
+              color: 'rgba(16, 16, 16, 0.25)',
             }}
           >
-            <HomeIcon color="#101010" />
+            Нажмите в открытое пустое место,
+            <br />
+            чтобы выйти из этого режима
+          </div>
+
+          {/* Rectangle 67 - белая карточка */}
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              position: 'absolute',
+              width: '360px',
+              height: `${currentCardConfig.height}px`,
+              left: '20px',
+              top: `${currentCardConfig.top}px`,
+              background: '#FFFFFF',
+              borderRadius: '20px',
+            }}
+          >
+            {currentStep === 'router_need' && (
+              <RouterNeedStep
+                selected={equipmentState.router.need}
+                onSelect={handleRouterNeedSelect}
+                onNext={handleNext}
+                onBack={handleBack}
+              />
+            )}
+
+            {currentStep === 'router_purchase' && (
+              <RouterPurchaseStep
+                selected={equipmentState.router.purchase || null}
+                onSelect={handleRouterPurchaseSelect}
+                onNext={handleNext}
+                onBack={handleBack}
+              />
+            )}
           </div>
         </div>
-
-        {/* Логотип Гигапоиск */}
-        <div
-          className="absolute flex items-center"
-          style={{
-            width: '142.79px',
-            height: '10.2px',
-            left: '48.61px',
-            top: '15.71px',
-          }}
-        >
-          <svg
-            width="143"
-            height="11"
-            viewBox="0 0 230 14"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            preserveAspectRatio="xMidYMid meet"
-          >
-            <g clipPath="url(#clip0_frame4_logo)">
-              <path
-                d="M0 13.8056V0.194444H22.5306V4.86111H5.93306V13.8056H0ZM49.0092 0.194444V13.8056H43.0761V6.02778L29.9708 13.8056H24.0377V0.194444H29.9708V7.97222L43.0761 0.194444H49.0092ZM50.5142 13.8056V0.194444H73.0448V4.86111H56.4473V13.8056H50.5142ZM84.0292 4.47222L81.288 7.97222H86.7705L84.0292 4.47222ZM80.6872 0.194444H87.3713L98.017 13.8056H91.3329L89.8121 11.8611H78.2464L76.7256 13.8056H70.0415L80.6872 0.194444ZM98.7731 13.8056V0.194444H123.744V13.8056H117.811V4.86111H104.706V13.8056H98.7731ZM131.454 0H145.16C148.784 0 151.732 3.24722 151.732 7C151.732 10.7528 148.784 14 145.16 14H131.454C127.831 14 124.883 10.7528 124.883 7C124.883 3.24722 127.831 0 131.454 0ZM143.94 5.05556H132.675C131.642 5.05556 130.797 5.93056 130.797 7C130.797 8.06944 131.642 8.94444 132.675 8.94444H143.94C144.973 8.94444 145.818 8.06944 145.818 7C145.818 5.93056 144.973 5.05556 143.94 5.05556ZM177.834 0.194444V13.8056H171.901V6.02778L158.796 13.8056H152.863V0.194444H158.796V7.97222L171.901 0.194444H177.834ZM203.38 8.75V13.8056H185.544C181.92 13.8056 178.972 10.7528 178.972 7C178.972 3.24722 181.92 0.194444 185.544 0.194444H203.38V5.25H186.764C185.732 5.25 184.887 5.93056 184.887 7C184.887 8.06944 185.732 8.75 186.764 8.75H203.38ZM204.88 13.8056V0.194444H210.813V7.66111L221.252 0.194444H229.852L220.332 7L229.852 13.8056H221.252L216.033 10.0722L210.813 13.8056H204.88Z"
-                fill="#101010"
-              />
-            </g>
-            <defs>
-              <clipPath id="clip0_frame4_logo">
-                <rect width="230" height="14" fill="white" />
-              </clipPath>
-            </defs>
-          </svg>
-        </div>
       </div>
 
-      {/* Контент */}
+      {/* image 1 - изображение внизу */}
       <div
-        className="absolute"
         style={{
-          left: '20px',
-          right: '20px',
-          top: '150px',
+          position: 'absolute',
+          width: '400px',
+          height: '125px',
+          left: '0px',
+          top: '745px',
+          background: '#F5F5F5',
         }}
-      >
-        <div
-          style={{
-            background: '#FFFFFF',
-            borderRadius: '20px',
-            padding: '30px',
-            textAlign: 'center',
-          }}
-        >
-          <h1
-            style={{
-              fontFamily: 'TT Firs Neue, sans-serif',
-              fontWeight: 400,
-              fontSize: '24px',
-              lineHeight: '125%',
-              color: '#101010',
-              marginBottom: '20px',
-            }}
-          >
-            Выбор оборудования
-          </h1>
-          <p
-            style={{
-              fontFamily: 'TT Firs Neue, sans-serif',
-              fontWeight: 400,
-              fontSize: '16px',
-              lineHeight: '155%',
-              color: 'rgba(16, 16, 16, 0.5)',
-            }}
-          >
-            Здесь будет выбор роутера, симкарты и другого оборудования
-          </p>
-        </div>
-      </div>
+      />
     </div>
   );
 }

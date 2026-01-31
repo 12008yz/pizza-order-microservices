@@ -1,0 +1,12 @@
+export { apiClient } from './client';
+export type { ApiResponse, PaginatedResponse, AddressSuggestion, Provider, Tariff, Order, Notification, Equipment, AvailabilityCheck } from '@tariff/shared-types';
+export { authService } from './auth.service';
+export type { LoginData, RegisterData, AuthResponse } from './auth.service';
+export { availabilityService } from './availability.service';
+export { equipmentService } from './equipment.service';
+export { locationsService } from './locations.service';
+export { notificationsService } from './notifications.service';
+export { ordersService } from './orders.service';
+export type { CreateOrderData, GetOrdersParams, UpdateOrderStatusData, CalculateOrderData } from './orders.service';
+export { providersService } from './providers.service';
+export { tariffsService } from './tariffs.service';

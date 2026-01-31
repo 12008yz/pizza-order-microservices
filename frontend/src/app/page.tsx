@@ -145,7 +145,7 @@ export default function Home() {
     setTimeout(() => {
       checkIntervalRef.current = setInterval(() => {
         checkFrame1Progress();
-      }, 100);
+      }, 150);
     }, 200);
 
     // Таймаут на случай, если что-то не загрузится (максимум 15 секунд)

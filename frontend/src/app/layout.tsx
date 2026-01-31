@@ -15,7 +15,11 @@ export default function RootLayout({
   return (
     <html lang="ru">
       <head>
-        {/* Preload всех шрифтов для параллельной загрузки и улучшения производительности */}
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
+        />
+        {/* Preload только критичных шрифтов — меньше конкуренции за bandwidth, быстрее FCP */}
         <link
           rel="preload"
           href="/fonts/TTFirsNeue-Regular.woff2"
@@ -30,22 +34,6 @@ export default function RootLayout({
           type="font/woff2"
           crossOrigin="anonymous"
         />
-        <link
-          rel="preload"
-          href="/fonts/TTFirsNeue-Light.woff2"
-          as="font"
-          type="font/woff2"
-          crossOrigin="anonymous"
-        />
-        <link
-          rel="preload"
-          href="/fonts/TTFirsNeue-Thin.woff2"
-          as="font"
-          type="font/woff2"
-          crossOrigin="anonymous"
-        />
-        {/* Preconnect для ускорения загрузки */}
-        <link rel="preconnect" href="/fonts" />
       </head>
       <body>
         <AppProviders>{children}</AppProviders>

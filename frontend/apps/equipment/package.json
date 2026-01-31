@@ -1,0 +1,31 @@
+{
+  "name": "equipment",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "dev": "next dev -p 3002",
+    "build": "next build",
+    "start": "next start -p 3002",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@phosphor-icons/react": "^2.1.10",
+    "@tariff/api-client": "*",
+    "@tariff/contexts": "*",
+    "@tariff/ui": "*",
+    "next": "14.0.4",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.5",
+    "@types/react": "^18.2.45",
+    "@types/react-dom": "^18.2.18",
+    "autoprefixer": "^10.4.23",
+    "eslint": "^8.56.0",
+    "eslint-config-next": "14.0.4",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^3.4.19",
+    "typescript": "^5.3.3"
+  }
+}

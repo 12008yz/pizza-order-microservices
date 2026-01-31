@@ -74,12 +74,8 @@ const nextConfig = {
   async headers() {
     return [
       {
-        source: '/:path*',
+        source: '/fonts/:path*',
         headers: [
-          {
-            key: 'viewport',
-            value: 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover',
-          },
           {
             key: 'Cache-Control',
             value: 'public, max-age=31536000, immutable',
@@ -87,15 +83,12 @@ const nextConfig = {
         ],
       },
       {
-        source: '/fonts/:path*',
+        // Долгое кэширование только для статики Next.js (JS/CSS чанки)
+        source: '/_next/static/:path*',
         headers: [
           {
             key: 'Cache-Control',
             value: 'public, max-age=31536000, immutable',
-          },
-          {
-            key: 'Accept-Encoding',
-            value: 'br, gzip, deflate',
           },
         ],
       },

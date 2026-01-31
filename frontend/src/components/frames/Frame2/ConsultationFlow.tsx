@@ -618,15 +618,16 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
             height: '50px',
           }}
         >
-          {/* Кнопка Назад */}
+          {/* Кнопка Назад — как во Frame1/Frame4: type="button" для надёжного клика */}
           <button
+            type="button"
             onClick={handleBack}
             onMouseDown={() => setIsBackBtnPressed(true)}
             onMouseUp={() => setIsBackBtnPressed(false)}
             onMouseLeave={() => setIsBackBtnPressed(false)}
             onTouchStart={() => setIsBackBtnPressed(true)}
             onTouchEnd={() => setIsBackBtnPressed(false)}
-            className="rounded-[10px] flex items-center justify-center"
+            className="outline-none cursor-pointer rounded-[10px] flex items-center justify-center"
             style={{
               width: '50px',
               height: '50px',
@@ -642,8 +643,9 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
             </svg>
           </button>
 
-          {/* Кнопка Далее */}
+          {/* Кнопка Далее — как во Frame1/Frame4: type="button" для надёжного клика */}
           <button
+            type="button"
             onClick={handleNextFromMethod}
             onMouseDown={() => setIsNextBtnPressed(true)}
             onMouseUp={() => setIsNextBtnPressed(false)}
@@ -651,7 +653,7 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
             onTouchStart={() => setIsNextBtnPressed(true)}
             onTouchEnd={() => setIsNextBtnPressed(false)}
             disabled={!selectedMethod}
-            className="flex-1 rounded-[10px] flex items-center justify-center text-center text-white"
+            className="outline-none flex-1 rounded-[10px] flex items-center justify-center text-center text-white cursor-pointer disabled:cursor-not-allowed"
             style={{
               height: '50px',
               background: selectedMethod ? '#101010' : 'rgba(16, 16, 16, 0.25)',
@@ -785,15 +787,16 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
             height: '50px',
           }}
         >
-          {/* Кнопка Назад */}
+          {/* Кнопка Назад — как во Frame1/Frame4: type="button" для надёжного клика */}
           <button
+            type="button"
             onClick={handleBack}
             onMouseDown={() => setIsBackBtnPressed(true)}
             onMouseUp={() => setIsBackBtnPressed(false)}
             onMouseLeave={() => setIsBackBtnPressed(false)}
             onTouchStart={() => setIsBackBtnPressed(true)}
             onTouchEnd={() => setIsBackBtnPressed(false)}
-            className="rounded-[10px] flex items-center justify-center"
+            className="outline-none cursor-pointer rounded-[10px] flex items-center justify-center"
             style={{
               width: '50px',
               height: '50px',
@@ -809,8 +812,9 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
             </svg>
           </button>
 
-          {/* Кнопка Далее */}
+          {/* Кнопка Далее — как во Frame1/Frame4: type="button" для надёжного клика */}
           <button
+            type="button"
             onClick={handleSubmitPhoneAfterMethod}
             onMouseDown={() => setIsPhoneNextBtnPressed(true)}
             onMouseUp={() => setIsPhoneNextBtnPressed(false)}
@@ -818,7 +822,7 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
             onTouchStart={() => setIsPhoneNextBtnPressed(true)}
             onTouchEnd={() => setIsPhoneNextBtnPressed(false)}
             disabled={!isPhoneValid}
-            className="flex-1 rounded-[10px] flex items-center justify-center text-center text-white"
+            className="outline-none flex-1 rounded-[10px] flex items-center justify-center text-center text-white cursor-pointer disabled:cursor-not-allowed"
             style={{
               height: '50px',
               background: isPhoneValid ? '#101010' : 'rgba(16, 16, 16, 0.25)',

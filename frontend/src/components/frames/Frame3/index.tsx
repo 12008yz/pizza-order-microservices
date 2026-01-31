@@ -1417,12 +1417,14 @@ function Frame3Content() {
 
                   {/* Кнопки */}
                   <div style={{ display: 'flex', gap: '10px' }}>
-                    {/* Кнопка избранное (сердечко) */}
+                    {/* Кнопка избранное (сердечко) — как во Frame1/Frame4: type="button" для надёжного клика */}
                     <button
+                      type="button"
                       onClick={(e) => {
                         e.stopPropagation();
                         handleFavoriteClick(tariff.id);
                       }}
+                      className="outline-none cursor-pointer"
                       style={{
                         width: '50px',
                         height: '50px',
@@ -1432,7 +1434,6 @@ function Frame3Content() {
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        cursor: 'pointer',
                         boxSizing: 'border-box',
                         transition: 'transform 0.15s ease-out',
                         flexShrink: 0,
@@ -1450,12 +1451,14 @@ function Frame3Content() {
                       )}
                     </button>
 
-                    {/* Кнопка промо */}
+                    {/* Кнопка промо (главная) — как во Frame1/Frame4: type="button" для надёжного клика */}
                     <button
+                      type="button"
                       onClick={(e) => {
                         e.stopPropagation();
                         handleTariffSelect(tariff.id);
                       }}
+                      className="outline-none cursor-pointer"
                       style={{
                         flex: 1,
                         height: '50px',
@@ -1471,7 +1474,6 @@ function Frame3Content() {
                         justifyContent: 'center',
                         textAlign: 'center',
                         color: '#FFFFFF',
-                        cursor: 'pointer',
                       }}
                     >
                       {tariff.promoText}

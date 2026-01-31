@@ -34,22 +34,25 @@ export default function TechAccessModal({ isOpen, onClose }: TechAccessModalProp
           </p>
 
           <button
+            type="button"
             onClick={() => setShowApartmentModal(true)}
-            className="w-full px-4 py-3 border border-[rgba(16,16,16,0.25)] rounded-[10px] text-left hover:bg-gray-50 transition-colors mb-4"
+            className="outline-none cursor-pointer w-full px-4 py-3 border border-[rgba(16,16,16,0.25)] rounded-[10px] text-left hover:bg-gray-50 transition-colors mb-4"
           >
             Выбрать квартиру
           </button>
 
           <div className="flex gap-3">
             <button
+              type="button"
               onClick={onClose}
-              className="flex-1 px-4 py-3 border border-[rgba(16,16,16,0.15)] rounded-[10px] hover:bg-gray-50 transition-colors"
+              className="outline-none cursor-pointer flex-1 px-4 py-3 border border-[rgba(16,16,16,0.15)] rounded-[10px] hover:bg-gray-50 transition-colors"
             >
               Назад
             </button>
             <button
+              type="button"
               onClick={onClose}
-              className="flex-1 px-4 py-3 bg-[#101010] text-white rounded-[10px] hover:bg-gray-800 transition-colors"
+              className="outline-none cursor-pointer flex-1 px-4 py-3 bg-[#101010] text-white rounded-[10px] hover:bg-gray-800 transition-colors"
             >
               Далее
             </button>

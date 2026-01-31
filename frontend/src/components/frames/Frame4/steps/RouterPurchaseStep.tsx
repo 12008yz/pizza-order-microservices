@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import type { RouterPurchaseOption } from '../types';
 
 interface RouterPurchaseStepProps {
@@ -22,6 +22,9 @@ export default function RouterPurchaseStep({
   onNext,
   onBack,
 }: RouterPurchaseStepProps) {
+  const [isBackPressed, setIsBackPressed] = useState(false);
+  const [isNextPressed, setIsNextPressed] = useState(false);
+
   return (
     <>
       {/* Group 7539 - Заголовок */}
@@ -152,9 +155,16 @@ export default function RouterPurchaseStep({
         );
       })}
 
-      {/* Group 7507 - Кнопка назад */}
-      <div
+      {/* Кнопка назад — анимация нажатия как во Frame1 */}
+      <button
+        type="button"
         onClick={onBack}
+        onMouseDown={() => setIsBackPressed(true)}
+        onMouseUp={() => setIsBackPressed(false)}
+        onMouseLeave={() => setIsBackPressed(false)}
+        onTouchStart={() => setIsBackPressed(true)}
+        onTouchEnd={() => setIsBackPressed(false)}
+        className="outline-none cursor-pointer border border-[rgba(16,16,16,0.25)] rounded-[10px] flex items-center justify-center bg-transparent"
         style={{
           position: 'absolute',
           left: '15px',
@@ -162,15 +172,10 @@ export default function RouterPurchaseStep({
           width: '50px',
           height: '50px',
           boxSizing: 'border-box',
-          border: '1px solid rgba(16, 16, 16, 0.25)',
-          borderRadius: '10px',
-          cursor: 'pointer',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
+          transform: isBackPressed ? 'scale(0.92)' : 'scale(1)',
+          transition: 'transform 0.15s ease-out',
         }}
       >
-        {/* Vector - стрелка назад */}
         <svg
           width="6"
           height="12"
@@ -185,42 +190,33 @@ export default function RouterPurchaseStep({
             strokeLinejoin="round"
           />
         </svg>
-      </div>
+      </button>
 
-      {/* Group 7377 - Кнопка "Далее" */}
-      <div
+      {/* Кнопка "Далее" — анимация нажатия как во Frame1 */}
+      <button
+        type="button"
         onClick={onNext}
+        onMouseDown={() => setIsNextPressed(true)}
+        onMouseUp={() => setIsNextPressed(false)}
+        onMouseLeave={() => setIsNextPressed(false)}
+        onTouchStart={() => setIsNextPressed(true)}
+        onTouchEnd={() => setIsNextPressed(false)}
+        className="outline-none cursor-pointer rounded-[10px] flex items-center justify-center text-white font-normal text-base text-center bg-[#101010] border border-[rgba(16,16,16,0.25)]"
         style={{
           position: 'absolute',
           left: '70px',
           right: '15px',
           bottom: '15px',
           height: '50px',
-          background: '#101010',
-          border: '1px solid rgba(16, 16, 16, 0.25)',
-          borderRadius: '10px',
-          cursor: 'pointer',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
+          boxSizing: 'border-box',
+          fontFamily: 'TT Firs Neue, sans-serif',
+          lineHeight: '315%',
+          transform: isNextPressed ? 'scale(0.97)' : 'scale(1)',
+          transition: 'transform 0.15s ease-out',
         }}
       >
-        <span
-          style={{
-            fontFamily: 'TT Firs Neue, sans-serif',
-            fontStyle: 'normal',
-            fontWeight: 400,
-            fontSize: '16px',
-            lineHeight: '315%',
-            display: 'flex',
-            alignItems: 'center',
-            textAlign: 'center',
-            color: '#FFFFFF',
-          }}
-        >
-          Далее
-        </span>
-      </div>
+        Далее
+      </button>
     </>
   );
 }

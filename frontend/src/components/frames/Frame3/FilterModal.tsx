@@ -33,23 +33,26 @@ export default function FilterModal({ isOpen, onClose }: FilterModalProps) {
 
           <div className="flex flex-col gap-3">
             <button
+              type="button"
               onClick={() => setShowProvidersModal(true)}
-              className="px-4 py-3 border border-[rgba(16,16,16,0.25)] rounded-[10px] text-left hover:bg-gray-50 transition-colors"
+              className="outline-none cursor-pointer px-4 py-3 border border-[rgba(16,16,16,0.25)] rounded-[10px] text-left hover:bg-gray-50 transition-colors"
             >
               Выбрать операторов
             </button>
 
             <button
+              type="button"
               onClick={() => setShowServicesModal(true)}
-              className="px-4 py-3 border border-[rgba(16,16,16,0.25)] rounded-[10px] text-left hover:bg-gray-50 transition-colors"
+              className="outline-none cursor-pointer px-4 py-3 border border-[rgba(16,16,16,0.25)] rounded-[10px] text-left hover:bg-gray-50 transition-colors"
             >
               Выбрать услуги
             </button>
           </div>
 
           <button
+            type="button"
             onClick={onClose}
-            className="mt-4 w-full px-4 py-3 bg-[#101010] text-white rounded-[10px] hover:bg-gray-800 transition-colors"
+            className="outline-none cursor-pointer mt-4 w-full px-4 py-3 bg-[#101010] text-white rounded-[10px] hover:bg-gray-800 transition-colors"
           >
             Применить
           </button>

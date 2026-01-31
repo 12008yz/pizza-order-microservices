@@ -316,10 +316,12 @@ export default function TariffCard({
         </div>
       </div>
 
-      {/* CTA Button */}
+      {/* CTA Button — как во Frame1/Frame4: type="button" для надёжного клика */}
       <div style={{ padding: '0 20px 0 20px' }}>
         <button
+          type="button"
           onClick={onClick}
+          className="outline-none cursor-pointer"
           style={{
             boxSizing: 'border-box',
             width: '100%',
@@ -333,7 +335,6 @@ export default function TariffCard({
             lineHeight: '100%',
             color: '#FFFFFF',
             textAlign: 'center',
-            cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',

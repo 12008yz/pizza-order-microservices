@@ -279,8 +279,9 @@ export default function FilterWizard({ isOpen, onClose, onApply }: FilterWizardP
                   padding: '15px',
                }}
             >
-               {/* Кнопка Назад */}
+               {/* Кнопка Назад — как во Frame1/Frame4: type="button" для надёжного клика */}
                <button
+                  type="button"
                   onClick={handleBack}
                   disabled={step === 1}
                   onMouseDown={() => setIsBackBtnPressed(true)}
@@ -288,7 +289,7 @@ export default function FilterWizard({ isOpen, onClose, onApply }: FilterWizardP
                   onMouseLeave={() => setIsBackBtnPressed(false)}
                   onTouchStart={() => setIsBackBtnPressed(true)}
                   onTouchEnd={() => setIsBackBtnPressed(false)}
-                  className="rounded-[10px] flex items-center justify-center"
+                  className="outline-none rounded-[10px] flex items-center justify-center disabled:cursor-not-allowed"
                   style={{
                      width: '50px',
                      height: '50px',
@@ -306,15 +307,16 @@ export default function FilterWizard({ isOpen, onClose, onApply }: FilterWizardP
                   </svg>
                </button>
 
-               {/* Кнопка Далее/Применить */}
+               {/* Кнопка Далее/Применить — как во Frame1/Frame4: type="button" для надёжного клика */}
                <button
+                  type="button"
                   onClick={handleNext}
                   onMouseDown={() => setIsNextBtnPressed(true)}
                   onMouseUp={() => setIsNextBtnPressed(false)}
                   onMouseLeave={() => setIsNextBtnPressed(false)}
                   onTouchStart={() => setIsNextBtnPressed(true)}
                   onTouchEnd={() => setIsNextBtnPressed(false)}
-                  className="flex-1 rounded-[10px] flex items-center justify-center text-center text-white"
+                  className="outline-none cursor-pointer flex-1 rounded-[10px] flex items-center justify-center text-center text-white"
                   style={{
                      height: '50px',
                      background: '#101010',

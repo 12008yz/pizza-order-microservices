@@ -15,7 +15,7 @@ import type {
   TvBoxWizardState,
 } from './types';
 
-export type TvBoxFlowStep = 'need' | 'tvCount' | 'purchase' | 'operator' | 'done';
+export type TvBoxFlowStep = 'need' | 'purchase' | 'tvCount' | 'operator' | 'done';
 
 interface TvBoxFlowProps {
   onComplete: (state: TvBoxWizardState) => void;
@@ -51,8 +51,8 @@ export default function TvBoxFlow({ onComplete, onBackFromFirst }: TvBoxFlowProp
 
   const goNextFromNeed = useCallback(() => {
     if (state.need === 'need') {
-      // Пользователю нужна приставка → выбор количества ТВ
-      setStep('tvCount');
+      // Пользователю нужна приставка → выбор цены/способа приобретения
+      setStep('purchase');
       return;
     }
     if (state.need === 'have_from_operator') {
@@ -71,16 +71,15 @@ export default function TvBoxFlow({ onComplete, onBackFromFirst }: TvBoxFlowProp
     setStep('done');
   }, [state, onComplete]);
 
-  const goNextFromTvCount = useCallback(() => {
-    // После выбора количества ТВ → способ приобретения
-    setStep('purchase');
+  const goNextFromPurchase = useCallback(() => {
+    // После выбора цены/способа приобретения → количество ТВ
+    setStep('tvCount');
   }, []);
 
-  const goNextFromPurchase = useCallback(() => {
-    // После выбора способа приобретения → завершаем
-    onComplete(state);
-    setStep('done');
-  }, [state, onComplete]);
+  const goNextFromTvCount = useCallback(() => {
+    // После выбора количества ТВ → оператор (или завершаем)
+    setStep('operator');
+  }, []);
 
   const goNextFromOperator = useCallback(() => {
     // После выбора оператора → завершаем
@@ -89,11 +88,13 @@ export default function TvBoxFlow({ onComplete, onBackFromFirst }: TvBoxFlowProp
   }, [state, onComplete]);
 
   const goBack = useCallback(() => {
-    if (step === 'tvCount') setStep('need');
-    else if (step === 'purchase') setStep('tvCount');
-    else if (step === 'operator') setStep('need');
-    else if (step === 'need' && onBackFromFirst) onBackFromFirst();
-  }, [step, onBackFromFirst]);
+    if (step === 'purchase') setStep('need');
+    else if (step === 'tvCount') setStep('purchase');
+    else if (step === 'operator') {
+      // На оператора попали либо с tvCount (need → purchase → tvCount), либо с need (have_from_operator)
+      setStep(state.tvCount != null ? 'tvCount' : 'need');
+    } else if (step === 'need' && onBackFromFirst) onBackFromFirst();
+  }, [step, state.tvCount, onBackFromFirst]);
 
   if (step === 'done') return null;
 

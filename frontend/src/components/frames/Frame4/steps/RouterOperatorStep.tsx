@@ -26,6 +26,8 @@ export default function RouterOperatorStep({
 }: RouterOperatorStepProps) {
   const [showBanner, setShowBanner] = useState(false);
   const [countdown, setCountdown] = useState(7);
+  const [isBackPressed, setIsBackPressed] = useState(false);
+  const [isNextPressed, setIsNextPressed] = useState(false);
 
   // Показываем баннер когда выбран оператор
   useEffect(() => {
@@ -183,9 +185,16 @@ export default function RouterOperatorStep({
         );
       })}
 
-      {/* Group 7507 - Кнопка назад */}
-      <div
+      {/* Кнопка назад — анимация нажатия как во Frame1 */}
+      <button
+        type="button"
         onClick={onBack}
+        onMouseDown={() => setIsBackPressed(true)}
+        onMouseUp={() => setIsBackPressed(false)}
+        onMouseLeave={() => setIsBackPressed(false)}
+        onTouchStart={() => setIsBackPressed(true)}
+        onTouchEnd={() => setIsBackPressed(false)}
+        className="outline-none cursor-pointer border border-[rgba(16,16,16,0.25)] rounded-[10px] flex items-center justify-center bg-transparent"
         style={{
           position: 'absolute',
           left: '15px',
@@ -193,66 +202,43 @@ export default function RouterOperatorStep({
           width: '50px',
           height: '50px',
           boxSizing: 'border-box',
-          border: '1px solid rgba(16, 16, 16, 0.25)',
-          borderRadius: '10px',
-          cursor: 'pointer',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
+          transform: isBackPressed ? 'scale(0.92)' : 'scale(1)',
+          transition: 'transform 0.15s ease-out',
         }}
       >
-        {/* Vector - стрелка назад */}
-        <svg
-          width="6"
-          height="12"
-          viewBox="0 0 6 12"
-          fill="none"
-        >
-          <path
-            d="M5 1L1 6L5 11"
-            stroke="#101010"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
+        <svg width="6" height="12" viewBox="0 0 6 12" fill="none">
+          <path d="M5 1L1 6L5 11" stroke="#101010" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
-      </div>
+      </button>
 
-      {/* Group 7377 - Кнопка "Далее" */}
-      <div
-        onClick={isNextDisabled ? undefined : onNext}
+      {/* Кнопка "Далее" — анимация нажатия как во Frame1 (только когда не disabled) */}
+      <button
+        type="button"
+        onClick={onNext}
+        disabled={isNextDisabled}
+        onMouseDown={() => !isNextDisabled && setIsNextPressed(true)}
+        onMouseUp={() => setIsNextPressed(false)}
+        onMouseLeave={() => setIsNextPressed(false)}
+        onTouchStart={() => !isNextDisabled && setIsNextPressed(true)}
+        onTouchEnd={() => setIsNextPressed(false)}
+        className="outline-none rounded-[10px] flex items-center justify-center text-white font-normal text-base text-center bg-[#101010] border border-[rgba(16,16,16,0.25)]"
         style={{
           position: 'absolute',
           left: '70px',
           right: '15px',
           bottom: '15px',
           height: '50px',
-          background: '#101010',
-          border: '1px solid rgba(16, 16, 16, 0.25)',
-          borderRadius: '10px',
+          boxSizing: 'border-box',
+          fontFamily: 'TT Firs Neue, sans-serif',
+          lineHeight: '315%',
           cursor: isNextDisabled ? 'not-allowed' : 'pointer',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
           opacity: isNextDisabled ? 0.1 : 1,
+          transform: isNextPressed && !isNextDisabled ? 'scale(0.97)' : 'scale(1)',
+          transition: 'transform 0.15s ease-out',
         }}
       >
-        <span
-          style={{
-            fontFamily: 'TT Firs Neue, sans-serif',
-            fontStyle: 'normal',
-            fontWeight: 400,
-            fontSize: '16px',
-            lineHeight: '315%',
-            display: 'flex',
-            alignItems: 'center',
-            textAlign: 'center',
-            color: '#FFFFFF',
-          }}
-        >
-          Далее
-        </span>
-      </div>
+        Далее
+      </button>
 
       {/* Group 7508 - Баннер предупреждения */}
       {showBanner && (

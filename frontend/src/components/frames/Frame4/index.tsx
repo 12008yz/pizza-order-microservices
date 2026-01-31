@@ -186,7 +186,7 @@ function Frame4Content() {
       const need = equipmentState.tvBox?.need;
 
       if (need === 'need') {
-        setCurrentStep('tvbox_tvcount');
+        setCurrentStep('tvbox_purchase'); // сначала цена (покупка/рассрочка/аренда)
       } else if (need === 'have_from_operator') {
         setCurrentStep('tvbox_operator');
       } else {
@@ -194,9 +194,9 @@ function Frame4Content() {
         saveEquipment(equipmentState);
         router.push('/order');
       }
-    } else if (currentStep === 'tvbox_tvcount') {
-      setCurrentStep('tvbox_purchase');
     } else if (currentStep === 'tvbox_purchase') {
+      setCurrentStep('tvbox_tvcount'); // после цены — количество
+    } else if (currentStep === 'tvbox_tvcount') {
       setCurrentStep('tvbox_operator');
     } else if (currentStep === 'tvbox_operator') {
       saveEquipment(equipmentState);
@@ -219,15 +219,15 @@ function Frame4Content() {
       }
     } else if (currentStep === 'tvbox_need') {
       setCurrentStep('router_config');
-    } else if (currentStep === 'tvbox_tvcount') {
-      setCurrentStep('tvbox_need');
     } else if (currentStep === 'tvbox_purchase') {
-      setCurrentStep('tvbox_tvcount');
+      setCurrentStep('tvbox_need');
+    } else if (currentStep === 'tvbox_tvcount') {
+      setCurrentStep('tvbox_purchase');
     } else if (currentStep === 'tvbox_operator') {
       if (equipmentState.tvBox?.need === 'have_from_operator') {
         setCurrentStep('tvbox_need');
       } else {
-        setCurrentStep('tvbox_purchase');
+        setCurrentStep('tvbox_tvcount');
       }
     }
   };
@@ -238,7 +238,15 @@ function Frame4Content() {
     }
   };
 
+  // Анимация: подсказка появляется после монтирования (как в ConnectionTypeModal)
+  const [isHintVisible, setIsHintVisible] = useState(false);
+  useEffect(() => {
+    const t = setTimeout(() => setIsHintVisible(true), 50);
+    return () => clearTimeout(t);
+  }, []);
+
   const currentCardConfig = cardConfig[currentStep];
+  const cardTransition = 'height 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), top 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)';
 
   return (
     <div
@@ -273,7 +281,7 @@ function Frame4Content() {
             background: '#F5F5F5',
           }}
         >
-          {/* Нажмите в открытое пустое место, чтобы выйти из этого режима */}
+          {/* Нажмите в открытое пустое место — появление с анимацией */}
           <div
             style={{
               position: 'absolute',
@@ -291,6 +299,9 @@ function Frame4Content() {
               textAlign: 'center',
               justifyContent: 'center',
               color: 'rgba(16, 16, 16, 0.25)',
+              opacity: isHintVisible ? 1 : 0,
+              transform: isHintVisible ? 'translateY(0)' : 'translateY(-6px)',
+              transition: 'opacity 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)',
             }}
           >
             Нажмите в открытое пустое место,
@@ -298,7 +309,7 @@ function Frame4Content() {
             чтобы выйти из этого режима
           </div>
 
-          {/* Rectangle 67 - белая карточка */}
+          {/* Белая карточка — плавное изменение высоты/позиции при смене шага */}
           <div
             onClick={(e) => e.stopPropagation()}
             style={{
@@ -309,8 +320,19 @@ function Frame4Content() {
               top: `${currentCardConfig.top}px`,
               background: '#FFFFFF',
               borderRadius: '20px',
+              transition: cardTransition,
+              overflow: 'hidden',
             }}
           >
+            {/* Контент шага — лёгкое появление при смене шага (как в Frame3/модалках) */}
+            <div
+              key={currentStep}
+              style={{
+                width: '100%',
+                height: '100%',
+                animation: 'frame4StepIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards',
+              }}
+            >
             {currentStep === 'router_need' && (
               <RouterNeedStep
                 selected={equipmentState.router.need}
@@ -382,6 +404,7 @@ function Frame4Content() {
                 onBack={handleBack}
               />
             )}
+            </div>
           </div>
         </div>
       </div>

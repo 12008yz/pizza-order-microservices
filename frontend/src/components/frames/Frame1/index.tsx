@@ -95,6 +95,16 @@ function AddressFormContent() {
     }
   };
 
+  // Текущий шаг для подсветки: 0 = подключение, 1 = город, 2 = улица, 3 = дом
+  const activeStep =
+    !addressData.connectionType ? 0
+    : !addressData.city ? 1
+    : !addressData.street ? 2
+    : !addressData.houseNumber ? 3
+    : 3;
+
+  const isFieldActive = (step: number) => step === activeStep;
+
   const handleConnectionTypeClick = () => {
     setShowConnectionModal(true);
   };
@@ -117,11 +127,10 @@ function AddressFormContent() {
   };
 
   const handleConsultationClose = () => {
-    // Проверяем, заполнены ли все обязательные поля
     clearErrors();
     if (!validateForm()) {
-      // Если форма не валидна, возвращаемся на форму
       setFlowState('form');
+      clearErrors(); // при возврате на форму не подсвечивать поля красным
       return;
     }
 
@@ -209,11 +218,10 @@ function AddressFormContent() {
   // Функция сохранения данных пользователя и перехода на тарифы
   const saveUserDataAndNavigate = async (phone?: string, method?: ContactMethod) => {
     try {
-      // Проверяем, заполнены ли все обязательные поля
       clearErrors();
       if (!validateForm()) {
-        // Если форма не валидна, возвращаемся на форму
         setFlowState('form');
+        clearErrors(); // при возврате на форму не подсвечивать поля красным
         return;
       }
 
@@ -302,17 +310,12 @@ function AddressFormContent() {
 
         <div className="absolute left-[8.75%] right-[8.75%] top-[41.98%] bottom-[51.72%]">
           <div
-            className={`relative w-full rounded-[10px] bg-white ${addressData.connectionType
-              ? ''
-              : addressData.errors.connectionType
-                ? ''
-                : ''
-              }`}
+            className="relative w-full rounded-[10px] bg-white"
             style={{
-              border: addressData.connectionType
-                ? '0.5px solid #101010'
-                : addressData.errors.connectionType
-                  ? '0.5px solid rgb(239, 68, 68)'
+              border: addressData.errors.connectionType
+                ? '0.5px solid rgb(239, 68, 68)'
+                : isFieldActive(0) || addressData.connectionType
+                  ? '0.5px solid #101010'
                   : '0.5px solid rgba(16, 16, 16, 0.25)',
             }}
           >
@@ -338,10 +341,13 @@ function AddressFormContent() {
                   : 'Подключение'}
               </span>
               <div
-                className={`w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 ${addressData.connectionType
-                  ? 'bg-[#101010]'
-                  : 'border border-[rgba(16,16,16,0.25)]'
-                  }`}
+                className={`w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 ${
+                  addressData.connectionType
+                    ? 'bg-[#9CA3AF]'
+                    : isFieldActive(0)
+                      ? 'bg-[#101010]'
+                      : 'border border-[rgba(16,16,16,0.25)]'
+                }`}
                 style={{
                   borderWidth: '0.5px',
                   transition: 'background-color 0.2s ease, border-color 0.2s ease',
@@ -350,7 +356,7 @@ function AddressFormContent() {
                 {addressData.connectionType ? (
                   <AnimatedCheck key={`connection-${addressData.connectionType}`} size={8} color="#FFFFFF" strokeWidth={1.5} />
                 ) : (
-                  <CaretRight size={8} weight="regular" color="rgba(16, 16, 16, 0.25)" />
+                  <CaretRight size={8} weight="regular" color="#FFFFFF" />
                 )}
               </div>
             </div>
@@ -366,10 +372,10 @@ function AddressFormContent() {
             className={`relative w-full rounded-[10px] bg-white cursor-pointer ${addressData.city ? '' : ''
               }`}
             style={{
-              border: addressData.city
-                ? '0.5px solid #101010'
-                : addressData.errors.city
-                  ? '0.5px solid rgb(239, 68, 68)'
+              border: addressData.errors.city
+                ? '0.5px solid rgb(239, 68, 68)'
+                : isFieldActive(1) || addressData.city
+                  ? '0.5px solid #101010'
                   : '0.5px solid rgba(16, 16, 16, 0.25)',
             }}
           >
@@ -392,8 +398,13 @@ function AddressFormContent() {
                 {addressData.city || 'Название населённого пункта'}
               </span>
               <div
-                className={`w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 ${addressData.city ? 'bg-[#101010]' : 'border border-[rgba(16,16,16,0.25)]'
-                  }`}
+                className={`w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 ${
+                  addressData.city
+                    ? 'bg-[#9CA3AF]'
+                    : isFieldActive(1)
+                      ? 'bg-[#101010]'
+                      : 'border border-[rgba(16,16,16,0.25)]'
+                }`}
                 style={{
                   borderWidth: '0.5px',
                   transition: 'background-color 0.2s ease, border-color 0.2s ease',
@@ -402,7 +413,7 @@ function AddressFormContent() {
                 {addressData.city ? (
                   <AnimatedCheck key={`city-${addressData.city}`} size={8} color="#FFFFFF" strokeWidth={1.5} />
                 ) : (
-                  <CaretRight size={8} weight="regular" color="rgba(16, 16, 16, 0.25)" />
+                  <CaretRight size={8} weight="regular" color="#FFFFFF" />
                 )}
               </div>
             </div>
@@ -420,10 +431,10 @@ function AddressFormContent() {
             className={`relative w-full rounded-[10px] bg-white ${!addressData.city ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
               }`}
             style={{
-              border: addressData.street
-                ? '0.5px solid #101010'
-                : addressData.errors.street
-                  ? '0.5px solid rgb(239, 68, 68)'
+              border: addressData.errors.street
+                ? '0.5px solid rgb(239, 68, 68)'
+                : isFieldActive(2) || addressData.street
+                  ? '0.5px solid #101010'
                   : '0.5px solid rgba(16, 16, 16, 0.25)',
             }}
           >
@@ -446,8 +457,13 @@ function AddressFormContent() {
                 {addressData.street || 'Улица'}
               </span>
               <div
-                className={`w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 ${addressData.street ? 'bg-[#101010]' : 'border border-[rgba(16,16,16,0.25)]'
-                  }`}
+                className={`w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 ${
+                  addressData.street
+                    ? 'bg-[#9CA3AF]'
+                    : isFieldActive(2)
+                      ? 'bg-[#101010]'
+                      : 'border border-[rgba(16,16,16,0.25)]'
+                }`}
                 style={{
                   borderWidth: '0.5px',
                   transition: 'background-color 0.2s ease, border-color 0.2s ease',
@@ -456,7 +472,7 @@ function AddressFormContent() {
                 {addressData.street ? (
                   <AnimatedCheck key={`street-${addressData.street}`} size={8} color="#FFFFFF" strokeWidth={1.5} />
                 ) : (
-                  <CaretRight size={8} weight="regular" color="rgba(16, 16, 16, 0.25)" />
+                  <CaretRight size={8} weight="regular" color="#FFFFFF" />
                 )}
               </div>
             </div>
@@ -474,10 +490,10 @@ function AddressFormContent() {
             className={`relative w-full rounded-[10px] bg-white ${!addressData.street ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
               }`}
             style={{
-              border: addressData.houseNumber
-                ? '0.5px solid #101010'
-                : addressData.errors.houseNumber
-                  ? '0.5px solid rgb(239, 68, 68)'
+              border: addressData.errors.houseNumber
+                ? '0.5px solid rgb(239, 68, 68)'
+                : isFieldActive(3) || addressData.houseNumber
+                  ? '0.5px solid #101010'
                   : '0.5px solid rgba(16, 16, 16, 0.25)',
             }}
           >
@@ -504,8 +520,13 @@ function AddressFormContent() {
                   : 'Номер дома'}
               </span>
               <div
-                className={`w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 ${addressData.houseNumber ? 'bg-[#101010]' : 'border border-[rgba(16,16,16,0.25)]'
-                  }`}
+                className={`w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 ${
+                  addressData.houseNumber
+                    ? 'bg-[#9CA3AF]'
+                    : isFieldActive(3)
+                      ? 'bg-[#101010]'
+                      : 'border border-[rgba(16,16,16,0.25)]'
+                }`}
                 style={{
                   borderWidth: '0.5px',
                   transition: 'background-color 0.2s ease, border-color 0.2s ease',
@@ -514,7 +535,7 @@ function AddressFormContent() {
                 {addressData.houseNumber ? (
                   <AnimatedCheck key={`house-${addressData.houseNumber}-${addressData.apartmentNumber ?? ''}`} size={8} color="#FFFFFF" strokeWidth={1.5} />
                 ) : (
-                  <CaretRight size={8} weight="regular" color="rgba(16, 16, 16, 0.25)" />
+                  <CaretRight size={8} weight="regular" color="#FFFFFF" />
                 )}
               </div>
             </div>

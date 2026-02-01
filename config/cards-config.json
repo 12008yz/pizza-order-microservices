@@ -1,0 +1,9 @@
+{
+  "cardWidth": 360,
+  "cardMinHeight": 560,
+  "gap": 5,
+  "paddingLeft": 20,
+  "paddingRight": 20,
+  "peekRight": 7,
+  "containerMargin": 4
+}

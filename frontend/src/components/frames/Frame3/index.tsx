@@ -95,6 +95,125 @@ const providerIdToSlugMap: Record<number, string> = {
   8: 'netbynet',
 };
 
+// Демо-тарифы, если API не вернул данные (provider-service не запущен или БД пустая)
+const DEMO_TARIFFS: ApiTariff[] = [
+  {
+    id: 1,
+    name: 'Технологии выгоды. Тест-драйв.',
+    description: 'Интернет 100 Мбит/с + ТВ 135 каналов + мобильная связь',
+    providerId: 1,
+    speed: 100,
+    price: 965,
+    connectionPrice: 500,
+    technology: 'fiber',
+    hasTV: true,
+    tvChannels: 135,
+    hasMobile: true,
+    mobileMinutes: 1000,
+    mobileGB: 40,
+    mobileSMS: 50,
+    promoPrice: 0,
+    promoMonths: 3,
+    promoText: '90 дней за 0 р.',
+    favoriteLabel: 'Кинотеатр «Wink»',
+    favoriteDesc: 'Дополнительное приложение',
+    popularity: 95,
+    provider: { id: 1, name: 'Ростелеком', slug: 'rostelecom' },
+  },
+  {
+    id: 2,
+    name: 'Домашний интернет + ТВ',
+    description: 'Интернет 200 Мбит/с + ТВ 180 каналов + мобильная связь',
+    providerId: 2,
+    speed: 200,
+    price: 890,
+    connectionPrice: 0,
+    technology: 'fiber',
+    hasTV: true,
+    tvChannels: 180,
+    hasMobile: true,
+    mobileMinutes: 800,
+    mobileGB: 30,
+    mobileSMS: 100,
+    promoPrice: 1,
+    promoMonths: 1,
+    promoText: '30 дней за 1 р.',
+    favoriteLabel: 'KION',
+    favoriteDesc: 'Дополнительное приложение',
+    popularity: 90,
+    provider: { id: 2, name: 'МТС', slug: 'mts' },
+  },
+  {
+    id: 3,
+    name: 'Всё в одном',
+    description: 'Интернет 300 Мбит/с + ТВ 200 каналов + мобильная связь',
+    providerId: 3,
+    speed: 300,
+    price: 1100,
+    connectionPrice: 300,
+    technology: 'fiber',
+    hasTV: true,
+    tvChannels: 200,
+    hasMobile: true,
+    mobileMinutes: 1500,
+    mobileGB: 50,
+    mobileSMS: 200,
+    promoPrice: 0,
+    promoMonths: 2,
+    promoText: '60 дней за 0 р.',
+    favoriteLabel: 'Wink',
+    favoriteDesc: 'Дополнительное приложение',
+    popularity: 85,
+    provider: { id: 3, name: 'Билайн', slug: 'beeline' },
+  },
+  {
+    id: 4,
+    name: 'Интернет + ТВ Стартовый',
+    description: 'Интернет 150 Мбит/с + ТВ 100 каналов',
+    providerId: 5,
+    speed: 150,
+    price: 650,
+    connectionPrice: 0,
+    technology: 'fiber',
+    hasTV: true,
+    tvChannels: 100,
+    hasMobile: false,
+    mobileMinutes: null,
+    mobileGB: null,
+    mobileSMS: null,
+    promoPrice: 0,
+    promoMonths: 0,
+    promoText: '14 дней за 0 р.',
+    favoriteLabel: null,
+    favoriteDesc: null,
+    popularity: 80,
+    provider: { id: 5, name: 'ДОМ.RU', slug: 'domru' },
+  },
+  {
+    id: 5,
+    name: 'Объединяй! Максимум',
+    description: 'Интернет 500 Мбит/с + ТВ 250 каналов + мобильная связь безлимит',
+    providerId: 4,
+    speed: 500,
+    price: 1500,
+    connectionPrice: 0,
+    technology: 'fiber',
+    hasTV: true,
+    tvChannels: 250,
+    hasMobile: true,
+    mobileMinutes: 2000,
+    mobileGB: 999,
+    mobileSMS: 500,
+    promoPrice: 0,
+    promoMonths: 1,
+    promoText: '30 дней за 0 р.',
+    favoriteLabel: null,
+    favoriteDesc: null,
+    popularity: 75,
+    provider: { id: 4, name: 'Мегафон', slug: 'megafon' },
+  },
+];
+
 // Функция преобразования данных из API в формат компонента
 function transformApiTariffToComponent(apiTariff: ApiTariff): Tariff {
   const priceValue = typeof apiTariff.price === 'string' ? parseFloat(apiTariff.price) : apiTariff.price;
@@ -310,17 +429,16 @@ function Frame3Content() {
         setTariffsError(null);
         const response = await tariffsService.getTariffs();
 
-        if (response.success && response.data) {
-          const transformedTariffs = response.data.map((apiTariff: any) =>
-            transformApiTariffToComponent(apiTariff as ApiTariff)
+        if (response.success && response.data !== undefined) {
+          const rawTariffs: ApiTariff[] =
+            response.data.length > 0 ? (response.data as ApiTariff[]) : DEMO_TARIFFS;
+          const transformedTariffs = rawTariffs.map((apiTariff) =>
+            transformApiTariffToComponent(apiTariff)
           );
 
-          // Удаляем дубликаты по ID (на случай если API вернет дубликаты)
           const uniqueTariffs = transformedTariffs.reduce((acc: Tariff[], current: Tariff) => {
             const existingTariff = acc.find(t => t.id === current.id);
-            if (!existingTariff) {
-              acc.push(current);
-            }
+            if (!existingTariff) acc.push(current);
             return acc;
           }, []);
 
@@ -569,13 +687,11 @@ function Frame3Content() {
     setHintStep('none');
   };
 
-  // Скролл к следующей карточке
+  // Скролл к следующей карточке (одна карточка + зазор)
   const handleScrollRight = () => {
     if (scrollRef.current) {
-      // Анимация клика
       setArrowClicked(true);
       setTimeout(() => setArrowClicked(false), 400);
-
       scrollRef.current.scrollBy({
         left: 365,
         behavior: 'smooth',
@@ -1094,7 +1210,7 @@ function Frame3Content() {
         )}
       </div>
 
-      {/* Контейнер для карточек - показывает 15px второй карточки справа */}
+      {/* Контейнер для карточек — показывает 15px второй карточки справа */}
       <div
         className="absolute overflow-hidden"
         style={{
@@ -1111,6 +1227,8 @@ function Frame3Content() {
           style={{
             gap: '5px',
             height: '100%',
+            paddingLeft: '20px',
+            paddingRight: '20px',
             scrollSnapType: 'x mandatory',
             WebkitOverflowScrolling: 'touch',
             scrollbarWidth: 'none',

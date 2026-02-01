@@ -433,6 +433,8 @@ services:
       - ./frontend:/app
       - /app/node_modules
       - /app/.next
+      # Конфиг карточек карусели — редактируйте config/cards-config.json на хосте, обновите страницу в браузере (перезапуск Docker не нужен)
+      - ./config/cards-config.json:/app/public/cards-config.json
 
 volumes:
   auth_db_data:

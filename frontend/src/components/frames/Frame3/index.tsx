@@ -15,6 +15,7 @@ import {
   HeartOutlineIcon,
   HeartFilledIcon,
   HeartHeaderFilledIcon,
+  HeartHeaderBlackFilledIcon,
   ClearFilterIcon,
 } from '../../common/icons';
 import FavoriteToast from './FavoriteToast';
@@ -771,7 +772,7 @@ function Frame3Content() {
                 {favoritesInitialized && hasFavorites ? (
                   <HeartHeaderFilledIcon />
                 ) : (
-                  <HeartIcon />
+                  <HeartHeaderBlackFilledIcon />
                 )}
               </div>
             </div>
@@ -1183,7 +1184,7 @@ function Frame3Content() {
                 style={{
                   position: 'relative',
                   width: '360px',
-                  height: '420px',
+                  minHeight: '560px',
                   background: '#FFFFFF',
                   borderRadius: '20px',
                   scrollSnapAlign: 'start',
@@ -1237,17 +1238,16 @@ function Frame3Content() {
                   />
                 </div>
 
-                {/* Контентная область - заполняет оставшееся пространство */}
-                <div style={{ flex: 1, padding: '10px 15px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minHeight: 0 }}>
-
+                {/* Контентная область */}
+                <div style={{ padding: '10px 15px' }}>
                   {/* Список услуг */}
-                  <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', gap: '10px' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                     {/* Скорость */}
                     <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
                       <div style={{ display: 'flex', alignItems: 'center', flexShrink: 0, marginTop: '2px' }}>
                         <CheckCircleIcon />
                       </div>
-                      <div style={{ flex: 1 }}>
+                      <div style={{ flex: 1, minWidth: 0 }}>
                         <div
                           style={{
                             fontFamily: 'TT Firs Neue, sans-serif',
@@ -1255,6 +1255,9 @@ function Frame3Content() {
                             fontSize: '16px',
                             lineHeight: '155%',
                             color: '#101010',
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
                           }}
                         >
                           {tariff.speed}
@@ -1267,6 +1270,9 @@ function Frame3Content() {
                             lineHeight: '105%',
                             color: 'rgba(16, 16, 16, 0.5)',
                             marginTop: '2px',
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
                           }}
                         >
                           {tariff.speedDesc}
@@ -1274,22 +1280,25 @@ function Frame3Content() {
                       </div>
                     </div>
 
-                    {/* Каналы */}
+                    {/* Каналы — всегда одна строка, только цифры разные */}
                     <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
                       <div style={{ display: 'flex', alignItems: 'center', flexShrink: 0, marginTop: '2px' }}>
                         <CheckCircleIcon />
                       </div>
-                      <div style={{ flex: 1 }}>
+                      <div style={{ flex: 1, minWidth: 0 }}>
                         <div
                           style={{
                             fontFamily: 'TT Firs Neue, sans-serif',
                             fontWeight: 400,
                             fontSize: '16px',
                             lineHeight: '155%',
-                            color: '#101010',
+                            color: tariff.channels ? '#101010' : 'rgba(16, 16, 16, 0.35)',
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
                           }}
                         >
-                          {tariff.channels}
+                          {tariff.channels || '—'}
                         </div>
                         <div
                           style={{
@@ -1299,85 +1308,96 @@ function Frame3Content() {
                             lineHeight: '105%',
                             color: 'rgba(16, 16, 16, 0.5)',
                             marginTop: '2px',
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
                           }}
                         >
-                          {tariff.channelsDesc}
+                          {tariff.channelsDesc || ' '}
                         </div>
                       </div>
                     </div>
 
-                    {/* Мобильная связь */}
-                    {tariff.mobile && (
-                      <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', flexShrink: 0, marginTop: '2px' }}>
-                          <CheckCircleIcon />
+                    {/* Мобильная связь — всегда одна строка */}
+                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', flexShrink: 0, marginTop: '2px' }}>
+                        <CheckCircleIcon />
+                      </div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div
+                          style={{
+                            fontFamily: 'TT Firs Neue, sans-serif',
+                            fontWeight: 400,
+                            fontSize: '16px',
+                            lineHeight: '155%',
+                            color: tariff.mobile ? '#101010' : 'rgba(16, 16, 16, 0.35)',
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                          }}
+                        >
+                          {tariff.mobile || '—'}
                         </div>
-                        <div style={{ flex: 1 }}>
-                          <div
-                            style={{
-                              fontFamily: 'TT Firs Neue, sans-serif',
-                              fontWeight: 400,
-                              fontSize: '16px',
-                              lineHeight: '155%',
-                              color: '#101010',
-                            }}
-                          >
-                            {tariff.mobile}
-                          </div>
-                          <div
-                            style={{
-                              fontFamily: 'TT Firs Neue, sans-serif',
-                              fontWeight: 400,
-                              fontSize: '14px',
-                              lineHeight: '105%',
-                              color: 'rgba(16, 16, 16, 0.5)',
-                              marginTop: '2px',
-                            }}
-                          >
-                            {tariff.mobileDesc}
-                          </div>
+                        <div
+                          style={{
+                            fontFamily: 'TT Firs Neue, sans-serif',
+                            fontWeight: 400,
+                            fontSize: '14px',
+                            lineHeight: '105%',
+                            color: 'rgba(16, 16, 16, 0.5)',
+                            marginTop: '2px',
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                          }}
+                        >
+                          {tariff.mobileDesc || ' '}
                         </div>
                       </div>
-                    )}
+                    </div>
 
-                    {/* Дополнительное приложение (Кинотеатр) */}
-                    {tariff.favoriteLabel && (
-                      <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', flexShrink: 0, marginTop: '2px' }}>
-                          <CheckCircleIcon />
+                    {/* Дополнительное приложение (Кинотеатр) — всегда одна строка */}
+                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', flexShrink: 0, marginTop: '2px' }}>
+                        <CheckCircleIcon />
+                      </div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div
+                          style={{
+                            fontFamily: 'TT Firs Neue, sans-serif',
+                            fontWeight: 400,
+                            fontSize: '16px',
+                            lineHeight: '155%',
+                            color: tariff.favoriteLabel ? '#101010' : 'rgba(16, 16, 16, 0.35)',
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                          }}
+                        >
+                          {tariff.favoriteLabel || '—'}
                         </div>
-                        <div style={{ flex: 1 }}>
-                          <div
-                            style={{
-                              fontFamily: 'TT Firs Neue, sans-serif',
-                              fontWeight: 400,
-                              fontSize: '16px',
-                              lineHeight: '155%',
-                              color: '#101010',
-                            }}
-                          >
-                            {tariff.favoriteLabel}
-                          </div>
-                          <div
-                            style={{
-                              fontFamily: 'TT Firs Neue, sans-serif',
-                              fontWeight: 400,
-                              fontSize: '14px',
-                              lineHeight: '105%',
-                              color: 'rgba(16, 16, 16, 0.5)',
-                              marginTop: '2px',
-                            }}
-                          >
-                            {tariff.favoriteDesc}
-                          </div>
+                        <div
+                          style={{
+                            fontFamily: 'TT Firs Neue, sans-serif',
+                            fontWeight: 400,
+                            fontSize: '14px',
+                            lineHeight: '105%',
+                            color: 'rgba(16, 16, 16, 0.5)',
+                            marginTop: '2px',
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                          }}
+                        >
+                          {tariff.favoriteDesc || ' '}
                         </div>
                       </div>
-                    )}
+                    </div>
                   </div>
                 </div>
 
                 {/* Футер с ценой и кнопками */}
-                <div style={{ padding: '15px', flexShrink: 0 }}>
+                <div style={{ padding: '15px', flexShrink: 0, position: 'relative' }}>
                   {/* Line 9 - Разделитель перед ценой */}
                   <div
                     style={{
@@ -1395,10 +1415,54 @@ function Frame3Content() {
                       fontSize: '22px',
                       lineHeight: '115%',
                       color: '#101010',
-                      marginBottom: '8px',
+                      marginBottom: '4px',
                     }}
                   >
                     {tariff.price}
+                  </div>
+
+                  {/* Промо-акция и огонёк на одной линии */}
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      marginBottom: '2px',
+                      minHeight: '20px',
+                    }}
+                  >
+                    {tariff.promoText ? (
+                      <div
+                        style={{
+                          fontFamily: 'TT Firs Neue, sans-serif',
+                          fontWeight: 400,
+                          fontSize: '14px',
+                          lineHeight: '145%',
+                          color: 'rgba(16, 16, 16, 0.5)',
+                        }}
+                      >
+                        {tariff.promoText}
+                      </div>
+                    ) : (
+                      <span />
+                    )}
+                    {/* Красный огонёк справа, на уровне с промо-текстом */}
+                    <div
+                      style={{
+                        width: '16px',
+                        height: '16px',
+                        flexShrink: 0,
+                        background: '#FF1000',
+                        borderRadius: '50%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      <svg width="7" height="8" viewBox="0 0 7 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M3.75927 0.0684591C3.72341 0.0380912 3.68091 0.0169502 3.63534 0.00681841C3.58978 -0.00331335 3.54249 -0.00213889 3.49746 0.0102428C3.45244 0.0226244 3.411 0.0458503 3.37663 0.0779624C3.34227 0.110074 3.31598 0.150131 3.3 0.194756L2.5 2.43218L1.62145 1.56514C1.59195 1.53599 1.55672 1.51354 1.51808 1.49927C1.47943 1.485 1.43826 1.47924 1.39727 1.48235C1.35629 1.48546 1.31641 1.49739 1.28028 1.51734C1.24414 1.53729 1.21257 1.56482 1.18764 1.5981C0.4 2.64922 0 3.70663 0 4.74072C0 5.60513 0.337142 6.43414 0.937258 7.04538C1.53737 7.65661 2.35131 8 3.2 8C4.04869 8 4.86263 7.65661 5.46274 7.04538C6.06286 6.43414 6.4 5.60513 6.4 4.74072C6.4 2.53885 4.55309 0.740686 3.75927 0.0684591Z" fill="white"/>
+                      </svg>
+                    </div>
                   </div>
 
                   {/* Подключение */}
@@ -1407,7 +1471,7 @@ function Frame3Content() {
                       fontFamily: 'TT Firs Neue, sans-serif',
                       fontWeight: 400,
                       fontSize: '14px',
-                      lineHeight: '105%',
+                      lineHeight: '145%',
                       color: 'rgba(16, 16, 16, 0.5)',
                       marginBottom: '15px',
                     }}
@@ -1451,7 +1515,7 @@ function Frame3Content() {
                       )}
                     </button>
 
-                    {/* Кнопка промо (главная) — как во Frame1/Frame4: type="button" для надёжного клика */}
+                    {/* Кнопка "Подключить" — как во Frame1/Frame4: type="button" для надёжного клика */}
                     <button
                       type="button"
                       onClick={(e) => {
@@ -1476,7 +1540,7 @@ function Frame3Content() {
                         color: '#FFFFFF',
                       }}
                     >
-                      {tariff.promoText}
+                      Подключить
                     </button>
                   </div>
                 </div>

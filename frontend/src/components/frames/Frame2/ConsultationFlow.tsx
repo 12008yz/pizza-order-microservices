@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 
 type ContactMethod = 'max' | 'telegram' | 'phone';
-type ConsultationStep = 'phone-input' | 'contact-method' | 'phone-after-method';
+type ConsultationStep = 'contact-method' | 'phone-after-method';
 
 interface NotificationItem {
   id: string;
@@ -19,7 +19,7 @@ interface ConsultationFlowProps {
 }
 
 export default function ConsultationFlow({ onClose, onSubmit, onSkip }: ConsultationFlowProps) {
-  const [step, setStep] = useState<ConsultationStep>('phone-input');
+  const [step, setStep] = useState<ConsultationStep>('contact-method');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [selectedMethod, setSelectedMethod] = useState<ContactMethod | null>(null);
   const [phoneError, setPhoneError] = useState(false);
@@ -91,28 +91,6 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
     setShowSkipAfterError(false);
   }, [formatPhoneNumber]);
 
-  const handleSubmitPhone = useCallback(() => {
-    const phoneDigits = phoneNumber.replace(/\D/g, '');
-    // Валидация: российский номер должен быть строго 11 цифр
-    if (phoneDigits.length === 11) {
-      // Добавляем второе уведомление
-      setNotifications((prev) => [
-        ...prev,
-        {
-          id: 'sent',
-          timer: 7,
-          content: 'Информация направлена.',
-          hasLink: true,
-        },
-      ]);
-      // Переходим к выбору способа связи
-      setStep('contact-method');
-    } else {
-      setPhoneError(true);
-      setShowSkipAfterError(true);
-    }
-  }, [phoneNumber]);
-
   const handleSubmitPhoneAfterMethod = useCallback(() => {
     const phoneDigits = phoneNumber.replace(/\D/g, '');
     // Валидация: российский номер должен быть строго 11 цифр
@@ -152,8 +130,6 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
   const handleBack = useCallback(() => {
     if (step === 'phone-after-method') {
       setStep('contact-method');
-    } else if (step === 'contact-method') {
-      setStep('phone-input');
     } else {
       onClose();
     }
@@ -163,17 +139,6 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
     const phoneDigits = phoneNumber.replace(/\D/g, '');
     return phoneDigits.length === 11;
   }, [phoneNumber]);
-  const hasInput = phoneNumber.length > 0;
-
-  const buttonConfig = useMemo(() => {
-    if (showSkipAfterError) {
-      return { text: 'Пропустить', action: onSkip || onClose, isError: false };
-    }
-    if (hasInput) {
-      return { text: 'Далее', action: handleSubmitPhone, isError: phoneError };
-    }
-    return { text: 'Пропустить', action: onSkip || onClose, isError: false };
-  }, [showSkipAfterError, hasInput, phoneError, handleSubmitPhone, onSkip, onClose]);
 
   // Закрытие уведомления
   const handleCloseNotification = useCallback((id: string) => {
@@ -276,123 +241,6 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
       </>
     );
   }, [notifications, handleCloseNotification]);
-
-  // Экран ввода телефона
-  const renderPhoneInput = () => (
-    <>
-      {renderNotifications}
-
-      {/* Карточка консультации */}
-      <div
-        className="absolute bg-white rounded-[20px]"
-        style={{
-          width: '360px',
-          height: '235px',
-          left: '20px',
-          top: '490px',
-          boxSizing: 'border-box',
-          backdropFilter: 'blur(7.5px)',
-        }}
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* Заголовок */}
-        <div
-          className="absolute font-normal flex items-center"
-          style={{
-            width: '330px',
-            height: '25px',
-            left: '15px',
-            top: '15px',
-            fontFamily: 'TT Firs Neue, sans-serif',
-            fontSize: '20px',
-            lineHeight: '125%',
-            color: '#101010',
-            letterSpacing: '0.5px',
-          }}
-        >
-          Консультация
-        </div>
-
-        {/* Подзаголовок */}
-        <div
-          className="absolute font-normal"
-          style={{
-            width: '330px',
-            height: '30px',
-            left: '15px',
-            top: '50px',
-            fontFamily: 'TT Firs Neue, sans-serif',
-            fontSize: '14px',
-            lineHeight: '105%',
-            color: 'rgba(16, 16, 16, 0.25)',
-            letterSpacing: '0.5px',
-          }}
-        >
-          Напишите номер вашего сотового телефона. Пожалуйста, проверьте правильность
-        </div>
-
-        {/* Поле ввода телефона */}
-        <div
-          className="absolute rounded-[10px]"
-          style={{
-            left: '15px',
-            right: '15px',
-            top: '95px',
-            height: '50px',
-            border: phoneError
-              ? '1px solid #FF3B30'
-              : isPhoneValid
-                ? '1px solid #101010'
-                : '1px solid rgba(16, 16, 16, 0.25)',
-            boxSizing: 'border-box',
-          }}
-        >
-          <input
-            type="tel"
-            value={phoneNumber}
-            onChange={handlePhoneChange}
-            placeholder="Номер сотового телефона"
-            className="w-full h-full px-[15px] bg-transparent outline-none"
-            style={{
-              fontFamily: 'TT Firs Neue, sans-serif',
-              fontSize: '16px',
-              lineHeight: '125%',
-              color: phoneError ? '#FF3B30' : phoneNumber ? '#101010' : 'rgba(16, 16, 16, 0.25)',
-              letterSpacing: '0.5px',
-            }}
-          />
-        </div>
-
-        {/* Кнопка */}
-        <button
-          onClick={buttonConfig.action}
-          onMouseDown={() => setIsMainBtnPressed(true)}
-          onMouseUp={() => setIsMainBtnPressed(false)}
-          onMouseLeave={() => setIsMainBtnPressed(false)}
-          onTouchStart={() => setIsMainBtnPressed(true)}
-          onTouchEnd={() => setIsMainBtnPressed(false)}
-          className="absolute rounded-[10px] flex items-center justify-center text-white"
-          style={{
-            left: '15px',
-            right: '15px',
-            top: '160px',
-            height: '50px',
-            background: '#101010',
-            border: '1px solid rgba(16, 16, 16, 0.25)',
-            fontFamily: 'TT Firs Neue, sans-serif',
-            fontSize: '16px',
-            lineHeight: '315%',
-            boxSizing: 'border-box',
-            letterSpacing: '0.5px',
-            transform: isMainBtnPressed ? 'scale(0.97)' : 'scale(1)',
-            transition: 'transform 0.15s ease-out',
-          }}
-        >
-          {buttonConfig.text}
-        </button>
-      </div>
-    </>
-  );
 
   // Экран выбора способа связи
   const renderContactMethod = () => (
@@ -880,7 +728,6 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
           onClick={handleBackgroundClick}
         />
 
-        {step === 'phone-input' && renderPhoneInput()}
         {step === 'contact-method' && renderContactMethod()}
         {step === 'phone-after-method' && renderPhoneAfterMethod()}
       </div>

@@ -1,5 +1,6 @@
 node_modules
 .next
+packages
 out
 dist
 .git

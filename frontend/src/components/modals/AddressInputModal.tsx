@@ -220,7 +220,7 @@ export default function AddressInputModal({
           const searchQuery = hasApartment ? queryParts[0] : query;
 
           let dbSuggestions: any[] = [];
-          let apartmentSuggestions: any[] = [];
+          const apartmentSuggestions: any[] = [];
 
           // Определяем streetId для загрузки домов
           let streetIdToUse = addressData.streetId;

@@ -27,7 +27,7 @@ export default function ConnectionTypeModal({
   const [shouldRender, setShouldRender] = useState(false);
   const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  use_effect: useEffect(() => {
+  useEffect(() => {
     // Если был запущен таймер закрытия – сбрасываем его при новом изменении isOpen
     if (closeTimeoutRef.current) {
       clearTimeout(closeTimeoutRef.current);

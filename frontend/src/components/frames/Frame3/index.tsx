@@ -701,7 +701,7 @@ function Frame3Content() {
 
   return (
     <div
-      className="relative w-full max-w-[400px] mx-auto bg-[#F5F5F5] overflow-hidden"
+      className="relative w-full max-w-full mx-auto bg-[#F5F5F5] overflow-hidden"
       style={{
         fontFamily: 'TT Firs Neue, sans-serif',
         height: '100vh',
@@ -1210,12 +1210,12 @@ function Frame3Content() {
         )}
       </div>
 
-      {/* Контейнер для карточек — показывает 15px второй карточки справа */}
+      {/* Контейнер для карточек — без обрезки краёв */}
       <div
-        className="absolute overflow-hidden"
+        className="absolute"
         style={{
-          left: '20px',
-          right: '5px',
+          left: '0px',
+          right: '0px',
           top: '305px',
         }}
         onClick={(e) => e.stopPropagation()}
@@ -1223,7 +1223,7 @@ function Frame3Content() {
         {/* Горизонтальный скролл с карточками */}
         <div
           ref={scrollRef}
-          className="flex overflow-x-auto scrollbar-hide"
+          className="flex overflow-x-auto scrollbar-hide flex-nowrap"
           style={{
             gap: '5px',
             height: '100%',
@@ -1237,8 +1237,10 @@ function Frame3Content() {
         >
           {tariffsLoading ? (
             <div
+              className="flex-shrink-0"
               style={{
-                width: '360px',
+                minWidth: '360px',
+                flex: '1 0 0',
                 background: '#FFFFFF',
                 borderRadius: '20px',
                 display: 'flex',
@@ -1254,8 +1256,10 @@ function Frame3Content() {
             </div>
           ) : tariffsError ? (
             <div
+              className="flex-shrink-0"
               style={{
-                width: '360px',
+                minWidth: '360px',
+                flex: '1 0 0',
                 background: '#FFFFFF',
                 borderRadius: '20px',
                 display: 'flex',
@@ -1271,8 +1275,10 @@ function Frame3Content() {
             </div>
           ) : !tariffsLoading && displayedTariffs.length === 0 ? (
             <div
+              className="flex-shrink-0"
               style={{
-                width: '360px',
+                minWidth: '360px',
+                flex: '1 0 0',
                 background: '#FFFFFF',
                 borderRadius: '20px',
                 display: 'flex',
@@ -1301,14 +1307,14 @@ function Frame3Content() {
                 className="flex-shrink-0"
                 style={{
                   position: 'relative',
-                  width: '360px',
+                  minWidth: '360px',
+                  flex: '1 0 0',
                   minHeight: '560px',
                   background: '#FFFFFF',
                   borderRadius: '20px',
                   scrollSnapAlign: 'start',
                   boxSizing: 'border-box',
                   overflow: 'hidden',
-                  flexShrink: 0,
                   display: 'flex',
                   flexDirection: 'column',
                 }}

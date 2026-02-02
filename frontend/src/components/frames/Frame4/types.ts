@@ -16,7 +16,8 @@ export interface RouterSelection {
 export interface RouterWizardState {
   need: RouterNeedOption | null;
   purchaseOption: RouterPurchaseOption | null;
-  operatorId: number | null;
+  operatorId: RouterOperatorOption | null;
+  configOption: RouterConfigOption | null;
   configComplete: boolean;
 }
 
@@ -33,13 +34,28 @@ export interface TvBoxWizardState {
   operatorId: TvBoxOperatorOption | null;
 }
 
+// ============ SIM CARD TYPES ============
+export type SimConnectionType = 'new_number' | 'keep_number' | 'no_thanks';
+export type SimClientStatus = 'new_client' | 'existing_client';
+export type SimSmartphoneCount = 1 | 2 | 3 | 4 | 5;
+export type SimOperatorOption = 'beeline' | 'megafon' | 'mts' | 'tele2' | 'yota';
+
+export interface SimCardWizardState {
+  connectionType: SimConnectionType | null;
+  clientStatus: SimClientStatus | null;
+  smartphoneCount: SimSmartphoneCount | null;
+  currentOperator: SimOperatorOption | null;
+}
+
 // ============ COMBINED EQUIPMENT STATE ============
 export interface EquipmentState {
   router: RouterSelection;
   tvBox?: TvBoxWizardState;
+  simCard?: SimCardWizardState;
 }
 
 export interface FullEquipmentWizardState {
   router: RouterWizardState;
   tvBox: TvBoxWizardState;
+  simCard: SimCardWizardState;
 }

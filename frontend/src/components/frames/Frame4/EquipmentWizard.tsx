@@ -4,7 +4,7 @@ import React, { useState, useCallback } from 'react';
 import { EquipmentModal } from './components';
 import RouterFlow from './RouterFlow';
 import TvBoxFlow from './TvBoxFlow';
-import type { RouterWizardState, TvBoxWizardState, FullEquipmentWizardState } from './types';
+import type { RouterWizardState, TvBoxWizardState, FullEquipmentWizardState, SimCardWizardState } from './types';
 
 type WizardPhase = 'router' | 'tvbox' | 'done';
 
@@ -18,6 +18,7 @@ const INITIAL_ROUTER_STATE: RouterWizardState = {
   need: null,
   purchaseOption: null,
   operatorId: null,
+  configOption: null,
   configComplete: false,
 };
 
@@ -26,6 +27,13 @@ const INITIAL_TVBOX_STATE: TvBoxWizardState = {
   tvCount: null,
   purchaseOption: null,
   operatorId: null,
+};
+
+const INITIAL_SIMCARD_STATE: SimCardWizardState = {
+  connectionType: null,
+  clientStatus: null,
+  smartphoneCount: null,
+  currentOperator: null,
 };
 
 export default function EquipmentWizard({
@@ -49,10 +57,11 @@ export default function EquipmentWizard({
   const handleTvBoxComplete = useCallback(
     (state: TvBoxWizardState) => {
       setTvBoxState(state);
-      // Оба флоу завершены - вызываем onComplete и закрываем
+      // Роутер и ТВ-приставка завершены; simCard не заполняется в модальном визарде — передаём начальное состояние
       onComplete?.({
         router: routerState,
         tvBox: state,
+        simCard: INITIAL_SIMCARD_STATE,
       });
       setPhase('done');
       onClose();

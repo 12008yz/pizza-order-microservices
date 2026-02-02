@@ -7,7 +7,7 @@ import {
   RouterOperatorStep,
   RouterConfigStep,
 } from './steps';
-import type { RouterNeedOption, PurchaseOption, RouterWizardState } from './types';
+import type { RouterNeedOption, RouterPurchaseOption, RouterOperatorOption, RouterConfigOption, RouterWizardState } from './types';
 
 export type RouterFlowStep = 'need' | 'purchase' | 'operator' | 'config' | 'done';
 
@@ -20,6 +20,7 @@ const INITIAL_STATE: RouterWizardState = {
   need: null,
   purchaseOption: null,
   operatorId: null,
+  configOption: null,
   configComplete: false,
 };
 
@@ -31,12 +32,16 @@ export default function RouterFlow({ onComplete, onBackFromFirst }: RouterFlowPr
     setState((s) => ({ ...s, need }));
   }, []);
 
-  const setPurchaseOption = useCallback((purchaseOption: PurchaseOption) => {
+  const setPurchaseOption = useCallback((purchaseOption: RouterPurchaseOption) => {
     setState((s) => ({ ...s, purchaseOption }));
   }, []);
 
-  const setOperatorId = useCallback((operatorId: number) => {
+  const setOperatorId = useCallback((operatorId: RouterOperatorOption) => {
     setState((s) => ({ ...s, operatorId }));
+  }, []);
+
+  const setConfigOption = useCallback((configOption: RouterConfigOption) => {
+    setState((s) => ({ ...s, configOption }));
   }, []);
 
   const goNextFromNeed = useCallback(() => {
@@ -44,16 +49,16 @@ export default function RouterFlow({ onComplete, onBackFromFirst }: RouterFlowPr
       setStep('purchase');
       return;
     }
-    if (state.need === 'have_from_operator') {
+    if (state.need === 'from_operator') {
       setStep('operator');
       return;
     }
-    if (state.need === 'have_own') {
+    if (state.need === 'own') {
       setStep('config');
       return;
     }
-    // state.need === 'no' — завершаем без дальнейших шагов
-    onComplete({ ...state, need: state.need ?? 'no' });
+    // state.need === 'no_thanks' — завершаем без дальнейших шагов
+    onComplete({ ...state, need: state.need ?? 'no_thanks' });
     setStep('done');
   }, [state, onComplete]);
 
@@ -69,7 +74,7 @@ export default function RouterFlow({ onComplete, onBackFromFirst }: RouterFlowPr
 
   const goNextFromConfig = useCallback(() => {
     setState((s) => ({ ...s, configComplete: true }));
-    onComplete({ ...state, configComplete: true });
+    onComplete({ ...state, configOption: state.configOption, configComplete: true });
     setStep('done');
   }, [state, onComplete]);
 
@@ -85,10 +90,10 @@ export default function RouterFlow({ onComplete, onBackFromFirst }: RouterFlowPr
   if (step === 'need') {
     return (
       <RouterNeedStep
-        value={state.need}
-        onChange={setNeed}
+        selected={state.need}
+        onSelect={setNeed}
         onNext={goNextFromNeed}
-        onBack={onBackFromFirst}
+        onBack={onBackFromFirst ?? (() => {})}
       />
     );
   }
@@ -96,8 +101,8 @@ export default function RouterFlow({ onComplete, onBackFromFirst }: RouterFlowPr
   if (step === 'purchase') {
     return (
       <RouterPurchaseStep
-        value={state.purchaseOption}
-        onChange={setPurchaseOption}
+        selected={state.purchaseOption}
+        onSelect={setPurchaseOption}
         onNext={goNextFromPurchase}
         onBack={goBack}
       />
@@ -107,8 +112,8 @@ export default function RouterFlow({ onComplete, onBackFromFirst }: RouterFlowPr
   if (step === 'operator') {
     return (
       <RouterOperatorStep
-        selectedId={state.operatorId}
-        onChange={setOperatorId}
+        selected={state.operatorId}
+        onSelect={setOperatorId}
         onNext={goNextFromOperator}
         onBack={goBack}
       />
@@ -116,7 +121,14 @@ export default function RouterFlow({ onComplete, onBackFromFirst }: RouterFlowPr
   }
 
   if (step === 'config') {
-    return <RouterConfigStep onNext={goNextFromConfig} onBack={goBack} />;
+    return (
+      <RouterConfigStep
+        selected={state.configOption}
+        onSelect={setConfigOption}
+        onNext={goNextFromConfig}
+        onBack={goBack}
+      />
+    );
   }
 
   return null;

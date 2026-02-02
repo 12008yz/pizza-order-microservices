@@ -11,6 +11,10 @@ import {
   TvBoxTvCountStep,
   TvBoxPurchaseStep,
   TvBoxOperatorStep,
+  SimConnectionTypeStep,
+  SimClientStatusStep,
+  SimSmartphoneCountStep,
+  SimOperatorStep,
 } from './steps';
 import type {
   RouterNeedOption,
@@ -22,6 +26,10 @@ import type {
   TvCountOption,
   TvBoxPurchaseOption,
   TvBoxOperatorOption,
+  SimConnectionType,
+  SimClientStatus,
+  SimSmartphoneCount,
+  SimOperatorOption,
 } from './types';
 import { AddressProvider } from '../../../contexts/AddressContext';
 import { useEquipment } from '../../../contexts/EquipmentContext';
@@ -33,6 +41,13 @@ const defaultTvBox = {
   operatorId: null as TvBoxOperatorOption | null,
 };
 
+const defaultSimCard = {
+  connectionType: null as SimConnectionType | null,
+  clientStatus: null as SimClientStatus | null,
+  smartphoneCount: null as SimSmartphoneCount | null,
+  currentOperator: null as SimOperatorOption | null,
+};
+
 const defaultEquipmentState: EquipmentState = {
   router: {
     need: 'need',
@@ -41,6 +56,7 @@ const defaultEquipmentState: EquipmentState = {
     config: null,
   },
   tvBox: defaultTvBox,
+  simCard: defaultSimCard,
 };
 
 type Step =
@@ -51,7 +67,11 @@ type Step =
   | 'tvbox_need'
   | 'tvbox_tvcount'
   | 'tvbox_purchase'
-  | 'tvbox_operator';
+  | 'tvbox_operator'
+  | 'sim_connection_type'
+  | 'sim_client_status'
+  | 'sim_smartphone_count'
+  | 'sim_operator';
 
 // Конфигурация карточек для разных шагов (высота подстраивается под контент)
 const cardConfig: Record<Step, { height: number; top: number }> = {
@@ -64,6 +84,11 @@ const cardConfig: Record<Step, { height: number; top: number }> = {
   tvbox_tvcount: { height: 430, top: 315 },
   tvbox_purchase: { height: 350, top: 375 },
   tvbox_operator: { height: 460, top: 265 },
+  // SIM card steps
+  sim_connection_type: { height: 350, top: 375 },
+  sim_client_status: { height: 295, top: 430 },
+  sim_smartphone_count: { height: 460, top: 265 },
+  sim_operator: { height: 460, top: 265 },
 };
 
 function Frame4Content() {
@@ -74,6 +99,7 @@ function Frame4Content() {
     ...defaultEquipmentState,
     ...savedEquipment,
     tvBox: { ...defaultTvBox, ...savedEquipment?.tvBox },
+    simCard: { ...defaultSimCard, ...savedEquipment?.simCard },
   }));
 
   // Инициализация из сохранённого выбора при монтировании
@@ -83,6 +109,7 @@ function Frame4Content() {
         ...prev,
         ...savedEquipment,
         tvBox: { ...defaultTvBox, ...savedEquipment.tvBox },
+        simCard: { ...defaultSimCard, ...savedEquipment.simCard },
       }));
     }
   }, []);
@@ -162,6 +189,35 @@ function Frame4Content() {
     }));
   };
 
+  // SIM Card handlers
+  const handleSimConnectionTypeSelect = (option: SimConnectionType) => {
+    setEquipmentState((prev) => ({
+      ...prev,
+      simCard: { ...prev.simCard!, connectionType: option },
+    }));
+  };
+
+  const handleSimClientStatusSelect = (option: SimClientStatus) => {
+    setEquipmentState((prev) => ({
+      ...prev,
+      simCard: { ...prev.simCard!, clientStatus: option },
+    }));
+  };
+
+  const handleSimSmartphoneCountSelect = (count: SimSmartphoneCount) => {
+    setEquipmentState((prev) => ({
+      ...prev,
+      simCard: { ...prev.simCard!, smartphoneCount: count },
+    }));
+  };
+
+  const handleSimOperatorSelect = (operator: SimOperatorOption) => {
+    setEquipmentState((prev) => ({
+      ...prev,
+      simCard: { ...prev.simCard!, currentOperator: operator },
+    }));
+  };
+
   const handleNext = () => {
     if (currentStep === 'router_need') {
       const { need } = equipmentState.router;
@@ -190,15 +246,43 @@ function Frame4Content() {
       } else if (need === 'have_from_operator') {
         setCurrentStep('tvbox_operator');
       } else {
-        // have_own | smart_tv — сохраняем и на /order
-        saveEquipment(equipmentState);
-        router.push('/order');
+        // have_own | smart_tv — переходим к SIM карте
+        setCurrentStep('sim_connection_type');
       }
     } else if (currentStep === 'tvbox_purchase') {
       setCurrentStep('tvbox_tvcount'); // после цены — количество
     } else if (currentStep === 'tvbox_tvcount') {
       setCurrentStep('tvbox_operator');
     } else if (currentStep === 'tvbox_operator') {
+      // После ТВ-бокса переходим к SIM карте
+      setCurrentStep('sim_connection_type');
+    } else if (currentStep === 'sim_connection_type') {
+      const connectionType = equipmentState.simCard?.connectionType;
+
+      if (connectionType === 'no_thanks') {
+        // Пропускаем SIM карту, идём на заказ
+        saveEquipment(equipmentState);
+        router.push('/order');
+      } else if (connectionType === 'new_number') {
+        // Новый номер — спрашиваем количество
+        setCurrentStep('sim_smartphone_count');
+      } else if (connectionType === 'keep_number') {
+        // Сохранить номер — спрашиваем статус клиента
+        setCurrentStep('sim_client_status');
+      }
+    } else if (currentStep === 'sim_client_status') {
+      setCurrentStep('sim_smartphone_count');
+    } else if (currentStep === 'sim_smartphone_count') {
+      const connectionType = equipmentState.simCard?.connectionType;
+      if (connectionType === 'keep_number') {
+        // Если сохраняем номер, спрашиваем оператора
+        setCurrentStep('sim_operator');
+      } else {
+        // Если новый номер, идём на заказ
+        saveEquipment(equipmentState);
+        router.push('/order');
+      }
+    } else if (currentStep === 'sim_operator') {
       saveEquipment(equipmentState);
       router.push('/order');
     }
@@ -229,6 +313,27 @@ function Frame4Content() {
       } else {
         setCurrentStep('tvbox_tvcount');
       }
+    } else if (currentStep === 'sim_connection_type') {
+      // Возврат к ТВ-боксу
+      const tvNeed = equipmentState.tvBox?.need;
+      if (tvNeed === 'need') {
+        setCurrentStep('tvbox_operator');
+      } else if (tvNeed === 'have_from_operator') {
+        setCurrentStep('tvbox_operator');
+      } else {
+        setCurrentStep('tvbox_need');
+      }
+    } else if (currentStep === 'sim_client_status') {
+      setCurrentStep('sim_connection_type');
+    } else if (currentStep === 'sim_smartphone_count') {
+      const connectionType = equipmentState.simCard?.connectionType;
+      if (connectionType === 'keep_number') {
+        setCurrentStep('sim_client_status');
+      } else {
+        setCurrentStep('sim_connection_type');
+      }
+    } else if (currentStep === 'sim_operator') {
+      setCurrentStep('sim_smartphone_count');
     }
   };
 
@@ -400,6 +505,42 @@ function Frame4Content() {
               <TvBoxOperatorStep
                 selected={equipmentState.tvBox?.operatorId ?? null}
                 onSelect={handleTvBoxOperatorSelect}
+                onNext={handleNext}
+                onBack={handleBack}
+              />
+            )}
+
+            {currentStep === 'sim_connection_type' && (
+              <SimConnectionTypeStep
+                selected={equipmentState.simCard?.connectionType ?? null}
+                onSelect={handleSimConnectionTypeSelect}
+                onNext={handleNext}
+                onBack={handleBack}
+              />
+            )}
+
+            {currentStep === 'sim_client_status' && (
+              <SimClientStatusStep
+                selected={equipmentState.simCard?.clientStatus ?? null}
+                onSelect={handleSimClientStatusSelect}
+                onNext={handleNext}
+                onBack={handleBack}
+              />
+            )}
+
+            {currentStep === 'sim_smartphone_count' && (
+              <SimSmartphoneCountStep
+                selected={equipmentState.simCard?.smartphoneCount ?? null}
+                onSelect={handleSimSmartphoneCountSelect}
+                onNext={handleNext}
+                onBack={handleBack}
+              />
+            )}
+
+            {currentStep === 'sim_operator' && (
+              <SimOperatorStep
+                selected={equipmentState.simCard?.currentOperator ?? null}
+                onSelect={handleSimOperatorSelect}
                 onNext={handleNext}
                 onBack={handleBack}
               />

@@ -3,7 +3,7 @@ import './globals.css'
 import AppProviders from '../components/providers/AppProviders'
 
 export const metadata: Metadata = {
-  title: 'Агрегатор интернет-провайдеров',
+  title: 'Гигапоиск',
   description: 'Проверьте доступность интернета по вашему адресу и сравните тарифы провайдеров',
 }
 

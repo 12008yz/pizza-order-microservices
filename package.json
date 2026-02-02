@@ -1,7 +1,7 @@
 {
   "name": "tariff-aggregator-monorepo",
   "version": "1.0.0",
-  "description": "Microservices internet provider and tariff aggregator application",
+  "description": "Гигапоиск — проверка доступности интернета по адресу и сравнение тарифов провайдеров",
   "private": true,
   "workspaces": [
     "services/*",
@@ -27,7 +27,8 @@
     "sequelize",
     "tariff",
     "provider",
-    "aggregator"
+    "гигапоиск",
+    "gigapoisk"
   ],
   "author": "",
   "license": "ISC"

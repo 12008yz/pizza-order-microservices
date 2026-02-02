@@ -10,6 +10,8 @@ export default function Logo() {
         left: '70px',
         top: '80px',
       }}
+      role="img"
+      aria-label="Гигапоиск"
     >
       <svg
         width="140"

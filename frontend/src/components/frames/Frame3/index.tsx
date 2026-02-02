@@ -12,7 +12,6 @@ import {
   CheckCircleIcon,
   PlusCircleIcon,
   ArrowCircleRightIcon,
-  HeartOutlineIcon,
   HeartFilledIcon,
   HeartHeaderFilledIcon,
   HeartHeaderBlackFilledIcon,
@@ -1223,18 +1222,18 @@ function Frame3Content() {
         {/* Горизонтальный скролл с карточками */}
         <div
           ref={scrollRef}
-          className="flex overflow-x-auto scrollbar-hide flex-nowrap"
+          className="flex overflow-x-auto scrollbar-hide flex-nowrap carousel-container"
           style={{
             gap: '5px',
             height: '100%',
-            paddingLeft: '20px',
-            paddingRight: '20px',
             scrollSnapType: 'x mandatory',
             WebkitOverflowScrolling: 'touch',
             scrollbarWidth: 'none',
             msOverflowStyle: 'none',
           }}
         >
+          {/* Спейсер слева: на мобильных 20px — часть контента скролла, карточка обрезается только краем экрана */}
+          <div className="carousel-spacer-left" aria-hidden="true" />
           {tariffsLoading ? (
             <div
               className="flex-shrink-0"
@@ -1301,15 +1300,15 @@ function Frame3Content() {
               </div>
             </div>
           ) : (
-            displayedTariffs.map((tariff, index) => (
+            <>
+            {displayedTariffs.map((tariff, index) => (
               <div
                 key={`tariff-${tariff.id}-${tariff.providerId}-${index}`}
                 className="flex-shrink-0"
                 style={{
                   position: 'relative',
-                  minWidth: '360px',
+                  minWidth: '385px',
                   flex: '1 0 0',
-                  minHeight: '560px',
                   background: '#FFFFFF',
                   borderRadius: '20px',
                   scrollSnapAlign: 'start',
@@ -1362,8 +1361,8 @@ function Frame3Content() {
                   />
                 </div>
 
-                {/* Контентная область */}
-                <div style={{ padding: '10px 15px' }}>
+                {/* Контентная область — flex: 1 тянет вниз футер с кнопками */}
+                <div style={{ padding: '10px 15px', flex: 1, minHeight: 0 }}>
                   {/* Список услуг */}
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                     {/* Скорость */}
@@ -1632,10 +1631,20 @@ function Frame3Content() {
                         recentlyAddedFavorites.has(tariff.id) ? (
                           <AnimatedHeartFilledIcon />
                         ) : (
-                          <HeartFilledIcon />
+                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ display: 'block' }}>
+                            <path
+                              d="M16.6865 4.25C18.0951 4.25159 19.4463 4.81157 20.4424 5.80762C21.3762 6.74144 21.9267 7.98708 21.9932 9.2998L22 9.56348C21.9995 12.6104 19.7234 15.4496 17.2539 17.6123C14.8105 19.7521 12.3114 21.1131 12.1211 21.2139L12.1182 21.2158C12.0818 21.2353 12.0413 21.2461 12 21.2461C11.9587 21.2461 11.9182 21.2353 11.8818 21.2158L11.8789 21.2148L11.3398 20.9102C10.4423 20.3843 8.57862 19.2171 6.74609 17.6123C4.27656 15.4496 2.00049 12.6104 2 9.56348C2.00159 8.15485 2.56157 6.80367 3.55762 5.80762C4.55353 4.8117 5.90408 4.25174 7.3125 4.25C9.10232 4.25 10.645 5.0173 11.6006 6.29004L12 6.82227L12.3994 6.29004C13.3549 5.01753 14.8971 4.25028 16.6865 4.25Z"
+                              fill="#FF3030"
+                            />
+                          </svg>
                         )
                       ) : (
-                        <HeartOutlineIcon />
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ display: 'block' }}>
+                          <path
+                            d="M16.6865 4.25C18.0951 4.25159 19.4463 4.81157 20.4424 5.80762C21.3762 6.74144 21.9267 7.98708 21.9932 9.2998L22 9.56348C21.9995 12.6104 19.7234 15.4496 17.2539 17.6123C14.8105 19.7521 12.3114 21.1131 12.1211 21.2139L12.1182 21.2158C12.0818 21.2353 12.0413 21.2461 12 21.2461C11.9587 21.2461 11.9182 21.2353 11.8818 21.2158L11.8789 21.2148L11.3398 20.9102C10.4423 20.3843 8.57862 19.2171 6.74609 17.6123C4.27656 15.4496 2.00049 12.6104 2 9.56348C2.00159 8.15485 2.56157 6.80367 3.55762 5.80762C4.55353 4.8117 5.90408 4.25174 7.3125 4.25C9.10232 4.25 10.645 5.0173 11.6006 6.29004L12 6.82227L12.3994 6.29004C13.3549 5.01753 14.8971 4.25028 16.6865 4.25Z"
+                            stroke="#101010"
+                          />
+                        </svg>
                       )}
                     </button>
 
@@ -1669,7 +1678,8 @@ function Frame3Content() {
                   </div>
                 </div>
               </div>
-            ))
+            ))}
+            </>
           )}
         </div>
       </div>

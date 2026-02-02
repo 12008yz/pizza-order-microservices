@@ -366,11 +366,11 @@ function AddressFormContent() {
         <div className="absolute left-[8.75%] right-[8.75%] top-[48.37%] bottom-[45.4%]">
           <div
             onClick={() => {
+              if (!addressData.connectionType) return;
               setAddressModalStep('city');
               setShowAddressModal(true);
             }}
-            className={`relative w-full rounded-[10px] bg-white cursor-pointer ${addressData.city ? '' : ''
-              }`}
+            className={`relative w-full rounded-[10px] bg-white ${!addressData.connectionType ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'} ${addressData.city ? '' : ''}`}
             style={{
               border: addressData.errors.city
                 ? '0.5px solid rgb(239, 68, 68)'

@@ -27,8 +27,7 @@ function AddressFormContent() {
   const [showConnectionModal, setShowConnectionModal] = useState(false);
   const [showAddressModal, setShowAddressModal] = useState(false);
   const [addressModalStep, setAddressModalStep] = useState<'city' | 'street' | 'house'>('city');
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [_submitError, setSubmitError] = useState<string | null>(null); // submitError не используется, но setSubmitError используется
+  const [_submitError, setSubmitError] = useState<string | null>(null); // submitError не используется, setSubmitError используется в обработчике
   const [showCookieBanner, setShowCookieBanner] = useState(true);
   const [cookieTimer, setCookieTimer] = useState(7);
 

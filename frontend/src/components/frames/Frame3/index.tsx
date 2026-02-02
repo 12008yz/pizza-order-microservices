@@ -651,7 +651,7 @@ function Frame3Content() {
 
   // Обработчик клика на кнопку тарифа - переходит на Frame4 (оборудование)
   const handleTariffSelect = (tariffId: number) => {
-    // Сохраняем выбранный тариф в sessionStorage
+    // Сохраняем полный тариф в sessionStorage для итоговой карточки (тариф + оборудование)
     try {
       const selectedTariff = tariffs.find(t => t.id === tariffId);
       if (selectedTariff) {
@@ -662,6 +662,17 @@ function Frame3Content() {
           tariffName: selectedTariff.tariffName,
           price: selectedTariff.price,
           priceValue: selectedTariff.priceValue,
+          speed: selectedTariff.speed,
+          speedValue: selectedTariff.speedValue,
+          speedDesc: selectedTariff.speedDesc,
+          channels: selectedTariff.channels,
+          channelsDesc: selectedTariff.channelsDesc,
+          mobile: selectedTariff.mobile,
+          mobileDesc: selectedTariff.mobileDesc,
+          favoriteLabel: selectedTariff.favoriteLabel,
+          favoriteDesc: selectedTariff.favoriteDesc,
+          connectionPrice: selectedTariff.connectionPrice,
+          promoText: selectedTariff.promoText,
         }));
       }
     } catch (error) {

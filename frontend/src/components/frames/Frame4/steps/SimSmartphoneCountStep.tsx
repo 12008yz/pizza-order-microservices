@@ -11,11 +11,10 @@ interface SimSmartphoneCountStepProps {
 }
 
 const options: { value: SimSmartphoneCount; label: string }[] = [
-  { value: 1, label: '1 смартфон' },
-  { value: 2, label: '2 смартфона' },
-  { value: 3, label: '3 смартфона' },
-  { value: 4, label: '4 смартфона' },
-  { value: 5, label: '5 смартфонов' },
+  { value: 1, label: 'Подключение одного смартфона' },
+  { value: 2, label: 'Подключение 2-х смартфонов' },
+  { value: 3, label: 'Подключение 3-х смартфонов' },
+  { value: 4, label: 'Подключение 4-х смартфонов' },
 ];
 
 export default function SimSmartphoneCountStep({
@@ -34,18 +33,12 @@ export default function SimSmartphoneCountStep({
         style={{
           position: 'absolute',
           width: '330px',
-          height: '70px',
           left: '15px',
           top: '15px',
         }}
       >
         <div
           style={{
-            position: 'absolute',
-            width: '330px',
-            height: '25px',
-            left: '0px',
-            top: '0px',
             fontFamily: 'TT Firs Neue, sans-serif',
             fontStyle: 'normal',
             fontWeight: 400,
@@ -54,36 +47,32 @@ export default function SimSmartphoneCountStep({
             display: 'flex',
             alignItems: 'center',
             color: '#101010',
+            marginBottom: '15px',
           }}
         >
-          Количество SIM-карт
+          SIM-карта
         </div>
 
         <div
           style={{
-            position: 'absolute',
-            width: '330px',
-            height: '30px',
-            left: '0px',
-            top: '40px',
             fontFamily: 'TT Firs Neue, sans-serif',
             fontStyle: 'normal',
             fontWeight: 400,
             fontSize: '14px',
-            lineHeight: '105%',
-            color: 'rgba(16, 16, 16, 0.25)',
+            lineHeight: '145%',
+            color: 'rgba(16, 16, 16, 0.5)',
           }}
         >
-          Сколько SIM-карт вам необходимо
+          Мы подготовили все возможные варианты.
           <br />
-          подключить?
+          Пожалуйста, проверьте правильность
         </div>
       </div>
 
       {/* Опции */}
       {options.map((option, index) => {
         const isSelected = selected === option.value;
-        const topPosition = 100 + index * 55;
+        const topPosition = 110 + index * 55;
 
         return (
           <div

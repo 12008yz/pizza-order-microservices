@@ -37,7 +37,7 @@ export interface TvBoxWizardState {
 // ============ SIM CARD TYPES ============
 export type SimConnectionType = 'new_number' | 'keep_number' | 'no_thanks';
 export type SimClientStatus = 'new_client' | 'existing_client';
-export type SimSmartphoneCount = 1 | 2 | 3 | 4 | 5;
+export type SimSmartphoneCount = 1 | 2 | 3 | 4;
 export type SimOperatorOption = 'beeline' | 'megafon' | 'mts' | 'tele2' | 'yota';
 
 export interface SimCardWizardState {

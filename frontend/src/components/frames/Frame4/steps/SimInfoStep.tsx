@@ -3,16 +3,23 @@
 import React, { useState } from 'react';
 
 interface SimInfoStepProps {
+  infoType: 'person' | 'region';
   onNext: () => void;
   onBack: () => void;
 }
 
-export default function SimInfoStep({ onNext, onBack }: SimInfoStepProps) {
+const infoTexts = {
+  person: 'SIM-карта должна быть зарегистрирована только на того же человека, на которого, собираетесь оформлять интернет и пр.',
+  region: 'SIM-карта должна быть зарегистрирована в том же регионе, в котором, собираетесь оформлять интернет и пр.',
+};
+
+export default function SimInfoStep({ infoType, onNext, onBack }: SimInfoStepProps) {
   const [isBackPressed, setIsBackPressed] = useState(false);
   const [isNextPressed, setIsNextPressed] = useState(false);
 
   return (
     <>
+      {/* Заголовок */}
       <div
         style={{
           position: 'absolute',
@@ -28,12 +35,15 @@ export default function SimInfoStep({ onNext, onBack }: SimInfoStepProps) {
             fontWeight: 400,
             fontSize: '20px',
             lineHeight: '125%',
+            display: 'flex',
+            alignItems: 'center',
             color: '#101010',
-            marginBottom: '12px',
+            marginBottom: '15px',
           }}
         >
           SIM-карта
         </div>
+
         <div
           style={{
             fontFamily: 'TT Firs Neue, sans-serif',
@@ -42,12 +52,30 @@ export default function SimInfoStep({ onNext, onBack }: SimInfoStepProps) {
             fontSize: '14px',
             lineHeight: '145%',
             color: 'rgba(16, 16, 16, 0.5)',
+            marginBottom: '20px',
           }}
         >
-          Проверьте выбранные параметры. После нажатия «Далее» вы перейдёте к оформлению заказа.
+          Мы подготовили все возможные варианты.
+          <br />
+          Пожалуйста, проверьте правильность
+        </div>
+
+        {/* Информационный текст */}
+        <div
+          style={{
+            fontFamily: 'TT Firs Neue, sans-serif',
+            fontStyle: 'normal',
+            fontWeight: 400,
+            fontSize: '14px',
+            lineHeight: '145%',
+            color: '#101010',
+          }}
+        >
+          {infoTexts[infoType]}
         </div>
       </div>
 
+      {/* Кнопка назад */}
       <button
         type="button"
         onClick={onBack}
@@ -78,6 +106,8 @@ export default function SimInfoStep({ onNext, onBack }: SimInfoStepProps) {
           />
         </svg>
       </button>
+
+      {/* Кнопка с номером шага */}
       <button
         type="button"
         onClick={onNext}
@@ -86,7 +116,7 @@ export default function SimInfoStep({ onNext, onBack }: SimInfoStepProps) {
         onMouseLeave={() => setIsNextPressed(false)}
         onTouchStart={() => setIsNextPressed(true)}
         onTouchEnd={() => setIsNextPressed(false)}
-        className="outline-none cursor-pointer rounded-[10px] flex items-center justify-center text-white font-normal text-base text-center bg-[#101010] border border-[rgba(16,16,16,0.25)]"
+        className="outline-none cursor-pointer rounded-[10px] flex items-center justify-center font-normal text-base text-center border border-[rgba(16,16,16,0.25)]"
         style={{
           position: 'absolute',
           left: '70px',
@@ -95,12 +125,13 @@ export default function SimInfoStep({ onNext, onBack }: SimInfoStepProps) {
           height: '50px',
           boxSizing: 'border-box',
           fontFamily: 'TT Firs Neue, sans-serif',
-          lineHeight: '315%',
+          background: 'transparent',
+          color: '#101010',
           transform: isNextPressed ? 'scale(0.97)' : 'scale(1)',
           transition: 'transform 0.15s ease-out',
         }}
       >
-        Далее
+        3
       </button>
     </>
   );

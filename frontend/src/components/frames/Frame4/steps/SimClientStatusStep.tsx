@@ -11,8 +11,8 @@ interface SimClientStatusStepProps {
 }
 
 const options: { value: SimClientStatus; label: string }[] = [
-  { value: 'new_client', label: 'Новый клиент' },
-  { value: 'existing_client', label: 'Уже являюсь клиентом' },
+  { value: 'existing_client', label: 'Я являюсь клиентом «МТС»' },
+  { value: 'new_client', label: 'Я не являюсь клиентом «МТС»' },
 ];
 
 export default function SimClientStatusStep({
@@ -31,18 +31,12 @@ export default function SimClientStatusStep({
         style={{
           position: 'absolute',
           width: '330px',
-          height: '70px',
           left: '15px',
           top: '15px',
         }}
       >
         <div
           style={{
-            position: 'absolute',
-            width: '330px',
-            height: '25px',
-            left: '0px',
-            top: '0px',
             fontFamily: 'TT Firs Neue, sans-serif',
             fontStyle: 'normal',
             fontWeight: 400,
@@ -51,36 +45,32 @@ export default function SimClientStatusStep({
             display: 'flex',
             alignItems: 'center',
             color: '#101010',
+            marginBottom: '15px',
           }}
         >
-          Статус клиента
+          SIM-карта
         </div>
 
         <div
           style={{
-            position: 'absolute',
-            width: '330px',
-            height: '30px',
-            left: '0px',
-            top: '40px',
             fontFamily: 'TT Firs Neue, sans-serif',
             fontStyle: 'normal',
             fontWeight: 400,
             fontSize: '14px',
-            lineHeight: '105%',
-            color: 'rgba(16, 16, 16, 0.25)',
+            lineHeight: '145%',
+            color: 'rgba(16, 16, 16, 0.5)',
           }}
         >
-          Вы уже являетесь клиентом выбранного
+          Мы подготовили все возможные варианты.
           <br />
-          оператора мобильной связи?
+          Пожалуйста, проверьте правильность
         </div>
       </div>
 
       {/* Опции */}
       {options.map((option, index) => {
         const isSelected = selected === option.value;
-        const topPosition = 100 + index * 55;
+        const topPosition = 110 + index * 55;
 
         return (
           <div

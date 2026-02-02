@@ -15,7 +15,10 @@ import {
   SimClientStatusStep,
   SimSmartphoneCountStep,
   SimOperatorStep,
+  SimInfoStep,
+  OrderSummaryStep,
 } from './steps';
+import { SimCountWarningBanner } from './components';
 import type {
   RouterNeedOption,
   RouterPurchaseOption,
@@ -70,8 +73,11 @@ type Step =
   | 'tvbox_operator'
   | 'sim_connection_type'
   | 'sim_client_status'
+  | 'sim_info_person'
+  | 'sim_info_region'
   | 'sim_smartphone_count'
-  | 'sim_operator';
+  | 'sim_operator'
+  | 'order_summary';
 
 // Конфигурация карточек для разных шагов (высота подстраивается под контент)
 const cardConfig: Record<Step, { height: number; top: number }> = {
@@ -85,10 +91,14 @@ const cardConfig: Record<Step, { height: number; top: number }> = {
   tvbox_purchase: { height: 350, top: 375 },
   tvbox_operator: { height: 460, top: 265 },
   // SIM card steps
-  sim_connection_type: { height: 350, top: 375 },
+  sim_connection_type: { height: 295, top: 430 },
   sim_client_status: { height: 295, top: 430 },
-  sim_smartphone_count: { height: 460, top: 265 },
+  sim_info_person: { height: 250, top: 475 },
+  sim_info_region: { height: 250, top: 475 },
+  sim_smartphone_count: { height: 405, top: 320 },
   sim_operator: { height: 460, top: 265 },
+  // Итог: выбранный тариф из Frame3 + оборудование
+  order_summary: { height: 580, top: 145 },
 };
 
 function Frame4Content() {
@@ -101,6 +111,9 @@ function Frame4Content() {
     tvBox: { ...defaultTvBox, ...savedEquipment?.tvBox },
     simCard: { ...defaultSimCard, ...savedEquipment?.simCard },
   }));
+
+  // Показывать ли баннер с предупреждением о смартфонах
+  const [showSimCountWarning, setShowSimCountWarning] = useState(false);
 
   // Инициализация из сохранённого выбора при монтировании
   useEffect(() => {
@@ -209,6 +222,10 @@ function Frame4Content() {
       ...prev,
       simCard: { ...prev.simCard!, smartphoneCount: count },
     }));
+    // Показать баннер если выбрано больше 1 смартфона
+    if (count > 1) {
+      setShowSimCountWarning(true);
+    }
   };
 
   const handleSimOperatorSelect = (operator: SimOperatorOption) => {
@@ -259,29 +276,28 @@ function Frame4Content() {
     } else if (currentStep === 'sim_connection_type') {
       const connectionType = equipmentState.simCard?.connectionType;
 
-      if (connectionType === 'no_thanks') {
-        // Пропускаем SIM карту, идём на заказ
-        saveEquipment(equipmentState);
-        router.push('/order');
-      } else if (connectionType === 'new_number') {
-        // Новый номер — спрашиваем количество
-        setCurrentStep('sim_smartphone_count');
-      } else if (connectionType === 'keep_number') {
-        // Сохранить номер — спрашиваем статус клиента
+      if (connectionType === 'keep_number') {
+        // Подключение текущего номера — спрашиваем статус клиента МТС
         setCurrentStep('sim_client_status');
+      } else if (connectionType === 'new_number') {
+        // Подключение нового номера — переходим к количеству смартфонов
+        setCurrentStep('sim_smartphone_count');
       }
     } else if (currentStep === 'sim_client_status') {
+      // После выбора статуса клиента показываем информационный экран о регистрации на человека
+      setCurrentStep('sim_info_person');
+    } else if (currentStep === 'sim_info_person') {
+      // После первого инфо-экрана показываем второй о регионе
+      setCurrentStep('sim_info_region');
+    } else if (currentStep === 'sim_info_region') {
+      // После второго инфо-экрана переходим к количеству смартфонов
       setCurrentStep('sim_smartphone_count');
     } else if (currentStep === 'sim_smartphone_count') {
-      const connectionType = equipmentState.simCard?.connectionType;
-      if (connectionType === 'keep_number') {
-        // Если сохраняем номер, спрашиваем оператора
-        setCurrentStep('sim_operator');
-      } else {
-        // Если новый номер, идём на заказ
-        saveEquipment(equipmentState);
-        router.push('/order');
-      }
+      // После выбора количества смартфонов — итоговая карточка: тариф из Frame3 + оборудование
+      setCurrentStep('order_summary');
+    } else if (currentStep === 'order_summary') {
+      saveEquipment(equipmentState);
+      router.push('/order');
     } else if (currentStep === 'sim_operator') {
       saveEquipment(equipmentState);
       router.push('/order');
@@ -325,13 +341,19 @@ function Frame4Content() {
       }
     } else if (currentStep === 'sim_client_status') {
       setCurrentStep('sim_connection_type');
+    } else if (currentStep === 'sim_info_person') {
+      setCurrentStep('sim_client_status');
+    } else if (currentStep === 'sim_info_region') {
+      setCurrentStep('sim_info_person');
     } else if (currentStep === 'sim_smartphone_count') {
       const connectionType = equipmentState.simCard?.connectionType;
       if (connectionType === 'keep_number') {
-        setCurrentStep('sim_client_status');
+        setCurrentStep('sim_info_region');
       } else {
         setCurrentStep('sim_connection_type');
       }
+    } else if (currentStep === 'order_summary') {
+      setCurrentStep('sim_smartphone_count');
     } else if (currentStep === 'sim_operator') {
       setCurrentStep('sim_smartphone_count');
     }
@@ -386,6 +408,14 @@ function Frame4Content() {
             background: '#F5F5F5',
           }}
         >
+          {/* Баннер с предупреждением о смартфонах */}
+          {showSimCountWarning && currentStep === 'sim_smartphone_count' && (
+            <SimCountWarningBanner
+              onClose={() => setShowSimCountWarning(false)}
+              autoCloseAfter={7}
+            />
+          )}
+
           {/* Нажмите в открытое пустое место — появление с анимацией */}
           <div
             style={{
@@ -528,6 +558,22 @@ function Frame4Content() {
               />
             )}
 
+            {currentStep === 'sim_info_person' && (
+              <SimInfoStep
+                infoType="person"
+                onNext={handleNext}
+                onBack={handleBack}
+              />
+            )}
+
+            {currentStep === 'sim_info_region' && (
+              <SimInfoStep
+                infoType="region"
+                onNext={handleNext}
+                onBack={handleBack}
+              />
+            )}
+
             {currentStep === 'sim_smartphone_count' && (
               <SimSmartphoneCountStep
                 selected={equipmentState.simCard?.smartphoneCount ?? null}
@@ -542,6 +588,17 @@ function Frame4Content() {
                 selected={equipmentState.simCard?.currentOperator ?? null}
                 onSelect={handleSimOperatorSelect}
                 onNext={handleNext}
+                onBack={handleBack}
+              />
+            )}
+
+            {currentStep === 'order_summary' && (
+              <OrderSummaryStep
+                equipmentState={equipmentState}
+                onConnect={() => {
+                  saveEquipment(equipmentState);
+                  router.push('/order');
+                }}
                 onBack={handleBack}
               />
             )}

@@ -11,9 +11,8 @@ interface SimConnectionTypeStepProps {
 }
 
 const options: { value: SimConnectionType; label: string }[] = [
-  { value: 'new_number', label: 'Хочу новый номер' },
-  { value: 'keep_number', label: 'Хочу сохранить номер' },
-  { value: 'no_thanks', label: 'Нет, спасибо' },
+  { value: 'keep_number', label: 'Подключение текущего номера' },
+  { value: 'new_number', label: 'Подключение нового номера' },
 ];
 
 export default function SimConnectionTypeStep({
@@ -32,18 +31,12 @@ export default function SimConnectionTypeStep({
         style={{
           position: 'absolute',
           width: '330px',
-          height: '70px',
           left: '15px',
           top: '15px',
         }}
       >
         <div
           style={{
-            position: 'absolute',
-            width: '330px',
-            height: '25px',
-            left: '0px',
-            top: '0px',
             fontFamily: 'TT Firs Neue, sans-serif',
             fontStyle: 'normal',
             fontWeight: 400,
@@ -52,6 +45,7 @@ export default function SimConnectionTypeStep({
             display: 'flex',
             alignItems: 'center',
             color: '#101010',
+            marginBottom: '15px',
           }}
         >
           SIM-карта
@@ -59,29 +53,24 @@ export default function SimConnectionTypeStep({
 
         <div
           style={{
-            position: 'absolute',
-            width: '330px',
-            height: '30px',
-            left: '0px',
-            top: '40px',
             fontFamily: 'TT Firs Neue, sans-serif',
             fontStyle: 'normal',
             fontWeight: 400,
             fontSize: '14px',
-            lineHeight: '105%',
-            color: 'rgba(16, 16, 16, 0.25)',
+            lineHeight: '145%',
+            color: 'rgba(16, 16, 16, 0.5)',
           }}
         >
-          Подключите мобильную связь вместе
+          Мы подготовили все возможные варианты.
           <br />
-          с домашним интернетом
+          Пожалуйста, проверьте правильность
         </div>
       </div>
 
       {/* Опции */}
       {options.map((option, index) => {
         const isSelected = selected === option.value;
-        const topPosition = 100 + index * 55;
+        const topPosition = 110 + index * 55;
 
         return (
           <div

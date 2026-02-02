@@ -14,3 +14,5 @@ export { default as SimConnectionTypeStep } from './SimConnectionTypeStep';
 export { default as SimClientStatusStep } from './SimClientStatusStep';
 export { default as SimSmartphoneCountStep } from './SimSmartphoneCountStep';
 export { default as SimOperatorStep } from './SimOperatorStep';
+export { default as SimInfoStep } from './SimInfoStep';
+export { default as OrderSummaryStep } from './OrderSummaryStep';

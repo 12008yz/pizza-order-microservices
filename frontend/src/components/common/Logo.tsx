@@ -8,7 +8,7 @@ export default function Logo() {
         width: '140px',
         height: '10px',
         left: '70px',
-        top: '80px',
+        top: 'calc(35px + var(--sat, 0px))',
       }}
       role="img"
       aria-label="Гигапоиск"

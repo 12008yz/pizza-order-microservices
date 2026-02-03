@@ -77,13 +77,12 @@ export default function SimTariffsPage() {
 
   return (
     <div
+      className="relative w-full max-w-[400px] mx-auto flex flex-col bg-[#F5F5F5]"
       style={{
-        width: '100%',
-        maxWidth: '400px',
-        margin: '0 auto',
-        minHeight: '870px',
-        background: '#F5F5F5',
-        position: 'relative',
+        minHeight: '100dvh',
+        paddingTop: 'var(--sat, 0px)',
+        paddingBottom: 'var(--sab, 0px)',
+        boxSizing: 'border-box',
       }}
     >
       {/* Шапка: назад + заголовок */}

@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import BaseModal from '../../../modals/BaseModal';
 
 interface EquipmentModalProps {
   isOpen: boolean;
@@ -16,22 +15,62 @@ export default function EquipmentModal({
   children,
   className = '',
 }: EquipmentModalProps) {
+  if (!isOpen) return null;
+
+  const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
+
   return (
-    <BaseModal isOpen={isOpen} onClose={onClose} backdropBlur>
+    <div
+      className="fixed inset-0 z-[10000] flex flex-col items-center overflow-hidden"
+      style={{
+        background: '#F5F5F5',
+        backdropFilter: 'blur(12.5px)',
+        paddingTop: 'var(--sat, 0px)',
+        paddingBottom: 'var(--sab, 0px)',
+        height: '100dvh',
+        boxSizing: 'border-box',
+      }}
+      onClick={handleBackdropClick}
+    >
+      {/* Контейнер — header и карточка влезают в экран, прокрутка только внутри карточки */}
       <div
-        className={`overflow-hidden ${className}`}
-        style={{
-          width: '100%',
-          maxWidth: '400px',
-          maxHeight: 'calc(100vh - 180px)',
-          background: '#FFFFFF',
-          borderRadius: '20px',
-          fontFamily: 'TT Firs Neue, sans-serif',
-        }}
+        className={`relative w-full max-w-[400px] flex flex-col flex-1 min-h-0 overflow-hidden bg-[#F5F5F5] ${className}`}
+        style={{ boxSizing: 'border-box' }}
         onClick={(e) => e.stopPropagation()}
       >
-        {children}
+        {/* Шапка: подсказка */}
+        <div className="flex-shrink-0" style={{ minHeight: '105px' }}>
+          <div
+            className="font-normal flex items-center justify-center text-center"
+            style={{
+              width: '240px',
+              margin: '0 auto',
+              paddingTop: '75px',
+              height: '30px',
+              fontFamily: 'TT Firs Neue, sans-serif',
+              fontSize: '14px',
+              lineHeight: '105%',
+              color: 'rgba(16, 16, 16, 0.25)',
+              letterSpacing: '0.5px',
+            }}
+          >
+            Нажмите в открытое пустое место, чтобы выйти из этого режима
+          </div>
+        </div>
+
+        {/* Карточка — занимает остаток экрана, контент шага прокручивается внутри */}
+        <div
+          className="flex-1 min-h-0 flex flex-col rounded-[20px] bg-white overflow-hidden"
+          style={{ maxWidth: '360px', marginLeft: 'auto', marginRight: 'auto', width: '100%' }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          {children}
+        </div>
       </div>
-    </BaseModal>
+    </div>
   );
 }

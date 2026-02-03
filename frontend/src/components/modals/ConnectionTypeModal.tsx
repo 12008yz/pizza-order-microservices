@@ -87,215 +87,170 @@ export default function ConnectionTypeModal({
 
   return (
     <div
-      className="fixed inset-0 z-[10000] flex items-end justify-center"
+      className="fixed inset-0 z-[10000] flex flex-col items-center overflow-hidden"
       style={{
         background: '#F5F5F5',
         backdropFilter: 'blur(12.5px)',
-        paddingBottom: '155px',
+        paddingTop: 'var(--sat, 0px)',
+        paddingBottom: 'var(--sab, 0px)',
+        height: '100dvh',
+        boxSizing: 'border-box',
         opacity: isAnimating ? 1 : 0,
         transition: 'opacity 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
       }}
       onClick={handleBackdropClick}
     >
-      {/* Подсказка сверху */}
+      {/* Контейнер — header и карточка влезают в экран, прокрутка только внутри карточки */}
       <div
+        className="relative w-full max-w-[400px] flex flex-col flex-1 min-h-0 overflow-hidden bg-[#F5F5F5]"
         style={{
-          position: 'absolute',
-          width: '240px',
-          height: '30px',
-          left: '50%',
-          transform: isAnimating ? 'translateX(-50%) translateY(0)' : 'translateX(-50%) translateY(-10px)',
-          top: '75px',
-          fontFamily: 'TT Firs Neue, sans-serif',
-          fontStyle: 'normal',
-          fontWeight: 400,
-          fontSize: '14px',
-          lineHeight: '105%',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          textAlign: 'center',
-          color: 'rgba(16, 16, 16, 0.15)',
-          opacity: isAnimating ? 1 : 0,
-          transition: 'opacity 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
-        }}
-      >
-        Нажмите в открытое пустое место, чтобы выйти из этого режима
-      </div>
-
-      {/* Основной контейнер модалки */}
-      <div
-        onClick={handleContainerClick}
-        style={{
-          boxSizing: 'border-box',
-          position: 'relative',
-          width: '360px',
-          height: '350px',
-          background: '#FFFFFF',
-          backdropFilter: 'blur(7.5px)',
-          borderRadius: '20px',
-          padding: '15px',
-          overflow: 'hidden',
           transform: isAnimating ? 'translateY(0)' : 'translateY(100px)',
           opacity: isAnimating ? 1 : 0,
           transition: 'opacity 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
+          boxSizing: 'border-box',
         }}
+        onClick={handleContainerClick}
       >
-        {/* Заголовок */}
+        {/* Шапка: подсказка — клик по пустому месту закрывает модалку */}
         <div
-          style={{
-            width: '330px',
-            height: '25px',
-            fontFamily: 'TT Firs Neue, sans-serif',
-            fontStyle: 'normal',
-            fontWeight: 400,
-            fontSize: '20px',
-            lineHeight: '125%',
-            display: 'flex',
-            alignItems: 'center',
-            color: '#101010',
-          }}
+          className="flex-shrink-0 cursor-pointer"
+          style={{ minHeight: '105px' }}
+          onClick={() => onClose()}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => e.key === 'Enter' && onClose()}
+          aria-label="Закрыть"
         >
-          Проверка тех. доступа
+          <div
+            className="font-normal flex items-center justify-center text-center"
+            style={{
+              width: '240px',
+              margin: '0 auto',
+              paddingTop: '75px',
+              height: '30px',
+              fontFamily: 'TT Firs Neue, sans-serif',
+              fontSize: '14px',
+              lineHeight: '105%',
+              color: 'rgba(16, 16, 16, 0.15)',
+              letterSpacing: '0.5px',
+            }}
+          >
+            Нажмите в открытое пустое место, чтобы выйти из этого режима
+          </div>
         </div>
 
-        {/* Подзаголовок */}
+        {/* Карточка — занимает остаток экрана, опции прокручиваются внутри */}
         <div
-          style={{
-            width: '330px',
-            height: '30px',
-            marginTop: '15px',
-            fontFamily: 'TT Firs Neue, sans-serif',
-            fontStyle: 'normal',
-            fontWeight: 400,
-            fontSize: '14px',
-            lineHeight: '105%',
-            color: 'rgba(16, 16, 16, 0.25)',
-          }}
+          className="flex-1 min-h-0 flex flex-col rounded-[20px] bg-white overflow-hidden"
+          style={{ maxWidth: '360px', marginLeft: 'auto', marginRight: 'auto', backdropFilter: 'blur(7.5px)' }}
+          onClick={(e) => e.stopPropagation()}
         >
-          Мы подготовили доступные тарифные планы. Пожалуйста, проверьте правильность
-        </div>
-
-        {/* Опции типов подключения */}
-        <div style={{ marginTop: '20px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-          {connectionTypes.map((type) => (
+          <div className="flex-shrink-0 px-[15px] pt-[15px]">
             <div
-              key={type.value}
-              onClick={() => handleSelect(type.value)}
+              className="font-normal"
               style={{
-                boxSizing: 'border-box',
-                width: '330px',
-                height: '50px',
-                border: selectedType === type.value
-                  ? '1px solid #101010'
-                  : '1px solid rgba(16, 16, 16, 0.25)',
-                borderRadius: '10px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                padding: '0 15px',
-                cursor: 'pointer',
-                transition: 'border-color 0.2s ease',
-                position: 'relative',
-                top: type.value === 'private' ? '-3px' : type.value === 'office' ? '-7px' : '0px',
+                fontFamily: 'TT Firs Neue, sans-serif',
+                fontSize: '20px',
+                lineHeight: '125%',
+                color: '#101010',
               }}
             >
-              <span
-                style={{
-                  fontFamily: 'TT Firs Neue, sans-serif',
-                  fontStyle: 'normal',
-                  fontWeight: 400,
-                  fontSize: '16px',
-                  lineHeight: '125%',
-                  color: selectedType === type.value ? '#101010' : 'rgba(16, 16, 16, 0.5)',
-                }}
-              >
-                {type.label}
-              </span>
-
-              {/* Radio кнопка */}
-              <div
-                style={{
-                  boxSizing: 'border-box',
-                  width: '16px',
-                  height: '16px',
-                  borderRadius: '50%',
-                  background: selectedType === type.value ? '#101010' : 'transparent',
-                  border: selectedType === type.value
-                    ? 'none'
-                    : '1px solid rgba(16, 16, 16, 0.5)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
-                {selectedType === type.value && (
-                  <Check size={10} weight="bold" color="white" />
-                )}
-              </div>
+              Проверка тех. доступа
             </div>
-          ))}
-        </div>
+            <div
+              className="font-normal pt-[15px]"
+              style={{
+                fontFamily: 'TT Firs Neue, sans-serif',
+                fontSize: '14px',
+                lineHeight: '105%',
+                color: 'rgba(16, 16, 16, 0.25)',
+              }}
+            >
+              Мы подготовили доступные тарифные планы. Пожалуйста, проверьте правильность
+            </div>
+          </div>
 
-        {/* Кнопки навигации */}
-        <div
-          style={{
-            position: 'absolute',
-            bottom: '12px',
-            left: '15px',
-            right: '15px',
-            display: 'flex',
-            gap: '10px',
-          }}
-        >
-          {/* Кнопка "Назад" */}
-          <button
-            onClick={onClose}
-            style={{
-              boxSizing: 'border-box',
-              width: '48px',
-              height: '48px',
-              border: '1px solid rgba(16, 16, 16, 0.15)',
-              borderRadius: '10px',
-              background: 'transparent',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: 'pointer',
-            }}
-          >
-            <CaretLeft size={20} weight="regular" color="#101010" />
-          </button>
+          {/* Опции типов подключения — прокручиваемая область */}
+          <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden px-[15px] pt-[20px]" style={{ WebkitOverflowScrolling: 'touch' }}>
+            <div className="flex flex-col gap-[10px] pb-2">
+              {connectionTypes.map((type) => (
+                <div
+                  key={type.value}
+                  onClick={() => handleSelect(type.value)}
+                  className="rounded-[10px] flex items-center justify-between px-[15px] cursor-pointer"
+                  style={{
+                    boxSizing: 'border-box',
+                    minHeight: '50px',
+                    height: '50px',
+                    border: selectedType === type.value
+                      ? '1px solid #101010'
+                      : '1px solid rgba(16, 16, 16, 0.25)',
+                    transition: 'border-color 0.2s ease',
+                  }}
+                >
+                  <span
+                    style={{
+                      fontFamily: 'TT Firs Neue, sans-serif',
+                      fontWeight: 400,
+                      fontSize: '16px',
+                      lineHeight: '125%',
+                      color: selectedType === type.value ? '#101010' : 'rgba(16, 16, 16, 0.5)',
+                    }}
+                  >
+                    {type.label}
+                  </span>
+                  <div
+                    className="w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0"
+                    style={{
+                      boxSizing: 'border-box',
+                      background: selectedType === type.value ? '#101010' : 'transparent',
+                      border: selectedType === type.value ? 'none' : '1px solid rgba(16, 16, 16, 0.5)',
+                    }}
+                  >
+                    {selectedType === type.value && (
+                      <Check size={10} weight="bold" color="white" />
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
 
-          {/* Кнопка "Далее" */}
-          <button
-            onClick={handleNext}
-            disabled={!selectedType}
-            style={{
-              boxSizing: 'border-box',
-              flex: 1,
-              height: '51px',
-              marginRight: '-3px',
-              position: 'relative',
-              background: selectedType ? '#101010' : 'rgba(16, 16, 16, 0.25)',
-              border: '1px solid rgba(16, 16, 16, 0.25)',
-              borderRadius: '10px',
-              fontFamily: 'TT Firs Neue, sans-serif',
-              fontStyle: 'normal',
-              fontWeight: 400,
-              fontSize: '17px',
-              lineHeight: '315%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              textAlign: 'center',
-              color: '#FFFFFF',
-              cursor: selectedType ? 'pointer' : 'not-allowed',
-              transition: 'background-color 0.2s ease',
-            }}
-          >
-            Далее
-          </button>
+          {/* Кнопки навигации */}
+          <div className="flex-shrink-0 flex gap-[10px] px-[15px] pb-[15px] pt-[10px]">
+            <button
+              onClick={onClose}
+              className="rounded-[10px] flex items-center justify-center flex-shrink-0"
+              style={{
+                boxSizing: 'border-box',
+                width: '48px',
+                height: '48px',
+                border: '1px solid rgba(16, 16, 16, 0.15)',
+                background: 'transparent',
+                cursor: 'pointer',
+              }}
+            >
+              <CaretLeft size={20} weight="regular" color="#101010" />
+            </button>
+            <button
+              onClick={handleNext}
+              disabled={!selectedType}
+              className="flex-1 rounded-[10px] flex items-center justify-center text-center text-white min-h-[50px] disabled:cursor-not-allowed"
+              style={{
+                boxSizing: 'border-box',
+                background: selectedType ? '#101010' : 'rgba(16, 16, 16, 0.25)',
+                border: '1px solid rgba(16, 16, 16, 0.25)',
+                fontFamily: 'TT Firs Neue, sans-serif',
+                fontWeight: 400,
+                fontSize: '17px',
+                lineHeight: '315%',
+                cursor: selectedType ? 'pointer' : 'not-allowed',
+                transition: 'background-color 0.2s ease',
+              }}
+            >
+              Далее
+            </button>
+          </div>
         </div>
       </div>
     </div>

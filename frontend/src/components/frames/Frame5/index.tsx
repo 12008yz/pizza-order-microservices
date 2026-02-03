@@ -122,7 +122,7 @@ function Frame5Content() {
     return (
       <div
         className="relative w-full max-w-[400px] mx-auto bg-[#F5F5F5] flex flex-col items-center justify-center"
-        style={{ fontFamily: 'TT Firs Neue, sans-serif', minHeight: '100vh', padding: 20 }}
+        style={{ fontFamily: 'TT Firs Neue, sans-serif', minHeight: '100dvh', padding: 20, paddingTop: 'calc(20px + var(--sat, 0px))', paddingBottom: 'calc(20px + var(--sab, 0px))' }}
       >
         <p style={{ color: 'rgba(16,16,16,0.7)', marginBottom: 16, textAlign: 'center' }}>
           Сначала выберите тариф на странице провайдеров.
@@ -134,11 +134,13 @@ function Frame5Content() {
 
   return (
     <div
-      className="relative w-full max-w-[400px] mx-auto bg-[#F5F5F5] overflow-hidden"
+      className="relative w-full max-w-[400px] mx-auto bg-[#F5F5F5] overflow-y-auto overflow-x-hidden flex flex-col"
       style={{
         fontFamily: 'TT Firs Neue, sans-serif',
-        minHeight: '100vh',
-        maxHeight: '870px',
+        minHeight: '100dvh',
+        paddingTop: 'var(--sat, 0px)',
+        paddingBottom: 'var(--sab, 0px)',
+        boxSizing: 'border-box',
       }}
     >
       {/* Header */}

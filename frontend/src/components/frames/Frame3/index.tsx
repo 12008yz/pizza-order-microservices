@@ -711,27 +711,32 @@ function Frame3Content() {
 
   return (
     <div
-      className="relative w-full max-w-full mx-auto bg-[#F5F5F5] overflow-hidden"
+      className="relative w-full max-w-[430px] mx-auto bg-[#F5F5F5] overflow-x-hidden overflow-y-auto"
       style={{
         fontFamily: 'TT Firs Neue, sans-serif',
-        height: '100vh',
-        maxHeight: '870px',
+        minHeight: '100dvh',
+        paddingTop: 'var(--sat, 0px)',
+        paddingBottom: 'var(--sab, 0px)',
       }}
       onClick={showFavoritesMode ? handleFavoritesModeBackgroundClick : undefined}
     >
-      {/* Режим избранного: текст вместо Header */}
+      {/* Режим избранного: текст вместо Header — клик по пустому месту закрывает режим */}
       {showFavoritesMode ? (
         <div
-          className="absolute"
+          className="w-full flex justify-center cursor-pointer"
           style={{
-            width: '240px',
-            height: '30px',
-            left: 'calc(50% - 240px/2)',
-            top: '75px',
+            paddingTop: '30px',
+            paddingBottom: '15px',
           }}
+          onClick={() => setShowFavoritesMode(false)}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => e.key === 'Enter' && setShowFavoritesMode(false)}
+          aria-label="Выйти из режима избранного"
         >
           <div
             style={{
+              width: '240px',
               fontFamily: 'TT Firs Neue, sans-serif',
               fontWeight: 400,
               fontSize: '14px',
@@ -749,278 +754,265 @@ function Frame3Content() {
       ) : (
         /* Header - Group 7545 */
         <div
-          className="absolute"
+          className="relative w-full px-5"
           style={{
-            width: '360px',
-            height: '41.61px',
-            left: '20px',
-            top: '73px',
+            paddingTop: '20px',
+            paddingBottom: '15px',
           }}
         >
-          {/* Group 7510 - Кнопка дом (слева) */}
-          <div
-            className="absolute cursor-pointer"
-            style={{
-              width: '40.8px',
-              height: '40.8px',
-              left: '0px',
-              top: '0px',
-            }}
-            onClick={withClickGuard(() => {
-              setClickedButton('home');
-              setTimeout(() => setClickedButton(null), 300);
-              router.push('/');
-            })}
-            onMouseDown={() => setIsHomePressed(true)}
-            onMouseUp={() => setIsHomePressed(false)}
-            onMouseLeave={() => setIsHomePressed(false)}
-            onTouchStart={() => setIsHomePressed(true)}
-            onTouchEnd={() => setIsHomePressed(false)}
-          >
+          <div className="relative flex items-center justify-between" style={{ height: '41.61px' }}>
+            {/* Group 7510 - Кнопка дом (слева) */}
             <div
-              className="w-full h-full flex items-center justify-center relative overflow-hidden"
+              className="cursor-pointer"
               style={{
-                background: '#FFFFFF',
-                borderRadius: '100px',
-                transform: isHomePressed ? 'scale(0.85)' : 'scale(1)',
-                transition: 'transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                width: '40.8px',
+                height: '40.8px',
               }}
+              onClick={withClickGuard(() => {
+                setClickedButton('home');
+                setTimeout(() => setClickedButton(null), 300);
+                router.push('/');
+              })}
+              onMouseDown={() => setIsHomePressed(true)}
+              onMouseUp={() => setIsHomePressed(false)}
+              onMouseLeave={() => setIsHomePressed(false)}
+              onTouchStart={() => setIsHomePressed(true)}
+              onTouchEnd={() => setIsHomePressed(false)}
             >
-              {/* Ripple эффект */}
-              {clickedButton === 'home' && (
-                <div
-                  style={{
-                    position: 'absolute',
-                    width: '100%',
-                    height: '100%',
-                    borderRadius: '100px',
-                    background: 'rgba(16, 16, 16, 0.1)',
-                    animation: 'ripple 0.4s ease-out',
-                  }}
-                />
-              )}
               <div
+                className="w-full h-full flex items-center justify-center relative overflow-hidden"
                 style={{
-                  position: 'relative',
-                  zIndex: 1,
+                  background: '#FFFFFF',
+                  borderRadius: '100px',
+                  transform: isHomePressed ? 'scale(0.85)' : 'scale(1)',
                   transition: 'transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)',
-                  transform: isHomePressed ? 'rotate(-5deg) scale(0.95)' : 'rotate(0deg) scale(1)',
                 }}
               >
-                <HomeIcon color={clickedButton === 'home' ? '#4A90E2' : '#101010'} />
-              </div>
-            </div>
-          </div>
-
-          {/* Логотип Гигапоиск - гигапоиск 2 */}
-          <div
-            className="absolute flex items-center"
-            style={{
-              width: '142.79px',
-              height: '10.2px',
-              left: '48.61px',
-              top: '15.71px',
-            }}
-          >
-            <svg
-              width="143"
-              height="11"
-              viewBox="0 0 230 14"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              preserveAspectRatio="xMidYMid meet"
-            >
-              <g clipPath="url(#clip0_frame3_logo)">
-                <path
-                  d="M0 13.8056V0.194444H22.5306V4.86111H5.93306V13.8056H0ZM49.0092 0.194444V13.8056H43.0761V6.02778L29.9708 13.8056H24.0377V0.194444H29.9708V7.97222L43.0761 0.194444H49.0092ZM50.5142 13.8056V0.194444H73.0448V4.86111H56.4473V13.8056H50.5142ZM84.0292 4.47222L81.288 7.97222H86.7705L84.0292 4.47222ZM80.6872 0.194444H87.3713L98.017 13.8056H91.3329L89.8121 11.8611H78.2464L76.7256 13.8056H70.0415L80.6872 0.194444ZM98.7731 13.8056V0.194444H123.744V13.8056H117.811V4.86111H104.706V13.8056H98.7731ZM131.454 0H145.16C148.784 0 151.732 3.24722 151.732 7C151.732 10.7528 148.784 14 145.16 14H131.454C127.831 14 124.883 10.7528 124.883 7C124.883 3.24722 127.831 0 131.454 0ZM143.94 5.05556H132.675C131.642 5.05556 130.797 5.93056 130.797 7C130.797 8.06944 131.642 8.94444 132.675 8.94444H143.94C144.973 8.94444 145.818 8.06944 145.818 7C145.818 5.93056 144.973 5.05556 143.94 5.05556ZM177.834 0.194444V13.8056H171.901V6.02778L158.796 13.8056H152.863V0.194444H158.796V7.97222L171.901 0.194444H177.834ZM203.38 8.75V13.8056H185.544C181.92 13.8056 178.972 10.7528 178.972 7C178.972 3.24722 181.92 0.194444 185.544 0.194444H203.38V5.25H186.764C185.732 5.25 184.887 5.93056 184.887 7C184.887 8.06944 185.732 8.75 186.764 8.75H203.38ZM204.88 13.8056V0.194444H210.813V7.66111L221.252 0.194444H229.852L220.332 7L229.852 13.8056H221.252L216.033 10.0722L210.813 13.8056H204.88Z"
-                  fill="#101010"
-                />
-              </g>
-              <defs>
-                <clipPath id="clip0_frame3_logo">
-                  <rect width="230" height="14" fill="white" />
-                </clipPath>
-              </defs>
-            </svg>
-          </div>
-
-          {/* Group 7510 - Кнопка избранное (Heart) */}
-          <div
-            className="absolute cursor-pointer"
-            style={{
-              width: '40.8px',
-              height: '40.8px',
-              left: '229.6px',
-              top: '0.41px',
-            }}
-            onClick={withClickGuard(() => {
-              setClickedButton('heart');
-              setTimeout(() => setClickedButton(null), 300);
-              handleHeartClick();
-            })}
-            onMouseDown={() => setIsHeartPressed(true)}
-            onMouseUp={() => setIsHeartPressed(false)}
-            onMouseLeave={() => setIsHeartPressed(false)}
-            onTouchStart={() => setIsHeartPressed(true)}
-            onTouchEnd={() => setIsHeartPressed(false)}
-          >
-            <div
-              className="w-full h-full flex items-center justify-center relative overflow-hidden"
-              style={{
-                background: '#FFFFFF',
-                borderRadius: '100px',
-                transform: isHeartPressed ? 'scale(0.85)' : 'scale(1)',
-                transition: 'transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)',
-              }}
-              suppressHydrationWarning
-            >
-              {/* Ripple эффект */}
-              {clickedButton === 'heart' && (
-                <div
-                  style={{
-                    position: 'absolute',
-                    width: '100%',
-                    height: '100%',
-                    borderRadius: '100px',
-                    background: 'rgba(255, 48, 48, 0.15)',
-                    animation: 'ripple 0.4s ease-out',
-                  }}
-                />
-              )}
-              <div
-                style={{
-                  position: 'relative',
-                  zIndex: 1,
-                  transition: 'transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)',
-                  transform: isHeartPressed ? 'scale(1.1) rotate(5deg)' : 'scale(1) rotate(0deg)',
-                }}
-              >
-                {favoritesInitialized && hasFavorites ? (
-                  <HeartHeaderFilledIcon />
-                ) : (
-                  <HeartHeaderBlackFilledIcon />
+                {/* Ripple эффект */}
+                {clickedButton === 'home' && (
+                  <div
+                    style={{
+                      position: 'absolute',
+                      width: '100%',
+                      height: '100%',
+                      borderRadius: '100px',
+                      background: 'rgba(16, 16, 16, 0.1)',
+                      animation: 'ripple 0.4s ease-out',
+                    }}
+                  />
                 )}
-              </div>
-            </div>
-          </div>
-
-          {/* Group 7511 - Кнопка фильтр (Funnel) */}
-          <div
-            className="absolute cursor-pointer"
-            style={{
-              width: '40.8px',
-              height: '40.8px',
-              left: '274.6px',
-              top: '0.41px',
-            }}
-            onClick={withClickGuard(() => {
-              // Если мастер фильтра уже открыт, игнорируем клики,
-              // чтобы не ломать иконку и состояние
-              if (showFilterWizard) return;
-
-              setClickedButton('funnel');
-              setTimeout(() => setClickedButton(null), 300);
-              handleFilterClick();
-            })}
-            onMouseDown={() => setIsFunnelPressed(true)}
-            onMouseUp={() => setIsFunnelPressed(false)}
-            onMouseLeave={() => setIsFunnelPressed(false)}
-            onTouchStart={() => setIsFunnelPressed(true)}
-            onTouchEnd={() => setIsFunnelPressed(false)}
-          >
-            <div
-              className="w-full h-full flex items-center justify-center relative overflow-hidden"
-              style={{
-                background: '#FFFFFF',
-                borderRadius: '100px',
-                transform: isFunnelPressed ? 'scale(0.85)' : 'scale(1)',
-                transition: 'transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)',
-              }}
-            >
-              {/* Ripple эффект */}
-              {clickedButton === 'funnel' && (
                 <div
                   style={{
-                    position: 'absolute',
-                    width: '100%',
-                    height: '100%',
-                    borderRadius: '100px',
-                    background: 'rgba(139, 69, 19, 0.15)',
-                    animation: 'ripple 0.4s ease-out',
+                    position: 'relative',
+                    zIndex: 1,
+                    transition: 'transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                    transform: isHomePressed ? 'rotate(-5deg) scale(0.95)' : 'rotate(0deg) scale(1)',
                   }}
-                />
-              )}
-              <div
-                style={{
-                  position: 'relative',
-                  zIndex: 1,
-                  transition: 'transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)',
-                  transform: isFunnelPressed ? 'scale(1.1) rotate(-10deg)' : 'scale(1) rotate(0deg)',
-                }}
-              >
-                <FunnelIcon />
+                >
+                  <HomeIcon color={clickedButton === 'home' ? '#4A90E2' : '#101010'} />
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Group 7509 - Кнопка самолёт (Plane) */}
-          <div
-            className="absolute cursor-pointer"
-            style={{
-              width: '40.8px',
-              height: '40.8px',
-              left: '319.2px',
-              top: '0.81px',
-            }}
-            onClick={withClickGuard(() => {
-              setClickedButton('plane');
-              setTimeout(() => setClickedButton(null), 300);
-              handlePlaneClick();
-            })}
-            onMouseDown={() => setIsPlanePressed(true)}
-            onMouseUp={() => setIsPlanePressed(false)}
-            onMouseLeave={() => setIsPlanePressed(false)}
-            onTouchStart={() => setIsPlanePressed(true)}
-            onTouchEnd={() => setIsPlanePressed(false)}
-          >
+            {/* Логотип Гигапоиск */}
             <div
-              className="w-full h-full flex items-center justify-center relative overflow-hidden"
+              className="absolute left-1/2 transform -translate-x-1/2"
               style={{
-                background: '#FFFFFF',
-                borderRadius: '100px',
-                transform: isPlanePressed ? 'scale(0.85)' : 'scale(1)',
-                transition: 'transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                width: '142.79px',
+                height: '10.2px',
               }}
             >
-              {/* Ripple эффект */}
-              {clickedButton === 'plane' && (
-                <div
-                  style={{
-                    position: 'absolute',
-                    width: '100%',
-                    height: '100%',
-                    borderRadius: '100px',
-                    background: 'rgba(34, 139, 34, 0.15)',
-                    animation: 'ripple 0.4s ease-out',
-                  }}
-                />
-              )}
-              <div
-                style={{
-                  position: 'relative',
-                  zIndex: 1,
-                  transition: 'transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)',
-                  transform: isPlanePressed ? 'scale(1.1) rotate(15deg)' : 'scale(1) rotate(0deg)',
-                }}
+              <svg
+                width="143"
+                height="11"
+                viewBox="0 0 230 14"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                preserveAspectRatio="xMidYMid meet"
               >
-                <PlaneIcon color={clickedButton === 'plane' ? '#228B22' : '#101010'} />
+                <g clipPath="url(#clip0_frame3_logo)">
+                  <path
+                    d="M0 13.8056V0.194444H22.5306V4.86111H5.93306V13.8056H0ZM49.0092 0.194444V13.8056H43.0761V6.02778L29.9708 13.8056H24.0377V0.194444H29.9708V7.97222L43.0761 0.194444H49.0092ZM50.5142 13.8056V0.194444H73.0448V4.86111H56.4473V13.8056H50.5142ZM84.0292 4.47222L81.288 7.97222H86.7705L84.0292 4.47222ZM80.6872 0.194444H87.3713L98.017 13.8056H91.3329L89.8121 11.8611H78.2464L76.7256 13.8056H70.0415L80.6872 0.194444ZM98.7731 13.8056V0.194444H123.744V13.8056H117.811V4.86111H104.706V13.8056H98.7731ZM131.454 0H145.16C148.784 0 151.732 3.24722 151.732 7C151.732 10.7528 148.784 14 145.16 14H131.454C127.831 14 124.883 10.7528 124.883 7C124.883 3.24722 127.831 0 131.454 0ZM143.94 5.05556H132.675C131.642 5.05556 130.797 5.93056 130.797 7C130.797 8.06944 131.642 8.94444 132.675 8.94444H143.94C144.973 8.94444 145.818 8.06944 145.818 7C145.818 5.93056 144.973 5.05556 143.94 5.05556ZM177.834 0.194444V13.8056H171.901V6.02778L158.796 13.8056H152.863V0.194444H158.796V7.97222L171.901 0.194444H177.834ZM203.38 8.75V13.8056H185.544C181.92 13.8056 178.972 10.7528 178.972 7C178.972 3.24722 181.92 0.194444 185.544 0.194444H203.38V5.25H186.764C185.732 5.25 184.887 5.93056 184.887 7C184.887 8.06944 185.732 8.75 186.764 8.75H203.38ZM204.88 13.8056V0.194444H210.813V7.66111L221.252 0.194444H229.852L220.332 7L229.852 13.8056H221.252L216.033 10.0722L210.813 13.8056H204.88Z"
+                    fill="#101010"
+                  />
+                </g>
+                <defs>
+                  <clipPath id="clip0_frame3_logo">
+                    <rect width="230" height="14" fill="white" />
+                  </clipPath>
+                </defs>
+              </svg>
+            </div>
+
+            {/* Правые кнопки */}
+            <div className="flex items-center gap-1">
+              {/* Кнопка избранное (Heart) */}
+              <div
+                className="cursor-pointer"
+                style={{
+                  width: '40.8px',
+                  height: '40.8px',
+                }}
+                onClick={withClickGuard(() => {
+                  setClickedButton('heart');
+                  setTimeout(() => setClickedButton(null), 300);
+                  handleHeartClick();
+                })}
+                onMouseDown={() => setIsHeartPressed(true)}
+                onMouseUp={() => setIsHeartPressed(false)}
+                onMouseLeave={() => setIsHeartPressed(false)}
+                onTouchStart={() => setIsHeartPressed(true)}
+                onTouchEnd={() => setIsHeartPressed(false)}
+              >
+                <div
+                  className="w-full h-full flex items-center justify-center relative overflow-hidden"
+                  style={{
+                    background: '#FFFFFF',
+                    borderRadius: '100px',
+                    transform: isHeartPressed ? 'scale(0.85)' : 'scale(1)',
+                    transition: 'transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                  }}
+                  suppressHydrationWarning
+                >
+                  {clickedButton === 'heart' && (
+                    <div
+                      style={{
+                        position: 'absolute',
+                        width: '100%',
+                        height: '100%',
+                        borderRadius: '100px',
+                        background: 'rgba(255, 48, 48, 0.15)',
+                        animation: 'ripple 0.4s ease-out',
+                      }}
+                    />
+                  )}
+                  <div
+                    style={{
+                      position: 'relative',
+                      zIndex: 1,
+                      transition: 'transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                      transform: isHeartPressed ? 'scale(1.1) rotate(5deg)' : 'scale(1) rotate(0deg)',
+                    }}
+                  >
+                    {favoritesInitialized && hasFavorites ? (
+                      <HeartHeaderFilledIcon />
+                    ) : (
+                      <HeartHeaderBlackFilledIcon />
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Кнопка фильтр (Funnel) */}
+              <div
+                className="cursor-pointer"
+                style={{
+                  width: '40.8px',
+                  height: '40.8px',
+                }}
+                onClick={withClickGuard(() => {
+                  if (showFilterWizard) return;
+                  setClickedButton('funnel');
+                  setTimeout(() => setClickedButton(null), 300);
+                  handleFilterClick();
+                })}
+                onMouseDown={() => setIsFunnelPressed(true)}
+                onMouseUp={() => setIsFunnelPressed(false)}
+                onMouseLeave={() => setIsFunnelPressed(false)}
+                onTouchStart={() => setIsFunnelPressed(true)}
+                onTouchEnd={() => setIsFunnelPressed(false)}
+              >
+                <div
+                  className="w-full h-full flex items-center justify-center relative overflow-hidden"
+                  style={{
+                    background: '#FFFFFF',
+                    borderRadius: '100px',
+                    transform: isFunnelPressed ? 'scale(0.85)' : 'scale(1)',
+                    transition: 'transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                  }}
+                >
+                  {clickedButton === 'funnel' && (
+                    <div
+                      style={{
+                        position: 'absolute',
+                        width: '100%',
+                        height: '100%',
+                        borderRadius: '100px',
+                        background: 'rgba(139, 69, 19, 0.15)',
+                        animation: 'ripple 0.4s ease-out',
+                      }}
+                    />
+                  )}
+                  <div
+                    style={{
+                      position: 'relative',
+                      zIndex: 1,
+                      transition: 'transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                      transform: isFunnelPressed ? 'scale(1.1) rotate(-10deg)' : 'scale(1) rotate(0deg)',
+                    }}
+                  >
+                    <FunnelIcon />
+                  </div>
+                </div>
+              </div>
+
+              {/* Кнопка самолёт (Plane) */}
+              <div
+                className="cursor-pointer"
+                style={{
+                  width: '40.8px',
+                  height: '40.8px',
+                }}
+                onClick={withClickGuard(() => {
+                  setClickedButton('plane');
+                  setTimeout(() => setClickedButton(null), 300);
+                  handlePlaneClick();
+                })}
+                onMouseDown={() => setIsPlanePressed(true)}
+                onMouseUp={() => setIsPlanePressed(false)}
+                onMouseLeave={() => setIsPlanePressed(false)}
+                onTouchStart={() => setIsPlanePressed(true)}
+                onTouchEnd={() => setIsPlanePressed(false)}
+              >
+                <div
+                  className="w-full h-full flex items-center justify-center relative overflow-hidden"
+                  style={{
+                    background: '#FFFFFF',
+                    borderRadius: '100px',
+                    transform: isPlanePressed ? 'scale(0.85)' : 'scale(1)',
+                    transition: 'transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                  }}
+                >
+                  {clickedButton === 'plane' && (
+                    <div
+                      style={{
+                        position: 'absolute',
+                        width: '100%',
+                        height: '100%',
+                        borderRadius: '100px',
+                        background: 'rgba(34, 139, 34, 0.15)',
+                        animation: 'ripple 0.4s ease-out',
+                      }}
+                    />
+                  )}
+                  <div
+                    style={{
+                      position: 'relative',
+                      zIndex: 1,
+                      transition: 'transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                      transform: isPlanePressed ? 'scale(1.1) rotate(15deg)' : 'scale(1) rotate(0deg)',
+                    }}
+                  >
+                    <PlaneIcon color={clickedButton === 'plane' ? '#228B22' : '#101010'} />
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
       )}
 
-      {/* HintTooltip - модальное окно подсказки */}
+      {/* HintTooltip */}
       {hintStep !== 'none' && !showFavoritesMode && (
         <HintTooltip
           text={hintStep === 'consultation' ? 'Консультация, это здесь' : 'Фильтрация, это здесь'}
@@ -1036,47 +1028,46 @@ function Frame3Content() {
         onClose={() => setShowFavoriteToast(false)}
       />
 
-      {/* Кнопка отмены фильтрации - слева от карточки, показывается только когда фильтр активен и не в режиме избранного */}
-      {isFilterActive && !showFavoritesMode && (
-        <div
-          className="absolute cursor-pointer"
-          style={{
-            width: '40px',
-            height: '40px',
-            left: '20px',
-            top: '255px',
-          }}
-          onClick={withClickGuard(handleClearFilters)}
-          onMouseDown={() => setIsClearFilterPressed(true)}
-          onMouseUp={() => setIsClearFilterPressed(false)}
-          onMouseLeave={() => setIsClearFilterPressed(false)}
-          onTouchStart={() => setIsClearFilterPressed(true)}
-          onTouchEnd={() => setIsClearFilterPressed(false)}
-        >
-          <div
-            className="w-full h-full flex items-center justify-center"
-            style={{
-              background: '#FFFFFF',
-              borderRadius: '100px',
-              transform: isClearFilterPressed ? 'scale(0.92)' : 'scale(1)',
-              transition: 'transform 0.15s ease-out',
-            }}
-          >
-            <ClearFilterIcon />
-          </div>
-        </div>
-      )}
-
-      {/* Контейнер для кнопок управления справа - Group 7509 */}
+      {/* Контейнер для кнопок управления */}
       <div
-        className="absolute"
+        className="relative w-full px-5 flex justify-between items-center"
         style={{
-          right: '20px',
-          top: '255px',
+          marginBottom: '15px',
         }}
       >
+        {/* Кнопка отмены фильтрации - слева */}
+        {isFilterActive && !showFavoritesMode ? (
+          <div
+            className="cursor-pointer"
+            style={{
+              width: '40px',
+              height: '40px',
+            }}
+            onClick={withClickGuard(handleClearFilters)}
+            onMouseDown={() => setIsClearFilterPressed(true)}
+            onMouseUp={() => setIsClearFilterPressed(false)}
+            onMouseLeave={() => setIsClearFilterPressed(false)}
+            onTouchStart={() => setIsClearFilterPressed(true)}
+            onTouchEnd={() => setIsClearFilterPressed(false)}
+          >
+            <div
+              className="w-full h-full flex items-center justify-center"
+              style={{
+                background: '#FFFFFF',
+                borderRadius: '100px',
+                transform: isClearFilterPressed ? 'scale(0.92)' : 'scale(1)',
+                transition: 'transform 0.15s ease-out',
+              }}
+            >
+              <ClearFilterIcon />
+            </div>
+          </div>
+        ) : (
+          <div style={{ width: '40px' }} />
+        )}
+
+        {/* Кнопка скролла вправо */}
         {showFavoritesMode ? (
-          // Общий "пилюлеобразный" контейнер для избранного + стрелки
           <div
             className="flex items-center"
             style={{
@@ -1087,12 +1078,10 @@ function Frame3Content() {
               padding: '0 8px',
               boxSizing: 'border-box',
               justifyContent: 'space-between',
-              // Чуть уменьшаем расстояние между сердцем и стрелкой
               gap: '2px',
             }}
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Сердечко избранного */}
             <div
               style={{
                 display: 'flex',
@@ -1105,7 +1094,6 @@ function Frame3Content() {
               <HeartFilledIcon />
             </div>
 
-            {/* Кнопка скролла вправо внутри общей "таблетки" */}
             <div
               className="cursor-pointer"
               style={{
@@ -1125,14 +1113,12 @@ function Frame3Content() {
               <div
                 className="w-full h-full flex items-center justify-center relative overflow-hidden"
                 style={{
-                  // Анимация как в обычном режиме стрелки
                   background: '#FFFFFF',
                   borderRadius: '100px',
                   transform: isArrowPressed ? 'scale(0.85)' : 'scale(1)',
                   transition: 'transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)',
                 }}
               >
-                {/* Ripple эффект */}
                 {arrowClicked && (
                   <div
                     style={{
@@ -1157,7 +1143,6 @@ function Frame3Content() {
                         : 'scale(1)',
                   }}
                 >
-                  {/* Те же цвета и поведение, что и у обычной стрелки */}
                   <ArrowCircleRightIcon
                     color={arrowClicked ? '#4A90E2' : '#101010'}
                     isAnimating={arrowClicked}
@@ -1167,7 +1152,6 @@ function Frame3Content() {
             </div>
           </div>
         ) : (
-          // Обычная одиночная круглая стрелка
           <div
             className="cursor-pointer"
             style={{
@@ -1220,30 +1204,38 @@ function Frame3Content() {
         )}
       </div>
 
-      {/* Контейнер для карточек — без обрезки краёв */}
+      {/* Контейнер для карточек */}
       <div
-        className="absolute"
+        className="relative w-full"
         style={{
-          left: '0px',
-          right: '0px',
-          top: '305px',
+          paddingBottom: '20px',
         }}
-        onClick={(e) => e.stopPropagation()}
+        onClick={(e) => {
+          if (showFavoritesMode && e.target === e.currentTarget) {
+            setShowFavoritesMode(false);
+          } else {
+            e.stopPropagation();
+          }
+        }}
       >
-        {/* Горизонтальный скролл с карточками */}
+        {/* Горизонтальный скролл с карточками — в режиме избранного клик по пустому месту закрывает */}
         <div
           ref={scrollRef}
           className="flex overflow-x-auto scrollbar-hide flex-nowrap carousel-container"
           style={{
             gap: '5px',
-            height: '100%',
             scrollSnapType: 'x mandatory',
             WebkitOverflowScrolling: 'touch',
             scrollbarWidth: 'none',
             msOverflowStyle: 'none',
           }}
+          onClick={(e) => {
+            if (showFavoritesMode && e.target === e.currentTarget) {
+              setShowFavoritesMode(false);
+            }
+          }}
         >
-          {/* Спейсер слева: на мобильных 20px — часть контента скролла, карточка обрезается только краем экрана */}
+          {/* Спейсер слева */}
           <div className="carousel-spacer-left" aria-hidden="true" />
           {tariffsLoading ? (
             <div
@@ -1730,7 +1722,6 @@ function Frame3Content() {
         isOpen={showFilterWizard}
         onClose={() => {
           setShowFilterWizard(false);
-          // На всякий случай сбрасываем визуальное "нажатие" фильтра
           setIsFunnelPressed(false);
           setClickedButton(prev => (prev === 'funnel' ? null : prev));
         }}

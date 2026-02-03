@@ -491,10 +491,7 @@ export default function AddressInputModal({
     };
   }, [query, currentStep, addressData.cityId, addressData.city, addressData.streetId, addressData.buildingId, addressData.entrance, addressData.floor]);
 
-  const handleSelect = (index: number) => {
-    // index - это индекс в visibleSuggestions (0-2)
-    // Реальный индекс в полном массиве suggestions = scrollOffset + index
-    const realIndex = scrollOffset + index;
+  const handleSelect = (realIndex: number) => {
     if (realIndex < suggestions.length) {
       setSelectedIndex(realIndex);
     }
@@ -764,227 +761,144 @@ export default function AddressInputModal({
 
   const canProceed = selectedIndex !== null || query.trim().length > 0;
   const hasSuggestions = suggestions.length > 0;
-  
-  // Всегда показываем максимум 3 подсказки, начиная с scrollOffset
-  const maxVisible = 3;
-  const visibleSuggestions = suggestions.slice(scrollOffset, scrollOffset + maxVisible);
-
-  // Высота одной подсказки и отступы
-  // Если всего одна подсказка в массиве, её высота равна высоте поля ввода (50px), иначе 40px
-  const suggestionHeight = suggestions.length === 1 ? 50 : 40;
-  const suggestionGap = 0;
-
-  // Высота блока подсказок — по количеству ВИДИМЫХ подсказок (без пустоты внутри)
-  const suggestionsBlockHeight = hasSuggestions
-    ? visibleSuggestions.length * suggestionHeight + Math.max(0, visibleSuggestions.length - 1) * suggestionGap
-    : 0;
-
-  // Базовая высота модалки (без подсказок)
-  const baseHeight = 240;
-  // Дополнительная высота для подсказок
-  const extraHeight = hasSuggestions ? suggestionsBlockHeight + 5 : 0;
-  // Полная высота модалки с подсказками
-  const modalHeight = baseHeight + extraHeight;
-
-  // Базовая позиция top модалки - ВНИЗУ экрана (485px от верха в контейнере 870px)
-  const baseTop = 485;
-  // При появлении подсказок модалка расширяется ВВЕРХ (top уменьшается)
-  const modalTop = baseTop - extraHeight - keyboardHeight;
 
   return (
     <div
-      className="fixed inset-0 z-[10000] flex items-center justify-center"
+      className="fixed inset-0 z-[10000] flex flex-col items-center overflow-hidden"
       style={{
         background: '#F5F5F5',
         backdropFilter: 'blur(12.5px)',
         opacity: isAnimating ? 1 : 0,
         transition: 'opacity 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
+        paddingTop: 'var(--sat, 0px)',
+        paddingBottom: 'var(--sab, 0px)',
+        height: '100dvh',
+        boxSizing: 'border-box',
       }}
       onClick={handleBackdropClick}
     >
-      {/* Контейнер 400x870 (клик по пустому месту внутри экрана закрывает модалку) */}
+      {/* Контейнер — header и карточка влезают в экран, прокрутка только внутри карточки */}
       <div
         onClick={handleContainerClick}
+        className="relative w-full max-w-[400px] flex flex-col flex-1 min-h-0 overflow-hidden bg-[#F5F5F5]"
         style={{
-          position: 'relative',
-          width: '400px',
-          height: '870px',
-          background: '#F5F5F5',
+          transform: isAnimating ? 'translateY(0)' : 'translateY(100px)',
+          transition: 'opacity 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
+          boxSizing: 'border-box',
         }}
       >
-        {/* Подсказка сверху */}
+        {/* Шапка: подсказка — клик по пустому месту закрывает модалку */}
         <div
-          style={{
-            position: 'absolute',
-            width: '240px',
-            height: '30px',
-            left: 'calc(50% - 240px/2)',
-            top: '75px',
-            fontFamily: 'TT Firs Neue, sans-serif',
-            fontStyle: 'normal',
-            fontWeight: 400,
-            fontSize: '14px',
-            lineHeight: '105%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            textAlign: 'center',
-            color: 'rgba(16, 16, 16, 0.15)',
-            opacity: isAnimating ? 1 : 0,
-            transform: isAnimating ? 'translateY(0)' : 'translateY(-10px)',
-            transition: 'opacity 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
-          }}
+          className="flex-shrink-0 cursor-pointer"
+          style={{ minHeight: '105px' }}
+          onClick={() => onClose()}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => e.key === 'Enter' && onClose()}
+          aria-label="Закрыть"
         >
-          Нажмите в открытое пустое место, чтобы выйти из этого режима
-        </div>
-
-        {/* Основной контейнер модалки */}
-        <div
-          onClick={(e) => e.stopPropagation()}
-          style={{
-            boxSizing: 'border-box',
-            position: 'absolute',
-            width: '360px',
-            height: `${modalHeight}px`,
-            left: '20px',
-            top: `${modalTop}px`,
-            background: '#FFFFFF',
-            backdropFilter: 'blur(7.5px)',
-            borderRadius: '20px',
-            transition: 'top 0.3s ease, height 0.3s ease, opacity 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
-            overflow: 'hidden',
-            opacity: isAnimating ? 1 : 0,
-            transform: isAnimating ? 'translateY(0)' : 'translateY(100px)',
-          }}
-        >
-          {/* Заголовок - фиксирован сверху */}
           <div
+            className="font-normal flex items-center justify-center text-center"
             style={{
-              position: 'absolute',
-              width: '330px',
-              left: '15px',
-              top: '15px',
+              width: '240px',
+              margin: '0 auto',
+              paddingTop: '75px',
+              height: '30px',
               fontFamily: 'TT Firs Neue, sans-serif',
-              fontStyle: 'normal',
-              fontWeight: 400,
-              fontSize: '20px',
-              lineHeight: '125%',
-              color: '#101010',
-            }}
-          >
-            Проверка тех. доступа
-          </div>
-
-          {/* Подзаголовок - фиксирован сверху */}
-          <div
-            style={{
-              position: 'absolute',
-              width: '330px',
-              left: '15px',
-              top: '50px',
-              fontFamily: 'TT Firs Neue, sans-serif',
-              fontStyle: 'normal',
-              fontWeight: 400,
               fontSize: '14px',
               lineHeight: '105%',
-              color: 'rgba(16, 16, 16, 0.25)',
+              color: 'rgba(16, 16, 16, 0.15)',
+              letterSpacing: '0.5px',
             }}
           >
-            Мы подготовили доступные тарифные планы. Пожалуйста, проверьте правильность
+            Нажмите в открытое пустое место, чтобы выйти из этого режима
           </div>
+        </div>
 
-          {/* Подсказки - появляются между заголовком и полем ввода */}
-          {hasSuggestions && (
+        {/* Карточка — занимает остаток экрана, список подсказок прокручивается внутри */}
+        <div
+          className="flex-1 min-h-0 flex flex-col rounded-[20px] bg-white overflow-hidden"
+          style={{ maxWidth: '360px', marginLeft: 'auto', marginRight: 'auto', backdropFilter: 'blur(7.5px)' }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="flex-shrink-0 px-[15px] pt-[15px]">
             <div
+              className="font-normal"
               style={{
-                position: 'absolute',
-                left: '15px',
-                bottom: '139px',
-                width: '330px',
-                height: `${suggestionsBlockHeight}px`,
-                boxSizing: 'border-box',
-                border: '1px solid rgba(16, 16, 16, 0.25)',
-                borderRadius: '10px',
-                overflow: 'hidden',
+                fontFamily: 'TT Firs Neue, sans-serif',
+                fontSize: '20px',
+                lineHeight: '125%',
+                color: '#101010',
               }}
             >
-              {visibleSuggestions.map((suggestion, index) => {
-                // index - это индекс в visibleSuggestions (0-2)
-                // Реальный индекс в suggestions = scrollOffset + index
-                const realIndex = scrollOffset + index;
-                const isSelected = selectedIndex === realIndex;
-                
-                return (
-                  <div
-                    key={suggestion.id || index}
-                    onClick={() => handleSelect(index)}
-                    style={{
-                      boxSizing: 'border-box',
-                      width: '100%',
-                      height: `${suggestionHeight}px`,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      padding: '0 15px',
-                      cursor: 'pointer',
-                      transition: 'background-color 0.2s ease',
-                      backgroundColor: 'transparent',
-                    }}
-                  >
-                    <span
-                      style={{
-                        fontFamily: 'TT Firs Neue, sans-serif',
-                        fontStyle: 'normal',
-                        fontWeight: 400,
-                        fontSize: '14px',
-                        lineHeight: '125%',
-                        letterSpacing: '1.2px',
-                        color: isSelected ? '#101010' : 'rgba(16, 16, 16, 0.5)',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap',
-                      }}
-                    >
-                      {suggestion.formatted || suggestion.text}
-                    </span>
+              Проверка тех. доступа
+            </div>
+            <div
+              className="font-normal pt-[10px]"
+              style={{
+                fontFamily: 'TT Firs Neue, sans-serif',
+                fontSize: '14px',
+                lineHeight: '105%',
+                color: 'rgba(16, 16, 16, 0.25)',
+              }}
+            >
+              Мы подготовили доступные тарифные планы. Пожалуйста, проверьте правильность
+            </div>
+          </div>
 
-                    {/* Radio кнопка */}
+          {/* Список подсказок — прокручиваемая область */}
+          <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden px-[15px] pt-[15px]" style={{ WebkitOverflowScrolling: 'touch' }}>
+            {hasSuggestions && (
+              <div
+                className="rounded-[10px] border border-[rgba(16,16,16,0.25)] overflow-hidden mb-[10px]"
+                style={{ minHeight: '40px' }}
+              >
+                {suggestions.map((suggestion, index) => {
+                  const isSelected = selectedIndex === index;
+                  return (
                     <div
+                      key={suggestion.id ?? index}
+                      onClick={() => handleSelect(index)}
+                      className="flex items-center justify-between px-[15px] cursor-pointer w-full"
                       style={{
                         boxSizing: 'border-box',
-                        width: '16px',
-                        height: '16px',
-                        borderRadius: '50%',
-                        background: isSelected ? '#101010' : 'transparent',
-                        border: isSelected
-                          ? 'none'
-                          : '1px solid rgba(16, 16, 16, 0.5)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        flexShrink: 0,
+                        minHeight: suggestions.length === 1 ? 50 : 40,
+                        transition: 'background-color 0.2s ease',
+                        backgroundColor: 'transparent',
                       }}
                     >
-                      {isSelected && (
-                        <Check size={10} weight="bold" color="white" />
-                      )}
+                      <span
+                        className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap"
+                        style={{
+                          fontFamily: 'TT Firs Neue, sans-serif',
+                          fontWeight: 400,
+                          fontSize: '14px',
+                          lineHeight: '125%',
+                          letterSpacing: '1.2px',
+                          color: isSelected ? '#101010' : 'rgba(16, 16, 16, 0.5)',
+                        }}
+                      >
+                        {suggestion.formatted || suggestion.text}
+                      </span>
+                      <div
+                        className="w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 ml-2"
+                        style={{
+                          boxSizing: 'border-box',
+                          background: isSelected ? '#101010' : 'transparent',
+                          border: isSelected ? 'none' : '1px solid rgba(16, 16, 16, 0.5)',
+                        }}
+                      >
+                        {isSelected && <Check size={10} weight="bold" color="white" />}
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
+                  );
+                })}
+              </div>
+            )}
+          </div>
 
-          {/* Поле ввода - ФИКСИРОВАНО от низа модалки */}
-          <div
-            style={{
-              position: 'absolute',
-              left: '15px',
-              bottom: '85px',
-              width: '330px',
-              height: '50px',
-            }}
-          >
+          {/* Поле ввода — всегда видно под списком подсказок */}
+          <div className="flex-shrink-0 px-[15px] pb-[10px]">
             <input
               ref={inputRef}
               type="text"
@@ -994,99 +908,50 @@ export default function AddressInputModal({
                 setSelectedIndex(null);
               }}
               placeholder={stepConfig[currentStep].placeholder}
+              className="w-full rounded-[10px] outline-none px-[15px]"
               style={{
                 boxSizing: 'border-box',
-                width: '330px',
                 height: '50px',
                 border: '1px solid #101010',
-                borderRadius: '10px',
-                padding: '0 15px',
                 fontFamily: 'TT Firs Neue, sans-serif',
-                fontStyle: 'normal',
                 fontWeight: 400,
                 fontSize: '16px',
                 lineHeight: '125%',
                 color: '#101010',
-                outline: 'none',
               }}
             />
           </div>
 
-          {/* Кнопки навигации - ФИКСИРОВАНЫ от низа модалки */}
-          <div
-            style={{
-              position: 'absolute',
-              width: '330px',
-              height: '50px',
-              left: '15px',
-              bottom: '15px',
-              display: 'flex',
-              gap: '5px',
-            }}
-          >
-            {/* Кнопка "Вверх" */}
+          {/* Кнопки навигации */}
+          <div className="flex-shrink-0 flex gap-[5px] px-[15px] pb-[15px] pt-[10px]">
             <button
               onClick={handleScrollUp}
               disabled={!hasSuggestions}
-              style={{
-                boxSizing: 'border-box',
-                width: '50px',
-                height: '50px',
-                border: '1px solid rgba(16, 16, 16, 0.15)',
-                borderRadius: '10px',
-                background: 'transparent',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: hasSuggestions ? 'pointer' : 'default',
-                opacity: hasSuggestions ? 1 : 0.25,
-              }}
+              className="rounded-[10px] flex items-center justify-center flex-shrink-0 w-[50px] h-[50px] border border-[rgba(16,16,16,0.15)] bg-transparent disabled:opacity-25"
+              style={{ cursor: hasSuggestions ? 'pointer' : 'default' }}
             >
               <CaretUp size={12} weight="regular" color="#101010" />
             </button>
-
-            {/* Кнопка "Вниз" */}
             <button
               onClick={handleScrollDown}
               disabled={!hasSuggestions}
-              style={{
-                boxSizing: 'border-box',
-                width: '50px',
-                height: '50px',
-                border: '1px solid rgba(16, 16, 16, 0.15)',
-                borderRadius: '10px',
-                background: 'transparent',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: hasSuggestions ? 'pointer' : 'default',
-                opacity: hasSuggestions ? 1 : 0.25,
-              }}
+              className="rounded-[10px] flex items-center justify-center flex-shrink-0 w-[50px] h-[50px] border border-[rgba(16,16,16,0.15)] bg-transparent disabled:opacity-25"
+              style={{ cursor: hasSuggestions ? 'pointer' : 'default' }}
             >
               <CaretDown size={12} weight="regular" color="#101010" />
             </button>
-
-            {/* Кнопка "Далее" */}
             <button
               onClick={handleNext}
               disabled={!canProceed}
+              className="flex-1 rounded-[10px] flex items-center justify-center text-center text-white min-h-[50px] disabled:cursor-not-allowed"
               style={{
                 boxSizing: 'border-box',
-                flex: 1,
-                height: '50px',
                 background: canProceed ? '#101010' : 'rgba(16, 16, 16, 0.25)',
                 border: '1px solid rgba(16, 16, 16, 0.25)',
-                borderRadius: '10px',
                 fontFamily: 'TT Firs Neue, sans-serif',
-                fontStyle: 'normal',
                 fontWeight: 400,
                 fontSize: '16px',
                 lineHeight: '315%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                textAlign: 'center',
-                color: '#FFFFFF',
                 cursor: canProceed ? 'pointer' : 'not-allowed',
                 transition: 'background-color 0.2s ease',
               }}

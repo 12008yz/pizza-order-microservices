@@ -16,15 +16,18 @@ export default function TechAccessModal({ isOpen, onClose }: TechAccessModalProp
   return (
     <>
       <div
-        className="fixed inset-0 z-[10000] flex items-center justify-center"
+        className="fixed inset-0 z-[10000] flex items-center justify-center overflow-y-auto overflow-x-hidden"
         style={{
           background: '#F5F5F5',
           backdropFilter: 'blur(12.5px)',
+          paddingTop: 'var(--sat, 0px)',
+          paddingBottom: 'var(--sab, 0px)',
         }}
         onClick={onClose}
       >
         <div
-          className="bg-white rounded-[20px] p-6 max-w-md w-full"
+          className="bg-white rounded-[20px] p-6 max-w-[400px] w-full mx-4 overflow-y-auto"
+          style={{ maxHeight: 'calc(100dvh - var(--sat, 0px) - var(--sab, 0px) - 80px)' }}
           onClick={(e) => e.stopPropagation()}
         >
           <h2 className="text-xl font-normal mb-2">Проверка тех. доступа</h2>

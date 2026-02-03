@@ -17,8 +17,14 @@ export default function ConsultationModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-[#F5F5F5] backdrop-blur-[12.5px]">
-      <div className="bg-white rounded-[20px] p-6 max-w-md">
+    <div
+      className="fixed inset-0 z-[10000] flex items-center justify-center bg-[#F5F5F5] backdrop-blur-[12.5px] overflow-y-auto overflow-x-hidden"
+      style={{ paddingTop: 'var(--sat, 0px)', paddingBottom: 'var(--sab, 0px)' }}
+    >
+      <div
+        className="bg-white rounded-[20px] p-6 max-w-[400px] w-full mx-4 overflow-y-auto"
+        style={{ maxHeight: 'calc(100dvh - var(--sat, 0px) - var(--sab, 0px) - 80px)' }}
+      >
         <h2 className="text-xl mb-4">Консультация</h2>
         <p className="text-gray-600 mb-4">Модальное окно в разработке</p>
         <button

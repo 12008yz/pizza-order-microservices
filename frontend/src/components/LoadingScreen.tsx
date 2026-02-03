@@ -6,14 +6,23 @@ interface LoadingScreenProps {
 
 export default function LoadingScreen({ progress = 0 }: LoadingScreenProps) {
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-white overflow-hidden">
-      {/* 400-1-1-1 - Main Container */}
+    <div
+      className="fixed inset-0 z-[9999] flex items-center justify-center bg-white overflow-y-auto overflow-x-hidden"
+      style={{
+        paddingTop: 'var(--sat, 0px)',
+        paddingBottom: 'var(--sab, 0px)',
+      }}
+    >
+      {/* Main Container — резиновость как Frame1/Frame3 */}
       <div
         style={{
           position: 'relative',
-          width: '400px',
-          height: '870px',
-          background: '#FFFFFF'
+          width: '100%',
+          maxWidth: '400px',
+          minHeight: '100dvh',
+          paddingBottom: 'var(--sab, 0px)',
+          background: '#FFFFFF',
+          boxSizing: 'border-box',
         }}
       >
         {/* Vector - точные CSS свойства из Figma */}

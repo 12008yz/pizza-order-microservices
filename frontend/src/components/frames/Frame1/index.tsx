@@ -273,13 +273,6 @@ function AddressFormContent() {
     await saveUserDataAndNavigate();
   };
 
-  // const isFormValid = // Не используется, закомментировано
-  //   addressData.connectionType &&
-  //   (addressData.cityId || addressData.city) &&
-  //   (addressData.streetId || addressData.street) &&
-  //   (addressData.buildingId || addressData.houseNumber) &&
-  //   addressData.privacyConsent;
-
   if (flowState === 'loading') {
     return <LoadingScreen progress={loadingProgress} />;
   }
@@ -295,313 +288,324 @@ function AddressFormContent() {
   }
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-[#F5F5F5] overflow-hidden">
-      <div className="relative w-[400px] h-[870px] bg-[#F5F5F5]">
-        <div className="absolute left-0 right-[0.06%] top-[10%] bottom-[10%] bg-[#F5F5F5]" />
-
-        {!showCookieBanner && <Header onConsultationClick={handleHeaderConsultationClick} />}
-
-        <div className="absolute left-[5%] right-[5%] top-[29.74%] bottom-[16.67%] bg-white backdrop-blur-[7.5px] rounded-[20px]" />
-
-        <div className="absolute left-[8.75%] right-[8.75%] top-[31.26%] bottom-[59.77%] font-normal text-xl leading-[125%] text-[#101010] flex items-start" style={{ letterSpacing: '0.5px' }}>
-          Маркетплейс тарифных планов, операторов на твоем адресе. Бесплатно заказать «wi-fi»
+    <div
+      className="fixed inset-0 z-[9999] flex items-start justify-center bg-[#F5F5F5] overflow-y-auto overflow-x-hidden"
+      style={{
+        paddingTop: 'var(--sat, 0px)',
+        paddingBottom: 'var(--sab, 0px)',
+      }}
+    >
+      <div
+        className="relative w-full max-w-[400px] min-h-full bg-[#F5F5F5] flex flex-col"
+        style={{
+          minHeight: '100dvh',
+          paddingBottom: '20px',
+        }}
+      >
+        {/* Header area */}
+        <div className="relative h-[80px] flex-shrink-0">
+          {!showCookieBanner && <Header onConsultationClick={handleHeaderConsultationClick} />}
         </div>
 
-        <div className="absolute left-[8.75%] right-[8.75%] top-[41.98%] bottom-[51.72%]">
-          <div
-            className="relative w-full rounded-[10px] bg-white"
-            style={{
-              border: addressData.errors.connectionType
-                ? '0.5px solid rgb(239, 68, 68)'
-                : isFieldActive(0) || addressData.connectionType
-                  ? '0.5px solid #101010'
-                  : '0.5px solid rgba(16, 16, 16, 0.25)',
-            }}
-          >
-            <div
-              onClick={handleConnectionTypeClick}
-              className="relative w-full h-full px-[15px] rounded-[10px] bg-transparent cursor-pointer flex items-center justify-between"
-              style={{ paddingTop: '15.5px', paddingBottom: '14px' }}
-            >
-              <span
-                className={`text-base leading-[125%] flex-1 ${addressData.connectionType ? 'text-[#101010]' : 'text-[rgba(16,16,16,0.5)]'
-                  }`}
-                style={{
-                  letterSpacing: '0.5px',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap',
-                  minWidth: 0,
-                  marginRight: '8px'
-                }}
-              >
-                {addressData.connectionType
-                  ? getConnectionTypeLabel(addressData.connectionType)
-                  : 'Подключение'}
-              </span>
-              <div
-                className={`w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 ${
-                  addressData.connectionType
-                    ? 'bg-[#9CA3AF]'
-                    : isFieldActive(0)
-                      ? 'bg-[#101010]'
-                      : 'border border-[rgba(16,16,16,0.25)]'
-                }`}
-                style={{
-                  borderWidth: '0.5px',
-                  transition: 'background-color 0.2s ease, border-color 0.2s ease',
-                }}
-              >
-                {addressData.connectionType ? (
-                  <AnimatedCheck key={`connection-${addressData.connectionType}`} size={8} color="#FFFFFF" strokeWidth={1.5} />
-                ) : (
-                  <CaretRight size={8} weight="regular" color="#FFFFFF" />
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="absolute left-[8.75%] right-[8.75%] top-[48.37%] bottom-[45.4%]">
-          <div
-            onClick={() => {
-              if (!addressData.connectionType) return;
-              setAddressModalStep('city');
-              setShowAddressModal(true);
-            }}
-            className={`relative w-full rounded-[10px] bg-white ${!addressData.connectionType ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'} ${addressData.city ? '' : ''}`}
-            style={{
-              border: addressData.errors.city
-                ? '0.5px solid rgb(239, 68, 68)'
-                : isFieldActive(1) || addressData.city
-                  ? '0.5px solid #101010'
-                  : '0.5px solid rgba(16, 16, 16, 0.25)',
-            }}
-          >
-            <div
-              className="relative w-full h-full px-[15px] rounded-[10px] bg-transparent flex items-center justify-between"
-              style={{ paddingTop: '15.5px', paddingBottom: '14px' }}
-            >
-              <span
-                className={`text-base leading-[125%] flex-1 ${addressData.city ? 'text-[#101010]' : 'text-[rgba(16,16,16,0.5)]'
-                  }`}
-                style={{
-                  letterSpacing: '0.5px',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap',
-                  minWidth: 0,
-                  marginRight: '8px'
-                }}
-              >
-                {addressData.city || 'Название населённого пункта'}
-              </span>
-              <div
-                className={`w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 ${
-                  addressData.city
-                    ? 'bg-[#9CA3AF]'
-                    : isFieldActive(1)
-                      ? 'bg-[#101010]'
-                      : 'border border-[rgba(16,16,16,0.25)]'
-                }`}
-                style={{
-                  borderWidth: '0.5px',
-                  transition: 'background-color 0.2s ease, border-color 0.2s ease',
-                }}
-              >
-                {addressData.city ? (
-                  <AnimatedCheck key={`city-${addressData.city}`} size={8} color="#FFFFFF" strokeWidth={1.5} />
-                ) : (
-                  <CaretRight size={8} weight="regular" color="#FFFFFF" />
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="absolute left-[8.75%] right-[8.75%] top-[54.72%] bottom-[39.08%]">
-          <div
-            onClick={() => {
-              if (addressData.city) {
-                setAddressModalStep('street');
-                setShowAddressModal(true);
-              }
-            }}
-            className={`relative w-full rounded-[10px] bg-white ${!addressData.city ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
-              }`}
-            style={{
-              border: addressData.errors.street
-                ? '0.5px solid rgb(239, 68, 68)'
-                : isFieldActive(2) || addressData.street
-                  ? '0.5px solid #101010'
-                  : '0.5px solid rgba(16, 16, 16, 0.25)',
-            }}
-          >
-            <div
-              className="relative w-full h-full px-[15px] rounded-[10px] bg-transparent flex items-center justify-between"
-              style={{ paddingTop: '15.5px', paddingBottom: '13.5px' }}
-            >
-              <span
-                className={`text-base leading-[125%] flex-1 ${addressData.street ? 'text-[#101010]' : 'text-[rgba(16,16,16,0.5)]'
-                  }`}
-                style={{
-                  letterSpacing: '0.5px',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap',
-                  minWidth: 0,
-                  marginRight: '8px'
-                }}
-              >
-                {addressData.street || 'Улица'}
-              </span>
-              <div
-                className={`w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 ${
-                  addressData.street
-                    ? 'bg-[#9CA3AF]'
-                    : isFieldActive(2)
-                      ? 'bg-[#101010]'
-                      : 'border border-[rgba(16,16,16,0.25)]'
-                }`}
-                style={{
-                  borderWidth: '0.5px',
-                  transition: 'background-color 0.2s ease, border-color 0.2s ease',
-                }}
-              >
-                {addressData.street ? (
-                  <AnimatedCheck key={`street-${addressData.street}`} size={8} color="#FFFFFF" strokeWidth={1.5} />
-                ) : (
-                  <CaretRight size={8} weight="regular" color="#FFFFFF" />
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="absolute left-[8.75%] right-[8.75%] top-[61.04%] bottom-[32.76%]">
-          <div
-            onClick={() => {
-              if (addressData.street) {
-                setAddressModalStep('house');
-                setShowAddressModal(true);
-              }
-            }}
-            className={`relative w-full rounded-[10px] bg-white ${!addressData.street ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
-              }`}
-            style={{
-              border: addressData.errors.houseNumber
-                ? '0.5px solid rgb(239, 68, 68)'
-                : isFieldActive(3) || addressData.houseNumber
-                  ? '0.5px solid #101010'
-                  : '0.5px solid rgba(16, 16, 16, 0.25)',
-            }}
-          >
-            <div
-              className="relative w-full h-full px-[15px] rounded-[10px] bg-transparent flex items-center justify-between"
-              style={{ paddingTop: '15.5px', paddingBottom: '13.5px' }}
-            >
-              <span
-                className={`text-base leading-[125%] flex-1 ${addressData.houseNumber ? 'text-[#101010]' : 'text-[rgba(16,16,16,0.5)]'
-                  }`}
-                style={{
-                  letterSpacing: '0.5px',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap',
-                  minWidth: 0,
-                  marginRight: '8px'
-                }}
-              >
-                {addressData.houseNumber
-                  ? (addressData.apartmentNumber
-                    ? `д. ${addressData.houseNumber} кв. ${addressData.apartmentNumber}`
-                    : addressData.houseNumber)
-                  : 'Номер дома'}
-              </span>
-              <div
-                className={`w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 ${
-                  addressData.houseNumber
-                    ? 'bg-[#9CA3AF]'
-                    : isFieldActive(3)
-                      ? 'bg-[#101010]'
-                      : 'border border-[rgba(16,16,16,0.25)]'
-                }`}
-                style={{
-                  borderWidth: '0.5px',
-                  transition: 'background-color 0.2s ease, border-color 0.2s ease',
-                }}
-              >
-                {addressData.houseNumber ? (
-                  <AnimatedCheck key={`house-${addressData.houseNumber}-${addressData.apartmentNumber ?? ''}`} size={8} color="#FFFFFF" strokeWidth={1.5} />
-                ) : (
-                  <CaretRight size={8} weight="regular" color="#FFFFFF" />
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-
+        {/* Main content area */}
         <div
-          className="absolute left-[8.75%] right-[8.75%]"
+          className="relative flex-1 mx-[5%] bg-white backdrop-blur-[7.5px] rounded-[20px] flex flex-col"
           style={{
-            marginTop: '6px',
-            top: '66.76%',
-            bottom: '26.44%',
+            marginTop: '20px',
+            padding: '20px 15px',
+            minHeight: 'auto',
           }}
         >
-          <PrivacyConsent />
-        </div>
-
-        <div
-          className="absolute left-[8.75%] right-[8.75%]"
-          style={{
-            top: '75.71%',
-            bottom: '18.39%',
-          }}
-        >
-          <button
-            onClick={handleSubmit}
-            onMouseDown={() => setIsSubmitPressed(true)}
-            onMouseUp={() => setIsSubmitPressed(false)}
-            onMouseLeave={() => setIsSubmitPressed(false)}
-            onTouchStart={() => setIsSubmitPressed(true)}
-            onTouchEnd={() => setIsSubmitPressed(false)}
-            className="box-border absolute left-0 right-0 top-0 bottom-0 rounded-[10px] flex items-center justify-center font-normal text-base leading-[315%] text-center text-white outline-none bg-[#101010] hover:bg-gray-800 cursor-pointer"
-            style={{
-              letterSpacing: '0.5px',
-              transform: isSubmitPressed ? 'scale(0.97)' : 'scale(1)',
-              transition: 'transform 0.15s ease-out',
-            }}
+          {/* Описание */}
+          <div
+            className="font-normal text-xl leading-[125%] text-[#101010] mb-6"
+            style={{ letterSpacing: '0.5px' }}
           >
-            Показать всех операторов
-          </button>
+            Маркетплейс тарифных планов, операторов на твоем адресе. Бесплатно заказать «wi-fi»
+          </div>
+
+          {/* Поле выбора типа подключения */}
+          <div className="mb-4">
+            <div
+              className="relative w-full rounded-[10px] bg-white"
+              style={{
+                border: addressData.errors.connectionType
+                  ? '0.5px solid rgb(239, 68, 68)'
+                  : isFieldActive(0) || addressData.connectionType
+                    ? '0.5px solid #101010'
+                    : '0.5px solid rgba(16, 16, 16, 0.25)',
+              }}
+            >
+              <div
+                onClick={handleConnectionTypeClick}
+                className="relative w-full h-full px-[15px] rounded-[10px] bg-transparent cursor-pointer flex items-center justify-between"
+                style={{ paddingTop: '15.5px', paddingBottom: '14px' }}
+              >
+                <span
+                  className={`text-base leading-[125%] flex-1 ${addressData.connectionType ? 'text-[#101010]' : 'text-[rgba(16,16,16,0.5)]'
+                    }`}
+                  style={{
+                    letterSpacing: '0.5px',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                    minWidth: 0,
+                    marginRight: '8px'
+                  }}
+                >
+                  {addressData.connectionType
+                    ? getConnectionTypeLabel(addressData.connectionType)
+                    : 'Подключение'}
+                </span>
+                <div
+                  className={`w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 ${
+                    addressData.connectionType
+                      ? 'bg-[#9CA3AF]'
+                      : isFieldActive(0)
+                        ? 'bg-[#101010]'
+                        : 'border border-[rgba(16,16,16,0.25)]'
+                  }`}
+                  style={{
+                    borderWidth: '0.5px',
+                    transition: 'background-color 0.2s ease, border-color 0.2s ease',
+                  }}
+                >
+                  {addressData.connectionType ? (
+                    <AnimatedCheck key={`connection-${addressData.connectionType}`} size={8} color="#FFFFFF" strokeWidth={1.5} />
+                  ) : (
+                    <CaretRight size={8} weight="regular" color="#FFFFFF" />
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Поле выбора города */}
+          <div className="mb-4">
+            <div
+              onClick={() => {
+                if (!addressData.connectionType) return;
+                setAddressModalStep('city');
+                setShowAddressModal(true);
+              }}
+              className={`relative w-full rounded-[10px] bg-white ${!addressData.connectionType ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+              style={{
+                border: addressData.errors.city
+                  ? '0.5px solid rgb(239, 68, 68)'
+                  : isFieldActive(1) || addressData.city
+                    ? '0.5px solid #101010'
+                    : '0.5px solid rgba(16, 16, 16, 0.25)',
+              }}
+            >
+              <div
+                className="relative w-full h-full px-[15px] rounded-[10px] bg-transparent flex items-center justify-between"
+                style={{ paddingTop: '15.5px', paddingBottom: '14px' }}
+              >
+                <span
+                  className={`text-base leading-[125%] flex-1 ${addressData.city ? 'text-[#101010]' : 'text-[rgba(16,16,16,0.5)]'
+                    }`}
+                  style={{
+                    letterSpacing: '0.5px',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                    minWidth: 0,
+                    marginRight: '8px'
+                  }}
+                >
+                  {addressData.city || 'Название населённого пункта'}
+                </span>
+                <div
+                  className={`w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 ${
+                    addressData.city
+                      ? 'bg-[#9CA3AF]'
+                      : isFieldActive(1)
+                        ? 'bg-[#101010]'
+                        : 'border border-[rgba(16,16,16,0.25)]'
+                  }`}
+                  style={{
+                    borderWidth: '0.5px',
+                    transition: 'background-color 0.2s ease, border-color 0.2s ease',
+                  }}
+                >
+                  {addressData.city ? (
+                    <AnimatedCheck key={`city-${addressData.city}`} size={8} color="#FFFFFF" strokeWidth={1.5} />
+                  ) : (
+                    <CaretRight size={8} weight="regular" color="#FFFFFF" />
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Поле выбора улицы */}
+          <div className="mb-4">
+            <div
+              onClick={() => {
+                if (addressData.city) {
+                  setAddressModalStep('street');
+                  setShowAddressModal(true);
+                }
+              }}
+              className={`relative w-full rounded-[10px] bg-white ${!addressData.city ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
+                }`}
+              style={{
+                border: addressData.errors.street
+                  ? '0.5px solid rgb(239, 68, 68)'
+                  : isFieldActive(2) || addressData.street
+                    ? '0.5px solid #101010'
+                    : '0.5px solid rgba(16, 16, 16, 0.25)',
+              }}
+            >
+              <div
+                className="relative w-full h-full px-[15px] rounded-[10px] bg-transparent flex items-center justify-between"
+                style={{ paddingTop: '15.5px', paddingBottom: '13.5px' }}
+              >
+                <span
+                  className={`text-base leading-[125%] flex-1 ${addressData.street ? 'text-[#101010]' : 'text-[rgba(16,16,16,0.5)]'
+                    }`}
+                  style={{
+                    letterSpacing: '0.5px',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                    minWidth: 0,
+                    marginRight: '8px'
+                  }}
+                >
+                  {addressData.street || 'Улица'}
+                </span>
+                <div
+                  className={`w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 ${
+                    addressData.street
+                      ? 'bg-[#9CA3AF]'
+                      : isFieldActive(2)
+                        ? 'bg-[#101010]'
+                        : 'border border-[rgba(16,16,16,0.25)]'
+                  }`}
+                  style={{
+                    borderWidth: '0.5px',
+                    transition: 'background-color 0.2s ease, border-color 0.2s ease',
+                  }}
+                >
+                  {addressData.street ? (
+                    <AnimatedCheck key={`street-${addressData.street}`} size={8} color="#FFFFFF" strokeWidth={1.5} />
+                  ) : (
+                    <CaretRight size={8} weight="regular" color="#FFFFFF" />
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Поле выбора дома */}
+          <div className="mb-4">
+            <div
+              onClick={() => {
+                if (addressData.street) {
+                  setAddressModalStep('house');
+                  setShowAddressModal(true);
+                }
+              }}
+              className={`relative w-full rounded-[10px] bg-white ${!addressData.street ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
+                }`}
+              style={{
+                border: addressData.errors.houseNumber
+                  ? '0.5px solid rgb(239, 68, 68)'
+                  : isFieldActive(3) || addressData.houseNumber
+                    ? '0.5px solid #101010'
+                    : '0.5px solid rgba(16, 16, 16, 0.25)',
+              }}
+            >
+              <div
+                className="relative w-full h-full px-[15px] rounded-[10px] bg-transparent flex items-center justify-between"
+                style={{ paddingTop: '15.5px', paddingBottom: '13.5px' }}
+              >
+                <span
+                  className={`text-base leading-[125%] flex-1 ${addressData.houseNumber ? 'text-[#101010]' : 'text-[rgba(16,16,16,0.5)]'
+                    }`}
+                  style={{
+                    letterSpacing: '0.5px',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                    minWidth: 0,
+                    marginRight: '8px'
+                  }}
+                >
+                  {addressData.houseNumber
+                    ? (addressData.apartmentNumber
+                      ? `д. ${addressData.houseNumber} кв. ${addressData.apartmentNumber}`
+                      : addressData.houseNumber)
+                    : 'Номер дома'}
+                </span>
+                <div
+                  className={`w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 ${
+                    addressData.houseNumber
+                      ? 'bg-[#9CA3AF]'
+                      : isFieldActive(3)
+                        ? 'bg-[#101010]'
+                        : 'border border-[rgba(16,16,16,0.25)]'
+                  }`}
+                  style={{
+                    borderWidth: '0.5px',
+                    transition: 'background-color 0.2s ease, border-color 0.2s ease',
+                  }}
+                >
+                  {addressData.houseNumber ? (
+                    <AnimatedCheck key={`house-${addressData.houseNumber}-${addressData.apartmentNumber ?? ''}`} size={8} color="#FFFFFF" strokeWidth={1.5} />
+                  ) : (
+                    <CaretRight size={8} weight="regular" color="#FFFFFF" />
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Privacy Consent */}
+          <div className="mb-4">
+            <PrivacyConsent />
+          </div>
+
+          {/* Кнопка отправки */}
+          <div className="mt-auto pt-4">
+            <button
+              onClick={handleSubmit}
+              onMouseDown={() => setIsSubmitPressed(true)}
+              onMouseUp={() => setIsSubmitPressed(false)}
+              onMouseLeave={() => setIsSubmitPressed(false)}
+              onTouchStart={() => setIsSubmitPressed(true)}
+              onTouchEnd={() => setIsSubmitPressed(false)}
+              className="w-full h-[50px] rounded-[10px] flex items-center justify-center font-normal text-base leading-[315%] text-center text-white outline-none bg-[#101010] hover:bg-gray-800 cursor-pointer"
+              style={{
+                letterSpacing: '0.5px',
+                transform: isSubmitPressed ? 'scale(0.97)' : 'scale(1)',
+                transition: 'transform 0.15s ease-out',
+              }}
+            >
+              Показать всех операторов
+            </button>
+          </div>
         </div>
 
+        {/* Cookie Banner - позиционируется поверх всего */}
         {showCookieBanner && (
           <div
-            className="absolute z-20 bg-white rounded-[20px]"
+            className="absolute z-20 bg-white rounded-[20px] left-[20px] right-[20px]"
             style={{
-              width: '360px',
-              height: '120px',
-              left: '20px',
-              top: '75px',
+              top: 'calc(75px + var(--sat, 0px))',
+              padding: '15px',
               boxSizing: 'border-box',
             }}
           >
             {/* Текст таймера */}
             <div
-              className="absolute font-normal"
+              className="font-normal mb-2"
               style={{
                 fontFamily: 'TT Firs Neue, sans-serif',
-                fontStyle: 'normal',
-                fontWeight: 400,
                 fontSize: '12px',
                 lineHeight: '165%',
                 color: 'rgba(16, 16, 16, 0.25)',
-                width: '300px',
-                height: '20px',
-                left: '15px',
-                top: '15px',
               }}
             >
               Автоматически закроется через {cookieTimer}
@@ -609,18 +613,12 @@ function AddressFormContent() {
 
             {/* Основной текст */}
             <div
-              className="absolute font-normal"
+              className="font-normal pr-6"
               style={{
                 fontFamily: 'TT Firs Neue, sans-serif',
-                fontStyle: 'normal',
-                fontWeight: 400,
                 fontSize: '14px',
                 lineHeight: '105%',
                 color: '#101010',
-                width: '330px',
-                height: '60px',
-                left: '15px',
-                top: '45px',
               }}
             >
               Если продолжаете использовать этот портал, вы выражаете согласие на использование

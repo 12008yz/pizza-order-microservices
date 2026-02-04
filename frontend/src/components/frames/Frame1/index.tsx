@@ -264,26 +264,29 @@ function AddressFormContent() {
           height: '100dvh',
         }}
       >
-        {/* Header area - фиксированная высота */}
+        {/* Header area - обёртка с top сдвигает абсолютно позиционированный Header вниз */}
         <div
           className="flex-shrink-0 relative"
           style={{
-            height: '60px',
-            paddingTop: '75px',
+            minHeight: '120px',
           }}
         >
-          {!showCookieBanner && <Header onConsultationClick={handleHeaderConsultationClick} />}
+          {!showCookieBanner && (
+            <div style={{ position: 'relative', top: '75px' }}>
+              <Header onConsultationClick={handleHeaderConsultationClick} />
+            </div>
+          )}
         </div>
 
         {/* Cookie Banner - абсолютно позиционирован поверх */}
         {showCookieBanner && (
           <div
             className="absolute bg-white z-20"
-            style={{
-              left: '20px',
-              right: '20px',
-              top: '75px',
-              borderRadius: '20px',
+          style={{
+            left: '20px',
+            right: '20px',
+            top: '100px',
+            borderRadius: '20px',
               padding: '15px',
             }}
           >

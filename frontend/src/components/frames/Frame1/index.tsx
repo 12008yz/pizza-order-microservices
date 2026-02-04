@@ -346,7 +346,7 @@ function AddressFormContent() {
             borderRadius: '20px',
             padding: '15px',
             marginTop: 'auto',
-            marginBottom: '177px',
+            marginBottom: '20px',
           }}
         >
           {/* Описание */}

@@ -100,9 +100,9 @@ export default function ConnectionTypeModal({
       }}
       onClick={handleBackdropClick}
     >
-      {/* Контейнер — header и карточка влезают в экран, прокрутка только внутри карточки */}
+      {/* Контейнер — header и карточка влезают в экран, карточка прижата вниз */}
       <div
-        className="relative w-full max-w-[400px] flex flex-col flex-1 min-h-0 overflow-hidden bg-[#F5F5F5]"
+        className="relative w-full max-w-[400px] flex flex-col h-full overflow-hidden bg-[#F5F5F5]"
         style={{
           transform: isAnimating ? 'translateY(0)' : 'translateY(100px)',
           opacity: isAnimating ? 1 : 0,
@@ -139,10 +139,19 @@ export default function ConnectionTypeModal({
           </div>
         </div>
 
-        {/* Карточка — занимает остаток экрана, опции прокручиваются внутри */}
+        {/* Карточка — компактная, прижата вниз с отступом 20px */}
         <div
-          className="flex-1 min-h-0 flex flex-col rounded-[20px] bg-white overflow-hidden"
-          style={{ maxWidth: '360px', marginLeft: 'auto', marginRight: 'auto', backdropFilter: 'blur(7.5px)' }}
+          className="flex flex-col rounded-[20px] bg-white mx-[5%]"
+          style={{
+            maxWidth: '360px',
+            marginLeft: 'auto',
+            marginRight: 'auto',
+            marginTop: 'auto',
+            marginBottom: '20px',
+            backdropFilter: 'blur(7.5px)',
+            maxHeight: 'calc(100dvh - 145px)',
+            overflow: 'hidden',
+          }}
           onClick={(e) => e.stopPropagation()}
         >
           <div className="flex-shrink-0 px-[15px] pt-[15px]">
@@ -170,9 +179,9 @@ export default function ConnectionTypeModal({
             </div>
           </div>
 
-          {/* Опции типов подключения — прокручиваемая область */}
-          <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden px-[15px] pt-[20px]" style={{ WebkitOverflowScrolling: 'touch' }}>
-            <div className="flex flex-col gap-[10px] pb-2">
+          {/* Опции типов подключения */}
+          <div className="overflow-y-auto overflow-x-hidden px-[15px] pt-[20px]" style={{ WebkitOverflowScrolling: 'touch' }}>
+            <div className="flex flex-col gap-[5px]">
               {connectionTypes.map((type) => (
                 <div
                   key={type.value}

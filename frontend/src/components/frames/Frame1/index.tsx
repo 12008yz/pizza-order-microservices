@@ -268,8 +268,8 @@ function AddressFormContent() {
         <div
           className="flex-shrink-0 relative"
           style={{
-            height: '115px',
-            paddingTop: '75px',
+            height: '60px',
+            paddingTop: '20px',
           }}
         >
           {!showCookieBanner && <Header onConsultationClick={handleHeaderConsultationClick} />}
@@ -339,12 +339,14 @@ function AddressFormContent() {
           </div>
         )}
 
-        {/* Белая карточка - компактная по контенту */}
+        {/* Белая карточка - компактная по контенту, прижата вниз */}
         <div
           className="mx-[5%] bg-white flex flex-col"
           style={{
             borderRadius: '20px',
             padding: '15px',
+            marginTop: 'auto',
+            marginBottom: '177px',
           }}
         >
           {/* Описание */}
@@ -592,7 +594,6 @@ function AddressFormContent() {
             </div>
 
             {/* Отступ между полями и Privacy */}
-            <div style={{ height: '10px' }} />
 
             {/* Privacy Consent */}
             <div className="flex-shrink-0">

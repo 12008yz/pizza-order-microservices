@@ -269,7 +269,7 @@ function AddressFormContent() {
           className="flex-shrink-0 relative"
           style={{
             height: '60px',
-            paddingTop: '20px',
+            paddingTop: '75px',
           }}
         >
           {!showCookieBanner && <Header onConsultationClick={handleHeaderConsultationClick} />}

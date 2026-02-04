@@ -12,10 +12,9 @@ import LoadingScreen from '../../LoadingScreen';
 import AnimatedCheck from '../../common/AnimatedCheck';
 import dynamic from 'next/dynamic';
 
-// Динамический импорт ConsultationFlow для code splitting
 const ConsultationFlow = dynamic(() => import('../Frame2/ConsultationFlow'), {
-  loading: () => <div>Загрузка...</div>, // Можно заменить на LoadingScreen
-  ssr: false, // Отключаем SSR для этого компонента
+  loading: () => <div>Загрузка...</div>,
+  ssr: false,
 });
 
 type FlowState = 'form' | 'loading' | 'consultation';
@@ -27,18 +26,15 @@ function AddressFormContent() {
   const [showConnectionModal, setShowConnectionModal] = useState(false);
   const [showAddressModal, setShowAddressModal] = useState(false);
   const [addressModalStep, setAddressModalStep] = useState<'city' | 'street' | 'house'>('city');
-  const [_submitError, setSubmitError] = useState<string | null>(null); // submitError не используется, setSubmitError используется в обработчике
+  const [_submitError, setSubmitError] = useState<string | null>(null);
   const [showCookieBanner, setShowCookieBanner] = useState(true);
   const [cookieTimer, setCookieTimer] = useState(7);
 
-  // Flow state for loading and consultation
   const [flowState, setFlowState] = useState<FlowState>('form');
   const [loadingProgress, setLoadingProgress] = useState(0);
 
-  // Button press state for animation
   const [isSubmitPressed, setIsSubmitPressed] = useState(false);
 
-  // Закрытие баннера cookies через 7 секунд с обратным отсчетом
   useEffect(() => {
     if (showCookieBanner && cookieTimer > 0) {
       let timerId: NodeJS.Timeout | null = null;
@@ -59,7 +55,6 @@ function AddressFormContent() {
     }
   }, [showCookieBanner, cookieTimer]);
 
-  // Эффект для загрузочного экрана
   useEffect(() => {
     if (flowState === 'loading') {
       let intervalId: NodeJS.Timeout | null = null;
@@ -94,7 +89,6 @@ function AddressFormContent() {
     }
   };
 
-  // Текущий шаг для подсветки: 0 = подключение, 1 = город, 2 = улица, 3 = дом
   const activeStep =
     !addressData.connectionType ? 0
     : !addressData.city ? 1
@@ -110,17 +104,12 @@ function AddressFormContent() {
 
   const handleSubmit = async () => {
     setSubmitError(null);
-    // Очищаем все ошибки валидации при нажатии на кнопку
     clearErrors();
 
-    // Валидация формы
     if (!validateForm()) {
-      // Если форма не валидна, ошибки уже установлены в validateForm
-      // Поля автоматически подсветятся красным
       return;
     }
 
-    // Показываем загрузочный экран
     setLoadingProgress(0);
     setFlowState('loading');
   };
@@ -129,11 +118,10 @@ function AddressFormContent() {
     clearErrors();
     if (!validateForm()) {
       setFlowState('form');
-      clearErrors(); // при возврате на форму не подсвечивать поля красным
+      clearErrors();
       return;
     }
 
-    // Сохраняем текущие данные в sessionStorage при закрытии модалки
     try {
       const sanitizedAddressData = {
         ...addressData,
@@ -143,47 +131,39 @@ function AddressFormContent() {
         apartmentNumber: sanitizeString(addressData.apartmentNumber, 20),
       };
       sessionStorage.setItem('addressData', JSON.stringify(sanitizedAddressData));
-      // Очищаем данные формы из sessionStorage
       sessionStorage.removeItem('addressFormData');
     } catch (error) {
       console.warn('Failed to save to sessionStorage:', error);
     }
 
-    // Очищаем форму и переходим на тарифы
     clearAddress();
     router.push('/providers');
   };
 
-  // Открытие консультации по клику на иконку самолёта в Header
   const handleHeaderConsultationClick = () => {
     setLoadingProgress(0);
     setFlowState('loading');
   };
 
-  // Функция санитизации строковых данных для защиты от XSS
   const sanitizeString = (str: string | undefined, maxLength: number = 200): string | undefined => {
     if (!str) return undefined;
-    // Удаляем потенциально опасные символы и ограничиваем длину
     const sanitized = str
       .trim()
-      .replace(/[<>"']/g, '') // Удаляем HTML-символы
+      .replace(/[<>"']/g, '')
       .slice(0, maxLength);
     return sanitized || undefined;
   };
 
-  // Функция сохранения номера телефона в базу данных (всегда вызывается при консультации)
   const savePhoneToDatabase = async (phone: string, method?: ContactMethod) => {
     if (!phone) return;
 
-    const normalizedPhone = phone.replace(/\D/g, ''); // Только цифры
+    const normalizedPhone = phone.replace(/\D/g, '');
 
-    // Валидация номера телефона - строго 11 цифр
     if (normalizedPhone.length !== 11) {
       console.error('Invalid phone number format');
       return;
     }
 
-    // Формируем данные для сохранения (включаем все доступные данные из формы)
     const userData = {
       phone: normalizedPhone,
       city: sanitizeString(addressData.city, 100),
@@ -194,8 +174,6 @@ function AddressFormContent() {
       contactMethod: method || undefined,
     };
 
-    // Отправляем данные на сервер для сохранения в базе данных
-    // API автоматически объединит данные, если пользователь уже существует
     try {
       const response = await fetch('/api/users/profile', {
         method: 'POST',
@@ -210,26 +188,22 @@ function AddressFormContent() {
       }
     } catch (error) {
       console.error('Error saving user data:', error);
-      // Продолжаем даже если сохранение не удалось
     }
   };
 
-  // Функция сохранения данных пользователя и перехода на тарифы
   const saveUserDataAndNavigate = async (phone?: string, method?: ContactMethod) => {
     try {
       clearErrors();
       if (!validateForm()) {
         setFlowState('form');
-        clearErrors(); // при возврате на форму не подсвечивать поля красным
+        clearErrors();
         return;
       }
 
-      // Если есть телефон, сохраняем его в базу данных
       if (phone) {
         await savePhoneToDatabase(phone, method);
       }
 
-      // Санитизируем данные перед сохранением
       const sanitizedAddressData = {
         ...addressData,
         city: sanitizeString(addressData.city, 100),
@@ -238,38 +212,26 @@ function AddressFormContent() {
         apartmentNumber: sanitizeString(addressData.apartmentNumber, 20),
       };
 
-      // Сохраняем данные в sessionStorage для отображения на странице тарифов
-      // Используем try-catch для защиты от ошибок при работе с sessionStorage
       try {
         sessionStorage.setItem('addressData', JSON.stringify(sanitizedAddressData));
-        // Очищаем данные формы из sessionStorage (addressFormData), так как данные уже отправлены
         sessionStorage.removeItem('addressFormData');
       } catch (error) {
         console.warn('Failed to save to sessionStorage:', error);
-        // Продолжаем работу даже если sessionStorage недоступен
       }
 
-      // Очищаем форму после отправки
       clearAddress();
-
-      // Переходим на страницу тарифов только если все поля заполнены
       router.push('/providers');
     } catch (error) {
       console.error('Error in saveUserDataAndNavigate:', error);
-      // В случае ошибки возвращаемся на форму
       setFlowState('form');
     }
   };
 
-  // Обработка отправки данных консультации (с телефоном и методом связи)
   const handleConsultationSubmit = async (data: { phone?: string; method?: ContactMethod }) => {
-    // Убрали console.log для production
     await saveUserDataAndNavigate(data.phone, data.method);
   };
 
-  // Обработка пропуска консультации ("Нет, спасибо")
   const handleConsultationSkip = async () => {
-    // Убрали console.log для production
     await saveUserDataAndNavigate();
   };
 
@@ -289,323 +251,50 @@ function AddressFormContent() {
 
   return (
     <div
-      className="fixed inset-0 z-[9999] flex items-start justify-center bg-[#F5F5F5] overflow-y-auto overflow-x-hidden"
+      className="fixed inset-0 z-[9999] flex items-start justify-center bg-[#F5F5F5] overflow-hidden"
       style={{
         paddingTop: 'var(--sat, 0px)',
         paddingBottom: 'var(--sab, 0px)',
       }}
     >
+      {/* Контейнер - адаптивный, max-width 400px */}
       <div
-        className="relative w-full max-w-[400px] min-h-full bg-[#F5F5F5] flex flex-col"
+        className="relative w-full max-w-[400px] h-full flex flex-col bg-[#F5F5F5]"
         style={{
-          minHeight: '100dvh',
-          paddingBottom: '20px',
+          height: '100dvh',
         }}
       >
-        {/* Header area */}
-        <div className="relative h-[80px] flex-shrink-0">
+        {/* Header area - фиксированная высота */}
+        <div
+          className="flex-shrink-0 relative"
+          style={{
+            height: '115px',
+            paddingTop: '75px',
+          }}
+        >
           {!showCookieBanner && <Header onConsultationClick={handleHeaderConsultationClick} />}
         </div>
 
-        {/* Main content area */}
-        <div
-          className="relative flex-1 mx-[5%] bg-white backdrop-blur-[7.5px] rounded-[20px] flex flex-col"
-          style={{
-            marginTop: '20px',
-            padding: '20px 15px',
-            minHeight: 'auto',
-          }}
-        >
-          {/* Описание */}
-          <div
-            className="font-normal text-xl leading-[125%] text-[#101010] mb-6"
-            style={{ letterSpacing: '0.5px' }}
-          >
-            Маркетплейс тарифных планов, операторов на твоем адресе. Бесплатно заказать «wi-fi»
-          </div>
-
-          {/* Поле выбора типа подключения */}
-          <div className="mb-4">
-            <div
-              className="relative w-full rounded-[10px] bg-white"
-              style={{
-                border: addressData.errors.connectionType
-                  ? '0.5px solid rgb(239, 68, 68)'
-                  : isFieldActive(0) || addressData.connectionType
-                    ? '0.5px solid #101010'
-                    : '0.5px solid rgba(16, 16, 16, 0.25)',
-              }}
-            >
-              <div
-                onClick={handleConnectionTypeClick}
-                className="relative w-full h-full px-[15px] rounded-[10px] bg-transparent cursor-pointer flex items-center justify-between"
-                style={{ paddingTop: '15.5px', paddingBottom: '14px' }}
-              >
-                <span
-                  className={`text-base leading-[125%] flex-1 ${addressData.connectionType ? 'text-[#101010]' : 'text-[rgba(16,16,16,0.5)]'
-                    }`}
-                  style={{
-                    letterSpacing: '0.5px',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap',
-                    minWidth: 0,
-                    marginRight: '8px'
-                  }}
-                >
-                  {addressData.connectionType
-                    ? getConnectionTypeLabel(addressData.connectionType)
-                    : 'Подключение'}
-                </span>
-                <div
-                  className={`w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 ${
-                    addressData.connectionType
-                      ? 'bg-[#9CA3AF]'
-                      : isFieldActive(0)
-                        ? 'bg-[#101010]'
-                        : 'border border-[rgba(16,16,16,0.25)]'
-                  }`}
-                  style={{
-                    borderWidth: '0.5px',
-                    transition: 'background-color 0.2s ease, border-color 0.2s ease',
-                  }}
-                >
-                  {addressData.connectionType ? (
-                    <AnimatedCheck key={`connection-${addressData.connectionType}`} size={8} color="#FFFFFF" strokeWidth={1.5} />
-                  ) : (
-                    <CaretRight size={8} weight="regular" color="#FFFFFF" />
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Поле выбора города */}
-          <div className="mb-4">
-            <div
-              onClick={() => {
-                if (!addressData.connectionType) return;
-                setAddressModalStep('city');
-                setShowAddressModal(true);
-              }}
-              className={`relative w-full rounded-[10px] bg-white ${!addressData.connectionType ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
-              style={{
-                border: addressData.errors.city
-                  ? '0.5px solid rgb(239, 68, 68)'
-                  : isFieldActive(1) || addressData.city
-                    ? '0.5px solid #101010'
-                    : '0.5px solid rgba(16, 16, 16, 0.25)',
-              }}
-            >
-              <div
-                className="relative w-full h-full px-[15px] rounded-[10px] bg-transparent flex items-center justify-between"
-                style={{ paddingTop: '15.5px', paddingBottom: '14px' }}
-              >
-                <span
-                  className={`text-base leading-[125%] flex-1 ${addressData.city ? 'text-[#101010]' : 'text-[rgba(16,16,16,0.5)]'
-                    }`}
-                  style={{
-                    letterSpacing: '0.5px',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap',
-                    minWidth: 0,
-                    marginRight: '8px'
-                  }}
-                >
-                  {addressData.city || 'Название населённого пункта'}
-                </span>
-                <div
-                  className={`w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 ${
-                    addressData.city
-                      ? 'bg-[#9CA3AF]'
-                      : isFieldActive(1)
-                        ? 'bg-[#101010]'
-                        : 'border border-[rgba(16,16,16,0.25)]'
-                  }`}
-                  style={{
-                    borderWidth: '0.5px',
-                    transition: 'background-color 0.2s ease, border-color 0.2s ease',
-                  }}
-                >
-                  {addressData.city ? (
-                    <AnimatedCheck key={`city-${addressData.city}`} size={8} color="#FFFFFF" strokeWidth={1.5} />
-                  ) : (
-                    <CaretRight size={8} weight="regular" color="#FFFFFF" />
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Поле выбора улицы */}
-          <div className="mb-4">
-            <div
-              onClick={() => {
-                if (addressData.city) {
-                  setAddressModalStep('street');
-                  setShowAddressModal(true);
-                }
-              }}
-              className={`relative w-full rounded-[10px] bg-white ${!addressData.city ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
-                }`}
-              style={{
-                border: addressData.errors.street
-                  ? '0.5px solid rgb(239, 68, 68)'
-                  : isFieldActive(2) || addressData.street
-                    ? '0.5px solid #101010'
-                    : '0.5px solid rgba(16, 16, 16, 0.25)',
-              }}
-            >
-              <div
-                className="relative w-full h-full px-[15px] rounded-[10px] bg-transparent flex items-center justify-between"
-                style={{ paddingTop: '15.5px', paddingBottom: '13.5px' }}
-              >
-                <span
-                  className={`text-base leading-[125%] flex-1 ${addressData.street ? 'text-[#101010]' : 'text-[rgba(16,16,16,0.5)]'
-                    }`}
-                  style={{
-                    letterSpacing: '0.5px',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap',
-                    minWidth: 0,
-                    marginRight: '8px'
-                  }}
-                >
-                  {addressData.street || 'Улица'}
-                </span>
-                <div
-                  className={`w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 ${
-                    addressData.street
-                      ? 'bg-[#9CA3AF]'
-                      : isFieldActive(2)
-                        ? 'bg-[#101010]'
-                        : 'border border-[rgba(16,16,16,0.25)]'
-                  }`}
-                  style={{
-                    borderWidth: '0.5px',
-                    transition: 'background-color 0.2s ease, border-color 0.2s ease',
-                  }}
-                >
-                  {addressData.street ? (
-                    <AnimatedCheck key={`street-${addressData.street}`} size={8} color="#FFFFFF" strokeWidth={1.5} />
-                  ) : (
-                    <CaretRight size={8} weight="regular" color="#FFFFFF" />
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Поле выбора дома */}
-          <div className="mb-4">
-            <div
-              onClick={() => {
-                if (addressData.street) {
-                  setAddressModalStep('house');
-                  setShowAddressModal(true);
-                }
-              }}
-              className={`relative w-full rounded-[10px] bg-white ${!addressData.street ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
-                }`}
-              style={{
-                border: addressData.errors.houseNumber
-                  ? '0.5px solid rgb(239, 68, 68)'
-                  : isFieldActive(3) || addressData.houseNumber
-                    ? '0.5px solid #101010'
-                    : '0.5px solid rgba(16, 16, 16, 0.25)',
-              }}
-            >
-              <div
-                className="relative w-full h-full px-[15px] rounded-[10px] bg-transparent flex items-center justify-between"
-                style={{ paddingTop: '15.5px', paddingBottom: '13.5px' }}
-              >
-                <span
-                  className={`text-base leading-[125%] flex-1 ${addressData.houseNumber ? 'text-[#101010]' : 'text-[rgba(16,16,16,0.5)]'
-                    }`}
-                  style={{
-                    letterSpacing: '0.5px',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap',
-                    minWidth: 0,
-                    marginRight: '8px'
-                  }}
-                >
-                  {addressData.houseNumber
-                    ? (addressData.apartmentNumber
-                      ? `д. ${addressData.houseNumber} кв. ${addressData.apartmentNumber}`
-                      : addressData.houseNumber)
-                    : 'Номер дома'}
-                </span>
-                <div
-                  className={`w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 ${
-                    addressData.houseNumber
-                      ? 'bg-[#9CA3AF]'
-                      : isFieldActive(3)
-                        ? 'bg-[#101010]'
-                        : 'border border-[rgba(16,16,16,0.25)]'
-                  }`}
-                  style={{
-                    borderWidth: '0.5px',
-                    transition: 'background-color 0.2s ease, border-color 0.2s ease',
-                  }}
-                >
-                  {addressData.houseNumber ? (
-                    <AnimatedCheck key={`house-${addressData.houseNumber}-${addressData.apartmentNumber ?? ''}`} size={8} color="#FFFFFF" strokeWidth={1.5} />
-                  ) : (
-                    <CaretRight size={8} weight="regular" color="#FFFFFF" />
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Privacy Consent */}
-          <div className="mb-4">
-            <PrivacyConsent />
-          </div>
-
-          {/* Кнопка отправки */}
-          <div className="mt-auto pt-4">
-            <button
-              onClick={handleSubmit}
-              onMouseDown={() => setIsSubmitPressed(true)}
-              onMouseUp={() => setIsSubmitPressed(false)}
-              onMouseLeave={() => setIsSubmitPressed(false)}
-              onTouchStart={() => setIsSubmitPressed(true)}
-              onTouchEnd={() => setIsSubmitPressed(false)}
-              className="w-full h-[50px] rounded-[10px] flex items-center justify-center font-normal text-base leading-[315%] text-center text-white outline-none bg-[#101010] hover:bg-gray-800 cursor-pointer"
-              style={{
-                letterSpacing: '0.5px',
-                transform: isSubmitPressed ? 'scale(0.97)' : 'scale(1)',
-                transition: 'transform 0.15s ease-out',
-              }}
-            >
-              Показать всех операторов
-            </button>
-          </div>
-        </div>
-
-        {/* Cookie Banner - позиционируется поверх всего */}
+        {/* Cookie Banner - абсолютно позиционирован поверх */}
         {showCookieBanner && (
           <div
-            className="absolute z-20 bg-white rounded-[20px] left-[20px] right-[20px]"
+            className="absolute bg-white z-20"
             style={{
-              top: 'calc(75px + var(--sat, 0px))',
+              left: '20px',
+              right: '20px',
+              top: '75px',
+              borderRadius: '20px',
               padding: '15px',
-              boxSizing: 'border-box',
             }}
           >
             {/* Текст таймера */}
             <div
-              className="font-normal mb-2"
               style={{
                 fontFamily: 'TT Firs Neue, sans-serif',
-                fontSize: '12px',
-                lineHeight: '165%',
+                fontSize: '14px',
+                lineHeight: '145%',
                 color: 'rgba(16, 16, 16, 0.25)',
+                marginBottom: '10px',
               }}
             >
               Автоматически закроется через {cookieTimer}
@@ -613,12 +302,12 @@ function AddressFormContent() {
 
             {/* Основной текст */}
             <div
-              className="font-normal pr-6"
               style={{
                 fontFamily: 'TT Firs Neue, sans-serif',
                 fontSize: '14px',
                 lineHeight: '105%',
                 color: '#101010',
+                paddingRight: '20px',
               }}
             >
               Если продолжаете использовать этот портал, вы выражаете согласие на использование
@@ -639,16 +328,305 @@ function AddressFormContent() {
               onClick={() => setShowCookieBanner(false)}
               className="absolute cursor-pointer flex items-center justify-center bg-transparent border-none outline-none"
               style={{
-                width: '20px',
-                height: '20px',
+                width: '16px',
+                height: '16px',
                 right: '15px',
                 top: '15px',
               }}
             >
-              <X size={16} weight="regular" color="rgba(16, 16, 16, 0.5)" />
+              <X size={16} weight="regular" color="rgba(16, 16, 16, 0.25)" />
             </button>
           </div>
         )}
+
+        {/* Белая карточка - компактная по контенту */}
+        <div
+          className="mx-[5%] bg-white flex flex-col"
+          style={{
+            borderRadius: '20px',
+            padding: '15px',
+          }}
+        >
+          {/* Описание */}
+          <div
+            style={{
+              fontFamily: 'TT Firs Neue, sans-serif',
+              fontWeight: 400,
+              fontSize: '20px',
+              lineHeight: '125%',
+              color: '#101010',
+              marginBottom: '20px',
+              flexShrink: 0,
+            }}
+          >
+            Маркетплейс тарифных планов операторов на твоём адресе. Бесплатно и легко заказать
+          </div>
+
+          {/* Контейнер полей */}
+          <div className="flex flex-col gap-[5px]">
+            {/* Поле выбора типа подключения */}
+            <div
+              className="w-full rounded-[10px] bg-white cursor-pointer flex items-center justify-between px-[15px] flex-shrink-0"
+              style={{
+                height: '50px',
+                minHeight: '50px',
+                border: addressData.errors.connectionType
+                  ? '1px solid rgb(239, 68, 68)'
+                  : isFieldActive(0) || addressData.connectionType
+                    ? '1px solid rgba(16, 16, 16, 0.5)'
+                    : '1px solid rgba(16, 16, 16, 0.25)',
+                boxSizing: 'border-box',
+              }}
+              onClick={handleConnectionTypeClick}
+            >
+              <span
+                style={{
+                  fontFamily: 'TT Firs Neue, sans-serif',
+                  fontSize: '16px',
+                  lineHeight: '125%',
+                  color: addressData.connectionType ? '#101010' : 'rgba(16, 16, 16, 0.5)',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                  flex: 1,
+                  marginRight: '8px',
+                }}
+              >
+                {addressData.connectionType
+                  ? getConnectionTypeLabel(addressData.connectionType)
+                  : 'Подключение'}
+              </span>
+              <div
+                className="w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0"
+                style={{
+                  background: addressData.connectionType
+                    ? '#9CA3AF'
+                    : isFieldActive(0)
+                      ? '#101010'
+                      : 'transparent',
+                  border: addressData.connectionType || isFieldActive(0)
+                    ? 'none'
+                    : '1px solid rgba(16, 16, 16, 0.5)',
+                }}
+              >
+                {addressData.connectionType ? (
+                  <AnimatedCheck key={`connection-${addressData.connectionType}`} size={8} color="#FFFFFF" strokeWidth={1.5} />
+                ) : (
+                  <CaretRight size={8} weight="regular" color={isFieldActive(0) ? "#FFFFFF" : "rgba(16, 16, 16, 0.5)"} />
+                )}
+              </div>
+            </div>
+
+            {/* Поле выбора города */}
+            <div
+              className={`w-full rounded-[10px] bg-white flex items-center justify-between px-[15px] flex-shrink-0 ${!addressData.connectionType ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+              style={{
+                height: '50px',
+                minHeight: '50px',
+                opacity: !addressData.connectionType ? 0.5 : 1,
+                border: addressData.errors.city
+                  ? '1px solid rgb(239, 68, 68)'
+                  : isFieldActive(1) || addressData.city
+                    ? '1px solid rgba(16, 16, 16, 0.5)'
+                    : '1px solid rgba(16, 16, 16, 0.25)',
+                boxSizing: 'border-box',
+              }}
+              onClick={() => {
+                if (!addressData.connectionType) return;
+                setAddressModalStep('city');
+                setShowAddressModal(true);
+              }}
+            >
+              <span
+                style={{
+                  fontFamily: 'TT Firs Neue, sans-serif',
+                  fontSize: '16px',
+                  lineHeight: '125%',
+                  color: addressData.city ? '#101010' : 'rgba(16, 16, 16, 0.5)',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                  flex: 1,
+                  marginRight: '8px',
+                }}
+              >
+                {addressData.city || 'Название населённого пункта'}
+              </span>
+              <div
+                className="w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0"
+                style={{
+                  background: addressData.city
+                    ? '#9CA3AF'
+                    : isFieldActive(1)
+                      ? '#101010'
+                      : 'transparent',
+                  border: addressData.city || isFieldActive(1)
+                    ? 'none'
+                    : '1px solid rgba(16, 16, 16, 0.5)',
+                }}
+              >
+                {addressData.city ? (
+                  <AnimatedCheck key={`city-${addressData.city}`} size={8} color="#FFFFFF" strokeWidth={1.5} />
+                ) : (
+                  <CaretRight size={8} weight="regular" color={isFieldActive(1) ? "#FFFFFF" : "rgba(16, 16, 16, 0.5)"} />
+                )}
+              </div>
+            </div>
+
+            {/* Поле выбора улицы */}
+            <div
+              className={`w-full rounded-[10px] bg-white flex items-center justify-between px-[15px] flex-shrink-0 ${!addressData.city ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+              style={{
+                height: '50px',
+                minHeight: '50px',
+                opacity: !addressData.city ? 0.5 : 1,
+                border: addressData.errors.street
+                  ? '1px solid rgb(239, 68, 68)'
+                  : isFieldActive(2) || addressData.street
+                    ? '1px solid rgba(16, 16, 16, 0.5)'
+                    : '1px solid rgba(16, 16, 16, 0.25)',
+                boxSizing: 'border-box',
+              }}
+              onClick={() => {
+                if (addressData.city) {
+                  setAddressModalStep('street');
+                  setShowAddressModal(true);
+                }
+              }}
+            >
+              <span
+                style={{
+                  fontFamily: 'TT Firs Neue, sans-serif',
+                  fontSize: '16px',
+                  lineHeight: '125%',
+                  color: addressData.street ? '#101010' : 'rgba(16, 16, 16, 0.5)',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                  flex: 1,
+                  marginRight: '8px',
+                }}
+              >
+                {addressData.street || 'Улица'}
+              </span>
+              <div
+                className="w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0"
+                style={{
+                  background: addressData.street
+                    ? '#9CA3AF'
+                    : isFieldActive(2)
+                      ? '#101010'
+                      : 'transparent',
+                  border: addressData.street || isFieldActive(2)
+                    ? 'none'
+                    : '1px solid rgba(16, 16, 16, 0.5)',
+                }}
+              >
+                {addressData.street ? (
+                  <AnimatedCheck key={`street-${addressData.street}`} size={8} color="#FFFFFF" strokeWidth={1.5} />
+                ) : (
+                  <CaretRight size={8} weight="regular" color={isFieldActive(2) ? "#FFFFFF" : "rgba(16, 16, 16, 0.5)"} />
+                )}
+              </div>
+            </div>
+
+            {/* Поле выбора дома */}
+            <div
+              className={`w-full rounded-[10px] bg-white flex items-center justify-between px-[15px] flex-shrink-0 ${!addressData.street ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+              style={{
+                height: '50px',
+                minHeight: '50px',
+                opacity: !addressData.street ? 0.5 : 1,
+                border: addressData.errors.houseNumber
+                  ? '1px solid rgb(239, 68, 68)'
+                  : isFieldActive(3) || addressData.houseNumber
+                    ? '1px solid rgba(16, 16, 16, 0.5)'
+                    : '1px solid rgba(16, 16, 16, 0.25)',
+                boxSizing: 'border-box',
+              }}
+              onClick={() => {
+                if (addressData.street) {
+                  setAddressModalStep('house');
+                  setShowAddressModal(true);
+                }
+              }}
+            >
+              <span
+                style={{
+                  fontFamily: 'TT Firs Neue, sans-serif',
+                  fontSize: '16px',
+                  lineHeight: '125%',
+                  color: addressData.houseNumber ? '#101010' : 'rgba(16, 16, 16, 0.5)',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                  flex: 1,
+                  marginRight: '8px',
+                }}
+              >
+                {addressData.houseNumber
+                  ? (addressData.apartmentNumber
+                    ? `д. ${addressData.houseNumber} кв. ${addressData.apartmentNumber}`
+                    : addressData.houseNumber)
+                  : 'Номер дома'}
+              </span>
+              <div
+                className="w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0"
+                style={{
+                  background: addressData.houseNumber
+                    ? '#9CA3AF'
+                    : isFieldActive(3)
+                      ? '#101010'
+                      : 'transparent',
+                  border: addressData.houseNumber || isFieldActive(3)
+                    ? 'none'
+                    : '1px solid rgba(16, 16, 16, 0.5)',
+                }}
+              >
+                {addressData.houseNumber ? (
+                  <AnimatedCheck key={`house-${addressData.houseNumber}-${addressData.apartmentNumber ?? ''}`} size={8} color="#FFFFFF" strokeWidth={1.5} />
+                ) : (
+                  <CaretRight size={8} weight="regular" color={isFieldActive(3) ? "#FFFFFF" : "rgba(16, 16, 16, 0.5)"} />
+                )}
+              </div>
+            </div>
+
+            {/* Отступ между полями и Privacy */}
+            <div style={{ height: '10px' }} />
+
+            {/* Privacy Consent */}
+            <div className="flex-shrink-0">
+              <PrivacyConsent />
+            </div>
+
+            {/* Кнопка отправки */}
+            <button
+              onClick={handleSubmit}
+              onMouseDown={() => setIsSubmitPressed(true)}
+              onMouseUp={() => setIsSubmitPressed(false)}
+              onMouseLeave={() => setIsSubmitPressed(false)}
+              onTouchStart={() => setIsSubmitPressed(true)}
+              onTouchEnd={() => setIsSubmitPressed(false)}
+              className="w-full flex items-center justify-center text-white outline-none cursor-pointer flex-shrink-0"
+              style={{
+                height: '50px',
+                minHeight: '50px',
+                background: '#101010',
+                border: '1px solid rgba(16, 16, 16, 0.25)',
+                borderRadius: '10px',
+                fontFamily: 'TT Firs Neue, sans-serif',
+                fontWeight: 400,
+                fontSize: '16px',
+                lineHeight: '315%',
+                transform: isSubmitPressed ? 'scale(0.97)' : 'scale(1)',
+                transition: 'transform 0.15s ease-out',
+                marginTop: '10px',
+              }}
+            >
+              Показать всех операторов
+            </button>
+          </div>
+        </div>
 
         <ConnectionTypeModal
           isOpen={showConnectionModal}

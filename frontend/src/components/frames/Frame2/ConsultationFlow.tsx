@@ -154,11 +154,10 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
         {notifications.map((notification, index) => (
           <div
             key={notification.id}
-            className="absolute bg-white rounded-[20px]"
+            className="absolute left-1/2 -translate-x-1/2 bg-white rounded-[20px]"
             style={{
               width: '360px',
               height: '90px',
-              left: 0,
               top: `${75 + index * 95}px`,
               boxSizing: 'border-box',
               backdropFilter: 'blur(7.5px)',

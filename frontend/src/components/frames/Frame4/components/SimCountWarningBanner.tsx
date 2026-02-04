@@ -37,10 +37,10 @@ export default function SimCountWarningBanner({
 
   return (
     <div
+      className="left-1/2 -translate-x-1/2"
       style={{
         position: 'absolute',
-        left: '20px',
-        right: '20px',
+        width: 'min(360px, calc(100% - 40px))',
         top: '20px',
         background: '#FFFFFF',
         borderRadius: '15px',

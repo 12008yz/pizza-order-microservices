@@ -60,11 +60,11 @@ export default function TvBoxOperatorStep({
       {/* Баннер предупреждения */}
       {showBanner && (
         <div
+          className="left-1/2 -translate-x-1/2"
           style={{
             position: 'absolute',
             width: '360px',
             height: '120px',
-            left: '0px',
             top: '-210px',
             background: '#FFFFFF',
             borderRadius: '20px',

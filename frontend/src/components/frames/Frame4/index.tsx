@@ -447,16 +447,25 @@ function Frame4Content() {
         </div>
 
         {/* Белая карточка — занимает остаток экрана, контент шага прокручивается внутри. Клик по пустоте (вне карточки) закрывает. */}
-        <div className="flex-1 min-h-0 flex flex-col overflow-hidden px-5 pb-5">
+        <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
           <div
             onClick={(e) => e.stopPropagation()}
-            className="flex-1 min-h-0 flex flex-col rounded-[20px] bg-white overflow-hidden mx-auto w-full"
-            style={{ maxWidth: '360px' }}
+            className="flex flex-col rounded-[20px] bg-white overflow-hidden mx-[5%]"
+            style={{
+              width: '100%',
+              maxWidth: '360px',
+              marginLeft: 'auto',
+              marginRight: 'auto',
+              marginTop: 'auto',
+              marginBottom: '20px',
+              backdropFilter: 'blur(7.5px)',
+              maxHeight: 'calc(100dvh - 145px)',
+            }}
           >
             {/* Контент шага — лёгкое появление при смене шага */}
             <div
               key={currentStep}
-              className="flex flex-col flex-1 min-h-0 w-full"
+              className="flex flex-col w-full overflow-y-auto"
               style={{
                 animation: 'frame4StepIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards',
               }}

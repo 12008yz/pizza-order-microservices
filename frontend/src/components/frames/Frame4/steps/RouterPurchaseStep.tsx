@@ -77,7 +77,7 @@ export default function RouterPurchaseStep({
   const [isNextPressed, setIsNextPressed] = useState(false);
 
   return (
-    <div className="flex flex-col flex-1 min-h-0 w-full">
+    <div className="flex flex-col w-full">
       <div className="flex-shrink-0 px-[15px] pt-[15px]">
         <div className="font-normal" style={{ fontFamily: 'TT Firs Neue, sans-serif', fontSize: '20px', lineHeight: '125%', color: '#101010' }}>
           Роутер
@@ -88,7 +88,7 @@ export default function RouterPurchaseStep({
           Пожалуйста, проверьте правильность
         </div>
       </div>
-      <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden px-[15px] pt-[20px]" style={{ WebkitOverflowScrolling: 'touch' }}>
+      <div className="overflow-x-hidden px-[15px] pt-[20px]" style={{ WebkitOverflowScrolling: 'touch' }}>
         <div className="flex flex-col gap-[5px] pb-2">
           {options.map((opt) => (
             <OptionRow key={opt.value} option={opt} isSelected={selected === opt.value} onSelect={() => onSelect(opt.value)} />

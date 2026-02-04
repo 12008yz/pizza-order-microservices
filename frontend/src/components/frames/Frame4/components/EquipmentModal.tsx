@@ -38,7 +38,7 @@ export default function EquipmentModal({
     >
       {/* Контейнер — header и карточка влезают в экран, прокрутка только внутри карточки */}
       <div
-        className={`relative w-full max-w-[400px] flex flex-col flex-1 min-h-0 overflow-hidden bg-[#F5F5F5] ${className}`}
+        className={`relative w-full max-w-[400px] flex flex-col h-full overflow-hidden bg-[#F5F5F5] ${className}`}
         style={{ boxSizing: 'border-box' }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -64,8 +64,17 @@ export default function EquipmentModal({
 
         {/* Карточка — занимает остаток экрана, контент шага прокручивается внутри */}
         <div
-          className="flex-1 min-h-0 flex flex-col rounded-[20px] bg-white overflow-hidden"
-          style={{ maxWidth: '360px', marginLeft: 'auto', marginRight: 'auto', width: '100%' }}
+          className="flex flex-col rounded-[20px] bg-white mx-[5%] overflow-hidden"
+          style={{
+            width: '100%',
+            maxWidth: '360px',
+            marginLeft: 'auto',
+            marginRight: 'auto',
+            marginTop: 'auto',
+            marginBottom: '20px',
+            backdropFilter: 'blur(7.5px)',
+            maxHeight: 'calc(100dvh - 145px)',
+          }}
           onClick={(e) => e.stopPropagation()}
         >
           {children}

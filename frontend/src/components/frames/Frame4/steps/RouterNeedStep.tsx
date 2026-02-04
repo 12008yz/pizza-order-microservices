@@ -27,7 +27,7 @@ export default function RouterNeedStep({
   const [isNextPressed, setIsNextPressed] = useState(false);
 
   return (
-    <div className="flex flex-col flex-1 min-h-0 w-full">
+    <div className="flex flex-col w-full">
       {/* Заголовок */}
       <div className="flex-shrink-0 px-[15px] pt-[15px]">
         <div
@@ -57,7 +57,7 @@ export default function RouterNeedStep({
       </div>
 
       {/* Опции — прокручиваемая область */}
-      <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden px-[15px] pt-[20px]" style={{ WebkitOverflowScrolling: 'touch' }}>
+      <div className="overflow-x-hidden px-[15px] pt-[20px]" style={{ WebkitOverflowScrolling: 'touch' }}>
         <div className="flex flex-col gap-[5px] pb-2">
           {options.map((option) => {
             const isSelected = selected === option.value;

@@ -711,57 +711,52 @@ function Frame3Content() {
 
   return (
     <div
-      className="relative w-full max-w-[430px] mx-auto bg-[#F5F5F5] overflow-x-hidden overflow-y-auto"
+      className="fixed inset-0 flex items-start justify-center bg-[#F5F5F5] overflow-hidden"
       style={{
         fontFamily: 'TT Firs Neue, sans-serif',
-        minHeight: '100dvh',
         paddingTop: 'var(--sat, 0px)',
         paddingBottom: 'var(--sab, 0px)',
       }}
       onClick={showFavoritesMode ? handleFavoritesModeBackgroundClick : undefined}
     >
-      {/* Режим избранного: текст вместо Header — клик по пустому месту закрывает режим */}
-      {showFavoritesMode ? (
-        <div
-          className="w-full flex justify-center cursor-pointer"
-          style={{
-            paddingTop: '30px',
-            paddingBottom: '15px',
-          }}
-          onClick={() => setShowFavoritesMode(false)}
-          role="button"
-          tabIndex={0}
-          onKeyDown={(e) => e.key === 'Enter' && setShowFavoritesMode(false)}
-          aria-label="Выйти из режима избранного"
-        >
-          <div
-            style={{
-              width: '240px',
-              fontFamily: 'TT Firs Neue, sans-serif',
-              fontWeight: 400,
-              fontSize: '14px',
-              lineHeight: '105%',
-              display: 'flex',
-              alignItems: 'center',
-              textAlign: 'center',
-              justifyContent: 'center',
-              color: 'rgba(16, 16, 16, 0.25)',
-            }}
-          >
-            Нажмите в открытое пустое место, чтобы выйти из этого режима
-          </div>
-        </div>
-      ) : (
-        /* Header - Group 7545 */
-        <div
-          className="relative w-full px-5"
-          style={{
-            paddingTop: '20px',
-            paddingBottom: '15px',
-          }}
-        >
-          <div className="relative flex items-center justify-between" style={{ height: '41.61px' }}>
-            {/* Group 7510 - Кнопка дом (слева) */}
+      {/* Контейнер как в Frame 1: max-width 400px, flex flex-col, карусель прижата вниз */}
+      <div
+        className="relative w-full max-w-[400px] h-full flex flex-col bg-[#F5F5F5] overflow-hidden"
+        style={{ height: '100dvh', boxSizing: 'border-box' }}
+      >
+        {/* Header area — одна строка, выравнивание по центру по вертикали */}
+        <div className="flex-shrink-0 relative" style={{ minHeight: '120px' }}>
+          {showFavoritesMode ? (
+            <div
+              className="w-full flex justify-center cursor-pointer"
+              style={{ position: 'relative', top: '75px' }}
+              onClick={() => setShowFavoritesMode(false)}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => e.key === 'Enter' && setShowFavoritesMode(false)}
+              aria-label="Выйти из режима избранного"
+            >
+              <div
+                style={{
+                  width: '240px',
+                  fontFamily: 'TT Firs Neue, sans-serif',
+                  fontSize: '14px',
+                  lineHeight: '105%',
+                  textAlign: 'center',
+                  color: 'rgba(16, 16, 16, 0.15)',
+                }}
+              >
+                Нажмите в открытое пустое место, чтобы выйти из этого режима
+              </div>
+            </div>
+          ) : (
+            <div className="relative w-full px-5" style={{ position: 'relative', top: '75px' }}>
+              <div
+                className="relative flex items-center justify-between w-full"
+                style={{ height: '41px', minHeight: '41px' }}
+              >
+            {/* Левая колонка — та же ширина, что и правая, чтобы логотип был по центру */}
+            <div className="flex items-center flex-shrink-0" style={{ width: '132px' }}>
             <div
               className="cursor-pointer"
               style={{
@@ -813,11 +808,13 @@ function Frame3Content() {
                 </div>
               </div>
             </div>
+            </div>
 
-            {/* Логотип Гигапоиск */}
+            {/* Логотип Гигапоиск — 9px от домика (40.8 + 9 = 49.8) */}
             <div
-              className="absolute left-1/2 transform -translate-x-1/2"
+              className="absolute"
               style={{
+                left: '49.8px',
                 width: '142.79px',
                 height: '10.2px',
               }}
@@ -844,8 +841,8 @@ function Frame3Content() {
               </svg>
             </div>
 
-            {/* Правые кнопки */}
-            <div className="flex items-center gap-1">
+            {/* Правые кнопки — фиксированная ширина, чтобы логотип оставался по центру */}
+            <div className="flex items-center justify-end flex-shrink-0 gap-1" style={{ width: '132px' }}>
               {/* Кнопка избранное (Heart) */}
               <div
                 className="cursor-pointer"
@@ -1011,6 +1008,10 @@ function Frame3Content() {
           </div>
         </div>
       )}
+        </div>
+
+      {/* Spacer: прижимает кнопки и карусель к низу */}
+      <div className="flex-1 min-h-0" aria-hidden />
 
       {/* HintTooltip */}
       {hintStep !== 'none' && !showFavoritesMode && (
@@ -1204,11 +1205,11 @@ function Frame3Content() {
         )}
       </div>
 
-      {/* Контейнер для карточек */}
+      {/* Контейнер для карточек — отступ 20px от низа */}
       <div
         className="relative w-full"
         style={{
-          paddingBottom: '20px',
+          marginBottom: '20px',
         }}
         onClick={(e) => {
           if (showFavoritesMode && e.target === e.currentTarget) {
@@ -1235,8 +1236,6 @@ function Frame3Content() {
             }
           }}
         >
-          {/* Спейсер слева */}
-          <div className="carousel-spacer-left" aria-hidden="true" />
           {tariffsLoading ? (
             <div
               className="flex-shrink-0"
@@ -1727,6 +1726,7 @@ function Frame3Content() {
         }}
         onApply={handleFilterApply}
       />
+      </div>
     </div>
   );
 }

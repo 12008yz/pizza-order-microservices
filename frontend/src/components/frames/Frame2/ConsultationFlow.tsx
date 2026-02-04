@@ -242,174 +242,175 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
     );
   }, [notifications, handleCloseNotification]);
 
-  // Экран выбора способа связи — flex: header влезает, карточка в оставшемся месте, прокрутка только внутри карточки
+  // Экран выбора способа связи — компактная карточка прижата вниз (по образцу TechAccessModal)
   const renderContactMethod = () => (
-    <div className="flex flex-col flex-1 min-h-0 w-full px-5">
-      {/* Шапка: подсказка + место под уведомления (уведомления рендерятся абсолютно поверх) */}
-      <div className="flex-shrink-0 relative" style={{ minHeight: '105px' }}>
-        {notifications.length === 0 && (
-          <div
-            className="font-normal flex items-center justify-center text-center"
-            style={{
-              width: '240px',
-              margin: '0 auto',
-              paddingTop: '75px',
-              height: '30px',
-              fontFamily: 'TT Firs Neue, sans-serif',
-              fontSize: '14px',
-              lineHeight: '105%',
-              color: 'rgba(16, 16, 16, 0.15)',
-              letterSpacing: '0.5px',
-            }}
-          >
-            Нажмите в открытое пустое место, чтобы выйти из этого режима
-          </div>
-        )}
+    <div className="relative w-full max-w-[400px] flex flex-col h-full overflow-hidden bg-[#F5F5F5]">
+      {/* Шапка: подсказка (клик закрывает); уведомления рендерятся поверх */}
+      <div className="flex-shrink-0 relative cursor-pointer" style={{ minHeight: '105px' }} onClick={handleBackgroundClick}>
+        <div
+          className="font-normal flex items-center justify-center text-center"
+          style={{
+            width: '240px',
+            margin: '0 auto',
+            paddingTop: '75px',
+            height: '30px',
+            fontFamily: 'TT Firs Neue, sans-serif',
+            fontSize: '14px',
+            lineHeight: '105%',
+            color: 'rgba(16, 16, 16, 0.15)',
+            letterSpacing: '0.5px',
+          }}
+        >
+          Нажмите в открытое пустое место, чтобы выйти из этого режима
+        </div>
         {renderNotifications}
       </div>
 
-      {/* Карточка консультации — занимает остаток экрана, внутри прокручиваются только опции */}
+      {/* Карточка — компактная, прижата вниз с отступом 20px */}
       <div
-        className="flex-1 min-h-0 flex flex-col mx-0 rounded-[20px] bg-white overflow-hidden"
-        style={{ maxWidth: '360px', marginLeft: 'auto', marginRight: 'auto', backdropFilter: 'blur(7.5px)' }}
+        className="flex flex-col rounded-[20px] bg-white mx-[5%]"
+        style={{
+          maxWidth: '360px',
+          marginLeft: 'auto',
+          marginRight: 'auto',
+          marginTop: 'auto',
+          marginBottom: '20px',
+          padding: '15px',
+        }}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex-shrink-0 px-[15px] pt-[15px]">
-          <div
-            className="font-normal"
-            style={{
-              fontFamily: 'TT Firs Neue, sans-serif',
-              fontSize: '20px',
-              lineHeight: '125%',
-              color: '#101010',
-              letterSpacing: '0.5px',
-            }}
-          >
-            Консультация
-          </div>
-          <div
-            className="font-normal pt-[15px]"
-            style={{
-              fontFamily: 'TT Firs Neue, sans-serif',
-              fontSize: '14px',
-              lineHeight: '105%',
-              color: 'rgba(16, 16, 16, 0.25)',
-              letterSpacing: '0.5px',
-            }}
-          >
-            Напишите нам обо всем, а мы ответим вам. Пожалуйста, проверьте правильность
-          </div>
+        <div
+          className="font-normal"
+          style={{
+            fontFamily: 'TT Firs Neue, sans-serif',
+            fontSize: '20px',
+            lineHeight: '125%',
+            color: '#101010',
+            marginBottom: '15px',
+          }}
+        >
+          Консультация
+        </div>
+        <div
+          className="font-normal"
+          style={{
+            fontFamily: 'TT Firs Neue, sans-serif',
+            fontSize: '14px',
+            lineHeight: '105%',
+            color: 'rgba(16, 16, 16, 0.25)',
+            marginBottom: '20px',
+          }}
+        >
+          Напишите нам обо всем, а мы ответим вам. Пожалуйста, проверьте правильность
         </div>
 
-        {/* Опции выбора — прокручиваемая область */}
-        <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden px-[15px] pt-[15px]" style={{ WebkitOverflowScrolling: 'touch' }}>
-          <div className="flex flex-col gap-[5px] pb-2">
-            {/* Написать в Max (неактивна) */}
-            <div
-              className="rounded-[10px] cursor-pointer flex items-center justify-between px-[15px]"
+        {/* Опции выбора */}
+        <div className="flex flex-col gap-[5px]" style={{ marginBottom: '20px' }}>
+          {/* Написать в Max (неактивна) */}
+          <div
+            className="rounded-[10px] flex items-center justify-between px-[15px]"
+            style={{
+              height: '50px',
+              minHeight: '50px',
+              border: '1px solid rgba(16, 16, 16, 0.25)',
+              opacity: 0.25,
+              boxSizing: 'border-box',
+            }}
+          >
+            <span
+              className="font-normal"
               style={{
-                height: '50px',
-                minHeight: '50px',
-                border: '1px solid rgba(16, 16, 16, 0.25)',
-                opacity: 0.25,
-                boxSizing: 'border-box',
+                fontFamily: 'TT Firs Neue, sans-serif',
+                fontSize: '16px',
+                lineHeight: '125%',
+                color: 'rgba(16, 16, 16, 0.5)',
+                letterSpacing: '0.5px',
               }}
             >
-              <span
-                className="font-normal"
-                style={{
-                  fontFamily: 'TT Firs Neue, sans-serif',
-                  fontSize: '16px',
-                  lineHeight: '125%',
-                  color: 'rgba(16, 16, 16, 0.5)',
-                  letterSpacing: '0.5px',
-                }}
-              >
-                Написать нам в «Max»
-              </span>
-              <div className="w-4 h-4 rounded-full border border-[rgba(16,16,16,0.5)] flex-shrink-0" />
-            </div>
+              Написать нам в «Max»
+            </span>
+            <div className="w-4 h-4 rounded-full border border-[rgba(16,16,16,0.5)] flex-shrink-0" />
+          </div>
 
-            {/* Написать в Telegram */}
-            <div
-              className="rounded-[10px] cursor-pointer flex items-center justify-between px-[15px]"
+          {/* Написать в Telegram */}
+          <div
+            className="rounded-[10px] cursor-pointer flex items-center justify-between px-[15px]"
+            style={{
+              height: '50px',
+              minHeight: '50px',
+              border: selectedMethod === 'telegram' ? '1px solid #101010' : '1px solid rgba(16, 16, 16, 0.25)',
+              boxSizing: 'border-box',
+            }}
+            onClick={() => handleSelectMethod('telegram')}
+          >
+            <span
+              className="font-normal"
               style={{
-                height: '50px',
-                minHeight: '50px',
-                border: selectedMethod === 'telegram' ? '1px solid #101010' : '1px solid rgba(16, 16, 16, 0.25)',
-                boxSizing: 'border-box',
+                fontFamily: 'TT Firs Neue, sans-serif',
+                fontSize: '16px',
+                lineHeight: '125%',
+                color: selectedMethod === 'telegram' ? '#101010' : 'rgba(16, 16, 16, 0.5)',
+                letterSpacing: '0.5px',
               }}
-              onClick={() => handleSelectMethod('telegram')}
             >
-              <span
-                className="font-normal"
-                style={{
-                  fontFamily: 'TT Firs Neue, sans-serif',
-                  fontSize: '16px',
-                  lineHeight: '125%',
-                  color: selectedMethod === 'telegram' ? '#101010' : 'rgba(16, 16, 16, 0.5)',
-                  letterSpacing: '0.5px',
-                }}
-              >
-                Написать нам в «Telegram»
-              </span>
-              <div
-                className="w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0"
-                style={{
-                  background: selectedMethod === 'telegram' ? '#101010' : 'transparent',
-                  border: selectedMethod === 'telegram' ? 'none' : '1px solid rgba(16, 16, 16, 0.5)',
-                }}
-              >
-                {selectedMethod === 'telegram' && (
-                  <svg width="8" height="8" viewBox="0 0 12 12" fill="none">
-                    <path d="M2.5 6L5 8.5L9.5 3.5" stroke="#FFFFFF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                )}
-              </div>
+              Написать нам в «Telegram»
+            </span>
+            <div
+              className="w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0"
+              style={{
+                background: selectedMethod === 'telegram' ? '#101010' : 'transparent',
+                border: selectedMethod === 'telegram' ? 'none' : '1px solid rgba(16, 16, 16, 0.5)',
+              }}
+            >
+              {selectedMethod === 'telegram' && (
+                <svg width="8" height="8" viewBox="0 0 12 12" fill="none">
+                  <path d="M2.5 6L5 8.5L9.5 3.5" stroke="#FFFFFF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              )}
             </div>
+          </div>
 
-            {/* Перезвонить на номер телефона */}
-            <div
-              className="rounded-[10px] cursor-pointer flex items-center justify-between px-[15px]"
+          {/* Перезвонить на номер телефона */}
+          <div
+            className="rounded-[10px] cursor-pointer flex items-center justify-between px-[15px]"
+            style={{
+              height: '50px',
+              minHeight: '50px',
+              border: selectedMethod === 'phone' ? '1px solid #101010' : '1px solid rgba(16, 16, 16, 0.25)',
+              boxSizing: 'border-box',
+            }}
+            onClick={() => handleSelectMethod('phone')}
+          >
+            <span
+              className="font-normal"
               style={{
-                height: '50px',
-                minHeight: '50px',
-                border: selectedMethod === 'phone' ? '1px solid #101010' : '1px solid rgba(16, 16, 16, 0.25)',
-                boxSizing: 'border-box',
+                fontFamily: 'TT Firs Neue, sans-serif',
+                fontSize: '16px',
+                lineHeight: '125%',
+                color: '#101010',
+                letterSpacing: '0.5px',
               }}
-              onClick={() => handleSelectMethod('phone')}
             >
-              <span
-                className="font-normal"
-                style={{
-                  fontFamily: 'TT Firs Neue, sans-serif',
-                  fontSize: '16px',
-                  lineHeight: '125%',
-                  color: '#101010',
-                  letterSpacing: '0.5px',
-                }}
-              >
-                Перезвонить на номер телефона
-              </span>
-              <div
-                className="w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0"
-                style={{
-                  background: selectedMethod === 'phone' ? '#101010' : 'transparent',
-                  border: selectedMethod === 'phone' ? 'none' : '1px solid rgba(16, 16, 16, 0.5)',
-                }}
-              >
-                {selectedMethod === 'phone' && (
-                  <svg width="8" height="8" viewBox="0 0 12 12" fill="none">
-                    <path d="M2.5 6L5 8.5L9.5 3.5" stroke="#FFFFFF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                )}
-              </div>
+              Перезвонить на номер телефона
+            </span>
+            <div
+              className="w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0"
+              style={{
+                background: selectedMethod === 'phone' ? '#101010' : 'transparent',
+                border: selectedMethod === 'phone' ? 'none' : '1px solid rgba(16, 16, 16, 0.5)',
+              }}
+            >
+              {selectedMethod === 'phone' && (
+                <svg width="8" height="8" viewBox="0 0 12 12" fill="none">
+                  <path d="M2.5 6L5 8.5L9.5 3.5" stroke="#FFFFFF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              )}
             </div>
           </div>
         </div>
 
         {/* Кнопки внизу */}
-        <div className="flex-shrink-0 flex gap-[10px] px-[15px] pb-[15px] pt-[10px]">
+        <div className="flex gap-[10px]">
           <button
             type="button"
             onClick={handleBack}
@@ -418,13 +419,12 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
             onMouseLeave={() => setIsBackBtnPressed(false)}
             onTouchStart={() => setIsBackBtnPressed(true)}
             onTouchEnd={() => setIsBackBtnPressed(false)}
-            className="outline-none cursor-pointer rounded-[10px] flex items-center justify-center flex-shrink-0"
+            className="outline-none cursor-pointer flex-shrink-0 rounded-[10px] flex items-center justify-center"
             style={{
               width: '50px',
               height: '50px',
               border: '1px solid rgba(16, 16, 16, 0.15)',
               background: 'white',
-              boxSizing: 'border-box',
               transform: isBackBtnPressed ? 'scale(0.92)' : 'scale(1)',
               transition: 'transform 0.15s ease-out',
             }}
@@ -442,15 +442,12 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
             onTouchStart={() => setIsNextBtnPressed(true)}
             onTouchEnd={() => setIsNextBtnPressed(false)}
             disabled={!selectedMethod}
-            className="outline-none flex-1 rounded-[10px] flex items-center justify-center text-center text-white cursor-pointer min-h-[50px] disabled:cursor-not-allowed"
+            className="outline-none flex-1 rounded-[10px] flex items-center justify-center text-white cursor-pointer min-h-[50px] disabled:cursor-not-allowed"
             style={{
               background: selectedMethod ? '#101010' : 'rgba(16, 16, 16, 0.25)',
-              border: '1px solid rgba(16, 16, 16, 0.25)',
+              minHeight: '50px',
               fontFamily: 'TT Firs Neue, sans-serif',
               fontSize: '16px',
-              lineHeight: '315%',
-              letterSpacing: '0.5px',
-              boxSizing: 'border-box',
               transform: isNextBtnPressed && selectedMethod ? 'scale(0.97)' : 'scale(1)',
               transition: 'transform 0.15s ease-out',
             }}
@@ -462,90 +459,94 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
     </div>
   );
 
-  // Экран ввода телефона — та же flex-структура: header влезает, карточка в оставшемся месте
+  // Экран ввода телефона — компактная карточка прижата вниз (по образцу TechAccessModal)
   const renderPhoneAfterMethod = () => (
-    <div className="flex flex-col flex-1 min-h-0 w-full px-5">
-      <div className="flex-shrink-0 relative" style={{ minHeight: '105px' }}>
-        {notifications.length === 0 && (
-          <div
-            className="font-normal flex items-center justify-center text-center"
-            style={{
-              width: '240px',
-              margin: '0 auto',
-              paddingTop: '75px',
-              height: '30px',
-              fontFamily: 'TT Firs Neue, sans-serif',
-              fontSize: '14px',
-              lineHeight: '105%',
-              color: 'rgba(16, 16, 16, 0.15)',
-              letterSpacing: '0.5px',
-            }}
-          >
-            Нажмите в открытое пустое место, чтобы выйти из этого режима
-          </div>
-        )}
+    <div className="relative w-full max-w-[400px] flex flex-col h-full overflow-hidden bg-[#F5F5F5]">
+      {/* Шапка: подсказка (клик закрывает); уведомления рендерятся поверх */}
+      <div className="flex-shrink-0 relative cursor-pointer" style={{ minHeight: '105px' }} onClick={handleBackgroundClick}>
+        <div
+          className="font-normal flex items-center justify-center text-center"
+          style={{
+            width: '240px',
+            margin: '0 auto',
+            paddingTop: '75px',
+            height: '30px',
+            fontFamily: 'TT Firs Neue, sans-serif',
+            fontSize: '14px',
+            lineHeight: '105%',
+            color: 'rgba(16, 16, 16, 0.15)',
+            letterSpacing: '0.5px',
+          }}
+        >
+          Нажмите в открытое пустое место, чтобы выйти из этого режима
+        </div>
         {renderNotifications}
       </div>
 
+      {/* Карточка — компактная, прижата вниз с отступом 20px */}
       <div
-        className="flex-1 min-h-0 flex flex-col mx-0 rounded-[20px] bg-white overflow-hidden"
-        style={{ maxWidth: '360px', marginLeft: 'auto', marginRight: 'auto', backdropFilter: 'blur(7.5px)' }}
+        className="flex flex-col rounded-[20px] bg-white mx-[5%]"
+        style={{
+          maxWidth: '360px',
+          marginLeft: 'auto',
+          marginRight: 'auto',
+          marginTop: 'auto',
+          marginBottom: '20px',
+          padding: '15px',
+        }}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex-shrink-0 px-[15px] pt-[15px]">
-          <div
-            className="font-normal"
+        <div
+          className="font-normal"
+          style={{
+            fontFamily: 'TT Firs Neue, sans-serif',
+            fontSize: '20px',
+            lineHeight: '125%',
+            color: '#101010',
+            marginBottom: '15px',
+          }}
+        >
+          Консультация
+        </div>
+        <div
+          className="font-normal"
+          style={{
+            fontFamily: 'TT Firs Neue, sans-serif',
+            fontSize: '14px',
+            lineHeight: '105%',
+            color: 'rgba(16, 16, 16, 0.25)',
+            marginBottom: '20px',
+          }}
+        >
+          Напишите номер вашего сотового телефона. Пожалуйста, проверьте правильность
+        </div>
+
+        <div
+          className="rounded-[10px] w-full mb-[20px]"
+          style={{
+            height: '50px',
+            minHeight: '50px',
+            border: isPhoneValid ? '1px solid #101010' : '1px solid rgba(16, 16, 16, 0.25)',
+            boxSizing: 'border-box',
+          }}
+        >
+          <input
+            type="tel"
+            value={phoneNumber}
+            onChange={handlePhoneChange}
+            placeholder="Номер сотового телефона"
+            className="w-full h-full px-[15px] bg-transparent outline-none rounded-[10px]"
             style={{
               fontFamily: 'TT Firs Neue, sans-serif',
-              fontSize: '20px',
+              fontSize: '16px',
               lineHeight: '125%',
-              color: '#101010',
+              color: phoneNumber ? '#101010' : 'rgba(16, 16, 16, 0.25)',
               letterSpacing: '0.5px',
             }}
-          >
-            Консультация
-          </div>
-          <div
-            className="font-normal pt-[15px]"
-            style={{
-              fontFamily: 'TT Firs Neue, sans-serif',
-              fontSize: '14px',
-              lineHeight: '105%',
-              color: 'rgba(16, 16, 16, 0.25)',
-              letterSpacing: '0.5px',
-            }}
-          >
-            Напишите номер вашего сотового телефона. Пожалуйста, проверьте правильность
-          </div>
+          />
         </div>
 
-        <div className="flex-shrink-0 px-[15px] pt-[15px]">
-          <div
-            className="rounded-[10px] w-full"
-            style={{
-              height: '50px',
-              border: isPhoneValid ? '1px solid #101010' : '1px solid rgba(16, 16, 16, 0.5)',
-              boxSizing: 'border-box',
-            }}
-          >
-            <input
-              type="tel"
-              value={phoneNumber}
-              onChange={handlePhoneChange}
-              placeholder="Номер сотового телефона"
-              className="w-full h-full px-[15px] bg-transparent outline-none"
-              style={{
-                fontFamily: 'TT Firs Neue, sans-serif',
-                fontSize: '16px',
-                lineHeight: '125%',
-                color: phoneNumber ? '#101010' : 'rgba(16, 16, 16, 0.25)',
-                letterSpacing: '0.5px',
-              }}
-            />
-          </div>
-        </div>
-
-        <div className="flex-shrink-0 flex gap-[10px] px-[15px] pb-[15px] pt-[15px]">
+        <div className="flex gap-[10px]">
           <button
             type="button"
             onClick={handleBack}
@@ -554,13 +555,12 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
             onMouseLeave={() => setIsBackBtnPressed(false)}
             onTouchStart={() => setIsBackBtnPressed(true)}
             onTouchEnd={() => setIsBackBtnPressed(false)}
-            className="outline-none cursor-pointer rounded-[10px] flex items-center justify-center flex-shrink-0"
+            className="outline-none cursor-pointer flex-shrink-0 rounded-[10px] flex items-center justify-center"
             style={{
               width: '50px',
               height: '50px',
               border: '1px solid rgba(16, 16, 16, 0.15)',
               background: 'white',
-              boxSizing: 'border-box',
               transform: isBackBtnPressed ? 'scale(0.92)' : 'scale(1)',
               transition: 'transform 0.15s ease-out',
             }}
@@ -578,15 +578,12 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
             onTouchStart={() => setIsPhoneNextBtnPressed(true)}
             onTouchEnd={() => setIsPhoneNextBtnPressed(false)}
             disabled={!isPhoneValid}
-            className="outline-none flex-1 rounded-[10px] flex items-center justify-center text-center text-white cursor-pointer min-h-[50px] disabled:cursor-not-allowed"
+            className="outline-none flex-1 rounded-[10px] flex items-center justify-center text-white cursor-pointer min-h-[50px] disabled:cursor-not-allowed"
             style={{
               background: isPhoneValid ? '#101010' : 'rgba(16, 16, 16, 0.25)',
-              border: '1px solid rgba(16, 16, 16, 0.25)',
+              minHeight: '50px',
               fontFamily: 'TT Firs Neue, sans-serif',
               fontSize: '16px',
-              lineHeight: '315%',
-              letterSpacing: '0.5px',
-              boxSizing: 'border-box',
               transform: isPhoneNextBtnPressed && isPhoneValid ? 'scale(0.97)' : 'scale(1)',
               transition: 'transform 0.15s ease-out',
             }}
@@ -628,7 +625,7 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
     >
       {/* Main Container — клик по пустоте (подсказка, отступы) всплывает к оверлею и закрывает; карточка stopPropagation */}
       <div
-        className="relative w-full max-w-[400px] bg-[#F5F5F5] flex flex-col flex-1 min-h-0 overflow-hidden"
+        className="relative w-full max-w-[400px] bg-[#F5F5F5] flex flex-col h-full overflow-hidden"
         style={{
           transform: isAnimating ? 'scale(1)' : 'scale(0.95)',
           transition: 'transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',

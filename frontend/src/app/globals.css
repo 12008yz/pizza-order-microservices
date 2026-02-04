@@ -98,34 +98,6 @@ body {
   }
 }
 
-/* Карусель Frame3: отступы через padding на десктопе, через спейсер (часть контента) на мобильных */
-.carousel-container {
-  padding-left: 20px;
-  padding-right: 20px;
-}
-
-/* Спейсер на десктопе не занимает места */
-.carousel-spacer-left {
-  min-width: 0;
-  width: 0;
-  flex-shrink: 0;
-}
-
-@media (max-width: 768px) {
-  .carousel-container {
-    padding-left: 0;
-    padding-right: 0;
-    /* при scroll-snap первая карточка остаётся с отступом 20px от края */
-    scroll-padding-left: 20px;
-  }
-
-  /* На мобильных спейсер — 20px часть прокручиваемого контента: при скролле уезжает первым, карточку обрезает только край экрана */
-  .carousel-container > .carousel-spacer-left {
-    min-width: 20px !important;
-    width: 20px !important;
-    flex-shrink: 0;
-  }
-}
 
 /* Утилитарные классы для safe-area */
 .safe-area-top {

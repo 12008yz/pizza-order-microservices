@@ -30,47 +30,102 @@ export default function FilterModal({ isOpen, onClose }: FilterModalProps) {
         onClick={onClose}
       >
         <div
-          className="relative w-full max-w-[400px] flex flex-col flex-1 min-h-0 overflow-hidden bg-[#F5F5F5] px-4"
+          className="relative w-full max-w-[400px] flex flex-col h-full overflow-hidden bg-[#F5F5F5]"
           style={{ boxSizing: 'border-box' }}
           onClick={(e) => e.stopPropagation()}
         >
+          {/* Шапка: подсказка */}
           <div
-            className="flex-1 min-h-0 flex flex-col rounded-[20px] bg-white overflow-hidden"
-            style={{ maxWidth: '400px', marginLeft: 'auto', marginRight: 'auto', width: '100%' }}
+            className="flex-shrink-0 cursor-pointer"
+            style={{ minHeight: '105px' }}
+            onClick={onClose}
           >
-            <div className="flex-shrink-0 p-6 pb-0">
-              <h2 className="text-xl font-normal mb-4">Фильтрация</h2>
+            <div
+              className="font-normal flex items-center justify-center text-center"
+              style={{
+                width: '240px',
+                margin: '0 auto',
+                paddingTop: '75px',
+                height: '30px',
+                fontFamily: 'TT Firs Neue, sans-serif',
+                fontSize: '14px',
+                lineHeight: '105%',
+                color: 'rgba(16, 16, 16, 0.15)',
+                letterSpacing: '0.5px',
+              }}
+            >
+              Нажмите в открытое пустое место, чтобы выйти из этого режима
+            </div>
+          </div>
+
+          {/* Карточка — компактная, прижата вниз */}
+          <div
+            className="flex flex-col rounded-[20px] bg-white mx-[5%]"
+            style={{
+              maxWidth: '360px',
+              marginLeft: 'auto',
+              marginRight: 'auto',
+              marginTop: 'auto',
+              marginBottom: '20px',
+              padding: '15px',
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div
+              style={{
+                fontFamily: 'TT Firs Neue, sans-serif',
+                fontSize: '20px',
+                lineHeight: '125%',
+                color: '#101010',
+                marginBottom: '15px',
+              }}
+            >
+              Фильтрация
             </div>
 
-            <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden px-6 py-4" style={{ WebkitOverflowScrolling: 'touch' }}>
-              <div className="flex flex-col gap-3">
-                <button
-                  type="button"
-                  onClick={() => setShowProvidersModal(true)}
-                  className="outline-none cursor-pointer px-4 py-3 border border-[rgba(16,16,16,0.25)] rounded-[10px] text-left hover:bg-gray-50 transition-colors"
-                >
-                  Выбрать операторов
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setShowServicesModal(true)}
-                  className="outline-none cursor-pointer px-4 py-3 border border-[rgba(16,16,16,0.25)] rounded-[10px] text-left hover:bg-gray-50 transition-colors"
-                >
-                  Выбрать услуги
-                </button>
-              </div>
-            </div>
-
-            <div className="flex-shrink-0 p-6 pt-4">
+            <div className="flex flex-col gap-[5px]" style={{ marginBottom: '20px' }}>
               <button
                 type="button"
-                onClick={onClose}
-                className="outline-none cursor-pointer w-full px-4 py-3 bg-[#101010] text-white rounded-[10px] hover:bg-gray-800 transition-colors"
+                onClick={() => setShowProvidersModal(true)}
+                className="outline-none cursor-pointer rounded-[10px] text-left hover:bg-gray-50 transition-colors border border-[rgba(16,16,16,0.25)]"
+                style={{
+                  fontFamily: 'TT Firs Neue, sans-serif',
+                  fontSize: '16px',
+                  minHeight: '50px',
+                  padding: '0 15px',
+                }}
               >
-                Применить
+                Выбрать операторов
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setShowServicesModal(true)}
+                className="outline-none cursor-pointer rounded-[10px] text-left hover:bg-gray-50 transition-colors border border-[rgba(16,16,16,0.25)]"
+                style={{
+                  fontFamily: 'TT Firs Neue, sans-serif',
+                  fontSize: '16px',
+                  minHeight: '50px',
+                  padding: '0 15px',
+                }}
+              >
+                Выбрать услуги
               </button>
             </div>
+
+            <button
+              type="button"
+              onClick={onClose}
+              className="w-full rounded-[10px] flex items-center justify-center text-white outline-none cursor-pointer"
+              style={{
+                background: '#101010',
+                minHeight: '50px',
+                fontFamily: 'TT Firs Neue, sans-serif',
+                fontSize: '16px',
+              }}
+            >
+              Применить
+            </button>
           </div>
         </div>
       </div>

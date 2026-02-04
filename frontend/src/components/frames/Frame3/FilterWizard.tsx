@@ -122,14 +122,12 @@ export default function FilterWizard({ isOpen, onClose, onApply }: FilterWizardP
       }
    };
 
-   const handleBackdropClick = (e: React.MouseEvent) => {
-      if (e.target === e.currentTarget) {
-         setIsAnimating(false);
-         setTimeout(() => {
-            setShouldRender(false);
-            onClose();
-         }, 300);
-      }
+   const handleBackdropClick = () => {
+      setIsAnimating(false);
+      setTimeout(() => {
+         setShouldRender(false);
+         onClose();
+      }, 300);
    };
 
    return (
@@ -147,9 +145,9 @@ export default function FilterWizard({ isOpen, onClose, onApply }: FilterWizardP
             transition: 'opacity 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
          }}
       >
-         {/* Контейнер — header и карточка влезают в экран, прокрутка только внутри карточки */}
+         {/* Контейнер — подсказка сверху, карточка компактная и прижата вниз */}
          <div
-            className="relative w-full max-w-[400px] flex flex-col flex-1 min-h-0 overflow-hidden bg-[#F5F5F5]"
+            className="relative w-full max-w-[400px] flex flex-col h-full overflow-hidden bg-[#F5F5F5]"
             style={{
                transform: isAnimating ? 'translateY(0)' : 'translateY(20px)',
                opacity: isAnimating ? 1 : 0,
@@ -157,8 +155,8 @@ export default function FilterWizard({ isOpen, onClose, onApply }: FilterWizardP
                boxSizing: 'border-box',
             }}
          >
-            {/* Шапка: подсказка */}
-            <div className="flex-shrink-0" style={{ minHeight: '105px' }}>
+            {/* Шапка: подсказка (клик по пустоте закрывает — обрабатывается корневым onClick) */}
+            <div className="flex-shrink-0 cursor-pointer" style={{ minHeight: '105px' }}>
                <div
                   className="font-normal flex items-center justify-center text-center"
                   style={{
@@ -169,7 +167,7 @@ export default function FilterWizard({ isOpen, onClose, onApply }: FilterWizardP
                      fontFamily: 'TT Firs Neue, sans-serif',
                      fontSize: '14px',
                      lineHeight: '105%',
-                     color: 'rgba(16, 16, 16, 0.25)',
+                     color: 'rgba(16, 16, 16, 0.15)',
                      letterSpacing: '0.5px',
                   }}
                >
@@ -177,81 +175,80 @@ export default function FilterWizard({ isOpen, onClose, onApply }: FilterWizardP
                </div>
             </div>
 
-            {/* Карточка фильтра — занимает остаток экрана, список опций прокручивается внутри */}
+            {/* Карточка — компактная, прижата вниз с отступом 20px */}
             <div
                onClick={(e) => e.stopPropagation()}
-               className="flex-1 min-h-0 flex flex-col rounded-[20px] bg-white overflow-hidden"
-               style={{ maxWidth: '360px', marginLeft: 'auto', marginRight: 'auto' }}
+               className="flex flex-col rounded-[20px] bg-white mx-[5%]"
+               style={{
+                  maxWidth: '360px',
+                  marginLeft: 'auto',
+                  marginRight: 'auto',
+                  marginTop: 'auto',
+                  marginBottom: '20px',
+                  padding: '15px',
+               }}
             >
                {/* Заголовок */}
-               <div className="flex-shrink-0 px-[15px] pt-[15px]">
-                  <div
-                     style={{
-                        fontFamily: 'TT Firs Neue, sans-serif',
-                        fontWeight: 400,
-                        fontSize: '20px',
-                        lineHeight: '125%',
-                        color: '#101010',
-                     }}
-                  >
-                     Фильтрация
-                  </div>
-                  <div
-                     className="pt-[15px]"
-                     style={{
-                        fontFamily: 'TT Firs Neue, sans-serif',
-                        fontWeight: 400,
-                        fontSize: '14px',
-                        lineHeight: '105%',
-                        color: 'rgba(16, 16, 16, 0.25)',
-                     }}
-                  >
-                     Мы подготовили доступные тарифные планы. Пожалуйста, проверьте правильность
-                  </div>
+               <div
+                  style={{
+                     fontFamily: 'TT Firs Neue, sans-serif',
+                     fontSize: '20px',
+                     lineHeight: '125%',
+                     color: '#101010',
+                     marginBottom: '15px',
+                  }}
+               >
+                  Фильтрация
+               </div>
+               <div
+                  style={{
+                     fontFamily: 'TT Firs Neue, sans-serif',
+                     fontSize: '14px',
+                     lineHeight: '105%',
+                     color: 'rgba(16, 16, 16, 0.25)',
+                     marginBottom: '20px',
+                  }}
+               >
+                  Мы подготовили доступные тарифные планы. Пожалуйста, проверьте правильность
                </div>
 
-               {/* Контент шага — прокручиваемая область */}
-               <div
-                  className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden px-[15px] pt-[20px]"
-                  style={{ WebkitOverflowScrolling: 'touch' }}
-               >
-                  <div className="flex flex-col gap-[7px] pb-2">
-                     {step === 1 &&
-                        serviceOptions.map((service) => (
-                           <CheckboxOption
-                              key={service.id}
-                              label={service.name}
-                              checked={selectedServices.includes(service.id) && service.enabled}
-                              onChange={() => handleServiceToggle(service.id)}
-                              className={!service.enabled ? 'pointer-events-none' : ''}
-                              style={!service.enabled ? { opacity: 0.25 } : undefined}
-                           />
-                        ))}
+               {/* Контент шага — без прокрутки, высота по содержимому */}
+               <div className="flex flex-col gap-[7px]" style={{ marginBottom: '20px' }}>
+                  {step === 1 &&
+                     serviceOptions.map((service) => (
+                        <CheckboxOption
+                           key={service.id}
+                           label={service.name}
+                           checked={selectedServices.includes(service.id) && service.enabled}
+                           onChange={() => handleServiceToggle(service.id)}
+                           className={!service.enabled ? 'pointer-events-none' : ''}
+                           style={!service.enabled ? { opacity: 0.25 } : undefined}
+                        />
+                     ))}
 
-                     {step === 2 &&
-                        providerOptions.map((provider) => (
-                           <CheckboxOption
-                              key={provider.id}
-                              label={provider.name}
-                              checked={selectedProviders.includes(provider.id)}
-                              onChange={() => handleProviderToggle(provider.id)}
-                           />
-                        ))}
+                  {step === 2 &&
+                     providerOptions.map((provider) => (
+                        <CheckboxOption
+                           key={provider.id}
+                           label={provider.name}
+                           checked={selectedProviders.includes(provider.id)}
+                           onChange={() => handleProviderToggle(provider.id)}
+                        />
+                     ))}
 
-                     {step === 3 &&
-                        sortOptions.map((option) => (
-                           <RadioOption
-                              key={option.id}
-                              label={option.name}
-                              selected={selectedSort === option.id}
-                              onClick={() => setSelectedSort(option.id)}
-                           />
-                        ))}
-                  </div>
+                  {step === 3 &&
+                     sortOptions.map((option) => (
+                        <RadioOption
+                           key={option.id}
+                           label={option.name}
+                           selected={selectedSort === option.id}
+                           onClick={() => setSelectedSort(option.id)}
+                        />
+                     ))}
                </div>
 
                {/* Кнопки навигации */}
-               <div className="flex-shrink-0 flex gap-[10px] px-[15px] pb-[15px] pt-[10px]">
+               <div className="flex gap-[10px]">
                   <button
                      type="button"
                      onClick={handleBack}
@@ -267,7 +264,6 @@ export default function FilterWizard({ isOpen, onClose, onApply }: FilterWizardP
                         height: '50px',
                         border: '1px solid rgba(16, 16, 16, 0.15)',
                         background: 'white',
-                        boxSizing: 'border-box',
                         transform: isBackBtnPressed ? 'scale(0.92)' : 'scale(1)',
                         transition: 'transform 0.15s ease-out',
                         cursor: step === 1 ? 'not-allowed' : 'pointer',
@@ -287,18 +283,14 @@ export default function FilterWizard({ isOpen, onClose, onApply }: FilterWizardP
                      onMouseLeave={() => setIsNextBtnPressed(false)}
                      onTouchStart={() => setIsNextBtnPressed(true)}
                      onTouchEnd={() => setIsNextBtnPressed(false)}
-                     className="outline-none cursor-pointer flex-1 rounded-[10px] flex items-center justify-center text-center text-white min-h-[50px]"
+                     className="outline-none cursor-pointer flex-1 rounded-[10px] flex items-center justify-center text-white min-h-[50px]"
                      style={{
                         background: '#101010',
-                        border: '1px solid rgba(16, 16, 16, 0.25)',
+                        minHeight: '50px',
                         fontFamily: 'TT Firs Neue, sans-serif',
                         fontSize: '16px',
-                        lineHeight: '315%',
-                        letterSpacing: '0.5px',
-                        boxSizing: 'border-box',
                         transform: isNextBtnPressed ? 'scale(0.97)' : 'scale(1)',
                         transition: 'transform 0.15s ease-out',
-                        cursor: 'pointer',
                      }}
                   >
                      {step === 3 ? 'Применить' : 'Далее'}

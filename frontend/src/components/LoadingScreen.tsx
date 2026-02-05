@@ -37,14 +37,14 @@ export default function LoadingScreen({ progress = 0 }: LoadingScreenProps) {
           }}
         />
 
-        {/* гигапоиск 2 - точные CSS свойства из Figma с SVG */}
+        {/* гигапоиск 2 - отступ сверху 375px */}
         <div
           style={{
             position: 'absolute',
             width: '230px',
             height: '14px',
             left: 'calc(50% - 230px/2 + 2px)',
-            top: 'calc(50% - 14px/2 - 7px + 10px)'
+            top: '375px'
           }}
         >
           <svg width="230" height="14" viewBox="0 0 230 14" fill="none" xmlns="http://www.w3.org/2000/svg">

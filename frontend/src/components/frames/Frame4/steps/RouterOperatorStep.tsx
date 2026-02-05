@@ -24,28 +24,8 @@ export default function RouterOperatorStep({
   onNext,
   onBack,
 }: RouterOperatorStepProps) {
-  const [showBanner, setShowBanner] = useState(false);
-  const [countdown, setCountdown] = useState(7);
   const [isBackPressed, setIsBackPressed] = useState(false);
   const [isNextPressed, setIsNextPressed] = useState(false);
-
-  useEffect(() => {
-    if (selected) {
-      setShowBanner(true);
-      setCountdown(7);
-    }
-  }, [selected]);
-
-  useEffect(() => {
-    if (showBanner && countdown > 0) {
-      const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
-      return () => clearTimeout(timer);
-    } else if (countdown === 0) {
-      setShowBanner(false);
-    }
-  }, [showBanner, countdown]);
-
-  const handleCloseBanner = () => setShowBanner(false);
   const [showError, setShowError] = useState(false);
 
   useEffect(() => {
@@ -73,28 +53,6 @@ export default function RouterOperatorStep({
           Пожалуйста, проверьте правильность
         </div>
       </div>
-
-      {/* Баннер предупреждения */}
-      {showBanner && (
-        <div className="flex-shrink-0 mx-[15px] mt-[15px] rounded-[20px] bg-white border border-[rgba(16,16,16,0.1)] p-[15px] relative">
-          <button
-            type="button"
-            onClick={handleCloseBanner}
-            className="absolute right-[15px] top-[15px] w-4 h-4 flex items-center justify-center cursor-pointer outline-none bg-transparent border-0"
-          >
-            <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-              <path d="M1 1L9 9M9 1L1 9" stroke="rgba(16, 16, 16, 0.25)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </button>
-          <div className="font-normal pr-6" style={{ fontFamily: 'TT Firs Neue, sans-serif', fontSize: '14px', lineHeight: '145%', color: 'rgba(16, 16, 16, 0.25)' }}>
-            Автоматически закроется через {countdown}
-          </div>
-          <div className="font-normal pt-2" style={{ fontFamily: 'TT Firs Neue, sans-serif', fontSize: '14px', lineHeight: '105%', color: '#101010' }}>
-            Внимание, оборудование этого провайдера технически прошито только на свои сети. Поэтому, подключить его невозможно.{' '}
-            <span className="underline cursor-pointer">Подробнее об этом писали в медиа</span>
-          </div>
-        </div>
-      )}
 
       <div className="overflow-x-hidden px-[15px] pt-[20px]" style={{ WebkitOverflowScrolling: 'touch' }}>
         <div className="flex flex-col gap-[5px] pb-2">

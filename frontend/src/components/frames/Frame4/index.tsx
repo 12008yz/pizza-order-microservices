@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import {
@@ -19,7 +19,6 @@ import {
   SimInfoStep,
   OrderSummaryStep,
 } from './steps';
-import { SimCountWarningBanner } from './components';
 import { HomeIcon, PlaneIcon } from '../../common/icons';
 
 const ConsultationFlow = dynamic(() => import('../Frame2/ConsultationFlow'), {
@@ -120,6 +119,53 @@ function Frame4Content() {
   }, [equipmentState, saveEquipment]);
 
   const [currentStep, setCurrentStep] = useState<Step>('router_need');
+
+  // Уведомления над карточкой, 75px от верха (как во Frame2)
+  type NotificationType = 'router_operator' | 'tvbox_operator' | 'tvbox_tvcount' | 'sim_smartphone';
+  const [frameNotification, setFrameNotification] = useState<{ type: NotificationType; countdown: number } | null>(null);
+  const closedNotificationTypeRef = useRef<NotificationType | null>(null);
+
+  const closeFrameNotification = () => {
+    if (frameNotification?.type === 'sim_smartphone') setShowSimCountWarning(false);
+    setFrameNotification(null);
+  };
+
+  useEffect(() => {
+    if (currentStep === 'router_operator' && equipmentState.router.operator != null) {
+      setFrameNotification((prev) => (prev?.type === 'router_operator' ? prev : { type: 'router_operator', countdown: 7 }));
+    } else if (currentStep === 'tvbox_operator' && equipmentState.tvBox?.operatorId != null) {
+      setFrameNotification((prev) => (prev?.type === 'tvbox_operator' ? prev : { type: 'tvbox_operator', countdown: 7 }));
+    } else if (currentStep === 'tvbox_tvcount' && (equipmentState.tvBox?.tvCount ?? 0) > 1) {
+      setFrameNotification((prev) => (prev?.type === 'tvbox_tvcount' ? prev : { type: 'tvbox_tvcount', countdown: 7 }));
+    } else if (currentStep === 'sim_smartphone_count' && showSimCountWarning) {
+      setFrameNotification((prev) => (prev?.type === 'sim_smartphone' ? prev : { type: 'sim_smartphone', countdown: 7 }));
+    } else {
+      setFrameNotification(null);
+    }
+  }, [currentStep, equipmentState.router.operator, equipmentState.tvBox?.operatorId, equipmentState.tvBox?.tvCount, showSimCountWarning]);
+
+  useEffect(() => {
+    if (frameNotification == null || frameNotification.countdown <= 0) return;
+    const t = setInterval(() => {
+      setFrameNotification((prev) => {
+        if (prev == null) return null;
+        if (prev.countdown <= 1) {
+          closedNotificationTypeRef.current = prev.type;
+          return null;
+        }
+        return { ...prev, countdown: prev.countdown - 1 };
+      });
+    }, 1000);
+    return () => clearInterval(t);
+  }, [frameNotification?.countdown, frameNotification != null]);
+
+  useEffect(() => {
+    if (frameNotification === null && closedNotificationTypeRef.current !== null) {
+      const t = closedNotificationTypeRef.current;
+      closedNotificationTypeRef.current = null;
+      if (t === 'sim_smartphone') setShowSimCountWarning(false);
+    }
+  }, [frameNotification]);
 
   const handleRouterNeedSelect = (option: RouterNeedOption) => {
     setEquipmentState((prev) => ({
@@ -414,36 +460,95 @@ function Frame4Content() {
           </div>
         )}
 
-        {/* Баннер с предупреждением о смартфонах */}
-        {showSimCountWarning && currentStep === 'sim_smartphone_count' && (
-          <div className="flex-shrink-0">
-            <SimCountWarningBanner
-              onClose={() => setShowSimCountWarning(false)}
-              autoCloseAfter={7}
-            />
-          </div>
-        )}
+        {/* Зона подсказки и уведомлений: как во Frame2 — уведомления 75px от верха */}
+        <div className="flex-shrink-0 relative" style={{ minHeight: '105px' }}>
+          {/* Уведомление — белая карточка 75px от верха, пиксель-перфект как во Frame2 */}
+          {frameNotification && (
+            <div
+              className="absolute left-1/2 -translate-x-1/2 bg-white rounded-[20px] flex flex-col"
+              style={{
+                width: 'min(360px, calc(100vw - 40px))',
+                top: '75px',
+                boxSizing: 'border-box',
+                backdropFilter: 'blur(7.5px)',
+                zIndex: 10,
+                padding: '15px',
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Строка: таймер + кнопка закрытия */}
+              <div className="flex items-center justify-between flex-shrink-0" style={{ minHeight: '20px' }}>
+                <div
+                  className="font-normal"
+                  style={{
+                    flex: '1',
+                    minWidth: 0,
+                    fontFamily: 'TT Firs Neue, sans-serif',
+                    fontSize: '14px',
+                    lineHeight: '145%',
+                    color: 'rgba(16, 16, 16, 0.25)',
+                  }}
+                >
+                  Автоматически закроется через {frameNotification.countdown}
+                </div>
+                <button
+                  type="button"
+                  onClick={closeFrameNotification}
+                  className="flex-shrink-0 flex items-center justify-center w-4 h-4 rounded-full cursor-pointer border-0 p-0 ml-2"
+                  style={{ background: 'rgba(16, 16, 16, 0.25)' }}
+                  aria-label="Закрыть"
+                >
+                  <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                    <path d="M1 1L9 9M9 1L1 9" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </button>
+              </div>
+              {/* Основной текст: по размеру контента */}
+              <div
+                className="font-normal"
+                style={{
+                  width: '100%',
+                  fontFamily: 'TT Firs Neue, sans-serif',
+                  fontSize: '14px',
+                  lineHeight: '105%',
+                  color: '#101010',
+                  marginTop: '10px',
+                  wordBreak: 'break-word',
+                }}
+              >
+                {frameNotification.type === 'router_operator' || frameNotification.type === 'tvbox_operator'
+                  ? 'Внимание, оборудование этого провайдера технически прошито только на свои сети. Поэтому, подключить его невозможно. '
+                  : frameNotification.type === 'tvbox_tvcount'
+                    ? 'К сожалению, стоимость подключения, а также стоимость ежемесячного платежа увеличится, пропорционально вашему числу телевизоров. Если же их число, свыше одного устройства. '
+                    : 'К сожалению, стоимость подключения, а также стоимость ежемесячного платежа увеличится, пропорционально вашему числу смартфонов. Если же их число, свыше одного устройства. '}
+                <a href="/privacy-policy" target="_blank" rel="noopener noreferrer" className="text-[#007AFF] underline" onClick={(e) => e.stopPropagation()}>
+                  Подробнее об этом писали в медиа
+                </a>
+              </div>
+            </div>
+          )}
 
-        {/* Подсказка — фиксированно сверху */}
-        <div
-          className="flex-shrink-0 font-normal flex items-center justify-center text-center"
-          style={{
-            width: '240px',
-            margin: '0 auto',
-            paddingTop: currentStep === 'order_summary' ? '10px' : '75px',
-            minHeight: '30px',
-            fontFamily: 'TT Firs Neue, sans-serif',
-            fontSize: '14px',
-            lineHeight: '105%',
-            color: 'rgba(16, 16, 16, 0.25)',
-            opacity: isHintVisible ? 1 : 0,
-            transform: isHintVisible ? 'translateY(0)' : 'translateY(-6px)',
-            transition: 'opacity 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)',
-          }}
-        >
-          Нажмите в открытое пустое место,
-          <br />
-          чтобы выйти из этого режима
+          {/* Подсказка — фиксированно сверху */}
+          <div
+            className="font-normal flex items-center justify-center text-center"
+            style={{
+              width: '240px',
+              margin: '0 auto',
+              paddingTop: currentStep === 'order_summary' ? '10px' : '75px',
+              minHeight: '30px',
+              fontFamily: 'TT Firs Neue, sans-serif',
+              fontSize: '14px',
+              lineHeight: '105%',
+              color: 'rgba(16, 16, 16, 0.25)',
+              opacity: isHintVisible ? 1 : 0,
+              transform: isHintVisible ? 'translateY(0)' : 'translateY(-6px)',
+              transition: 'opacity 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)',
+            }}
+          >
+            Нажмите в открытое пустое место,
+            <br />
+            чтобы выйти из этого режима
+          </div>
         </div>
 
         {/* Белая карточка — занимает остаток экрана, контент шага прокручивается внутри. Клик по пустоте (вне карточки) закрывает. */}

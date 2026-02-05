@@ -156,7 +156,7 @@ export default function AddressInputModal({
               region: item.region,
             }));
           }
-
+          
           // Добавляем опцию "Нет в списке моего адреса" в конец списка
           const notInListOption = {
             id: 'not-in-list-city',
@@ -203,7 +203,7 @@ export default function AddressInputModal({
               streetId: item.streetId,
             }));
           }
-
+          
           // Добавляем опцию "Нет в списке моего адреса" в конец списка
           const notInListOption = {
             id: 'not-in-list-street',
@@ -499,7 +499,7 @@ export default function AddressInputModal({
 
   const handleScrollUp = () => {
     if (suggestions.length === 0) return;
-
+    
     // Если ничего не выбрано, выбираем последнюю подсказку
     if (selectedIndex === null) {
       setSelectedIndex(suggestions.length - 1);
@@ -511,11 +511,11 @@ export default function AddressInputModal({
       }
       return;
     }
-
+    
     // Переходим к предыдущей подсказке
     const newIndex = Math.max(0, selectedIndex - 1);
     setSelectedIndex(newIndex);
-
+    
     // Если новая выбранная подсказка не видна, скроллим к ней
     const maxVisible = 3;
     if (newIndex < scrollOffset) {
@@ -525,18 +525,18 @@ export default function AddressInputModal({
 
   const handleScrollDown = () => {
     if (suggestions.length === 0) return;
-
+    
     // Если ничего не выбрано, выбираем первую подсказку
     if (selectedIndex === null) {
       setSelectedIndex(0);
       setScrollOffset(0);
       return;
     }
-
+    
     // Переходим к следующей подсказке
     const newIndex = Math.min(suggestions.length - 1, selectedIndex + 1);
     setSelectedIndex(newIndex);
-
+    
     // Если новая выбранная подсказка не видна, скроллим к ней
     const maxVisible = 3;
     if (newIndex >= scrollOffset + maxVisible) {
@@ -605,7 +605,7 @@ export default function AddressInputModal({
         onComplete();
         return;
       }
-
+      
       // Если выбрана подсказка с квартирой из БД
       if (selected?.isApartmentSuggestion && selected.buildingId && selected.apartmentNumber) {
         const buildingId = selected.buildingId;
@@ -777,26 +777,18 @@ export default function AddressInputModal({
       }}
       onClick={handleBackdropClick}
     >
-      {/* Контейнер — header и карточка влезают в экран, карточка прижата вниз */}
+      {/* Контейнер — header и карточка влезают в экран, прокрутка только внутри карточки */}
       <div
         onClick={handleContainerClick}
-        className="relative w-full max-w-[400px] flex flex-col h-full overflow-hidden bg-[#F5F5F5]"
+        className="relative w-full max-w-[400px] flex flex-col flex-1 min-h-0 overflow-hidden bg-[#F5F5F5]"
         style={{
           transform: isAnimating ? 'translateY(0)' : 'translateY(100px)',
           transition: 'opacity 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
           boxSizing: 'border-box',
         }}
       >
-        {/* Шапка: подсказка — клик по пустому месту закрывает модалку */}
-        <div
-          className="flex-shrink-0 cursor-pointer"
-          style={{ minHeight: '105px' }}
-          onClick={() => onClose()}
-          role="button"
-          tabIndex={0}
-          onKeyDown={(e) => e.key === 'Enter' && onClose()}
-          aria-label="Закрыть"
-        >
+        {/* Шапка: подсказка */}
+        <div className="flex-shrink-0" style={{ minHeight: '105px' }}>
           <div
             className="font-normal flex items-center justify-center text-center"
             style={{
@@ -815,19 +807,10 @@ export default function AddressInputModal({
           </div>
         </div>
 
-        {/* Карточка — компактная, прижата вниз с отступом 20px */}
+        {/* Карточка — занимает остаток экрана, список подсказок прокручивается внутри */}
         <div
-          className="flex flex-col rounded-[20px] bg-white mx-[5%]"
-          style={{
-            maxWidth: '360px',
-            marginLeft: 'auto',
-            marginRight: 'auto',
-            marginTop: 'auto',
-            marginBottom: '20px',
-            backdropFilter: 'blur(7.5px)',
-            maxHeight: 'calc(100dvh - 145px)',
-            overflow: 'hidden',
-          }}
+          className="flex-1 min-h-0 flex flex-col rounded-[20px] bg-white overflow-hidden"
+          style={{ maxWidth: '360px', marginLeft: 'auto', marginRight: 'auto', backdropFilter: 'blur(7.5px)' }}
           onClick={(e) => e.stopPropagation()}
         >
           <div className="flex-shrink-0 px-[15px] pt-[15px]">
@@ -855,8 +838,8 @@ export default function AddressInputModal({
             </div>
           </div>
 
-          {/* Список подсказок */}
-          <div className="overflow-y-auto overflow-x-hidden px-[15px] pt-[15px]" style={{ WebkitOverflowScrolling: 'touch', maxHeight: '200px' }}>
+          {/* Список подсказок — прокручиваемая область */}
+          <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden px-[15px] pt-[15px]" style={{ WebkitOverflowScrolling: 'touch' }}>
             {hasSuggestions && (
               <div
                 className="rounded-[10px] border border-[rgba(16,16,16,0.25)] overflow-hidden mb-[10px]"

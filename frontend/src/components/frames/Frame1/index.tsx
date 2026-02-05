@@ -404,12 +404,14 @@ function AddressFormContent() {
               <div
                 className="w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0"
                 style={{
-                  background: addressData.connectionType
-                    ? '#9CA3AF'
-                    : isFieldActive(0)
-                      ? '#101010'
-                      : 'transparent',
-                  border: addressData.connectionType || isFieldActive(0)
+                  background: addressData.errors.connectionType
+                    ? 'rgb(239, 68, 68)'
+                    : addressData.connectionType
+                      ? '#9CA3AF'
+                      : isFieldActive(0)
+                        ? '#101010'
+                        : 'transparent',
+                  border: addressData.errors.connectionType || addressData.connectionType || isFieldActive(0)
                     ? 'none'
                     : '1px solid rgba(16, 16, 16, 0.5)',
                 }}
@@ -417,7 +419,7 @@ function AddressFormContent() {
                 {addressData.connectionType ? (
                   <AnimatedCheck key={`connection-${addressData.connectionType}`} size={8} color="#FFFFFF" strokeWidth={1.5} />
                 ) : (
-                  <CaretRight size={8} weight="regular" color={isFieldActive(0) ? "#FFFFFF" : "rgba(16, 16, 16, 0.5)"} />
+                  <CaretRight size={8} weight="regular" color={addressData.errors.connectionType || isFieldActive(0) ? "#FFFFFF" : "rgba(16, 16, 16, 0.5)"} />
                 )}
               </div>
             </div>
@@ -460,12 +462,14 @@ function AddressFormContent() {
               <div
                 className="w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0"
                 style={{
-                  background: addressData.city
-                    ? '#9CA3AF'
-                    : isFieldActive(1)
-                      ? '#101010'
-                      : 'transparent',
-                  border: addressData.city || isFieldActive(1)
+                  background: addressData.errors.city
+                    ? 'rgb(239, 68, 68)'
+                    : addressData.city
+                      ? '#9CA3AF'
+                      : isFieldActive(1)
+                        ? '#101010'
+                        : 'transparent',
+                  border: addressData.errors.city || addressData.city || isFieldActive(1)
                     ? 'none'
                     : '1px solid rgba(16, 16, 16, 0.5)',
                 }}
@@ -473,7 +477,7 @@ function AddressFormContent() {
                 {addressData.city ? (
                   <AnimatedCheck key={`city-${addressData.city}`} size={8} color="#FFFFFF" strokeWidth={1.5} />
                 ) : (
-                  <CaretRight size={8} weight="regular" color={isFieldActive(1) ? "#FFFFFF" : "rgba(16, 16, 16, 0.5)"} />
+                  <CaretRight size={8} weight="regular" color={addressData.errors.city || isFieldActive(1) ? "#FFFFFF" : "rgba(16, 16, 16, 0.5)"} />
                 )}
               </div>
             </div>
@@ -517,12 +521,14 @@ function AddressFormContent() {
               <div
                 className="w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0"
                 style={{
-                  background: addressData.street
-                    ? '#9CA3AF'
-                    : isFieldActive(2)
-                      ? '#101010'
-                      : 'transparent',
-                  border: addressData.street || isFieldActive(2)
+                  background: addressData.errors.street
+                    ? 'rgb(239, 68, 68)'
+                    : addressData.street
+                      ? '#9CA3AF'
+                      : isFieldActive(2)
+                        ? '#101010'
+                        : 'transparent',
+                  border: addressData.errors.street || addressData.street || isFieldActive(2)
                     ? 'none'
                     : '1px solid rgba(16, 16, 16, 0.5)',
                 }}
@@ -530,7 +536,7 @@ function AddressFormContent() {
                 {addressData.street ? (
                   <AnimatedCheck key={`street-${addressData.street}`} size={8} color="#FFFFFF" strokeWidth={1.5} />
                 ) : (
-                  <CaretRight size={8} weight="regular" color={isFieldActive(2) ? "#FFFFFF" : "rgba(16, 16, 16, 0.5)"} />
+                  <CaretRight size={8} weight="regular" color={addressData.errors.street || isFieldActive(2) ? "#FFFFFF" : "rgba(16, 16, 16, 0.5)"} />
                 )}
               </div>
             </div>
@@ -578,12 +584,14 @@ function AddressFormContent() {
               <div
                 className="w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0"
                 style={{
-                  background: addressData.houseNumber
-                    ? '#9CA3AF'
-                    : isFieldActive(3)
-                      ? '#101010'
-                      : 'transparent',
-                  border: addressData.houseNumber || isFieldActive(3)
+                  background: addressData.errors.houseNumber
+                    ? 'rgb(239, 68, 68)'
+                    : addressData.houseNumber
+                      ? '#9CA3AF'
+                      : isFieldActive(3)
+                        ? '#101010'
+                        : 'transparent',
+                  border: addressData.errors.houseNumber || addressData.houseNumber || isFieldActive(3)
                     ? 'none'
                     : '1px solid rgba(16, 16, 16, 0.5)',
                 }}
@@ -591,7 +599,7 @@ function AddressFormContent() {
                 {addressData.houseNumber ? (
                   <AnimatedCheck key={`house-${addressData.houseNumber}-${addressData.apartmentNumber ?? ''}`} size={8} color="#FFFFFF" strokeWidth={1.5} />
                 ) : (
-                  <CaretRight size={8} weight="regular" color={isFieldActive(3) ? "#FFFFFF" : "rgba(16, 16, 16, 0.5)"} />
+                  <CaretRight size={8} weight="regular" color={addressData.errors.houseNumber || isFieldActive(3) ? "#FFFFFF" : "rgba(16, 16, 16, 0.5)"} />
                 )}
               </div>
             </div>

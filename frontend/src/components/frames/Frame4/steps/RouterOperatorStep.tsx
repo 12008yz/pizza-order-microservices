@@ -46,7 +46,20 @@ export default function RouterOperatorStep({
   }, [showBanner, countdown]);
 
   const handleCloseBanner = () => setShowBanner(false);
-  const isNextDisabled = selected === null;
+  const [showError, setShowError] = useState(false);
+
+  useEffect(() => {
+    if (selected !== null) setShowError(false);
+  }, [selected]);
+
+  const handleNext = () => {
+    if (selected === null) {
+      setShowError(true);
+      return;
+    }
+    setShowError(false);
+    onNext();
+  };
 
   return (
     <div className="flex flex-col w-full">
@@ -94,7 +107,7 @@ export default function RouterOperatorStep({
                 className="rounded-[10px] flex items-center justify-between px-[15px] cursor-pointer min-h-[50px]"
                 style={{
                   boxSizing: 'border-box',
-                  border: isSelected ? '1px solid rgba(16, 16, 16, 0.5)' : '1px solid rgba(16, 16, 16, 0.25)',
+                  border: showError && selected === null ? '1px solid rgb(239, 68, 68)' : isSelected ? '1px solid rgba(16, 16, 16, 0.5)' : '1px solid rgba(16, 16, 16, 0.25)',
                   transition: 'border-color 0.2s ease',
                   background: 'transparent',
                 }}
@@ -139,19 +152,19 @@ export default function RouterOperatorStep({
         </button>
         <button
           type="button"
-          onClick={onNext}
-          disabled={isNextDisabled}
-          onMouseDown={() => !isNextDisabled && setIsNextPressed(true)}
+          onClick={handleNext}
+          onMouseDown={() => setIsNextPressed(true)}
           onMouseUp={() => setIsNextPressed(false)}
           onMouseLeave={() => setIsNextPressed(false)}
-          onTouchStart={() => !isNextDisabled && setIsNextPressed(true)}
+          onTouchStart={() => setIsNextPressed(true)}
           onTouchEnd={() => setIsNextPressed(false)}
           className="outline-none rounded-[10px] flex items-center justify-center text-center text-white min-h-[50px] disabled:cursor-not-allowed flex-1"
           style={{
             background: '#101010', border: '1px solid rgba(16, 16, 16, 0.25)', fontFamily: 'TT Firs Neue, sans-serif', fontSize: '16px', lineHeight: '315%', boxSizing: 'border-box',
-            cursor: isNextDisabled ? 'not-allowed' : 'pointer', opacity: isNextDisabled ? 0.1 : 1,
-            transform: isNextPressed && !isNextDisabled ? 'scale(0.97)' : 'scale(1)', transition: 'transform 0.15s ease-out',
-          }}
+          cursor: selected === null ? 'pointer' : 'pointer',
+          opacity: 1,
+          transform: isNextPressed ? 'scale(0.97)' : 'scale(1)', transition: 'transform 0.15s ease-out',
+        }}
         >
           Далее
         </button>

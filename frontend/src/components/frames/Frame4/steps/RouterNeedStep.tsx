@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import type { RouterNeedOption } from '../types';
 
 interface RouterNeedStepProps {
@@ -17,6 +17,8 @@ const options: { value: RouterNeedOption; label: string }[] = [
   { value: 'no_thanks', label: 'Нет, спасибо' },
 ];
 
+const ERROR_BORDER = '1px solid rgb(239, 68, 68)';
+
 export default function RouterNeedStep({
   selected,
   onSelect,
@@ -25,6 +27,20 @@ export default function RouterNeedStep({
 }: RouterNeedStepProps) {
   const [isBackPressed, setIsBackPressed] = useState(false);
   const [isNextPressed, setIsNextPressed] = useState(false);
+  const [showError, setShowError] = useState(false);
+
+  useEffect(() => {
+    if (selected !== null) setShowError(false);
+  }, [selected]);
+
+  const handleNext = () => {
+    if (selected === null) {
+      setShowError(true);
+      return;
+    }
+    setShowError(false);
+    onNext();
+  };
 
   return (
     <div className="flex flex-col w-full">
@@ -57,7 +73,7 @@ export default function RouterNeedStep({
       </div>
 
       {/* Опции — прокручиваемая область */}
-      <div className="overflow-x-hidden px-[15px] pt-[20px]" style={{ WebkitOverflowScrolling: 'touch' }}>
+      <div className="overflow-y-auto overflow-x-hidden px-[15px] pt-[20px]" style={{ WebkitOverflowScrolling: 'touch' }}>
         <div className="flex flex-col gap-[5px] pb-2">
           {options.map((option) => {
             const isSelected = selected === option.value;
@@ -68,9 +84,11 @@ export default function RouterNeedStep({
                 className="rounded-[10px] flex items-center justify-between px-[15px] cursor-pointer min-h-[50px]"
                 style={{
                   boxSizing: 'border-box',
-                  border: isSelected
-                    ? '1px solid rgba(16, 16, 16, 0.5)'
-                    : '1px solid rgba(16, 16, 16, 0.25)',
+                  border: showError && selected === null
+                    ? ERROR_BORDER
+                    : isSelected
+                      ? '1px solid rgba(16, 16, 16, 0.5)'
+                      : '1px solid rgba(16, 16, 16, 0.25)',
                   transition: 'border-color 0.2s ease',
                   background: 'transparent',
                 }}
@@ -139,7 +157,7 @@ export default function RouterNeedStep({
         </button>
         <button
           type="button"
-          onClick={onNext}
+          onClick={handleNext}
           onMouseDown={() => setIsNextPressed(true)}
           onMouseUp={() => setIsNextPressed(false)}
           onMouseLeave={() => setIsNextPressed(false)}

@@ -6,7 +6,6 @@ const WARNINGS_DELAY_SEC = 3;
 
 interface SimInfoStepProps {
   infoType: 'person' | 'region';
-  /** Если true (выбран «Я не являюсь клиентом МТС»): оба предупреждения с интерактивным таймером 3 сек, затем переход на Frame 5 */
   showBothWarningsWithDelay?: boolean;
   onNext: () => void;
   onBack: () => void;
@@ -17,7 +16,6 @@ const infoTexts = {
   region: 'SIM-карта должна быть зарегистрирована в том же регионе, в котором, собираетесь оформлять интернет и пр.',
 };
 
-/** Интерактивный таймер: обратный отсчёт в круге */
 function WarningTimer({ secondsLeft, totalSec }: { secondsLeft: number; totalSec: number }) {
   const size = 32;
   const stroke = 3;
@@ -29,14 +27,7 @@ function WarningTimer({ secondsLeft, totalSec }: { secondsLeft: number; totalSec
   return (
     <div style={{ position: 'relative', width: size, height: size, flexShrink: 0 }}>
       <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ transform: 'rotate(-90deg)' }}>
-        <circle
-          cx={size / 2}
-          cy={size / 2}
-          r={r}
-          fill="none"
-          stroke="rgba(16, 16, 16, 0.12)"
-          strokeWidth={stroke}
-        />
+        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="rgba(16, 16, 16, 0.12)" strokeWidth={stroke} />
         <circle
           cx={size / 2}
           cy={size / 2}
@@ -100,57 +91,41 @@ export default function SimInfoStep({ infoType, showBothWarningsWithDelay = fals
   const showRegion = infoType === 'region' || showBothWarningsWithDelay;
 
   return (
-    <>
+    <div className="flex flex-col w-full">
       {/* Заголовок */}
-      <div
-        style={{
-          position: 'absolute',
-          width: '330px',
-          left: '15px',
-          top: '15px',
-        }}
-      >
+      <div className="flex-shrink-0 px-[15px] pt-[15px]">
         <div
+          className="font-normal"
           style={{
             fontFamily: 'TT Firs Neue, sans-serif',
-            fontStyle: 'normal',
-            fontWeight: 400,
             fontSize: '20px',
             lineHeight: '125%',
-            display: 'flex',
-            alignItems: 'center',
             color: '#101010',
-            marginBottom: '15px',
           }}
         >
           SIM-карта
         </div>
-
         <div
+          className="font-normal pt-[15px]"
           style={{
             fontFamily: 'TT Firs Neue, sans-serif',
-            fontStyle: 'normal',
-            fontWeight: 400,
             fontSize: '14px',
             lineHeight: '145%',
             color: 'rgba(16, 16, 16, 0.5)',
-            marginBottom: '20px',
           }}
         >
           Мы подготовили все возможные варианты.
           <br />
           Пожалуйста, проверьте правильность
         </div>
+      </div>
 
-        {/* Предупреждение 1 — на человека + интерактивный таймер */}
+      {/* Контент с предупреждениями */}
+      <div className="flex-1 overflow-y-auto px-[15px] pt-[20px] pb-2" style={{ WebkitOverflowScrolling: 'touch' }}>
         {showPerson && (
           <div
-            style={{
-              display: 'flex',
-              alignItems: 'flex-start',
-              gap: '12px',
-              marginBottom: showBothWarningsWithDelay ? '16px' : 0,
-            }}
+            className="flex items-start gap-3"
+            style={{ marginBottom: showBothWarningsWithDelay ? 16 : 0 }}
           >
             {showBothWarningsWithDelay && (
               <WarningTimer secondsLeft={secondsLeft} totalSec={WARNINGS_DELAY_SEC} />
@@ -158,7 +133,6 @@ export default function SimInfoStep({ infoType, showBothWarningsWithDelay = fals
             <div
               style={{
                 fontFamily: 'TT Firs Neue, sans-serif',
-                fontStyle: 'normal',
                 fontWeight: 400,
                 fontSize: '14px',
                 lineHeight: '145%',
@@ -171,14 +145,12 @@ export default function SimInfoStep({ infoType, showBothWarningsWithDelay = fals
           </div>
         )}
 
-        {/* Предупреждение 2 — регион + интерактивный таймер (только при «не клиент МТС») */}
         {showBothWarningsWithDelay && (
-          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+          <div className="flex items-start gap-3">
             <WarningTimer secondsLeft={secondsLeft} totalSec={WARNINGS_DELAY_SEC} />
             <div
               style={{
                 fontFamily: 'TT Firs Neue, sans-serif',
-                fontStyle: 'normal',
                 fontWeight: 400,
                 fontSize: '14px',
                 lineHeight: '145%',
@@ -195,7 +167,6 @@ export default function SimInfoStep({ infoType, showBothWarningsWithDelay = fals
           <div
             style={{
               fontFamily: 'TT Firs Neue, sans-serif',
-              fontStyle: 'normal',
               fontWeight: 400,
               fontSize: '14px',
               lineHeight: '145%',
@@ -207,66 +178,55 @@ export default function SimInfoStep({ infoType, showBothWarningsWithDelay = fals
         )}
       </div>
 
-      {/* Кнопка назад */}
-      <button
-        type="button"
-        onClick={onBack}
-        onMouseDown={() => setIsBackPressed(true)}
-        onMouseUp={() => setIsBackPressed(false)}
-        onMouseLeave={() => setIsBackPressed(false)}
-        onTouchStart={() => setIsBackPressed(true)}
-        onTouchEnd={() => setIsBackPressed(false)}
-        className="outline-none cursor-pointer border border-[rgba(16,16,16,0.25)] rounded-[10px] flex items-center justify-center bg-transparent"
-        style={{
-          position: 'absolute',
-          left: '15px',
-          bottom: '15px',
-          width: '50px',
-          height: '50px',
-          boxSizing: 'border-box',
-          transform: isBackPressed ? 'scale(0.92)' : 'scale(1)',
-          transition: 'transform 0.15s ease-out',
-        }}
-      >
-        <svg width="6" height="12" viewBox="0 0 6 12" fill="none">
-          <path
-            d="M5 1L1 6L5 11"
-            stroke="#101010"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-      </button>
-
-      {/* Кнопка «Далее» — первые 3 сек недоступна, если showBothWarningsWithDelay */}
-      <button
-        type="button"
-        onClick={onNext}
-        disabled={!canProceed}
-        onMouseDown={() => canProceed && setIsNextPressed(true)}
-        onMouseUp={() => setIsNextPressed(false)}
-        onMouseLeave={() => setIsNextPressed(false)}
-        onTouchStart={() => canProceed && setIsNextPressed(true)}
-        onTouchEnd={() => setIsNextPressed(false)}
-        className="outline-none cursor-pointer rounded-[10px] flex items-center justify-center font-normal text-base text-center border border-[rgba(16,16,16,0.25)]"
-        style={{
-          position: 'absolute',
-          left: '70px',
-          right: '15px',
-          bottom: '15px',
-          height: '50px',
-          boxSizing: 'border-box',
-          fontFamily: 'TT Firs Neue, sans-serif',
-          background: canProceed ? 'transparent' : 'rgba(16, 16, 16, 0.12)',
-          color: canProceed ? '#101010' : 'rgba(16, 16, 16, 0.4)',
-          transform: isNextPressed ? 'scale(0.97)' : 'scale(1)',
-          transition: 'transform 0.15s ease-out, background 0.2s, color 0.2s',
-          cursor: canProceed ? 'pointer' : 'not-allowed',
-        }}
-      >
-        {showBothWarningsWithDelay && !canProceed ? `Далее через ${secondsLeft} сек` : 'Далее'}
-      </button>
-    </>
+      {/* Кнопки навигации */}
+      <div className="flex-shrink-0 flex gap-[10px] px-[15px] pb-[15px] pt-[10px]">
+        <button
+          type="button"
+          onClick={onBack}
+          onMouseDown={() => setIsBackPressed(true)}
+          onMouseUp={() => setIsBackPressed(false)}
+          onMouseLeave={() => setIsBackPressed(false)}
+          onTouchStart={() => setIsBackPressed(true)}
+          onTouchEnd={() => setIsBackPressed(false)}
+          className="outline-none cursor-pointer rounded-[10px] flex items-center justify-center flex-shrink-0 bg-transparent"
+          style={{
+            width: '50px',
+            height: '50px',
+            border: '1px solid rgba(16, 16, 16, 0.25)',
+            boxSizing: 'border-box',
+            transform: isBackPressed ? 'scale(0.92)' : 'scale(1)',
+            transition: 'transform 0.15s ease-out',
+          }}
+        >
+          <svg width="6" height="12" viewBox="0 0 6 12" fill="none">
+            <path d="M5 1L1 6L5 11" stroke="#101010" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </button>
+        <button
+          type="button"
+          onClick={onNext}
+          disabled={!canProceed}
+          onMouseDown={() => canProceed && setIsNextPressed(true)}
+          onMouseUp={() => setIsNextPressed(false)}
+          onMouseLeave={() => setIsNextPressed(false)}
+          onTouchStart={() => canProceed && setIsNextPressed(true)}
+          onTouchEnd={() => setIsNextPressed(false)}
+          className="outline-none cursor-pointer flex-1 rounded-[10px] flex items-center justify-center text-center min-h-[50px] disabled:cursor-not-allowed"
+          style={{
+            border: '1px solid rgba(16, 16, 16, 0.25)',
+            fontFamily: 'TT Firs Neue, sans-serif',
+            fontSize: '16px',
+            boxSizing: 'border-box',
+            background: canProceed ? 'transparent' : 'rgba(16, 16, 16, 0.12)',
+            color: canProceed ? '#101010' : 'rgba(16, 16, 16, 0.4)',
+            transform: isNextPressed ? 'scale(0.97)' : 'scale(1)',
+            transition: 'transform 0.15s ease-out, background 0.2s, color 0.2s',
+            cursor: canProceed ? 'pointer' : 'not-allowed',
+          }}
+        >
+          {showBothWarningsWithDelay && !canProceed ? `Далее через ${secondsLeft} сек` : 'Далее'}
+        </button>
+      </div>
+    </div>
   );
 }

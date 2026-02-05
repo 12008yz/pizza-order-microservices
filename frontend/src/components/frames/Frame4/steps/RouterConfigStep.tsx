@@ -1,7 +1,9 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import type { RouterConfigOption } from '../types';
+
+const ERROR_BORDER = '1px solid rgb(239, 68, 68)';
 
 interface RouterConfigStepProps {
   selected: RouterConfigOption | null;
@@ -23,6 +25,20 @@ export default function RouterConfigStep({
 }: RouterConfigStepProps) {
   const [isBackPressed, setIsBackPressed] = useState(false);
   const [isNextPressed, setIsNextPressed] = useState(false);
+  const [showError, setShowError] = useState(false);
+
+  useEffect(() => {
+    if (selected !== null) setShowError(false);
+  }, [selected]);
+
+  const handleNext = () => {
+    if (selected === null) {
+      setShowError(true);
+      return;
+    }
+    setShowError(false);
+    onNext();
+  };
 
   return (
     <div className="flex flex-col w-full">
@@ -47,7 +63,7 @@ export default function RouterConfigStep({
                 className="rounded-[10px] flex items-center justify-between px-[15px] cursor-pointer min-h-[50px]"
                 style={{
                   boxSizing: 'border-box',
-                  border: isSelected ? '1px solid rgba(16, 16, 16, 0.5)' : '1px solid rgba(16, 16, 16, 0.25)',
+                  border: showError && selected === null ? ERROR_BORDER : isSelected ? '1px solid rgba(16, 16, 16, 0.5)' : '1px solid rgba(16, 16, 16, 0.25)',
                   transition: 'border-color 0.2s ease',
                   background: 'transparent',
                 }}
@@ -91,7 +107,7 @@ export default function RouterConfigStep({
         </button>
         <button
           type="button"
-          onClick={onNext}
+          onClick={handleNext}
           onMouseDown={() => setIsNextPressed(true)}
           onMouseUp={() => setIsNextPressed(false)}
           onMouseLeave={() => setIsNextPressed(false)}

@@ -216,15 +216,10 @@ export default function OrderSummaryStep({
   const hasAnyAddOn = routerAddOn > 0 || tvAddOn > 0 || simAddOn > 0;
 
   return (
-    <>
+    <div className="flex flex-col w-full">
       <div
-        style={{
-          position: 'absolute',
-          inset: 0,
-          overflowY: 'auto',
-          padding: '20px 20px 90px 20px',
-          boxSizing: 'border-box',
-        }}
+        className="flex-1 overflow-y-auto px-[15px] pt-[15px] pb-2"
+        style={{ WebkitOverflowScrolling: 'touch', boxSizing: 'border-box' }}
       >
         {/* Тариф: оператор и название */}
         <div style={{ marginBottom: '16px' }}>
@@ -496,50 +491,53 @@ export default function OrderSummaryStep({
         </div>
       </div>
 
-      {/* Кнопки */}
-      <button
-        type="button"
-        onClick={onBack}
-        onMouseDown={() => setIsBackPressed(true)}
-        onMouseUp={() => setIsBackPressed(false)}
-        onMouseLeave={() => setIsBackPressed(false)}
-        className="outline-none cursor-pointer border border-[rgba(16,16,16,0.25)] rounded-[10px] flex items-center justify-center bg-transparent"
-        style={{
-          position: 'absolute',
-          left: '15px',
-          bottom: '15px',
-          width: '50px',
-          height: '50px',
-          transform: isBackPressed ? 'scale(0.92)' : 'scale(1)',
-          transition: 'transform 0.15s ease-out',
-        }}
-      >
-        <svg width="6" height="12" viewBox="0 0 6 12" fill="none">
-          <path d="M5 1L1 6L5 11" stroke="#101010" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      </button>
-
-      <button
-        type="button"
-        onClick={onConnect}
-        onMouseDown={() => setIsConnectPressed(true)}
-        onMouseUp={() => setIsConnectPressed(false)}
-        onMouseLeave={() => setIsConnectPressed(false)}
-        className="outline-none cursor-pointer rounded-[10px] flex items-center justify-center text-white font-normal text-base bg-[#101010] border border-[rgba(16,16,16,0.25)]"
-        style={{
-          position: 'absolute',
-          left: '70px',
-          right: '15px',
-          bottom: '15px',
-          height: '50px',
-          fontFamily: 'TT Firs Neue, sans-serif',
-          lineHeight: '125%',
-          transform: isConnectPressed ? 'scale(0.97)' : 'scale(1)',
-          transition: 'transform 0.15s ease-out',
-        }}
-      >
-        Подключить
-      </button>
-    </>
+      {/* Кнопки навигации */}
+      <div className="flex-shrink-0 flex gap-[10px] px-[15px] pb-[15px] pt-[10px]">
+        <button
+          type="button"
+          onClick={onBack}
+          onMouseDown={() => setIsBackPressed(true)}
+          onMouseUp={() => setIsBackPressed(false)}
+          onMouseLeave={() => setIsBackPressed(false)}
+          onTouchStart={() => setIsBackPressed(true)}
+          onTouchEnd={() => setIsBackPressed(false)}
+          className="outline-none cursor-pointer rounded-[10px] flex items-center justify-center flex-shrink-0 bg-transparent"
+          style={{
+            width: '50px',
+            height: '50px',
+            border: '1px solid rgba(16, 16, 16, 0.25)',
+            boxSizing: 'border-box',
+            transform: isBackPressed ? 'scale(0.92)' : 'scale(1)',
+            transition: 'transform 0.15s ease-out',
+          }}
+        >
+          <svg width="6" height="12" viewBox="0 0 6 12" fill="none">
+            <path d="M5 1L1 6L5 11" stroke="#101010" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </button>
+        <button
+          type="button"
+          onClick={onConnect}
+          onMouseDown={() => setIsConnectPressed(true)}
+          onMouseUp={() => setIsConnectPressed(false)}
+          onMouseLeave={() => setIsConnectPressed(false)}
+          onTouchStart={() => setIsConnectPressed(true)}
+          onTouchEnd={() => setIsConnectPressed(false)}
+          className="outline-none cursor-pointer flex-1 rounded-[10px] flex items-center justify-center text-center text-white min-h-[50px]"
+          style={{
+            background: '#101010',
+            border: '1px solid rgba(16, 16, 16, 0.25)',
+            fontFamily: 'TT Firs Neue, sans-serif',
+            fontSize: '16px',
+            lineHeight: '125%',
+            boxSizing: 'border-box',
+            transform: isConnectPressed ? 'scale(0.97)' : 'scale(1)',
+            transition: 'transform 0.15s ease-out',
+          }}
+        >
+          Подключить
+        </button>
+      </div>
+    </div>
   );
 }

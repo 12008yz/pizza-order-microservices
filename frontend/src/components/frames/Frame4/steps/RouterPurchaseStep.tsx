@@ -1,7 +1,9 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import type { RouterPurchaseOption } from '../types';
+
+const ERROR_BORDER = '1px solid rgb(239, 68, 68)';
 
 interface RouterPurchaseStepProps {
   selected: RouterPurchaseOption | null;
@@ -20,20 +22,23 @@ function OptionRow({
   option,
   isSelected,
   onSelect,
+  showError,
+  hasSelection,
 }: {
   option: { value: RouterPurchaseOption; label: string };
   isSelected: boolean;
   onSelect: () => void;
+  showError: boolean;
+  hasSelection: boolean;
 }) {
+  const border = showError && !hasSelection ? ERROR_BORDER : isSelected ? '1px solid rgba(16, 16, 16, 0.5)' : '1px solid rgba(16, 16, 16, 0.25)';
   return (
     <div
       onClick={onSelect}
       className="rounded-[10px] flex items-center justify-between px-[15px] cursor-pointer min-h-[50px]"
       style={{
         boxSizing: 'border-box',
-        border: isSelected
-          ? '1px solid rgba(16, 16, 16, 0.5)'
-          : '1px solid rgba(16, 16, 16, 0.25)',
+        border,
         transition: 'border-color 0.2s ease',
         background: 'transparent',
       }}
@@ -75,6 +80,20 @@ export default function RouterPurchaseStep({
 }: RouterPurchaseStepProps) {
   const [isBackPressed, setIsBackPressed] = useState(false);
   const [isNextPressed, setIsNextPressed] = useState(false);
+  const [showError, setShowError] = useState(false);
+
+  useEffect(() => {
+    if (selected !== null) setShowError(false);
+  }, [selected]);
+
+  const handleNext = () => {
+    if (selected === null) {
+      setShowError(true);
+      return;
+    }
+    setShowError(false);
+    onNext();
+  };
 
   return (
     <div className="flex flex-col w-full">
@@ -91,7 +110,7 @@ export default function RouterPurchaseStep({
       <div className="overflow-x-hidden px-[15px] pt-[20px]" style={{ WebkitOverflowScrolling: 'touch' }}>
         <div className="flex flex-col gap-[5px] pb-2">
           {options.map((opt) => (
-            <OptionRow key={opt.value} option={opt} isSelected={selected === opt.value} onSelect={() => onSelect(opt.value)} />
+            <OptionRow key={opt.value} option={opt} isSelected={selected === opt.value} onSelect={() => onSelect(opt.value)} showError={showError} hasSelection={selected !== null} />
           ))}
         </div>
       </div>
@@ -116,7 +135,7 @@ export default function RouterPurchaseStep({
         </button>
         <button
           type="button"
-          onClick={onNext}
+          onClick={handleNext}
           onMouseDown={() => setIsNextPressed(true)}
           onMouseUp={() => setIsNextPressed(false)}
           onMouseLeave={() => setIsNextPressed(false)}

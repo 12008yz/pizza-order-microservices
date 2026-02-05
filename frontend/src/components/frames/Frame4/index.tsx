@@ -462,7 +462,7 @@ function Frame4Content() {
               maxHeight: 'calc(100dvh - 145px)',
             }}
           >
-            {/* Контент шага — лёгкое появление при смене шага */}
+            {/* Контент шага — компактная flex-компоновка как в Frame1/Frame2 */}
             <div
               key={currentStep}
               className="flex flex-col w-full overflow-y-auto"

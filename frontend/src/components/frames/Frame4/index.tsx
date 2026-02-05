@@ -326,16 +326,11 @@ function Frame4Content() {
       // После выбора статуса клиента показываем информационный экран о регистрации на человека
       setCurrentStep('sim_info_person');
     } else if (currentStep === 'sim_info_person') {
-      // Если «Я не являюсь клиентом МТС» — оба предупреждения с таймером показаны, переход на Frame 5 (оформление заказа)
-      if (equipmentState.simCard?.clientStatus === 'new_client') {
-        saveEquipment(equipmentState);
-        router.push('/order');
-      } else {
-        setCurrentStep('sim_info_region');
-      }
+      // Для обоих вариантов («клиент» и «не клиент») — после первого инфо идём на второй (регион), затем к количеству смартфонов
+      setCurrentStep('sim_info_region');
     } else if (currentStep === 'sim_info_region') {
-      // После второго инфо-экрана переходим к количеству смартфонов
-      setCurrentStep('sim_smartphone_count');
+      // После инфо-экранов переходим в итоговую карточку
+      setCurrentStep('order_summary');
     } else if (currentStep === 'sim_smartphone_count') {
       // После выбора количества смартфонов — итоговая карточка: тариф из Frame3 + оборудование
       setCurrentStep('order_summary');
@@ -397,7 +392,13 @@ function Frame4Content() {
         setCurrentStep('sim_connection_type');
       }
     } else if (currentStep === 'order_summary') {
-      setCurrentStep('sim_smartphone_count');
+      // Возврат: если «подключение текущего номера» — пришли с инфо-экранов, иначе с выбора количества смартфонов
+      const connectionType = equipmentState.simCard?.connectionType;
+      if (connectionType === 'keep_number') {
+        setCurrentStep('sim_info_region');
+      } else {
+        setCurrentStep('sim_smartphone_count');
+      }
     } else if (currentStep === 'sim_operator') {
       setCurrentStep('sim_smartphone_count');
     }
@@ -407,12 +408,14 @@ function Frame4Content() {
     router.push('/providers');
   };
 
-  // Анимация: подсказка появляется после монтирования (как в ConnectionTypeModal)
+  // Анимация: подсказка появляется после монтирования; скрыта во время уведомления или модалки, потом снова появляется
   const [isHintVisible, setIsHintVisible] = useState(false);
   useEffect(() => {
     const t = setTimeout(() => setIsHintVisible(true), 50);
     return () => clearTimeout(t);
   }, []);
+  const isPopupOrNotificationOpen = Boolean(frameNotification) || showConsultation;
+  const showHintText = isHintVisible && !isPopupOrNotificationOpen;
 
   return (
     <div
@@ -430,60 +433,71 @@ function Frame4Content() {
         onClick={handleBackdropClick}
         style={{ background: '#F5F5F5' }}
       >
-        {/* Header только на последней странице — итоговый пакет (order_summary) */}
+        {/* Header только на последней странице — отступ 75px как во Frame1, логотип ближе к иконке дома */}
         {currentStep === 'order_summary' && (
           <div
-            onClick={(e) => e.stopPropagation()}
             className="flex-shrink-0 relative"
             style={{
-              height: '75px',
-              marginLeft: '20px',
-              marginRight: '20px',
+              minHeight: '120px',
             }}
           >
-            {/* Кнопка домой */}
-            <button
-              type="button"
-              onClick={() => router.push('/')}
-              className="outline-none cursor-pointer border-0 w-10 h-10 flex items-center justify-center rounded-full bg-white"
-              style={{
-                position: 'absolute',
-                left: '0',
-                bottom: '0',
-              }}
-              aria-label="На главную"
-            >
-              <HomeIcon color="#101010" />
-            </button>
-
-            {/* Логотип ГИГАПОИСК по центру */}
             <div
+              onClick={(e) => e.stopPropagation()}
               style={{
-                position: 'absolute',
-                left: '50%',
-                transform: 'translateX(-50%)',
-                bottom: '15px',
+                position: 'relative',
+                top: '75px',
+                marginLeft: '20px',
+                marginRight: '20px',
+                height: '41px',
               }}
             >
-              <svg width="140" height="10" viewBox="0 0 230 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M0 13.8056V0.194444H22.5306V4.86111H5.93306V13.8056H0ZM49.0092 0.194444V13.8056H43.0761V6.02778L29.9708 13.8056H24.0377V0.194444H29.9708V7.97222L43.0761 0.194444H49.0092ZM50.5142 13.8056V0.194444H73.0448V4.86111H56.4473V13.8056H50.5142ZM84.0292 4.47222L81.288 7.97222H86.7705L84.0292 4.47222ZM80.6872 0.194444H87.3713L98.017 13.8056H91.3329L89.8121 11.8611H78.2464L76.7256 13.8056H70.0415L80.6872 0.194444ZM98.7731 13.8056V0.194444H123.744V13.8056H117.811V4.86111H104.706V13.8056H98.7731ZM131.454 0H145.16C148.784 0 151.732 3.24722 151.732 7C151.732 10.7528 148.784 14 145.16 14H131.454C127.831 14 124.883 10.7528 124.883 7C124.883 3.24722 127.831 0 131.454 0ZM143.94 5.05556H132.675C131.642 5.05556 130.797 5.93056 130.797 7C130.797 8.06944 131.642 8.94444 132.675 8.94444H143.94C144.973 8.94444 145.818 8.06944 145.818 7C145.818 5.93056 144.973 5.05556 143.94 5.05556ZM177.834 0.194444V13.8056H171.901V6.02778L158.796 13.8056H152.863V0.194444H158.796V7.97222L171.901 0.194444H177.834ZM203.38 8.75V13.8056H185.544C181.92 13.8056 178.972 10.7528 178.972 7C178.972 3.24722 181.92 0.194444 185.544 0.194444H203.38V5.25H186.764C185.732 5.25 184.887 5.93056 184.887 7C184.887 8.06944 185.732 8.75 186.764 8.75H203.38ZM204.88 13.8056V0.194444H210.813V7.66111L221.252 0.194444H229.852L220.332 7L229.852 13.8056H221.252L216.033 10.0722L210.813 13.8056H204.88Z" fill="#101010" />
-              </svg>
-            </div>
+              {/* Кнопка домой — как во Frame1 */}
+              <button
+                type="button"
+                onClick={() => router.push('/')}
+                className="outline-none cursor-pointer border-0 w-10 h-10 flex items-center justify-center rounded-full bg-white"
+                style={{
+                  position: 'absolute',
+                  left: '0',
+                  top: '0',
+                }}
+                aria-label="На главную"
+              >
+                <HomeIcon color="#101010" />
+              </button>
 
-            {/* Кнопка консультации */}
-            <button
-              type="button"
-              onClick={() => setShowConsultation(true)}
-              className="outline-none cursor-pointer border-0 w-10 h-10 flex items-center justify-center rounded-full bg-white"
-              style={{
-                position: 'absolute',
-                right: '0',
-                bottom: '0',
-              }}
-              aria-label="Консультация"
-            >
-              <PlaneIcon color="#101010" />
-            </button>
+              {/* Логотип ГИГАПОИСК — как в Frame1 (Logo): ближе к иконке дома, left 70px от края контента = 50px от кнопки (40px + 10px) */}
+              <div
+                style={{
+                  position: 'absolute',
+                  left: '50px',
+                  top: '15px',
+                  width: '140px',
+                  height: '10px',
+                }}
+                role="img"
+                aria-label="Гигапоиск"
+              >
+                <svg width="140" height="10" viewBox="0 0 230 14" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+                  <path d="M0 13.8056V0.194444H22.5306V4.86111H5.93306V13.8056H0ZM49.0092 0.194444V13.8056H43.0761V6.02778L29.9708 13.8056H24.0377V0.194444H29.9708V7.97222L43.0761 0.194444H49.0092ZM50.5142 13.8056V0.194444H73.0448V4.86111H56.4473V13.8056H50.5142ZM84.0292 4.47222L81.288 7.97222H86.7705L84.0292 4.47222ZM80.6872 0.194444H87.3713L98.017 13.8056H91.3329L89.8121 11.8611H78.2464L76.7256 13.8056H70.0415L80.6872 0.194444ZM98.7731 13.8056V0.194444H123.744V13.8056H117.811V4.86111H104.706V13.8056H98.7731ZM131.454 0H145.16C148.784 0 151.732 3.24722 151.732 7C151.732 10.7528 148.784 14 145.16 14H131.454C127.831 14 124.883 10.7528 124.883 7C124.883 3.24722 127.831 0 131.454 0ZM143.94 5.05556H132.675C131.642 5.05556 130.797 5.93056 130.797 7C130.797 8.06944 131.642 8.94444 132.675 8.94444H143.94C144.973 8.94444 145.818 8.06944 145.818 7C145.818 5.93056 144.973 5.05556 143.94 5.05556ZM177.834 0.194444V13.8056H171.901V6.02778L158.796 13.8056H152.863V0.194444H158.796V7.97222L171.901 0.194444H177.834ZM203.38 8.75V13.8056H185.544C181.92 13.8056 178.972 10.7528 178.972 7C178.972 3.24722 181.92 0.194444 185.544 0.194444H203.38V5.25H186.764C185.732 5.25 184.887 5.93056 184.887 7C184.887 8.06944 185.732 8.75 186.764 8.75H203.38ZM204.88 13.8056V0.194444H210.813V7.66111L221.252 0.194444H229.852L220.332 7L229.852 13.8056H221.252L216.033 10.0722L210.813 13.8056H204.88Z" fill="#101010" />
+                </svg>
+              </div>
+
+              {/* Кнопка консультации */}
+              <button
+                type="button"
+                onClick={() => setShowConsultation(true)}
+                className="outline-none cursor-pointer border-0 w-10 h-10 flex items-center justify-center rounded-full bg-white"
+                style={{
+                  position: 'absolute',
+                  right: '0',
+                  top: '0',
+                }}
+                aria-label="Консультация"
+              >
+                <PlaneIcon color="#101010" />
+              </button>
+            </div>
           </div>
         )}
 
@@ -568,8 +582,8 @@ function Frame4Content() {
                 fontSize: '14px',
                 lineHeight: '105%',
                 color: 'rgba(16, 16, 16, 0.25)',
-                opacity: isHintVisible ? 1 : 0,
-                transform: isHintVisible ? 'translateY(0)' : 'translateY(-6px)',
+                opacity: showHintText ? 1 : 0,
+                transform: showHintText ? 'translateY(0)' : 'translateY(-6px)',
                 transition: 'opacity 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)',
               }}
             >
@@ -590,7 +604,7 @@ function Frame4Content() {
               maxWidth: '360px',
               marginLeft: 'auto',
               marginRight: 'auto',
-              marginTop: currentStep === 'order_summary' ? '0' : 'auto',
+              marginTop: 'auto',
               marginBottom: '20px',
               backdropFilter: 'blur(7.5px)',
               maxHeight: currentStep === 'order_summary' ? 'calc(100dvh - 115px)' : 'calc(100dvh - 145px)',
@@ -743,6 +757,7 @@ function Frame4Content() {
                   onTvBoxNeedChange: handleTvBoxNeedSelect,
                   onTvBoxCountChange: handleTvBoxTvCountSelect,
                   onSimCountChange: handleSimSmartphoneCountSelect,
+                  onSimConnectionTypeChange: handleSimConnectionTypeSelect,
                 }}
               />
             )}

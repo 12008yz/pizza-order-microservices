@@ -697,16 +697,21 @@ function Frame3Content() {
     setHintStep('none');
   };
 
-  // Скролл к следующей карточке (одна карточка + зазор)
+  // Скролл ровно на одну карточку (ширина карточки + зазор 5px)
+  const CARD_GAP = 5;
   const handleScrollRight = () => {
-    if (scrollRef.current) {
-      setArrowClicked(true);
-      setTimeout(() => setArrowClicked(false), 400);
-      scrollRef.current.scrollBy({
-        left: 365,
-        behavior: 'smooth',
-      });
-    }
+    const el = scrollRef.current;
+    if (!el) return;
+    setArrowClicked(true);
+    setTimeout(() => setArrowClicked(false), 400);
+    const firstCard = el.firstElementChild;
+    const step = firstCard
+      ? (firstCard as HTMLElement).offsetWidth + CARD_GAP
+      : 390; // fallback: minWidth 385 + gap 5
+    el.scrollBy({
+      left: step,
+      behavior: 'smooth',
+    });
   };
 
   return (
@@ -1029,14 +1034,14 @@ function Frame3Content() {
         onClose={() => setShowFavoriteToast(false)}
       />
 
-      {/* Контейнер для кнопок управления */}
+      {/* Контейнер для кнопок управления — иконка сброса по левому краю карточки тарифа */}
       <div
-        className="relative w-full px-5 flex justify-between items-center"
+        className="relative w-full pr-5 flex justify-between items-center"
         style={{
           marginBottom: '15px',
         }}
       >
-        {/* Кнопка отмены фильтрации - слева */}
+        {/* Кнопка отмены фильтрации — по левому краю */}
         {isFilterActive && !showFavoritesMode ? (
           <div
             className="cursor-pointer"

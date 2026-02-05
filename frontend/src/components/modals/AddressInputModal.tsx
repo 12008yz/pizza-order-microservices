@@ -807,10 +807,18 @@ export default function AddressInputModal({
           </div>
         </div>
 
-        {/* Карточка — занимает остаток экрана, список подсказок прокручивается внутри */}
+        {/* Карточка — компактная, прижата вниз, список подсказок прокручивается внутри */}
         <div
-          className="flex-1 min-h-0 flex flex-col rounded-[20px] bg-white overflow-hidden"
-          style={{ maxWidth: '360px', marginLeft: 'auto', marginRight: 'auto', backdropFilter: 'blur(7.5px)' }}
+          className="flex-shrink-0 flex flex-col rounded-[20px] bg-white overflow-hidden min-h-0"
+          style={{
+            maxWidth: '360px',
+            marginLeft: 'auto',
+            marginRight: 'auto',
+            marginTop: 'auto',
+            marginBottom: '20px',
+            backdropFilter: 'blur(7.5px)',
+            maxHeight: 'min(480px, calc(100dvh - 145px))',
+          }}
           onClick={(e) => e.stopPropagation()}
         >
           <div className="flex-shrink-0 px-[15px] pt-[15px]">
@@ -838,11 +846,11 @@ export default function AddressInputModal({
             </div>
           </div>
 
-          {/* Список подсказок — прокручиваемая область */}
+          {/* Список подсказок — прокручиваемая область, отступ 5px до поля ввода */}
           <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden px-[15px] pt-[15px]" style={{ WebkitOverflowScrolling: 'touch' }}>
             {hasSuggestions && (
               <div
-                className="rounded-[10px] border border-[rgba(16,16,16,0.25)] overflow-hidden mb-[10px]"
+                className="rounded-[10px] border border-[rgba(16,16,16,0.25)] overflow-hidden mb-[5px]"
                 style={{ minHeight: '40px' }}
               >
                 {suggestions.map((suggestion, index) => {

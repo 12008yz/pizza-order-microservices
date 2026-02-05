@@ -139,9 +139,9 @@ export default function ConnectionTypeModal({
           </div>
         </div>
 
-        {/* Карточка — компактная, прижата вниз с отступом 20px */}
+        {/* Карточка — компактная, прижата вниз, не растягивается по высоте */}
         <div
-          className="flex flex-col rounded-[20px] bg-white mx-[5%]"
+          className="flex flex-col rounded-[20px] bg-white mx-[5%] flex-shrink-0"
           style={{
             maxWidth: '360px',
             marginLeft: 'auto',
@@ -149,7 +149,7 @@ export default function ConnectionTypeModal({
             marginTop: 'auto',
             marginBottom: '20px',
             backdropFilter: 'blur(7.5px)',
-            maxHeight: 'calc(100dvh - 145px)',
+            maxHeight: 'min(420px, calc(100dvh - 145px))',
             overflow: 'hidden',
           }}
           onClick={(e) => e.stopPropagation()}

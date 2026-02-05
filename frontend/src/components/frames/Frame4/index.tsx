@@ -357,7 +357,14 @@ function Frame4Content() {
         setCurrentStep('router_need');
       }
     } else if (currentStep === 'tvbox_need') {
-      setCurrentStep('router_config');
+      // Возврат зависит от того, откуда пришли в блок роутера: need→purchase→tvbox | from_operator→operator→config→tvbox | own→config→tvbox | no_thanks→tvbox
+      if (equipmentState.router.need === 'need') {
+        setCurrentStep('router_purchase');
+      } else if (equipmentState.router.need === 'from_operator' || equipmentState.router.need === 'own') {
+        setCurrentStep('router_config');
+      } else {
+        setCurrentStep('router_need'); // no_thanks
+      }
     } else if (currentStep === 'tvbox_purchase') {
       setCurrentStep('tvbox_need');
     } else if (currentStep === 'tvbox_tvcount') {

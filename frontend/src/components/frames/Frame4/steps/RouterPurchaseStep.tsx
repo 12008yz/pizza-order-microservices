@@ -117,7 +117,10 @@ export default function RouterPurchaseStep({
       <div className="flex-shrink-0 flex gap-[10px] px-[15px] pb-[15px] pt-[10px]">
         <button
           type="button"
-          onClick={onBack}
+          onClick={(e) => {
+            e.stopPropagation();
+            onBack();
+          }}
           onMouseDown={() => setIsBackPressed(true)}
           onMouseUp={() => setIsBackPressed(false)}
           onMouseLeave={() => setIsBackPressed(false)}

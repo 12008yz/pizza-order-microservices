@@ -251,7 +251,7 @@ function AddressFormContent() {
 
   return (
     <div
-      className="fixed inset-0 z-[9999] flex flex-col items-center overflow-y-auto overflow-x-hidden"
+      className="fixed inset-0 z-[9999] flex flex-col items-center overflow-hidden"
       style={{
         paddingTop: 'var(--sat, 0px)',
         paddingBottom: 'max(20px, env(safe-area-inset-bottom, 0px))',

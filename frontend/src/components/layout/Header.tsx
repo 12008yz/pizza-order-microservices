@@ -23,7 +23,7 @@ function Header({ onConsultationClick }: HeaderProps) {
 
   return (
     <>
-      {/* Кнопка дом: 20px слева, 75px сверху, 40×40, border-radius 100px */}
+      {/* Group 7545: header 360×40, left 20, top 75. Group 7510: кнопка дом 40×40, left 20, top 75 */}
       <div
         className="absolute w-10 h-10 cursor-pointer z-10"
         style={{
@@ -45,9 +45,8 @@ function Header({ onConsultationClick }: HeaderProps) {
           style={{
             boxSizing: 'border-box',
             position: 'absolute',
-            width: '40px',
-            height: '40px',
-            backdropFilter: 'blur(5px)',
+            width: 40,
+            height: 40,
             borderRadius: '100px',
             background: '#FFFFFF',
             display: 'flex',
@@ -75,6 +74,11 @@ function Header({ onConsultationClick }: HeaderProps) {
             style={{
               position: 'relative',
               zIndex: 1,
+              width: 20,
+              height: 20,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
               transform: isHomePressed ? 'rotate(-5deg) scale(0.95)' : 'rotate(0deg) scale(1)',
               transition: 'transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)',
             }}
@@ -84,7 +88,7 @@ function Header({ onConsultationClick }: HeaderProps) {
         </div>
       </div>
 
-      {/* Логотип */}
+      {/* Логотип — 140×10, left 70, top 90 (гигапоиск 2) */}
       <Logo />
 
       {/* Кнопка самолёт: 340px слева (= 20px справа), 75px сверху, 40×40 */}
@@ -109,9 +113,8 @@ function Header({ onConsultationClick }: HeaderProps) {
           style={{
             boxSizing: 'border-box',
             position: 'absolute',
-            width: '40px',
-            height: '40px',
-            backdropFilter: 'blur(5px)',
+            width: 40,
+            height: 40,
             borderRadius: '100px',
             background: '#FFFFFF',
             display: 'flex',
@@ -139,6 +142,11 @@ function Header({ onConsultationClick }: HeaderProps) {
             style={{
               position: 'relative',
               zIndex: 1,
+              width: 20,
+              height: 20,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
               transform: isPlanePressed ? 'scale(1.1) rotate(15deg)' : 'scale(1) rotate(0deg)',
               transition: 'transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)',
             }}

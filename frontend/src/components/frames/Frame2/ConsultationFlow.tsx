@@ -158,7 +158,7 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
             style={{
               width: '360px',
               height: '90px',
-              top: `${75 + index * 95}px`,
+              top: `calc(75px + var(--sat, 0px) + ${index * 95}px)`,
               boxSizing: 'border-box',
               backdropFilter: 'blur(7.5px)',
               transition: 'top 0.3s ease-in-out',
@@ -244,28 +244,30 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
   // Экран выбора способа связи — компактная карточка прижата вниз (по образцу TechAccessModal)
   const renderContactMethod = () => (
     <div className="relative w-full max-w-[400px] flex flex-col h-full overflow-hidden bg-[#F5F5F5]">
-      {/* Шапка: подсказка (клик закрывает); уведомления рендерятся поверх */}
+      {/* Шапка: подсказка скрыта при показе уведомления; уведомления с отступом сверху 75px + var(--sat) */}
       <div className="flex-shrink-0 relative cursor-pointer" style={{ minHeight: '105px' }} onClick={handleBackgroundClick}>
-        <div
-          className="font-normal flex items-center justify-center text-center"
-          style={{
-            width: '240px',
-            margin: '0 auto',
-            paddingTop: '75px',
-            height: '30px',
-            fontFamily: 'TT Firs Neue, sans-serif',
-            fontSize: '14px',
-            lineHeight: '105%',
-            color: 'rgba(16, 16, 16, 0.15)',
-            letterSpacing: '0.5px',
-          }}
-        >
-          Нажмите в открытое пустое место, чтобы выйти из этого режима
-        </div>
+        {notifications.length === 0 && (
+          <div
+            className="font-normal flex items-center justify-center text-center"
+            style={{
+              width: '240px',
+              margin: '0 auto',
+              paddingTop: '75px',
+              height: '30px',
+              fontFamily: 'TT Firs Neue, sans-serif',
+              fontSize: '14px',
+              lineHeight: '105%',
+              color: 'rgba(16, 16, 16, 0.15)',
+              letterSpacing: '0.5px',
+            }}
+          >
+            Нажмите в открытое пустое место, чтобы выйти из этого режима
+          </div>
+        )}
         {renderNotifications}
       </div>
 
-      {/* Карточка — компактная, прижата вниз с отступом 20px */}
+      {/* Карточка — прижата вниз, 20px от браузерной строки за счёт paddingBottom оверлея */}
       <div
         className="flex flex-col rounded-[20px] bg-white mx-[5%]"
         style={{
@@ -273,7 +275,7 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
           marginLeft: 'auto',
           marginRight: 'auto',
           marginTop: 'auto',
-          marginBottom: '20px',
+          marginBottom: 0,
           padding: '15px',
         }}
         onClick={(e) => e.stopPropagation()}
@@ -461,28 +463,30 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
   // Экран ввода телефона — компактная карточка прижата вниз (по образцу TechAccessModal)
   const renderPhoneAfterMethod = () => (
     <div className="relative w-full max-w-[400px] flex flex-col h-full overflow-hidden bg-[#F5F5F5]">
-      {/* Шапка: подсказка (клик закрывает); уведомления рендерятся поверх */}
+      {/* Шапка: подсказка скрыта при показе уведомления; уведомления с отступом сверху 75px + var(--sat) */}
       <div className="flex-shrink-0 relative cursor-pointer" style={{ minHeight: '105px' }} onClick={handleBackgroundClick}>
-        <div
-          className="font-normal flex items-center justify-center text-center"
-          style={{
-            width: '240px',
-            margin: '0 auto',
-            paddingTop: '75px',
-            height: '30px',
-            fontFamily: 'TT Firs Neue, sans-serif',
-            fontSize: '14px',
-            lineHeight: '105%',
-            color: 'rgba(16, 16, 16, 0.15)',
-            letterSpacing: '0.5px',
-          }}
-        >
-          Нажмите в открытое пустое место, чтобы выйти из этого режима
-        </div>
+        {notifications.length === 0 && (
+          <div
+            className="font-normal flex items-center justify-center text-center"
+            style={{
+              width: '240px',
+              margin: '0 auto',
+              paddingTop: '75px',
+              height: '30px',
+              fontFamily: 'TT Firs Neue, sans-serif',
+              fontSize: '14px',
+              lineHeight: '105%',
+              color: 'rgba(16, 16, 16, 0.15)',
+              letterSpacing: '0.5px',
+            }}
+          >
+            Нажмите в открытое пустое место, чтобы выйти из этого режима
+          </div>
+        )}
         {renderNotifications}
       </div>
 
-      {/* Карточка — компактная, прижата вниз с отступом 20px */}
+      {/* Карточка — прижата вниз, 20px от браузерной строки за счёт paddingBottom оверлея */}
       <div
         className="flex flex-col rounded-[20px] bg-white mx-[5%]"
         style={{
@@ -490,7 +494,7 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
           marginLeft: 'auto',
           marginRight: 'auto',
           marginTop: 'auto',
-          marginBottom: '20px',
+          marginBottom: 0,
           padding: '15px',
         }}
         onClick={(e) => e.stopPropagation()}
@@ -616,7 +620,7 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
         opacity: isAnimating ? 1 : 0,
         transition: 'opacity 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
         paddingTop: 'var(--sat, 0px)',
-        paddingBottom: 'var(--sab, 0px)',
+        paddingBottom: 'calc(20px + env(safe-area-inset-bottom, 0px))',
         height: '100dvh',
         boxSizing: 'border-box',
       }}

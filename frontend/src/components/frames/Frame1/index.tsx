@@ -251,18 +251,18 @@ function AddressFormContent() {
 
   return (
     <div
-      className="fixed inset-0 z-[9999] flex items-start justify-center bg-[#F5F5F5] overflow-hidden"
+      className="fixed inset-0 z-[9999] flex flex-col items-center bg-[#F5F5F5] overflow-y-auto overflow-x-hidden"
       style={{
         paddingTop: 'var(--sat, 0px)',
-        paddingBottom: 'var(--sab, 0px)',
+        paddingBottom: 'max(20px, env(safe-area-inset-bottom, 0px))',
       }}
     >
-      {/* Основной контейнер: 400×870 по макету, фон #F5F5F5 */}
+      {/* Основной контейнер: 400px, карточка 20px от верха (от хедера) и 20px от низа браузера */}
       <div
-        className="relative w-full max-w-[400px] flex flex-col bg-[#F5F5F5]"
+        className="relative w-full max-w-[400px] flex flex-col bg-[#F5F5F5] flex-1 min-h-0"
         style={{
-          minHeight: 'max(870px, 100dvh)',
-          height: '100dvh',
+          minHeight: '100dvh',
+          paddingBottom: '20px',
         }}
       >
         {/* Хедер: иконки 75px сверху, лого 90px. Резерв по высоте 115px */}
@@ -339,13 +339,13 @@ function AddressFormContent() {
           </div>
         )}
 
-        {/* Белая карточка: отступы 20px (5%), top 230px, ширина 360px, padding 15px, высота по контенту */}
+        {/* Белая карточка: 20px от хедера сверху, 20px от краёв по бокам, 20px от низа экрана (браузерной строки) */}
         <div
           className="bg-white flex flex-col flex-shrink-0"
           style={{
             marginLeft: '20px',
             marginRight: '20px',
-            marginTop: '230px',
+            marginTop: '20px',
             marginBottom: '20px',
             width: '360px',
             maxWidth: 'calc(100% - 40px)',

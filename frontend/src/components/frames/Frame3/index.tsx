@@ -1224,7 +1224,7 @@ function Frame3Content() {
           }
         }}
       >
-        {/* Горизонтальный скролл с карточками — в режиме избранного клик по пустому месту закрывает */}
+        {/* Горизонтальный скролл: отступы 20px по бокам (как эталон), карточка 360px — не обрезает контент */}
         <div
           ref={scrollRef}
           className="flex overflow-x-auto scrollbar-hide flex-nowrap carousel-container"
@@ -1234,6 +1234,9 @@ function Frame3Content() {
             WebkitOverflowScrolling: 'touch',
             scrollbarWidth: 'none',
             msOverflowStyle: 'none',
+            paddingLeft: '20px',
+            paddingRight: '20px',
+            paddingBottom: '20px',
           }}
           onClick={(e) => {
             if (showFavoritesMode && e.target === e.currentTarget) {
@@ -1314,8 +1317,9 @@ function Frame3Content() {
                 className="flex-shrink-0"
                 style={{
                   position: 'relative',
-                  minWidth: '385px',
-                  flex: '1 0 0',
+                  width: '360px',
+                  minWidth: '360px',
+                  flex: '0 0 360px',
                   background: '#FFFFFF',
                   borderRadius: '20px',
                   scrollSnapAlign: 'start',
@@ -1325,8 +1329,8 @@ function Frame3Content() {
                   flexDirection: 'column',
                 }}
               >
-                {/* Заголовок */}
-                <div style={{ padding: '15px 15px 0 15px', flexShrink: 0 }}>
+                {/* Заголовок: отступы 20px по макету */}
+                <div style={{ padding: '24px 20px 0 20px', flexShrink: 0 }}>
                   {/* Провайдер с Info icon */}
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '5px' }}>
                     <div
@@ -1368,8 +1372,8 @@ function Frame3Content() {
                   />
                 </div>
 
-                {/* Контентная область — flex: 1 тянет вниз футер с кнопками */}
-                <div style={{ padding: '10px 15px', flex: 1, minHeight: 0 }}>
+                {/* Контентная область — отступы 20px по макету */}
+                <div style={{ padding: '16px 20px', flex: 1, minHeight: 0 }}>
                   {/* Список услуг */}
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                     {/* Скорость */}
@@ -1526,8 +1530,8 @@ function Frame3Content() {
                   </div>
                 </div>
 
-                {/* Футер с ценой и кнопками */}
-                <div style={{ padding: '15px', flexShrink: 0, position: 'relative' }}>
+                {/* Футер с ценой и кнопками — отступы 20px */}
+                <div style={{ padding: '0 20px 20px 20px', flexShrink: 0, position: 'relative' }}>
                   {/* Line 9 - Разделитель перед ценой */}
                   <div
                     style={{

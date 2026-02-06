@@ -1,9 +1,11 @@
 interface ArrowCircleRightIconProps {
    color?: string;
    isAnimating?: boolean;
+   /** Только стрелка, без круга (когда круги рисуются отдельно) */
+   arrowOnly?: boolean;
 }
 
-export default function ArrowCircleRightIcon({ color = '#101010', isAnimating = false }: ArrowCircleRightIconProps) {
+export default function ArrowCircleRightIcon({ color = '#101010', isAnimating = false, arrowOnly = false }: ArrowCircleRightIconProps) {
    return (
       <svg
          width="20"
@@ -16,12 +18,14 @@ export default function ArrowCircleRightIcon({ color = '#101010', isAnimating = 
             transition: 'transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
          }}
       >
-         <path
-            fillRule="evenodd"
-            clipRule="evenodd"
-            d="M10 1.875C5.51269 1.875 1.875 5.51269 1.875 10C1.875 14.4873 5.51269 18.125 10 18.125C14.4873 18.125 18.125 14.4873 18.125 10C18.125 5.51269 14.4873 1.875 10 1.875ZM0 10C0 4.47715 4.47715 0 10 0C15.5228 0 20 4.47715 20 10C20 15.5228 15.5228 20 10 20C4.47715 20 0 15.5228 0 10Z"
-            fill={color}
-         />
+         {!arrowOnly && (
+            <path
+               fillRule="evenodd"
+               clipRule="evenodd"
+               d="M10 1.875C5.51269 1.875 1.875 5.51269 1.875 10C1.875 14.4873 5.51269 18.125 10 18.125C14.4873 18.125 18.125 14.4873 18.125 10C18.125 5.51269 14.4873 1.875 10 1.875ZM0 10C0 4.47715 4.47715 0 10 0C15.5228 0 20 4.47715 20 10C20 15.5228 15.5228 20 10 20C4.47715 20 0 15.5228 0 10Z"
+               fill={color}
+            />
+         )}
          <path
             fillRule="evenodd"
             clipRule="evenodd"

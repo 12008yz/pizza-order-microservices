@@ -725,12 +725,12 @@ function Frame3Content() {
       }}
       onClick={showFavoritesMode ? handleFavoritesModeBackgroundClick : undefined}
     >
-      {/* 400-3-1-1: position relative, 400×870, #F5F5F5 */}
+      {/* 400×viewport: без скролла, карточка по макету 5% / 32.18% / 16.67% */}
       <div
         className="relative flex flex-col overflow-hidden"
         style={{
           width: '400px',
-          height: '870px',
+          height: '100dvh',
           maxHeight: '100dvh',
           background: '#F5F5F5',
           boxSizing: 'border-box',
@@ -1049,7 +1049,7 @@ function Frame3Content() {
         onClose={() => setShowFavoriteToast(false)}
       />
 
-      {/* Group 7509 — Arrow: 40×40 left 340px top 230px, rotate -90deg */}
+      {/* Group 7509 — по макету: 40×40, left 340px top 230px */}
       {!showFavoritesMode && (
         <div
           className="cursor-pointer"
@@ -1071,11 +1071,15 @@ function Frame3Content() {
           onTouchStart={() => setIsArrowPressed(true)}
           onTouchEnd={() => setIsArrowPressed(false)}
         >
+          {/* Скрин 2: 1) белый внешний круг, 2) чёрный внутренний, 3) белая стрелка вправо */}
           <div
             className="w-full h-full flex items-center justify-center relative overflow-hidden"
             style={{
+              position: 'absolute',
+              inset: 0,
               background: '#FFFFFF',
-              borderRadius: '100px',
+              borderRadius: "40px",
+              boxShadow: '0 0 0 1px rgba(16, 16, 16, 0.06)',
               transform: isArrowPressed ? 'scale(0.85)' : 'scale(1)',
               transition: 'transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)',
             }}
@@ -1087,20 +1091,36 @@ function Frame3Content() {
                   width: '100%',
                   height: '100%',
                   borderRadius: '100px',
-                  background: 'rgba(16, 16, 16, 0.1)',
+                  background: 'rgba(16, 16, 16, 0.08)',
                   animation: 'ripple 0.4s ease-out',
                 }}
               />
             )}
+            {/* Чёрный круг по центру — меньше, чтобы белого фона было больше */}
             <div
               style={{
+                width: '16.25px',
+                height: '16.25px',
+                borderRadius: '100px',
+                background: '#101010',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
                 position: 'relative',
                 zIndex: 1,
-                transform: 'rotate(-90deg)',
-                transition: 'transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)',
               }}
             >
-              <ArrowCircleRightIcon color={arrowClicked ? '#4A90E2' : '#101010'} isAnimating={arrowClicked} />
+              <div
+                style={{
+                  width: '20px',
+                  height: '20px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <ArrowCircleRightIcon color="#FFFFFF" isAnimating={arrowClicked} arrowOnly />
+              </div>
             </div>
           </div>
         </div>
@@ -1139,14 +1159,14 @@ function Frame3Content() {
         </div>
       )}
 
-      {/* Rectangle 30 — карточка: left 5% right 5% top 32.18% bottom 16.67%, 360×445px */}
+      {/* Rectangle 30 — карточка по макету: left 5% right 5% top 32.18% bottom 16.67%, без скролла */}
       <div
         style={{
           position: 'absolute',
-          left: '20px',
-          top: '280px',
-          width: '360px',
-          height: '445px',
+          left: '5%',
+          right: '5%',
+          top: '32.18%',
+          bottom: '16.67%',
           zIndex: 1,
         }}
         onClick={(e) => {
@@ -1255,7 +1275,8 @@ function Frame3Content() {
                   position: 'relative',
                   width: '360px',
                   minWidth: '360px',
-                  minHeight: '445px',
+                  height: '100%',
+                  minHeight: 0,
                   background: '#FFFFFF',
                   borderRadius: '20px',
                   scrollSnapAlign: 'start',

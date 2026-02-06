@@ -17,22 +17,15 @@ export default function HintTooltip({ text, onAccept, onDecline, position }: Hin
       }, 3000);
       return () => clearTimeout(timer);
    }, [onAccept]);
-   // Позиционирование в зависимости от типа подсказки
+   // Figma Group 7585: 205×90, left 175px, top 120px
    const getPositionStyles = () => {
       if (position === 'consultation') {
-         // Под иконкой самолёта (консультация)
-         // Иконка самолёта: left: 319.2px от header, header left: 20px, width: 40.8px
-         // Правая граница иконки: 20 + 319.2 + 40.8 = 380px от левого края контейнера
-         // Контейнер: 400px, right = 400 - 380 = 20px
          return {
-            right: '20px',
+            left: '175px',
             top: '120px',
          };
       } else {
-         // Под иконкой воронки (фильтрация)
-         // Иконка воронки: left: 274.6px от header, header left: 20px, width: 40.8px
-         // Правая граница иконки: 20 + 274.6 + 40.8 = 335.4px от левого края контейнера
-         // Контейнер: 400px, right = 400 - 335.4 = 64.6px
+         // Фильтрация: под воронкой, right 64.6px
          return {
             right: '64.6px',
             top: '120px',
@@ -48,8 +41,7 @@ export default function HintTooltip({ text, onAccept, onDecline, position }: Hin
             position: 'absolute',
             width: '205px',
             height: '90px',
-            right: positionStyles.right,
-            top: positionStyles.top,
+            ...positionStyles,
             background: '#FFFFFF',
             borderRadius: '20px 10px 20px 20px',
             zIndex: 100,

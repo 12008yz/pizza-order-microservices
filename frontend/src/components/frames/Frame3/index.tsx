@@ -362,9 +362,9 @@ function Frame3Content() {
   // Состояние для режима избранного
   const [showFavoritesMode, setShowFavoritesMode] = useState(false);
 
-  // Универсальная защита от «дублей» кликов по кнопкам
-  const withClickGuard = <T extends any[]>(handler: (...args: T) => void) =>
-    (...args: T) => {
+  // Универсальная защита от «дублей» кликов по кнопкам (без дженерика — SWC в .tsx путает < с JSX)
+  const withClickGuard = (handler: (...args: any[]) => void) =>
+    (...args: any[]) => {
       if (clickGuardRef.current) return;
       clickGuardRef.current = true;
       try {
@@ -716,57 +716,71 @@ function Frame3Content() {
 
   return (
     <div
-      className="fixed inset-0 flex items-start justify-center bg-[#F5F5F5] overflow-hidden"
+      className="fixed inset-0 flex items-center justify-center overflow-hidden"
       style={{
         fontFamily: 'TT Firs Neue, sans-serif',
         paddingTop: 'var(--sat, 0px)',
         paddingBottom: 'var(--sab, 0px)',
+        background: '#F5F5F5',
       }}
       onClick={showFavoritesMode ? handleFavoritesModeBackgroundClick : undefined}
     >
-      {/* Контейнер как в Frame 1: max-width 400px, flex flex-col, карусель прижата вниз */}
+      {/* 400-3-1-1: position relative, 400×870, #F5F5F5 */}
       <div
-        className="relative w-full max-w-[400px] h-full flex flex-col bg-[#F5F5F5] overflow-hidden"
-        style={{ height: '100dvh', boxSizing: 'border-box' }}
+        className="relative flex flex-col overflow-hidden"
+        style={{
+          width: '400px',
+          height: '870px',
+          maxHeight: '100dvh',
+          background: '#F5F5F5',
+          boxSizing: 'border-box',
+        }}
       >
-        {/* Header area — одна строка, выравнивание по центру по вертикали */}
-        <div className="flex-shrink-0 relative" style={{ minHeight: '120px' }}>
-          {showFavoritesMode ? (
+        {showFavoritesMode ? (
+          <div
+            className="w-full flex justify-center cursor-pointer"
+            style={{ position: 'absolute', left: 0, right: 0, top: '75px', zIndex: 10 }}
+            onClick={() => setShowFavoritesMode(false)}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => e.key === 'Enter' && setShowFavoritesMode(false)}
+            aria-label="Выйти из режима избранного"
+          >
             <div
-              className="w-full flex justify-center cursor-pointer"
-              style={{ position: 'relative', top: '75px' }}
-              onClick={() => setShowFavoritesMode(false)}
-              role="button"
-              tabIndex={0}
-              onKeyDown={(e) => e.key === 'Enter' && setShowFavoritesMode(false)}
-              aria-label="Выйти из режима избранного"
+              style={{
+                width: '240px',
+                fontFamily: 'TT Firs Neue, sans-serif',
+                fontSize: '14px',
+                lineHeight: '105%',
+                textAlign: 'center',
+                color: 'rgba(16, 16, 16, 0.15)',
+              }}
             >
-              <div
-                style={{
-                  width: '240px',
-                  fontFamily: 'TT Firs Neue, sans-serif',
-                  fontSize: '14px',
-                  lineHeight: '105%',
-                  textAlign: 'center',
-                  color: 'rgba(16, 16, 16, 0.15)',
-                }}
-              >
-                Нажмите в открытое пустое место, чтобы выйти из этого режима
-              </div>
+              Нажмите в открытое пустое место, чтобы выйти из этого режима
             </div>
-          ) : (
-            <div className="relative w-full px-5" style={{ position: 'relative', top: '75px' }}>
-              <div
-                className="relative flex items-center justify-between w-full"
-                style={{ height: '41px', minHeight: '41px' }}
-              >
-            {/* Левая колонка — та же ширина, что и правая, чтобы логотип был по центру */}
-            <div className="flex items-center flex-shrink-0" style={{ width: '132px' }}>
+          </div>
+        ) : null}
+
+        {/* Group 7545: absolute 360×40, left 20px, top 75px */}
+        {!showFavoritesMode && (
+          <div
+            style={{
+              position: 'absolute',
+              width: '360px',
+              height: '40px',
+              left: '20px',
+              top: '75px',
+            }}
+          >
+            {/* Group 7510 — Home: 40×40 at left 0 (viewport 20px) */}
             <div
               className="cursor-pointer"
               style={{
-                width: '40.8px',
-                height: '40.8px',
+                position: 'absolute',
+                width: '40px',
+                height: '40px',
+                left: 0,
+                top: 0,
               }}
               onClick={withClickGuard(() => {
                 setClickedButton('home');
@@ -813,15 +827,15 @@ function Frame3Content() {
                 </div>
               </div>
             </div>
-            </div>
 
-            {/* Логотип Гигапоиск — 9px от домика (40.8 + 9 = 49.8) */}
+            {/* гигапоиск 2: 140×10, left 69px top 90px → in header left 49px top 15px */}
             <div
-              className="absolute"
               style={{
-                left: '49.8px',
-                width: '142.79px',
-                height: '10.2px',
+                position: 'absolute',
+                width: '140px',
+                height: '10px',
+                left: '49px',
+                top: '15px',
               }}
             >
               <svg
@@ -846,16 +860,17 @@ function Frame3Content() {
               </svg>
             </div>
 
-            {/* Правые кнопки — фиксированная ширина, чтобы логотип оставался по центру */}
-            <div className="flex items-center justify-end flex-shrink-0 gap-1" style={{ width: '132px' }}>
-              {/* Кнопка избранное (Heart) */}
-              <div
-                className="cursor-pointer"
-                style={{
-                  width: '40.8px',
-                  height: '40.8px',
-                }}
-                onClick={withClickGuard(() => {
+            {/* Heart: 40×40 at left 250px viewport = 230px in header */}
+            <div
+              className="cursor-pointer"
+              style={{
+                position: 'absolute',
+                width: '40px',
+                height: '40px',
+                left: '230px',
+                top: 0,
+              }}
+              onClick={withClickGuard(() => {
                   setClickedButton('heart');
                   setTimeout(() => setClickedButton(null), 300);
                   handleHeartClick();
@@ -905,14 +920,17 @@ function Frame3Content() {
                 </div>
               </div>
 
-              {/* Кнопка фильтр (Funnel) */}
-              <div
-                className="cursor-pointer"
-                style={{
-                  width: '40.8px',
-                  height: '40.8px',
-                }}
-                onClick={withClickGuard(() => {
+            {/* Group 7511 — Funnel: 40×40 at left 295px viewport = 275px in header */}
+            <div
+              className="cursor-pointer"
+              style={{
+                position: 'absolute',
+                width: '40px',
+                height: '40px',
+                left: '275px',
+                top: 0,
+              }}
+              onClick={withClickGuard(() => {
                   if (showFilterWizard) return;
                   setClickedButton('funnel');
                   setTimeout(() => setClickedButton(null), 300);
@@ -958,14 +976,17 @@ function Frame3Content() {
                 </div>
               </div>
 
-              {/* Кнопка самолёт (Plane) */}
-              <div
-                className="cursor-pointer"
-                style={{
-                  width: '40.8px',
-                  height: '40.8px',
-                }}
-                onClick={withClickGuard(() => {
+            {/* Group 7509 — PaperPlane: 40×40 at left 340px viewport = 320px in header */}
+            <div
+              className="cursor-pointer"
+              style={{
+                position: 'absolute',
+                width: '40px',
+                height: '40px',
+                left: '320px',
+                top: 0,
+              }}
+              onClick={withClickGuard(() => {
                   setClickedButton('plane');
                   setTimeout(() => setClickedButton(null), 300);
                   handlePlaneClick();
@@ -1010,15 +1031,10 @@ function Frame3Content() {
                 </div>
               </div>
             </div>
-          </div>
-        </div>
       )}
         </div>
 
-      {/* Spacer: прижимает кнопки и карусель к низу */}
-      <div className="flex-1 min-h-0" aria-hidden />
-
-      {/* HintTooltip */}
+      {/* HintTooltip — Figma Group 7585: left 175px top 120px */}
       {hintStep !== 'none' && !showFavoritesMode && (
         <HintTooltip
           text={hintStep === 'consultation' ? 'Консультация, это здесь' : 'Фильтрация, это здесь'}
@@ -1028,193 +1044,110 @@ function Frame3Content() {
         />
       )}
 
-      {/* Toast уведомление для избранного */}
       <FavoriteToast
         isVisible={showFavoriteToast}
         onClose={() => setShowFavoriteToast(false)}
       />
 
-      {/* Контейнер для кнопок управления — иконка сброса по левому краю карточки тарифа */}
-      <div
-        className="relative w-full pr-5 flex justify-between items-center"
-        style={{
-          marginBottom: '15px',
-        }}
-      >
-        {/* Кнопка отмены фильтрации — по левому краю */}
-        {isFilterActive && !showFavoritesMode ? (
+      {/* Group 7509 — Arrow: 40×40 left 340px top 230px, rotate -90deg */}
+      {!showFavoritesMode && (
+        <div
+          className="cursor-pointer"
+          style={{
+            position: 'absolute',
+            width: '40px',
+            height: '40px',
+            left: '340px',
+            top: '230px',
+            zIndex: 5,
+          }}
+          onClick={withClickGuard((e) => {
+            e.stopPropagation();
+            handleScrollRight();
+          })}
+          onMouseDown={() => setIsArrowPressed(true)}
+          onMouseUp={() => setIsArrowPressed(false)}
+          onMouseLeave={() => setIsArrowPressed(false)}
+          onTouchStart={() => setIsArrowPressed(true)}
+          onTouchEnd={() => setIsArrowPressed(false)}
+        >
           <div
-            className="cursor-pointer"
+            className="w-full h-full flex items-center justify-center relative overflow-hidden"
             style={{
-              width: '40px',
-              height: '40px',
-            }}
-            onClick={withClickGuard(handleClearFilters)}
-            onMouseDown={() => setIsClearFilterPressed(true)}
-            onMouseUp={() => setIsClearFilterPressed(false)}
-            onMouseLeave={() => setIsClearFilterPressed(false)}
-            onTouchStart={() => setIsClearFilterPressed(true)}
-            onTouchEnd={() => setIsClearFilterPressed(false)}
-          >
-            <div
-              className="w-full h-full flex items-center justify-center"
-              style={{
-                background: '#FFFFFF',
-                borderRadius: '100px',
-                transform: isClearFilterPressed ? 'scale(0.92)' : 'scale(1)',
-                transition: 'transform 0.15s ease-out',
-              }}
-            >
-              <ClearFilterIcon />
-            </div>
-          </div>
-        ) : (
-          <div style={{ width: '40px' }} />
-        )}
-
-        {/* Кнопка скролла вправо */}
-        {showFavoritesMode ? (
-          <div
-            className="flex items-center"
-            style={{
-              width: '76px',
-              height: '40px',
               background: '#FFFFFF',
               borderRadius: '100px',
-              padding: '0 8px',
-              boxSizing: 'border-box',
-              justifyContent: 'space-between',
-              gap: '2px',
+              transform: isArrowPressed ? 'scale(0.85)' : 'scale(1)',
+              transition: 'transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)',
             }}
-            onClick={(e) => e.stopPropagation()}
           >
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '24px',
-                height: '24px',
-              }}
-            >
-              <HeartFilledIcon />
-            </div>
-
-            <div
-              className="cursor-pointer"
-              style={{
-                width: '28px',
-                height: '28px',
-              }}
-              onClick={withClickGuard((e) => {
-                e.stopPropagation();
-                handleScrollRight();
-              })}
-              onMouseDown={() => setIsArrowPressed(true)}
-              onMouseUp={() => setIsArrowPressed(false)}
-              onMouseLeave={() => setIsArrowPressed(false)}
-              onTouchStart={() => setIsArrowPressed(true)}
-              onTouchEnd={() => setIsArrowPressed(false)}
-            >
+            {arrowClicked && (
               <div
-                className="w-full h-full flex items-center justify-center relative overflow-hidden"
                 style={{
-                  background: '#FFFFFF',
+                  position: 'absolute',
+                  width: '100%',
+                  height: '100%',
                   borderRadius: '100px',
-                  transform: isArrowPressed ? 'scale(0.85)' : 'scale(1)',
-                  transition: 'transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                  background: 'rgba(16, 16, 16, 0.1)',
+                  animation: 'ripple 0.4s ease-out',
                 }}
-              >
-                {arrowClicked && (
-                  <div
-                    style={{
-                      position: 'absolute',
-                      width: '100%',
-                      height: '100%',
-                      borderRadius: '999px',
-                      background: 'rgba(16, 16, 16, 0.1)',
-                      animation: 'ripple 0.4s ease-out',
-                    }}
-                  />
-                )}
-                <div
-                  style={{
-                    position: 'relative',
-                    zIndex: 1,
-                    transition: 'transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)',
-                    transform: isArrowPressed
-                      ? 'scale(1.1) rotate(-5deg)'
-                      : arrowClicked
-                        ? 'scale(1.15)'
-                        : 'scale(1)',
-                  }}
-                >
-                  <ArrowCircleRightIcon
-                    color={arrowClicked ? '#4A90E2' : '#101010'}
-                    isAnimating={arrowClicked}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        ) : (
-          <div
-            className="cursor-pointer"
-            style={{
-              width: '40px',
-              height: '40px',
-            }}
-            onClick={withClickGuard((e) => {
-              e.stopPropagation();
-              handleScrollRight();
-            })}
-            onMouseDown={() => setIsArrowPressed(true)}
-            onMouseUp={() => setIsArrowPressed(false)}
-            onMouseLeave={() => setIsArrowPressed(false)}
-            onTouchStart={() => setIsArrowPressed(true)}
-            onTouchEnd={() => setIsArrowPressed(false)}
-          >
+              />
+            )}
             <div
-              className="w-full h-full flex items-center justify-center relative overflow-hidden"
               style={{
-                background: '#FFFFFF',
-                borderRadius: '100px',
-                transform: isArrowPressed ? 'scale(0.85)' : 'scale(1)',
+                position: 'relative',
+                zIndex: 1,
+                transform: 'rotate(-90deg)',
                 transition: 'transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)',
               }}
             >
-              {arrowClicked && (
-                <div
-                  style={{
-                    position: 'absolute',
-                    width: '100%',
-                    height: '100%',
-                    borderRadius: '100px',
-                    background: 'rgba(16, 16, 16, 0.1)',
-                    animation: 'ripple 0.4s ease-out',
-                  }}
-                />
-              )}
-              <div
-                style={{
-                  position: 'relative',
-                  zIndex: 1,
-                  transition: 'transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)',
-                  transform: isArrowPressed ? 'scale(1.1) rotate(-5deg)' : arrowClicked ? 'scale(1.15)' : 'scale(1)',
-                }}
-              >
-                <ArrowCircleRightIcon color={arrowClicked ? '#4A90E2' : '#101010'} isAnimating={arrowClicked} />
-              </div>
+              <ArrowCircleRightIcon color={arrowClicked ? '#4A90E2' : '#101010'} isAnimating={arrowClicked} />
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
-      {/* Контейнер для карточек — отступ 20px от низа */}
+      {/* Кнопка сброса фильтра — left 20px top 230px (рядом со стрелкой по макету нет, оставляем для UX) */}
+      {isFilterActive && !showFavoritesMode && (
+        <div
+          className="cursor-pointer"
+          style={{
+            position: 'absolute',
+            width: '40px',
+            height: '40px',
+            left: '20px',
+            top: '230px',
+            zIndex: 5,
+          }}
+          onClick={withClickGuard(handleClearFilters)}
+          onMouseDown={() => setIsClearFilterPressed(true)}
+          onMouseUp={() => setIsClearFilterPressed(false)}
+          onMouseLeave={() => setIsClearFilterPressed(false)}
+          onTouchStart={() => setIsClearFilterPressed(true)}
+          onTouchEnd={() => setIsClearFilterPressed(false)}
+        >
+          <div
+            className="w-full h-full flex items-center justify-center"
+            style={{
+              background: '#FFFFFF',
+              borderRadius: '100px',
+              transform: isClearFilterPressed ? 'scale(0.92)' : 'scale(1)',
+              transition: 'transform 0.15s ease-out',
+            }}
+          >
+            <ClearFilterIcon />
+          </div>
+        </div>
+      )}
+
+      {/* Rectangle 30 — карточка: left 5% right 5% top 32.18% bottom 16.67%, 360×445px */}
       <div
-        className="relative w-full"
         style={{
-          marginBottom: '20px',
+          position: 'absolute',
+          left: '20px',
+          top: '280px',
+          width: '360px',
+          height: '445px',
+          zIndex: 1,
         }}
         onClick={(e) => {
           if (showFavoritesMode && e.target === e.currentTarget) {
@@ -1224,10 +1157,10 @@ function Frame3Content() {
           }
         }}
       >
-        {/* Горизонтальный скролл с карточками — в режиме избранного клик по пустому месту закрывает */}
+        {/* Горизонтальный скролл с карточками — 360×445, gap 5px */}
         <div
           ref={scrollRef}
-          className="flex overflow-x-auto scrollbar-hide flex-nowrap carousel-container"
+          className="flex overflow-x-auto scrollbar-hide flex-nowrap carousel-container h-full"
           style={{
             gap: '5px',
             scrollSnapType: 'x mandatory',
@@ -1245,8 +1178,9 @@ function Frame3Content() {
             <div
               className="flex-shrink-0"
               style={{
+                width: '360px',
                 minWidth: '360px',
-                flex: '1 0 0',
+                minHeight: '445px',
                 background: '#FFFFFF',
                 borderRadius: '20px',
                 display: 'flex',
@@ -1264,8 +1198,9 @@ function Frame3Content() {
             <div
               className="flex-shrink-0"
               style={{
+                width: '360px',
                 minWidth: '360px',
-                flex: '1 0 0',
+                minHeight: '445px',
                 background: '#FFFFFF',
                 borderRadius: '20px',
                 display: 'flex',
@@ -1283,8 +1218,9 @@ function Frame3Content() {
             <div
               className="flex-shrink-0"
               style={{
+                width: '360px',
                 minWidth: '360px',
-                flex: '1 0 0',
+                minHeight: '445px',
                 background: '#FFFFFF',
                 borderRadius: '20px',
                 display: 'flex',
@@ -1314,8 +1250,9 @@ function Frame3Content() {
                 className="flex-shrink-0"
                 style={{
                   position: 'relative',
-                  minWidth: '385px',
-                  flex: '1 0 0',
+                  width: '360px',
+                  minWidth: '360px',
+                  minHeight: '445px',
                   background: '#FFFFFF',
                   borderRadius: '20px',
                   scrollSnapAlign: 'start',
@@ -1325,10 +1262,9 @@ function Frame3Content() {
                   flexDirection: 'column',
                 }}
               >
-                {/* Заголовок */}
+                {/* Group 7572: left 35px top 295 viewport → 15px from card, 15px from card top */}
                 <div style={{ padding: '15px 15px 0 15px', flexShrink: 0 }}>
-                  {/* Провайдер с Info icon */}
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '5px' }}>
+                  <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '5px' }}>
                     <div
                       style={{
                         fontFamily: 'TT Firs Neue, sans-serif',
@@ -1340,12 +1276,10 @@ function Frame3Content() {
                     >
                       {tariff.providerName}
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <div style={{ width: '16px', height: '16px', flexShrink: 0 }}>
                       <InfoIcon />
                     </div>
                   </div>
-
-                  {/* Название тарифа */}
                   <div
                     style={{
                       fontFamily: 'TT Firs Neue, sans-serif',
@@ -1357,24 +1291,23 @@ function Frame3Content() {
                   >
                     {tariff.tariffName}
                   </div>
-
-                  {/* Line 8 - Разделитель после заголовка */}
+                  {/* Line 8: top 75px from card → marginTop 18px (15+20+18≈53+22 line) */}
                   <div
                     style={{
-                      marginTop: '15px',
+                      marginTop: '18px',
                       height: '1px',
                       background: 'rgba(16, 16, 16, 0.1)',
+                      width: '330px',
                     }}
                   />
                 </div>
 
-                {/* Контентная область — flex: 1 тянет вниз футер с кнопками */}
-                <div style={{ padding: '10px 15px', flex: 1, minHeight: 0 }}>
-                  {/* Список услуг */}
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                    {/* Скорость */}
-                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', flexShrink: 0, marginTop: '2px' }}>
+                {/* Контент: left 35px viewport = 15px padding, Group 7574/7573/7499/7575 — gap 5px */}
+                <div style={{ padding: '10px 15px 0 15px', flex: 1, minHeight: 0 }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+                    {/* Скорость — 16px 155%, подпись 14px 105% */}
+                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '9px' }}>
+                      <div style={{ width: '16px', height: '16px', flexShrink: 0, marginTop: '2px' }}>
                         <CheckCircleIcon />
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
@@ -1410,9 +1343,9 @@ function Frame3Content() {
                       </div>
                     </div>
 
-                    {/* Каналы — всегда одна строка, только цифры разные */}
-                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', flexShrink: 0, marginTop: '2px' }}>
+                    {/* Каналы — 16px 155%, 14px 105% */}
+                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '9px' }}>
+                      <div style={{ width: '16px', height: '16px', flexShrink: 0, marginTop: '2px' }}>
                         <CheckCircleIcon />
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
@@ -1448,9 +1381,9 @@ function Frame3Content() {
                       </div>
                     </div>
 
-                    {/* Мобильная связь — всегда одна строка */}
-                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', flexShrink: 0, marginTop: '2px' }}>
+                    {/* Мобильная связь — 16px 155%, 14px 105% */}
+                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '9px' }}>
+                      <div style={{ width: '16px', height: '16px', flexShrink: 0, marginTop: '2px' }}>
                         <CheckCircleIcon />
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
@@ -1486,9 +1419,9 @@ function Frame3Content() {
                       </div>
                     </div>
 
-                    {/* Дополнительное приложение (Кинотеатр) — всегда одна строка */}
-                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', flexShrink: 0, marginTop: '2px' }}>
+                    {/* Кинотеатр / доп. приложение — 16px 155%, 14px 105% */}
+                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '9px' }}>
+                      <div style={{ width: '16px', height: '16px', flexShrink: 0, marginTop: '2px' }}>
                         <CheckCircleIcon />
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
@@ -1609,9 +1542,9 @@ function Frame3Content() {
                     {tariff.connectionPrice}
                   </div>
 
-                  {/* Кнопки */}
-                  <div style={{ display: 'flex', gap: '10px' }}>
-                    {/* Кнопка избранное (сердечко) — как во Frame1/Frame4: type="button" для надёжного клика */}
+                  {/* Group 7571: 330×50, heart 50×50 left, gap 5px, Подключить flex:1 — Figma 8.75% 78.75% / 22.5% 8.75% */}
+                  <div style={{ display: 'flex', gap: '5px' }}>
+                    {/* Кнопка избранное (сердечко) — 50×50, border 1px solid rgba(16,16,16,0.1) */}
                     <button
                       type="button"
                       onClick={(e) => {
@@ -1731,7 +1664,6 @@ function Frame3Content() {
         }}
         onApply={handleFilterApply}
       />
-      </div>
     </div>
   );
 }

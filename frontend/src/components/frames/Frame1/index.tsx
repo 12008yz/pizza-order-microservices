@@ -251,21 +251,18 @@ function AddressFormContent() {
 
   return (
     <div
-      className="fixed inset-0 z-[9999] flex items-start justify-center bg-[#F5F5F5] overflow-hidden"
+      className="fixed inset-0 z-[9999] flex flex-col items-center bg-[#F5F5F5] overflow-y-auto overflow-x-hidden"
       style={{
         paddingTop: 'var(--sat, 0px)',
-        paddingBottom: 'var(--sab, 0px)',
+        paddingBottom: 'max(20px, env(safe-area-inset-bottom, 0px))',
       }}
     >
-      {/* Основной контейнер: 400×870 по макету, фон #F5F5F5 */}
+      {/* Контейнер 400px — строго по макету Figma, без масштабирования */}
       <div
-        className="relative w-full max-w-[400px] flex flex-col bg-[#F5F5F5]"
-        style={{
-          minHeight: 'max(870px, 100dvh)',
-          height: '100dvh',
-        }}
+        className="relative w-full max-w-[400px] flex flex-col bg-[#F5F5F5] min-h-full"
+        style={{ minHeight: 0, paddingBottom: '20px', boxSizing: 'border-box' }}
       >
-        {/* Хедер: иконки 75px сверху, лого 90px. Резерв по высоте 115px */}
+        {/* Хедер: иконки 75px сверху, лого 90px */}
         <div
           className="flex-shrink-0 relative"
           style={{ minHeight: '115px' }}
@@ -284,8 +281,8 @@ function AddressFormContent() {
             right: '20px',
             top: '100px',
             borderRadius: '20px',
-              padding: '15px',
-            }}
+            padding: '20px',
+          }}
           >
             {/* Текст таймера */}
             <div
@@ -307,7 +304,7 @@ function AddressFormContent() {
                 fontSize: '14px',
                 lineHeight: '105%',
                 color: '#101010',
-                paddingRight: '20px',
+                paddingRight: '24px',
               }}
             >
               Если продолжаете использовать этот портал, вы выражаете согласие на использование
@@ -330,8 +327,8 @@ function AddressFormContent() {
               style={{
                 width: '16px',
                 height: '16px',
-                right: '15px',
-                top: '15px',
+                right: '20px',
+                top: '20px',
               }}
             >
               <X size={16} weight="regular" color="rgba(16, 16, 16, 0.25)" />
@@ -339,22 +336,22 @@ function AddressFormContent() {
           </div>
         )}
 
-        {/* Белая карточка: отступы 20px (5%), top 230px (26.44%), ширина 360px, padding 15px */}
+        {/* Белая карточка: отступы по бокам 20px, сверху адаптивно (230px на высоких экранах), снизу 20px */}
         <div
-          className="bg-white flex flex-col flex-1"
+          className="frame1-card bg-white flex flex-col flex-shrink-0"
           style={{
             marginLeft: '20px',
             marginRight: '20px',
-            marginTop: '230px',
+            marginTop: 'clamp(24px, 12vh, 229px)',
             marginBottom: '20px',
             width: '360px',
             maxWidth: 'calc(100% - 40px)',
             borderRadius: '20px',
-            padding: '15px',
+            padding: '20px',
             boxSizing: 'border-box',
           }}
         >
-          {/* Заголовок: 28.16% ≈ 245px от экрана (230+15), 20px, line-height 125%, отступ до бейджа 60px */}
+          {/* Заголовок: отступ до полей адаптивный (20px на высоких экранах) */}
           <h1
             style={{
               fontFamily: 'TT Firs Neue, sans-serif',
@@ -363,51 +360,12 @@ function AddressFormContent() {
               lineHeight: '125%',
               color: '#101010',
               margin: 0,
-              marginBottom: '60px',
+              marginBottom: 'clamp(6px, 1.5vh, 20px)',
               flexShrink: 0,
             }}
           >
             Маркетплейс тарифных планов операторов на твоём адресе. Бесплатно и легко заказать
           </h1>
-
-          {/* Бейдж: 35px от экрана = от края карточки 15px, top 330px, 240×30, зелёная точка 8×8 */}
-          <div
-            style={{
-              marginBottom: '10px',
-              width: '240px',
-              height: '30px',
-              borderRadius: '20px',
-              border: '1px solid rgba(16,16,16,0.1)',
-              display: 'flex',
-              alignItems: 'center',
-              paddingLeft: '11px',
-              paddingRight: '12px',
-              boxSizing: 'border-box',
-              flexShrink: 0,
-            }}
-          >
-            <span
-              style={{
-                width: '8px',
-                height: '8px',
-                borderRadius: '50%',
-                background: '#00FF55',
-                boxShadow: '0 0 8px rgba(0,255,85,0.5)',
-                flexShrink: 0,
-                marginRight: '8px',
-              }}
-            />
-            <span
-              style={{
-                fontFamily: 'TT Firs Neue, sans-serif',
-                fontSize: '14px',
-                lineHeight: '145%',
-                color: '#101010',
-              }}
-            >
-              Мы всегда на связи, а вы как?
-            </span>
-          </div>
 
           {/* Контейнер полей: gap 5px, ширина 330px (35+330+35=400) */}
           <div className="flex flex-col flex-shrink-0" style={{ gap: '5px' }}>
@@ -654,12 +612,12 @@ function AddressFormContent() {
               </div>
             </div>
 
-            {/* Чекбокс с политикой: top 67.82% ≈ 590px, gap от полей 5px */}
-            <div className="flex-shrink-0" style={{ marginTop: '5px' }}>
+            {/* Чекбокс с политикой: gap от полей адаптивный */}
+            <div className="flex-shrink-0" style={{ marginTop: 'clamp(3px, 0.5vh, 5px)' }}>
               <PrivacyConsent />
             </div>
 
-            {/* Кнопка: top 75.86% ≈ 660px, отступ от чекбокса 20px */}
+            {/* Кнопка: отступ от чекбокса адаптивный (20px на высоких экранах) */}
             <button
               onClick={handleSubmit}
               onMouseDown={() => setIsSubmitPressed(true)}
@@ -679,7 +637,7 @@ function AddressFormContent() {
                 color: '#FFFFFF',
                 transform: isSubmitPressed ? 'scale(0.97)' : 'scale(1)',
                 transition: 'transform 0.15s ease-out',
-                marginTop: '20px',
+                marginTop: 'clamp(6px, 1.5vh, 20px)',
               }}
             >
               Показать всех операторов

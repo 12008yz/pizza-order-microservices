@@ -40,9 +40,11 @@ export default function NumberInput({
 
   return (
     <div
-      className={`flex items-center border border-[rgba(16,16,16,0.25)] rounded-[10px] bg-white ${className}`}
+      className={`flex items-center rounded-[10px] bg-white box-border ${className}`}
       style={{
         height: '50px',
+        minHeight: '50px',
+        border: '1px solid rgba(16,16,16,0.25)',
       }}
     >
       {/* Decrease button */}
@@ -69,10 +71,12 @@ export default function NumberInput({
         min={min}
         max={max}
         step={step}
-        className="flex-1 text-center font-normal text-base leading-[125%] bg-transparent outline-none"
+        className="flex-1 text-center bg-transparent outline-none"
         style={{
+          fontFamily: 'TT Firs Neue, sans-serif',
+          fontSize: '16px',
+          lineHeight: '125%',
           color: '#101010',
-          letterSpacing: '0.5px',
         }}
       />
 

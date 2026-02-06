@@ -44,7 +44,7 @@ export default function SortingModal({
         background: '#F5F5F5',
         backdropFilter: 'blur(12.5px)',
         paddingTop: 'var(--sat, 0px)',
-        paddingBottom: 'var(--sab, 0px)',
+        paddingBottom: 'max(20px, env(safe-area-inset-bottom, 0px))',
         height: '100dvh',
         boxSizing: 'border-box',
       }}
@@ -82,14 +82,13 @@ export default function SortingModal({
 
         {/* Карточка — компактная, прижата вниз с отступом 20px */}
         <div
-          className="flex flex-col rounded-[20px] bg-white mx-[5%]"
+          className="flex flex-col frame-card mx-[5%]"
           style={{
             maxWidth: '360px',
             marginLeft: 'auto',
             marginRight: 'auto',
             marginTop: 'auto',
             marginBottom: '20px',
-            padding: '15px',
           }}
           onClick={(e) => e.stopPropagation()}
         >

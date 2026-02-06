@@ -75,8 +75,8 @@ function ProvidersContent() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F5F5F5] py-8 px-4">
-      <div className="max-w-4xl mx-auto">
+    <div className="frame-container min-h-screen bg-[#F5F5F5] py-8 overflow-y-auto overflow-x-hidden" style={{ paddingLeft: '20px', paddingRight: '20px', paddingTop: 'var(--sat, 0px)' }}>
+      <div className="w-full max-w-[400px] mx-auto">
         {/* Заголовок */}
         <div className="mb-8">
           <button

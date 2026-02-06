@@ -17,17 +17,19 @@ const ConsultationFlow = dynamic(() => import('../Frame2/ConsultationFlow'), {
   ssr: false,
 });
 
-/** Стрелка: active — чёрный круг + белая стрелка; не active — белый круг + чёрная стрелка */
-function FieldArrowIcon({ active }: { active: boolean }) {
+/** Стрелка: error — красный круг + белая стрелка; active — чёрный круг + белая; не active — белый круг + чёрная */
+function FieldArrowIcon({ active, error }: { active: boolean; error?: boolean }) {
+  const circleFill = error ? 'rgb(239, 68, 68)' : active ? '#000000' : '#FFFFFF';
+  const arrowFill = error || active ? '#FFFFFF' : '#101010';
   return (
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path
         d="M0 8C0 9.58225 0.469192 11.129 1.34824 12.4446C2.22729 13.7602 3.47672 14.7855 4.93853 15.391C6.40034 15.9965 8.00887 16.155 9.56072 15.8463C11.1126 15.5376 12.538 14.7757 13.6569 13.6569C14.7757 12.538 15.5376 11.1126 15.8463 9.56072C16.155 8.00887 15.9965 6.40034 15.391 4.93853C14.7855 3.47672 13.7602 2.22729 12.4446 1.34824C11.129 0.469192 9.58225 0 8 0C5.87895 0.00224088 3.84542 0.845815 2.34562 2.34562C0.845813 3.84543 0.00223942 5.87895 0 8Z"
-        fill={active ? '#000000' : '#FFFFFF'}
+        fill={circleFill}
       />
       <path
         d="M7.20461 4.48769L10.2815 7.56461C10.3388 7.62177 10.3841 7.68964 10.4151 7.76434C10.4461 7.83905 10.462 7.91913 10.462 8C10.462 8.08087 10.4461 8.16095 10.4151 8.23565C10.3841 8.31036 10.3388 8.37823 10.2815 8.43538L7.20461 11.5123C7.08914 11.6278 6.93253 11.6926 6.76923 11.6926C6.60593 11.6926 6.44932 11.6278 6.33384 11.5123C6.21837 11.3968 6.1535 11.2402 6.1535 11.0769C6.1535 10.9136 6.21837 10.757 6.33384 10.6415L8.97615 8L6.33384 5.35846C6.27667 5.30129 6.23132 5.23341 6.20037 5.1587C6.16943 5.084 6.1535 5.00393 6.1535 4.92308C6.1535 4.84222 6.16943 4.76215 6.20037 4.68745C6.23132 4.61274 6.27667 4.54487 6.33384 4.48769C6.39102 4.43052 6.4589 4.38516 6.5336 4.35422C6.6083 4.32328 6.68837 4.30735 6.76923 4.30735C6.85009 4.30735 6.93015 4.32328 7.00486 4.35422C7.07956 4.38516 7.14744 4.43052 7.20461 4.48769Z"
-        fill={active ? '#FFFFFF' : '#101010'}
+        fill={arrowFill}
       />
     </svg>
   );
@@ -120,8 +122,7 @@ function AddressFormContent() {
 
   const handleSubmit = async () => {
     setSubmitError(null);
-    clearErrors();
-
+    // Не сбрасываем ошибки — при невалидной форме показываем красную обводку и стрелочки в полях
     if (!validateForm()) {
       return;
     }
@@ -442,10 +443,10 @@ function AddressFormContent() {
                 border: addressData.errors.connectionType || addressData.connectionType || isFieldActive(0) ? 'none' : '1px solid rgba(16, 16, 16, 0.5)',
               }}
             >
-              {addressData.connectionType ? (
+              {addressData.connectionType && !addressData.errors.connectionType ? (
                 <AnimatedCheck key={`connection-${addressData.connectionType}`} size={8} color="#FFFFFF" strokeWidth={1.5} />
               ) : (
-                <FieldArrowIcon active={isFieldActive(0) || !!addressData.errors.connectionType} />
+                <FieldArrowIcon active={isFieldActive(0) || !!addressData.errors.connectionType} error={!!addressData.errors.connectionType} />
               )}
             </div>
           </div>
@@ -503,10 +504,10 @@ function AddressFormContent() {
                 border: addressData.errors.city || addressData.city || isFieldActive(1) ? 'none' : '1px solid rgba(16, 16, 16, 0.5)',
               }}
             >
-              {addressData.city ? (
+              {addressData.city && !addressData.errors.city ? (
                 <AnimatedCheck key={`city-${addressData.city}`} size={8} color="#FFFFFF" strokeWidth={1.5} />
               ) : (
-                <FieldArrowIcon active={isFieldActive(1) || !!addressData.errors.city} />
+                <FieldArrowIcon active={isFieldActive(1) || !!addressData.errors.city} error={!!addressData.errors.city} />
               )}
             </div>
           </div>
@@ -565,10 +566,10 @@ function AddressFormContent() {
                 border: addressData.errors.street || addressData.street || isFieldActive(2) ? 'none' : '1px solid rgba(16, 16, 16, 0.5)',
               }}
             >
-              {addressData.street ? (
+              {addressData.street && !addressData.errors.street ? (
                 <AnimatedCheck key={`street-${addressData.street}`} size={8} color="#FFFFFF" strokeWidth={1.5} />
               ) : (
-                <FieldArrowIcon active={isFieldActive(2) || !!addressData.errors.street} />
+                <FieldArrowIcon active={isFieldActive(2) || !!addressData.errors.street} error={!!addressData.errors.street} />
               )}
             </div>
           </div>
@@ -629,10 +630,10 @@ function AddressFormContent() {
                 border: addressData.errors.houseNumber || addressData.houseNumber || isFieldActive(3) ? 'none' : '1px solid rgba(16, 16, 16, 0.5)',
               }}
             >
-              {addressData.houseNumber ? (
+              {addressData.houseNumber && !addressData.errors.houseNumber ? (
                 <AnimatedCheck key={`house-${addressData.houseNumber}-${addressData.apartmentNumber ?? ''}`} size={8} color="#FFFFFF" strokeWidth={1.5} />
               ) : (
-                <FieldArrowIcon active={isFieldActive(3) || !!addressData.errors.houseNumber} />
+                <FieldArrowIcon active={isFieldActive(3) || !!addressData.errors.houseNumber} error={!!addressData.errors.houseNumber} />
               )}
             </div>
           </div>

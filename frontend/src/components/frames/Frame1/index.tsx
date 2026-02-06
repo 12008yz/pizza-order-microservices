@@ -251,7 +251,7 @@ function AddressFormContent() {
 
   return (
     <div
-      className="fixed inset-0 z-[9999] flex flex-col items-center bg-[#F5F5F5] overflow-hidden"
+      className="fixed inset-0 z-[9999] flex flex-col items-center bg-[#F5F5F5] overflow-y-auto overflow-x-hidden"
       style={{
         paddingTop: 'var(--sat, 0px)',
         paddingBottom: 'max(20px, env(safe-area-inset-bottom, 0px))',
@@ -259,7 +259,7 @@ function AddressFormContent() {
     >
       {/* Контейнер 400px — строго по макету Figma, без масштабирования */}
       <div
-        className="relative w-full max-w-[400px] flex flex-col bg-[#F5F5F5] h-full overflow-hidden"
+        className="relative w-full max-w-[400px] flex flex-col bg-[#F5F5F5] min-h-full"
         style={{ minHeight: 0, paddingBottom: '20px', boxSizing: 'border-box' }}
       >
         {/* Хедер: иконки 75px сверху, лого 90px */}
@@ -336,13 +336,13 @@ function AddressFormContent() {
           </div>
         )}
 
-        {/* Белая карточка: отступы по бокам 20px, сверху по макету, снизу 20px от браузерной строки */}
+        {/* Белая карточка: отступы по бокам 20px, сверху адаптивно (230px на высоких экранах), снизу 20px */}
         <div
-          className="bg-white flex flex-col flex-shrink-0"
+          className="frame1-card bg-white flex flex-col flex-shrink-0"
           style={{
             marginLeft: '20px',
             marginRight: '20px',
-            marginTop: '230px',
+            marginTop: 'clamp(24px, 12vh, 229px)',
             marginBottom: '20px',
             width: '360px',
             maxWidth: 'calc(100% - 40px)',
@@ -351,7 +351,7 @@ function AddressFormContent() {
             boxSizing: 'border-box',
           }}
         >
-          {/* Заголовок: 20px, line-height 125%, отступ до полей 20px */}
+          {/* Заголовок: отступ до полей адаптивный (20px на высоких экранах) */}
           <h1
             style={{
               fontFamily: 'TT Firs Neue, sans-serif',
@@ -360,7 +360,7 @@ function AddressFormContent() {
               lineHeight: '125%',
               color: '#101010',
               margin: 0,
-              marginBottom: '20px',
+              marginBottom: 'clamp(6px, 1.5vh, 20px)',
               flexShrink: 0,
             }}
           >
@@ -612,12 +612,12 @@ function AddressFormContent() {
               </div>
             </div>
 
-            {/* Чекбокс с политикой: top 67.82% ≈ 590px, gap от полей 5px */}
-            <div className="flex-shrink-0" style={{ marginTop: '5px' }}>
+            {/* Чекбокс с политикой: gap от полей адаптивный */}
+            <div className="flex-shrink-0" style={{ marginTop: 'clamp(3px, 0.5vh, 5px)' }}>
               <PrivacyConsent />
             </div>
 
-            {/* Кнопка: top 75.86% ≈ 660px, отступ от чекбокса 20px */}
+            {/* Кнопка: отступ от чекбокса адаптивный (20px на высоких экранах) */}
             <button
               onClick={handleSubmit}
               onMouseDown={() => setIsSubmitPressed(true)}
@@ -637,7 +637,7 @@ function AddressFormContent() {
                 color: '#FFFFFF',
                 transform: isSubmitPressed ? 'scale(0.97)' : 'scale(1)',
                 transition: 'transform 0.15s ease-out',
-                marginTop: '20px',
+                marginTop: 'clamp(6px, 1.5vh, 20px)',
               }}
             >
               Показать всех операторов

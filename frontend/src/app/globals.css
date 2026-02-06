@@ -74,6 +74,13 @@ body {
   padding-right: var(--sar);
 }
 
+/* Frame1: на высоких экранах (как в Figma) — фиксированный отступ карточки сверху */
+@media (min-height: 868px) {
+  .frame1-card {
+    margin-top: 230px !important;
+  }
+}
+
 /* Frame4 — появление контента при смене шага */
 @keyframes frame4StepIn {
   from {

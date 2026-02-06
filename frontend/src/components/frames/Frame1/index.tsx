@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { CaretRight, X } from '@phosphor-icons/react';
 import { AddressProvider, useAddress, ConnectionType } from '../../../contexts/AddressContext';
@@ -34,6 +34,36 @@ function AddressFormContent() {
   const [loadingProgress, setLoadingProgress] = useState(0);
 
   const [isSubmitPressed, setIsSubmitPressed] = useState(false);
+  const [scale, setScale] = useState(1);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Масштаб под высоту экрана: всё вмещается без скролла
+  useEffect(() => {
+    const DESIGN_H = 870;
+    const updateScale = () => {
+      const vh = typeof window !== 'undefined' && window.visualViewport
+        ? window.visualViewport.height
+        : typeof window !== 'undefined'
+          ? window.innerHeight
+          : DESIGN_H;
+      const safeTop = typeof document !== 'undefined'
+        ? parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--sat')) || 0
+        : 0;
+      const safeBottom = 20;
+      const available = vh - safeTop - safeBottom - 20;
+      const s = Math.min(1, Math.max(0.5, available / DESIGN_H));
+      setScale(s);
+    };
+    updateScale();
+    if (typeof window !== 'undefined') {
+      window.visualViewport?.addEventListener('resize', updateScale);
+      window.addEventListener('resize', updateScale);
+      return () => {
+        window.visualViewport?.removeEventListener('resize', updateScale);
+        window.removeEventListener('resize', updateScale);
+      };
+    }
+  }, []);
 
   useEffect(() => {
     if (showCookieBanner && cookieTimer > 0) {
@@ -249,22 +279,36 @@ function AddressFormContent() {
     );
   }
 
+  const DESIGN_H = 870;
+
   return (
     <div
-      className="fixed inset-0 z-[9999] flex flex-col items-center bg-[#F5F5F5] overflow-y-auto overflow-x-hidden"
+      ref={containerRef}
+      className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#F5F5F5] overflow-hidden"
       style={{
         paddingTop: 'var(--sat, 0px)',
         paddingBottom: 'max(20px, env(safe-area-inset-bottom, 0px))',
       }}
     >
-      {/* Основной контейнер: 400px, карточка 20px от верха (от хедера) и 20px от низа браузера */}
+      {/* Обёртка под масштаб: высота 870*scale, контент масштабируется и вмещается в экран */}
       <div
-        className="relative w-full max-w-[400px] flex flex-col bg-[#F5F5F5] flex-1 min-h-0"
+        className="flex flex-col flex-shrink-0 overflow-hidden"
         style={{
-          minHeight: '100dvh',
-          paddingBottom: '20px',
+          width: '100%',
+          maxWidth: '400px',
+          height: `${DESIGN_H * scale}px`,
         }}
       >
+        <div
+          className="relative w-full flex flex-col bg-[#F5F5F5] flex-shrink-0"
+          style={{
+            width: '100%',
+            maxWidth: '400px',
+            height: `${DESIGN_H}px`,
+            transform: `scale(${scale})`,
+            transformOrigin: 'top center',
+          }}
+        >
         {/* Хедер: иконки 75px сверху, лого 90px. Резерв по высоте 115px */}
         <div
           className="flex-shrink-0 relative"
@@ -648,6 +692,9 @@ function AddressFormContent() {
           </div>
         </div>
 
+        </div>
+        </div>
+
         <ConnectionTypeModal
           isOpen={showConnectionModal}
           onClose={() => setShowConnectionModal(false)}
@@ -662,7 +709,6 @@ function AddressFormContent() {
           onComplete={() => setShowAddressModal(false)}
           initialStep={addressModalStep}
         />
-      </div>
     </div>
   );
 }

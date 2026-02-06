@@ -339,13 +339,13 @@ function AddressFormContent() {
           </div>
         )}
 
-        {/* Белая карточка: 20px от хедера сверху, 20px от краёв по бокам, 20px от низа экрана (браузерной строки) */}
+        {/* Белая карточка: отступы по бокам 20px, сверху по макету, снизу 20px от браузерной строки */}
         <div
           className="bg-white flex flex-col flex-shrink-0"
           style={{
             marginLeft: '20px',
             marginRight: '20px',
-            marginTop: '20px',
+            marginTop: '230px',
             marginBottom: '20px',
             width: '360px',
             maxWidth: 'calc(100% - 40px)',

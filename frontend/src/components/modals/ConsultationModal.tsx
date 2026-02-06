@@ -19,7 +19,7 @@ export default function ConsultationModal({
   return (
     <div
       className="fixed inset-0 z-[10000] flex items-center justify-center bg-[#F5F5F5] backdrop-blur-[12.5px] overflow-y-auto overflow-x-hidden"
-      style={{ paddingTop: 'var(--sat, 0px)', paddingBottom: 'max(20px, env(safe-area-inset-bottom, 0px))' }}
+      style={{ paddingTop: 'var(--sat, 0px)', paddingBottom: 'calc(20px + env(safe-area-inset-bottom, 0px))' }}
     >
       <div
         className="bg-white rounded-[20px] p-6 max-w-[400px] w-full mx-4 overflow-y-auto"

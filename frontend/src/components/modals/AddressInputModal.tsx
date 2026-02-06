@@ -771,7 +771,7 @@ export default function AddressInputModal({
         opacity: isAnimating ? 1 : 0,
         transition: 'opacity 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
         paddingTop: 'var(--sat, 0px)',
-        paddingBottom: 'max(20px, env(safe-area-inset-bottom, 0px))',
+        paddingBottom: 'calc(20px + env(safe-area-inset-bottom, 0px))',
         height: '100dvh',
         boxSizing: 'border-box',
       }}
@@ -815,7 +815,7 @@ export default function AddressInputModal({
             marginLeft: 'auto',
             marginRight: 'auto',
             marginTop: 'auto',
-            marginBottom: '20px',
+            marginBottom: 0,
             backdropFilter: 'blur(7.5px)',
             maxHeight: 'min(480px, calc(100dvh - 145px))',
           }}

@@ -87,14 +87,13 @@ export default function FilterProvidersModal({
 
         {/* Карточка — компактная, прижата вниз с отступом 20px */}
         <div
-          className="flex flex-col rounded-[20px] bg-white mx-[5%]"
+          className="flex flex-col frame-card mx-[5%]"
           style={{
             maxWidth: '360px',
             marginLeft: 'auto',
             marginRight: 'auto',
             marginTop: 'auto',
             marginBottom: '20px',
-            padding: '15px',
             maxHeight: 'calc(100dvh - 145px)',
             overflow: 'hidden',
           }}
@@ -114,7 +113,7 @@ export default function FilterProvidersModal({
           </div>
 
           <div className="overflow-y-auto overflow-x-hidden" style={{ WebkitOverflowScrolling: 'touch' }}>
-            <div className="flex flex-col gap-[5px] pb-[10px]">
+            <div className="flex flex-col frame-fields-gap" style={{ paddingBottom: '10px' }}>
               {providers.map((provider) => (
                 <CheckboxOption
                   key={provider.id}

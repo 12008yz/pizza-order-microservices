@@ -139,11 +139,12 @@ export default function ConnectionTypeModal({
           </div>
         </div>
 
-        {/* Карточка — компактная, прижата вниз, не растягивается по высоте */}
+        {/* Карточка по макету: 20px отступы по бокам, 360px ширина, padding 20px, radius 20px */}
         <div
-          className="flex flex-col rounded-[20px] bg-white mx-[5%] flex-shrink-0"
+          className="flex flex-col frame-card flex-shrink-0"
           style={{
-            maxWidth: '360px',
+            width: '360px',
+            maxWidth: 'calc(100% - 40px)',
             marginLeft: 'auto',
             marginRight: 'auto',
             marginTop: 'auto',
@@ -154,7 +155,7 @@ export default function ConnectionTypeModal({
           }}
           onClick={(e) => e.stopPropagation()}
         >
-          <div className="flex-shrink-0 px-[15px] pt-[15px]">
+          <div className="flex-shrink-0">
             <div
               className="font-normal"
               style={{
@@ -167,32 +168,35 @@ export default function ConnectionTypeModal({
               Проверка тех. доступа
             </div>
             <div
-              className="font-normal pt-[15px]"
+              className="font-normal"
               style={{
+                marginTop: '12px',
                 fontFamily: 'TT Firs Neue, sans-serif',
                 fontSize: '14px',
                 lineHeight: '105%',
-                color: 'rgba(16, 16, 16, 0.25)',
+                color: 'rgba(16, 16, 16, 0.5)',
               }}
             >
               Мы подготовили доступные тарифные планы. Пожалуйста, проверьте правильность
             </div>
           </div>
 
-          {/* Опции типов подключения */}
-          <div className="overflow-y-auto overflow-x-hidden px-[15px] pt-[20px]" style={{ WebkitOverflowScrolling: 'touch' }}>
-            <div className="flex flex-col gap-[5px]">
+          {/* Опции типов подключения — gap 5px, поле 50px, padding 15/16 */}
+          <div className="overflow-y-auto overflow-x-hidden" style={{ marginTop: '20px', WebkitOverflowScrolling: 'touch' }}>
+            <div className="flex flex-col" style={{ gap: '5px' }}>
               {connectionTypes.map((type) => (
                 <div
                   key={type.value}
                   onClick={() => handleSelect(type.value)}
-                  className="rounded-[10px] flex items-center justify-between px-[15px] cursor-pointer"
+                  className="rounded-[10px] flex items-center justify-between cursor-pointer"
                   style={{
                     boxSizing: 'border-box',
                     minHeight: '50px',
                     height: '50px',
+                    paddingLeft: '15px',
+                    paddingRight: '16px',
                     border: selectedType === type.value
-                      ? '1px solid #101010'
+                      ? '1px solid rgba(16, 16, 16, 0.5)'
                       : '1px solid rgba(16, 16, 16, 0.25)',
                     transition: 'border-color 0.2s ease',
                   }}
@@ -225,17 +229,17 @@ export default function ConnectionTypeModal({
             </div>
           </div>
 
-          {/* Кнопки навигации */}
-          <div className="flex-shrink-0 flex gap-[10px] px-[15px] pb-[15px] pt-[10px]">
+          {/* Кнопки навигации — по макету: отступ сверху 20px, кнопки 50px, gap 10px */}
+          <div className="flex-shrink-0 flex gap-[10px]" style={{ marginTop: '20px' }}>
             <button
               onClick={onClose}
               className="rounded-[10px] flex items-center justify-center flex-shrink-0"
               style={{
                 boxSizing: 'border-box',
-                width: '48px',
-                height: '48px',
-                border: '1px solid rgba(16, 16, 16, 0.15)',
-                background: 'transparent',
+                width: '50px',
+                height: '50px',
+                border: '1px solid rgba(16, 16, 16, 0.25)',
+                background: '#fff',
                 cursor: 'pointer',
               }}
             >
@@ -244,15 +248,15 @@ export default function ConnectionTypeModal({
             <button
               onClick={handleNext}
               disabled={!selectedType}
-              className="flex-1 rounded-[10px] flex items-center justify-center text-center text-white min-h-[50px] disabled:cursor-not-allowed"
+              className="flex-1 rounded-[10px] flex items-center justify-center text-center text-white disabled:cursor-not-allowed"
               style={{
                 boxSizing: 'border-box',
+                height: '50px',
                 background: selectedType ? '#101010' : 'rgba(16, 16, 16, 0.25)',
-                border: '1px solid rgba(16, 16, 16, 0.25)',
+                border: 'none',
                 fontFamily: 'TT Firs Neue, sans-serif',
                 fontWeight: 400,
-                fontSize: '17px',
-                lineHeight: '315%',
+                fontSize: '16px',
                 cursor: selectedType ? 'pointer' : 'not-allowed',
                 transition: 'background-color 0.2s ease',
               }}

@@ -281,8 +281,8 @@ function AddressFormContent() {
             right: '20px',
             top: '100px',
             borderRadius: '20px',
-              padding: '15px',
-            }}
+            padding: '20px',
+          }}
           >
             {/* Текст таймера */}
             <div
@@ -304,7 +304,7 @@ function AddressFormContent() {
                 fontSize: '14px',
                 lineHeight: '105%',
                 color: '#101010',
-                paddingRight: '20px',
+                paddingRight: '24px',
               }}
             >
               Если продолжаете использовать этот портал, вы выражаете согласие на использование
@@ -327,8 +327,8 @@ function AddressFormContent() {
               style={{
                 width: '16px',
                 height: '16px',
-                right: '15px',
-                top: '15px',
+                right: '20px',
+                top: '20px',
               }}
             >
               <X size={16} weight="regular" color="rgba(16, 16, 16, 0.25)" />
@@ -347,7 +347,7 @@ function AddressFormContent() {
             width: '360px',
             maxWidth: 'calc(100% - 40px)',
             borderRadius: '20px',
-            padding: '15px',
+            padding: '20px',
             boxSizing: 'border-box',
           }}
         >

@@ -2,12 +2,32 @@
 @tailwind components;
 @tailwind utilities;
 
-/* CSS-переменные для safe-area */
+/* CSS-переменные для safe-area и макета 400px (пиксель в пиксель с Figma) */
 :root {
   --sat: env(safe-area-inset-top, 0px);
   --sar: env(safe-area-inset-right, 0px);
   --sab: env(safe-area-inset-bottom, 0px);
   --sal: env(safe-area-inset-left, 0px);
+  /* Макет 400px */
+  --frame-width: 400px;
+  --frame-side: 20px;
+  --frame-card-width: 360px;
+  --frame-card-radius: 20px;
+  --frame-card-padding: 20px;
+  --frame-field-height: 50px;
+  --frame-field-radius: 10px;
+  --frame-field-padding-x: 15px;
+  --frame-field-padding-r: 16px;
+  --frame-field-gap: 5px;
+  --frame-btn-height: 50px;
+  --frame-font-title: 20px;
+  --frame-font-body: 16px;
+  --frame-font-caption: 14px;
+  --frame-color: #101010;
+  --frame-color-muted: rgba(16, 16, 16, 0.5);
+  --frame-color-border: rgba(16, 16, 16, 0.25);
+  --frame-color-border-active: rgba(16, 16, 16, 0.5);
+  --frame-bg: #F5F5F5;
 }
 
 /* TT Firs Neue - только необходимые шрифты (4 файла) */
@@ -77,38 +97,46 @@ body {
 /* Общий контейнер для фреймов 1–4: 400px, отступ снизу от браузерной строки */
 .frame-container {
   width: 100%;
-  max-width: 400px;
+  max-width: var(--frame-width);
   margin-left: auto;
   margin-right: auto;
   min-height: 100dvh;
-  padding-bottom: max(20px, env(safe-area-inset-bottom, 0px));
+  padding-bottom: max(var(--frame-side), env(safe-area-inset-bottom, 0px));
   box-sizing: border-box;
 }
 
-/* Единый стиль полей ввода по макету: высота 50px, отступы 15px/16px, радиус 10px */
+/* Карточка по макету: скругление 20px, внутренний отступ 20px */
+.frame-card {
+  border-radius: var(--frame-card-radius);
+  padding: var(--frame-card-padding);
+  background: #fff;
+  box-sizing: border-box;
+}
+
+/* Единый стиль полей ввода по макету */
 .frame-input {
-  height: 50px;
-  min-height: 50px;
-  padding-left: 15px;
-  padding-right: 16px;
-  border-radius: 10px;
-  border: 1px solid rgba(16, 16, 16, 0.25);
+  height: var(--frame-field-height);
+  min-height: var(--frame-field-height);
+  padding-left: var(--frame-field-padding-x);
+  padding-right: var(--frame-field-padding-r);
+  border-radius: var(--frame-field-radius);
+  border: 1px solid var(--frame-color-border);
   font-family: 'TT Firs Neue', sans-serif;
-  font-size: 16px;
+  font-size: var(--frame-font-body);
   line-height: 125%;
   box-sizing: border-box;
 }
 .frame-input:focus,
 .frame-input.active {
-  border-color: rgba(16, 16, 16, 0.5);
+  border-color: var(--frame-color-border-active);
 }
 .frame-input::placeholder {
-  color: rgba(16, 16, 16, 0.5);
+  color: var(--frame-color-muted);
 }
 
 /* Отступ между полями в формах */
 .frame-fields-gap {
-  gap: 5px;
+  gap: var(--frame-field-gap);
 }
 
 /* Frame1: на высоких экранах (как в Figma) — фиксированный отступ карточки сверху */

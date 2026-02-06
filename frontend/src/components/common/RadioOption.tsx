@@ -16,7 +16,7 @@ export default function RadioOption({ label, selected, onClick, className = '' }
       className={`relative rounded-[10px] cursor-pointer ${className}`}
       style={{
         height: '50px',
-        border: selected ? '1px solid #101010' : '1px solid rgba(16, 16, 16, 0.25)',
+        border: selected ? '1px solid rgba(16, 16, 16, 0.5)' : '1px solid rgba(16, 16, 16, 0.25)',
         boxSizing: 'border-box',
       }}
     >

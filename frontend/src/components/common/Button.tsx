@@ -36,7 +36,12 @@ export default function Button({
       onClick={onClick}
       disabled={disabled}
       className={`${baseStyles} ${variantStyles[variant]} ${className}`}
-      style={{ letterSpacing: '0.5px' }}
+      style={{
+        minHeight: '50px',
+        fontFamily: 'TT Firs Neue, sans-serif',
+        fontSize: '16px',
+        letterSpacing: '0.5px',
+      }}
     >
       {children}
     </button>

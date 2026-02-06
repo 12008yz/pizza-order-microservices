@@ -32,7 +32,7 @@ export default function BaseModal({
         background: backdropBlur ? '#F5F5F5' : 'rgba(0, 0, 0, 0.5)',
         backdropFilter: backdropBlur ? 'blur(12.5px)' : 'none',
         paddingTop: 'var(--sat, 0px)',
-        paddingBottom: 'var(--sab, 0px)',
+        paddingBottom: 'max(20px, env(safe-area-inset-bottom, 0px))',
         boxSizing: 'border-box',
       }}
       onClick={handleBackdropClick}

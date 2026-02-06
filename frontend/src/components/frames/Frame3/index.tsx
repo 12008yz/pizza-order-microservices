@@ -716,18 +716,18 @@ function Frame3Content() {
 
   return (
     <div
-      className="fixed inset-0 flex items-start justify-center bg-[#F5F5F5] overflow-hidden"
+      className="fixed inset-0 flex items-start justify-center bg-[#F5F5F5] overflow-y-auto overflow-x-hidden"
       style={{
         fontFamily: 'TT Firs Neue, sans-serif',
         paddingTop: 'var(--sat, 0px)',
-        paddingBottom: 'var(--sab, 0px)',
+        paddingBottom: 'max(20px, env(safe-area-inset-bottom, 0px))',
       }}
       onClick={showFavoritesMode ? handleFavoritesModeBackgroundClick : undefined}
     >
-      {/* Контейнер как в Frame 1: max-width 400px, flex flex-col, карусель прижата вниз */}
+      {/* Контейнер как в Frame1: max-width 400px, отступ снизу 20px */}
       <div
-        className="relative w-full max-w-[400px] h-full flex flex-col bg-[#F5F5F5] overflow-hidden"
-        style={{ height: '100dvh', boxSizing: 'border-box' }}
+        className="relative w-full max-w-[400px] min-h-full flex flex-col bg-[#F5F5F5] frame-container"
+        style={{ minHeight: '100dvh', boxSizing: 'border-box' }}
       >
         {/* Header area — одна строка, выравнивание по центру по вертикали */}
         <div className="flex-shrink-0 relative" style={{ minHeight: '120px' }}>

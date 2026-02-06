@@ -426,11 +426,11 @@ function Frame4Content() {
 
   return (
     <div
-      className="relative w-full max-w-[400px] mx-auto flex flex-col overflow-hidden bg-[#FFFFFF]"
+      className="relative w-full max-w-[400px] mx-auto flex flex-col overflow-y-auto overflow-x-hidden bg-[#FFFFFF] frame-container"
       style={{
         minHeight: '100dvh',
         paddingTop: 'var(--sat, 0px)',
-        paddingBottom: 'var(--sab, 0px)',
+        paddingBottom: 'max(20px, env(safe-area-inset-bottom, 0px))',
         boxSizing: 'border-box',
       }}
     >

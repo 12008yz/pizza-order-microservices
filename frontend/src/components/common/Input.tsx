@@ -22,10 +22,10 @@ export default function Input({
   className = '',
 }: InputProps) {
   const borderColor = error
-    ? '0.5px solid rgb(239, 68, 68)'
+    ? '1px solid rgb(239, 68, 68)'
     : value
-      ? '0.5px solid #101010'
-      : '0.5px solid rgba(16, 16, 16, 0.25)';
+      ? '1px solid rgba(16, 16, 16, 0.5)'
+      : '1px solid rgba(16, 16, 16, 0.25)';
 
   return (
     <div className={`relative w-full ${className}`}>
@@ -35,12 +35,17 @@ export default function Input({
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         disabled={disabled}
-        className="relative w-full rounded-[10px] bg-white px-[15px] py-[15.5px] text-base leading-[125%] outline-none"
+        className="relative w-full rounded-[10px] bg-white outline-none border-box"
         style={{
+          height: '50px',
+          minHeight: '50px',
+          paddingLeft: '15px',
+          paddingRight: '16px',
           border: borderColor,
+          fontFamily: 'TT Firs Neue, sans-serif',
+          fontSize: '16px',
+          lineHeight: '125%',
           color: value ? '#101010' : 'rgba(16,16,16,0.5)',
-          letterSpacing: '0.5px',
-          paddingBottom: '14px',
         }}
       />
       {error && (

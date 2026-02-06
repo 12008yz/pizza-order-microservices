@@ -258,70 +258,85 @@ function AddressFormContent() {
         background: '#F5F5F5',
       }}
     >
-      {/* 400×870 — жёстко по макету: position relative, ширина 400px, min-height 870px */}
+      {/* 400px ширина; высота = низ белого блока (230+495) + 20px отступ от браузерной строки внизу */}
       <div
         className="relative bg-[#F5F5F5]"
         style={{
-          width: '100%',
-          maxWidth: '400px',
-          minHeight: '870px',
+          width: 400,
+          minWidth: 400,
+          maxWidth: 400,
+          minHeight: 230 + 495 + 20, // 745 — белый блок заканчивается за 20px до низа
           boxSizing: 'border-box',
         }}
       >
-        {/* Header: по макету left 20px, top 75px, 360×40 — только когда баннер закрыт */}
-        {!showCookieBanner && (
-          <Header onConsultationClick={handleHeaderConsultationClick} />
-        )}
+        {/* Header: круглые кнопки и логотип — всегда (баннер поверх при открытии) */}
+        <Header onConsultationClick={handleHeaderConsultationClick} />
 
-        {/* Cookie Banner — Rectangle 67: 360×120, left 20px, top 75px, bg #FFFFFF, border-radius 20px */}
+        {/* Cookie Banner — Group 7476: 360×120, left calc(50%-180px), top 75; Rectangle 67 + текст + кнопка по макету */}
         {showCookieBanner && (
           <div
             className="absolute z-20 box-border"
             style={{
-              left: 20,
-              top: 75,
+              position: 'absolute',
               width: 360,
-              minHeight: 120,
+              height: 120,
+              left: 'calc(50% - 360px / 2)',
+              top: 75,
               background: '#FFFFFF',
               borderRadius: 20,
-              padding: '15px 35px 15px 35px',
             }}
           >
+            {/* Автоматически закроется через 7 — left 35px, top 90px относительно фрейма = 15px от левого/верхнего края баннера */}
             <p
+              className="absolute m-0"
               style={{
+                left: 15,
+                top: 15,
+                width: 300,
+                height: 20,
                 fontFamily: "'TT Firs Neue', sans-serif",
+                fontStyle: 'normal',
                 fontWeight: 400,
                 fontSize: 14,
                 lineHeight: '145%',
                 color: 'rgba(16, 16, 16, 0.25)',
-                margin: 0,
-                marginBottom: 10,
               }}
             >
               Автоматически закроется через {cookieTimer}
             </p>
+            {/* Основной текст — left 35px, top 120px относительно фрейма = 15px от левого, 45px от верха баннера; 330×60 */}
             <p
+              className="absolute m-0"
               style={{
+                left: 15,
+                top: 45,
+                width: 330,
+                minHeight: 60,
                 fontFamily: "'TT Firs Neue', sans-serif",
+                fontStyle: 'normal',
                 fontWeight: 400,
                 fontSize: 14,
                 lineHeight: '105%',
                 color: '#101010',
-                margin: 0,
-                paddingRight: 24,
               }}
             >
               Если продолжаете использовать этот портал, вы выражаете согласие на использование файлов куки в соответствии с условиями{' '}
-              <a href="/privacy-policy" target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+              <a href="/privacy-policy" target="_blank" rel="noopener noreferrer" className="text-[#0075FF] underline">
                 политики конфиденциальности
               </a>{' '}
               портала
             </p>
+            {/* Vector — кнопка закрытия в зоне left 86.75% / right 9.25% / top 10.57%; цвет иконки rgba(16,16,16,0.25) */}
             <button
               type="button"
               onClick={() => setShowCookieBanner(false)}
               className="absolute cursor-pointer flex items-center justify-center bg-transparent border-0 outline-none"
-              style={{ right: 15, top: 15, width: 16, height: 16 }}
+              style={{
+                left: '86.75%',
+                right: '9.25%',
+                top: '10.57%',
+                bottom: '87.59%',
+              }}
               aria-label="Закрыть"
             >
               <X size={16} weight="regular" color="rgba(16, 16, 16, 0.25)" />
@@ -329,37 +344,41 @@ function AddressFormContent() {
           </div>
         )}
 
-        {/* Белая карточка — Rectangle 30: left 5% right 5% top 26.44% bottom 16.67%, bg #FFFFFF, border-radius 20px */}
+        {/* Белая карточка — покрывает весь контент, 15px отступ по бокам от краёв фрейма, паддинг 15px по бокам внутри */}
         <div
           className="absolute box-border bg-white"
           style={{
-            left: '5%',
-            right: '5%',
-            top: '26.44%',
-            bottom: '16.67%',
+            left: 15,
+            right: 15,
+            top: 230,
+            background: '#FFFFFF',
             borderRadius: 20,
-            padding: 20,
             display: 'flex',
             flexDirection: 'column',
-            gap: 5,
+            padding: '12px 15px 20px 15px',
+            boxSizing: 'border-box',
+            gap: 8,
           }}
         >
-          {/* Заголовок: 20px, line-height 125%, color #101010 */}
+          {/* Заголовок — 8.75% отступы, 20px, 125%, #101010 */}
           <h1
+            className="mt-0 mb-0 flex-shrink-0"
             style={{
               fontFamily: "'TT Firs Neue', sans-serif",
+              fontStyle: 'normal',
               fontWeight: 400,
               fontSize: 20,
               lineHeight: '125%',
               color: '#101010',
               margin: 0,
-              flexShrink: 0,
+              paddingTop: 12,
+              paddingBottom: 10,
             }}
           >
             Маркетплейс тарифных планов операторов на твоём адресе. Бесплатно и легко заказать
           </h1>
 
-          {/* Поле Подключение — border 1px solid rgba(16,16,16,0.5), border-radius 10px */}
+          {/* Поле Подключение — Group 7432: border 1px solid rgba(16,16,16,0.5), border-radius 10px */}
           <div
             role="button"
             tabIndex={0}

@@ -27,8 +27,8 @@ function Header({ onConsultationClick }: HeaderProps) {
       <div
         className="absolute w-10 h-10 cursor-pointer z-10"
         style={{
-          left: '20px',
-          top: 'calc(75px + var(--sat, 0px))',
+          left: 20,
+          top: 75,
         }}
         onClick={() => {
           setClickedButton('home');
@@ -91,8 +91,8 @@ function Header({ onConsultationClick }: HeaderProps) {
       <div
         className="absolute w-10 h-10 cursor-pointer z-10"
         style={{
-          left: '340px',
-          top: 'calc(75px + var(--sat, 0px))',
+          left: 340,
+          top: 75,
         }}
         onClick={() => {
           setClickedButton('plane');

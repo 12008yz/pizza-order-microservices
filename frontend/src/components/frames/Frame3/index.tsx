@@ -716,7 +716,6 @@ function Frame3Content() {
 
   return (
     <div
-<<<<<<< HEAD
       className="fixed inset-0 flex items-center justify-center overflow-hidden"
       style={{
         fontFamily: 'TT Firs Neue, sans-serif',
@@ -736,20 +735,6 @@ function Frame3Content() {
           background: '#F5F5F5',
           boxSizing: 'border-box',
         }}
-=======
-      className="fixed inset-0 flex items-start justify-center bg-[#F5F5F5] overflow-y-auto overflow-x-hidden"
-      style={{
-        fontFamily: 'TT Firs Neue, sans-serif',
-        paddingTop: 'var(--sat, 0px)',
-        paddingBottom: 'max(20px, env(safe-area-inset-bottom, 0px))',
-      }}
-      onClick={showFavoritesMode ? handleFavoritesModeBackgroundClick : undefined}
-    >
-      {/* Контейнер как в Frame1: max-width 400px, отступ снизу 20px */}
-      <div
-        className="relative w-full max-w-[400px] min-h-full flex flex-col bg-[#F5F5F5] frame-container"
-        style={{ minHeight: '100dvh', boxSizing: 'border-box' }}
->>>>>>> 0636ae22087ae5a19782269fd684569c2ffa398a
       >
         {showFavoritesMode ? (
           <div
@@ -1172,11 +1157,7 @@ function Frame3Content() {
           }
         }}
       >
-<<<<<<< HEAD
         {/* Горизонтальный скролл с карточками — 360×445, gap 5px */}
-=======
-        {/* Горизонтальный скролл: отступы 20px по бокам (как эталон), карточка 360px — не обрезает контент */}
->>>>>>> 0636ae22087ae5a19782269fd684569c2ffa398a
         <div
           ref={scrollRef}
           className="flex overflow-x-auto scrollbar-hide flex-nowrap carousel-container h-full"
@@ -1274,11 +1255,7 @@ function Frame3Content() {
                   position: 'relative',
                   width: '360px',
                   minWidth: '360px',
-<<<<<<< HEAD
                   minHeight: '445px',
-=======
-                  flex: '0 0 360px',
->>>>>>> 0636ae22087ae5a19782269fd684569c2ffa398a
                   background: '#FFFFFF',
                   borderRadius: '20px',
                   scrollSnapAlign: 'start',
@@ -1288,16 +1265,9 @@ function Frame3Content() {
                   flexDirection: 'column',
                 }}
               >
-<<<<<<< HEAD
                 {/* Group 7572: left 35px top 295 viewport → 15px from card, 15px from card top */}
                 <div style={{ padding: '15px 15px 0 15px', flexShrink: 0 }}>
                   <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '5px' }}>
-=======
-                {/* Заголовок: отступы 20px по макету */}
-                <div style={{ padding: '24px 20px 0 20px', flexShrink: 0 }}>
-                  {/* Провайдер с Info icon */}
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '5px' }}>
->>>>>>> 0636ae22087ae5a19782269fd684569c2ffa398a
                     <div
                       style={{
                         fontFamily: 'TT Firs Neue, sans-serif',
@@ -1335,22 +1305,12 @@ function Frame3Content() {
                   />
                 </div>
 
-<<<<<<< HEAD
                 {/* Контент: left 35px viewport = 15px padding, Group 7574/7573/7499/7575 — gap 5px */}
                 <div style={{ padding: '10px 15px 0 15px', flex: 1, minHeight: 0 }}>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
                     {/* Скорость — 16px 155%, подпись 14px 105% */}
                     <div style={{ display: 'flex', alignItems: 'flex-start', gap: '9px' }}>
                       <div style={{ width: '16px', height: '16px', flexShrink: 0, marginTop: '2px' }}>
-=======
-                {/* Контентная область — отступы 20px по макету */}
-                <div style={{ padding: '16px 20px', flex: 1, minHeight: 0 }}>
-                  {/* Список услуг */}
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                    {/* Скорость */}
-                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', flexShrink: 0, marginTop: '2px' }}>
->>>>>>> 0636ae22087ae5a19782269fd684569c2ffa398a
                         <CheckCircleIcon />
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>

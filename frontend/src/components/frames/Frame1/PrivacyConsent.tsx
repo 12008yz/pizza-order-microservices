@@ -10,23 +10,24 @@ function PrivacyConsent() {
 
   return (
     <div
-      className={`relative w-full rounded-[10px] bg-white ${hasError ? '' : ''
-        }`}
+      className="relative w-full rounded-[10px] bg-white"
       style={{
+        height: '50px',
+        minHeight: '50px',
         border: hasError
-          ? '0.5px solid rgb(239, 68, 68)'
-          : '0.5px solid rgba(16, 16, 16, 0.25)',
+          ? '1px solid rgb(239, 68, 68)'
+          : '1px solid rgba(16, 16, 16, 0.25)',
         boxSizing: 'border-box',
       }}
     >
       <div
-        className="relative w-full px-[15px] rounded-[10px] bg-transparent cursor-pointer flex items-center"
-        style={{ paddingTop: '8px', paddingBottom: '8px' }}
+        className="relative w-full h-full rounded-[10px] bg-transparent cursor-pointer flex items-center box-border"
+        style={{ paddingLeft: '15px', paddingRight: '15px' }}
         onClick={() => updatePrivacyConsent(!addressData.privacyConsent)}
       >
-        {/* Чекбокс - круглый */}
+        {/* Чекбокс 16×16, отступ слева 15px */}
         <div
-          className={`rounded-full mr-2.5 flex-shrink-0 flex items-center justify-center ${addressData.privacyConsent
+          className={`rounded-full flex-shrink-0 flex items-center justify-center ${addressData.privacyConsent
             ? 'bg-[#101010]'
             : hasError
               ? 'border-2 border-red-500'
@@ -34,8 +35,9 @@ function PrivacyConsent() {
             }`}
           style={{
             boxSizing: 'border-box',
-            width: '15px',
-            height: '15px',
+            width: '16px',
+            height: '16px',
+            marginRight: '10px',
             transition: 'background-color 0.2s ease, border-color 0.2s ease',
           }}
         >
@@ -44,8 +46,15 @@ function PrivacyConsent() {
           )}
         </div>
 
-        {/* Текст */}
-        <span className="text-sm leading-[105%] text-[#101010]">
+        {/* Текст: 14px, line-height 105% = 15px */}
+        <span
+          style={{
+            fontFamily: 'TT Firs Neue, sans-serif',
+            fontSize: '14px',
+            lineHeight: '105%',
+            color: '#101010',
+          }}
+        >
           Я полностью согласен с условиями{' '}
           <a
             href="/privacy-policy"

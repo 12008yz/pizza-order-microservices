@@ -23,11 +23,12 @@ function Header({ onConsultationClick }: HeaderProps) {
 
   return (
     <>
-      {/* Group 7510 - Кнопка дом (слева) */}
+      {/* Кнопка дом: 20px слева, 75px сверху, 40×40, border-radius 100px */}
       <div
-        className="absolute w-10 h-10 left-5 cursor-pointer z-10"
+        className="absolute w-10 h-10 cursor-pointer z-10"
         style={{
-          top: 'calc(20px + var(--sat, 0px))',
+          left: '20px',
+          top: 'calc(75px + var(--sat, 0px))',
         }}
         onClick={() => {
           setClickedButton('home');
@@ -86,11 +87,12 @@ function Header({ onConsultationClick }: HeaderProps) {
       {/* Логотип */}
       <Logo />
 
-      {/* Group 7509 - Кнопка самолет (справа) */}
+      {/* Кнопка самолёт: 340px слева (= 20px справа), 75px сверху, 40×40 */}
       <div
-        className="absolute w-10 h-10 right-5 cursor-pointer z-10"
+        className="absolute w-10 h-10 cursor-pointer z-10"
         style={{
-          top: 'calc(20px + var(--sat, 0px))',
+          left: '340px',
+          top: 'calc(75px + var(--sat, 0px))',
         }}
         onClick={() => {
           setClickedButton('plane');

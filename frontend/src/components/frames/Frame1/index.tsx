@@ -257,24 +257,21 @@ function AddressFormContent() {
         paddingBottom: 'var(--sab, 0px)',
       }}
     >
-      {/* Контейнер - адаптивный, max-width 400px */}
+      {/* Основной контейнер: 400×870 по макету, фон #F5F5F5 */}
       <div
-        className="relative w-full max-w-[400px] h-full flex flex-col bg-[#F5F5F5]"
+        className="relative w-full max-w-[400px] flex flex-col bg-[#F5F5F5]"
         style={{
+          minHeight: 'max(870px, 100dvh)',
           height: '100dvh',
         }}
       >
-        {/* Header area - обёртка с top сдвигает абсолютно позиционированный Header вниз */}
+        {/* Хедер: иконки 75px сверху, лого 90px. Резерв по высоте 115px */}
         <div
           className="flex-shrink-0 relative"
-          style={{
-            minHeight: '120px',
-          }}
+          style={{ minHeight: '115px' }}
         >
           {!showCookieBanner && (
-            <div style={{ position: 'relative', top: '75px' }}>
-              <Header onConsultationClick={handleHeaderConsultationClick} />
-            </div>
+            <Header onConsultationClick={handleHeaderConsultationClick} />
           )}
         </div>
 
@@ -342,45 +339,92 @@ function AddressFormContent() {
           </div>
         )}
 
-        {/* Белая карточка - компактная по контенту, прижата вниз */}
+        {/* Белая карточка: отступы 20px (5%), top 230px (26.44%), ширина 360px, padding 15px */}
         <div
-          className="mx-[5%] bg-white flex flex-col"
+          className="bg-white flex flex-col flex-1"
           style={{
+            marginLeft: '20px',
+            marginRight: '20px',
+            marginTop: '230px',
+            marginBottom: '20px',
+            width: '360px',
+            maxWidth: 'calc(100% - 40px)',
             borderRadius: '20px',
             padding: '15px',
-            marginTop: 'auto',
-            marginBottom: '20px',
+            boxSizing: 'border-box',
           }}
         >
-          {/* Описание */}
-          <div
+          {/* Заголовок: 28.16% ≈ 245px от экрана (230+15), 20px, line-height 125%, отступ до бейджа 60px */}
+          <h1
             style={{
               fontFamily: 'TT Firs Neue, sans-serif',
               fontWeight: 400,
               fontSize: '20px',
               lineHeight: '125%',
               color: '#101010',
-              marginBottom: '20px',
+              margin: 0,
+              marginBottom: '60px',
               flexShrink: 0,
             }}
           >
             Маркетплейс тарифных планов операторов на твоём адресе. Бесплатно и легко заказать
+          </h1>
+
+          {/* Бейдж: 35px от экрана = от края карточки 15px, top 330px, 240×30, зелёная точка 8×8 */}
+          <div
+            style={{
+              marginBottom: '10px',
+              width: '240px',
+              height: '30px',
+              borderRadius: '20px',
+              border: '1px solid rgba(16,16,16,0.1)',
+              display: 'flex',
+              alignItems: 'center',
+              paddingLeft: '11px',
+              paddingRight: '12px',
+              boxSizing: 'border-box',
+              flexShrink: 0,
+            }}
+          >
+            <span
+              style={{
+                width: '8px',
+                height: '8px',
+                borderRadius: '50%',
+                background: '#00FF55',
+                boxShadow: '0 0 8px rgba(0,255,85,0.5)',
+                flexShrink: 0,
+                marginRight: '8px',
+              }}
+            />
+            <span
+              style={{
+                fontFamily: 'TT Firs Neue, sans-serif',
+                fontSize: '14px',
+                lineHeight: '145%',
+                color: '#101010',
+              }}
+            >
+              Мы всегда на связи, а вы как?
+            </span>
           </div>
 
-          {/* Контейнер полей */}
-          <div className="flex flex-col gap-[5px]">
-            {/* Поле выбора типа подключения */}
+          {/* Контейнер полей: gap 5px, ширина 330px (35+330+35=400) */}
+          <div className="flex flex-col flex-shrink-0" style={{ gap: '5px' }}>
+            {/* Поле Подключение: высота 50px, отступ текста слева 15px, стрелка справа 16px */}
             <div
-              className="w-full rounded-[10px] bg-white cursor-pointer flex items-center justify-between px-[15px] flex-shrink-0"
+              className="w-full rounded-[10px] bg-white cursor-pointer flex items-center justify-between flex-shrink-0"
               style={{
                 height: '50px',
+                paddingLeft: '15px',
+                paddingRight: '16px',
+                boxSizing: 'border-box',
                 minHeight: '50px',
                 border: addressData.errors.connectionType
                   ? '1px solid rgb(239, 68, 68)'
                   : isFieldActive(0) || addressData.connectionType
                     ? '1px solid rgba(16, 16, 16, 0.5)'
                     : '1px solid rgba(16, 16, 16, 0.25)',
-                boxSizing: 'border-box',
               }}
               onClick={handleConnectionTypeClick}
             >
@@ -419,24 +463,26 @@ function AddressFormContent() {
                 {addressData.connectionType ? (
                   <AnimatedCheck key={`connection-${addressData.connectionType}`} size={8} color="#FFFFFF" strokeWidth={1.5} />
                 ) : (
-                  <CaretRight size={8} weight="regular" color={addressData.errors.connectionType || isFieldActive(0) ? "#FFFFFF" : "rgba(16, 16, 16, 0.5)"} />
+                  <CaretRight size={16} weight="regular" color={addressData.errors.connectionType || isFieldActive(0) ? "#FFFFFF" : "rgba(16, 16, 16, 0.5)"} />
                 )}
               </div>
             </div>
 
-            {/* Поле выбора города */}
+            {/* Поле Населённый пункт */}
             <div
-              className={`w-full rounded-[10px] bg-white flex items-center justify-between px-[15px] flex-shrink-0 ${!addressData.connectionType ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+              className={`w-full rounded-[10px] bg-white flex items-center justify-between flex-shrink-0 ${!addressData.connectionType ? 'cursor-not-allowed' : 'cursor-pointer'}`}
               style={{
                 height: '50px',
                 minHeight: '50px',
+                paddingLeft: '15px',
+                paddingRight: '16px',
+                boxSizing: 'border-box',
                 opacity: !addressData.connectionType ? 0.5 : 1,
                 border: addressData.errors.city
                   ? '1px solid rgb(239, 68, 68)'
                   : isFieldActive(1) || addressData.city
                     ? '1px solid rgba(16, 16, 16, 0.5)'
                     : '1px solid rgba(16, 16, 16, 0.25)',
-                boxSizing: 'border-box',
               }}
               onClick={() => {
                 if (!addressData.connectionType) return;
@@ -477,24 +523,26 @@ function AddressFormContent() {
                 {addressData.city ? (
                   <AnimatedCheck key={`city-${addressData.city}`} size={8} color="#FFFFFF" strokeWidth={1.5} />
                 ) : (
-                  <CaretRight size={8} weight="regular" color={addressData.errors.city || isFieldActive(1) ? "#FFFFFF" : "rgba(16, 16, 16, 0.5)"} />
+                  <CaretRight size={16} weight="regular" color={addressData.errors.city || isFieldActive(1) ? "#FFFFFF" : "rgba(16, 16, 16, 0.5)"} />
                 )}
               </div>
             </div>
 
-            {/* Поле выбора улицы */}
+            {/* Поле Улица */}
             <div
-              className={`w-full rounded-[10px] bg-white flex items-center justify-between px-[15px] flex-shrink-0 ${!addressData.city ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+              className={`w-full rounded-[10px] bg-white flex items-center justify-between flex-shrink-0 ${!addressData.city ? 'cursor-not-allowed' : 'cursor-pointer'}`}
               style={{
                 height: '50px',
                 minHeight: '50px',
+                paddingLeft: '15px',
+                paddingRight: '16px',
+                boxSizing: 'border-box',
                 opacity: !addressData.city ? 0.5 : 1,
                 border: addressData.errors.street
                   ? '1px solid rgb(239, 68, 68)'
                   : isFieldActive(2) || addressData.street
                     ? '1px solid rgba(16, 16, 16, 0.5)'
                     : '1px solid rgba(16, 16, 16, 0.25)',
-                boxSizing: 'border-box',
               }}
               onClick={() => {
                 if (addressData.city) {
@@ -536,24 +584,26 @@ function AddressFormContent() {
                 {addressData.street ? (
                   <AnimatedCheck key={`street-${addressData.street}`} size={8} color="#FFFFFF" strokeWidth={1.5} />
                 ) : (
-                  <CaretRight size={8} weight="regular" color={addressData.errors.street || isFieldActive(2) ? "#FFFFFF" : "rgba(16, 16, 16, 0.5)"} />
+                  <CaretRight size={16} weight="regular" color={addressData.errors.street || isFieldActive(2) ? "#FFFFFF" : "rgba(16, 16, 16, 0.5)"} />
                 )}
               </div>
             </div>
 
-            {/* Поле выбора дома */}
+            {/* Поле Номер дома */}
             <div
-              className={`w-full rounded-[10px] bg-white flex items-center justify-between px-[15px] flex-shrink-0 ${!addressData.street ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+              className={`w-full rounded-[10px] bg-white flex items-center justify-between flex-shrink-0 ${!addressData.street ? 'cursor-not-allowed' : 'cursor-pointer'}`}
               style={{
                 height: '50px',
                 minHeight: '50px',
+                paddingLeft: '15px',
+                paddingRight: '16px',
+                boxSizing: 'border-box',
                 opacity: !addressData.street ? 0.5 : 1,
                 border: addressData.errors.houseNumber
                   ? '1px solid rgb(239, 68, 68)'
                   : isFieldActive(3) || addressData.houseNumber
                     ? '1px solid rgba(16, 16, 16, 0.5)'
                     : '1px solid rgba(16, 16, 16, 0.25)',
-                boxSizing: 'border-box',
               }}
               onClick={() => {
                 if (addressData.street) {
@@ -599,19 +649,17 @@ function AddressFormContent() {
                 {addressData.houseNumber ? (
                   <AnimatedCheck key={`house-${addressData.houseNumber}-${addressData.apartmentNumber ?? ''}`} size={8} color="#FFFFFF" strokeWidth={1.5} />
                 ) : (
-                  <CaretRight size={8} weight="regular" color={addressData.errors.houseNumber || isFieldActive(3) ? "#FFFFFF" : "rgba(16, 16, 16, 0.5)"} />
+                  <CaretRight size={16} weight="regular" color={addressData.errors.houseNumber || isFieldActive(3) ? "#FFFFFF" : "rgba(16, 16, 16, 0.5)"} />
                 )}
               </div>
             </div>
 
-            {/* Отступ между полями и Privacy */}
-
-            {/* Privacy Consent */}
-            <div className="flex-shrink-0">
+            {/* Чекбокс с политикой: top 67.82% ≈ 590px, gap от полей 5px */}
+            <div className="flex-shrink-0" style={{ marginTop: '5px' }}>
               <PrivacyConsent />
             </div>
 
-            {/* Кнопка отправки */}
+            {/* Кнопка: top 75.86% ≈ 660px, отступ от чекбокса 20px */}
             <button
               onClick={handleSubmit}
               onMouseDown={() => setIsSubmitPressed(true)}
@@ -624,15 +672,14 @@ function AddressFormContent() {
                 height: '50px',
                 minHeight: '50px',
                 background: '#101010',
-                border: '1px solid rgba(16, 16, 16, 0.25)',
                 borderRadius: '10px',
                 fontFamily: 'TT Firs Neue, sans-serif',
                 fontWeight: 400,
                 fontSize: '16px',
-                lineHeight: '315%',
+                color: '#FFFFFF',
                 transform: isSubmitPressed ? 'scale(0.97)' : 'scale(1)',
                 transition: 'transform 0.15s ease-out',
-                marginTop: '10px',
+                marginTop: '20px',
               }}
             >
               Показать всех операторов

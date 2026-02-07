@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import AnimatedCheck from '../../common/AnimatedCheck';
 
 interface TariffCardProps {
   id: number;
@@ -26,12 +27,16 @@ interface TariffCardProps {
   onFavoriteClick?: () => void;
 }
 
-// Круглая иконка с галочкой
+// Круглая иконка с галочкой (как в 1 фрейме)
 const CheckCircleIcon = () => (
-  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="10" cy="10" r="9" stroke="#101010" strokeWidth="1.5" fill="none" />
-    <path d="M6 10L9 13L14 7" stroke="#101010" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-  </svg>
+  <span className="relative inline-block" style={{ width: 20, height: 20 }}>
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" className="absolute inset-0">
+      <circle cx="10" cy="10" r="9" stroke="#101010" strokeWidth="1.5" fill="none" />
+    </svg>
+    <span className="absolute" style={{ left: 6, top: 6 }}>
+      <AnimatedCheck size={8} color="#101010" strokeWidth={1.5} />
+    </span>
+  </span>
 );
 
 // Круглая иконка с плюсом

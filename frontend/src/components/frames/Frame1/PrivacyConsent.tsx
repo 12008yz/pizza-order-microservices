@@ -36,7 +36,8 @@ function PrivacyConsent() {
           }}
         >
           {addressData.privacyConsent && (
-            <AnimatedCheck key={`privacy-${addressData.privacyConsent}`} size={9} color="white" strokeWidth={1.5} />
+            
+              <AnimatedCheck key={`privacy-${addressData.privacyConsent}`} size={9} color="white" strokeWidth={1.5} />
           )}
         </div>
 

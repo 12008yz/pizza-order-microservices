@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { Check } from '@phosphor-icons/react';
+import AnimatedCheck from '../common/AnimatedCheck';
 import { useAddress, ConnectionType } from '../../contexts/AddressContext';
 
 interface ConnectionTypeModalProps {
@@ -222,7 +222,7 @@ export default function ConnectionTypeModal({
                     }}
                   >
                     {selectedType === type.value && (
-                      <Check size={10} weight="bold" color="white" />
+                      <AnimatedCheck size={8} color="#FFFFFF" strokeWidth={1.5} />
                     )}
                   </div>
                 </div>

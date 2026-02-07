@@ -27,7 +27,7 @@ function FieldArrowIcon({ active, error }: { active: boolean; error?: boolean })
   return (
     <span className="relative inline-block" style={{ width: 16, height: 16 }}>
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" className="absolute inset-0">
-        <circle cx="8" cy="8" r="8" fill={circleFill} stroke={circleStroke} strokeWidth={1} />
+        <circle cx="8" cy="8" r="7.5" fill={circleFill} stroke={circleStroke} strokeWidth={1} />
       </svg>
       <svg width="12" height="6" viewBox="0 0 12 6" fill="none" xmlns="http://www.w3.org/2000/svg" className="absolute" style={{ left: 1, top: 5 }} aria-hidden>
         <path d={CHEVRON_PATH} fill={arrowFill} transform="rotate(90 6 3)" />
@@ -441,12 +441,13 @@ function AddressFormContent() {
               style={{
                 width: 16,
                 height: 16,
+                boxSizing: 'content-box',
                 background: addressData.errors.connectionType
                   ? 'rgb(239, 68, 68)'
                   : isFieldActive(0) || addressData.connectionType
                     ? '#000000'
                     : '#FFFFFF',
-                border: addressData.errors.connectionType || addressData.connectionType || isFieldActive(0) ? 'none' : '1px solid rgba(16, 16, 16, 0.5)',
+                border: addressData.errors.connectionType || addressData.connectionType || isFieldActive(0) ? 'none' : '0.1px solid rgba(16, 16, 16, 0.2)',
               }}
             >
               {addressData.connectionType && !addressData.errors.connectionType ? (
@@ -502,12 +503,13 @@ function AddressFormContent() {
               style={{
                 width: 16,
                 height: 16,
+                boxSizing: 'content-box',
                 background: addressData.errors.city
                   ? 'rgb(239, 68, 68)'
                   : isFieldActive(1) || addressData.city
                     ? '#000000'
                     : '#FFFFFF',
-                border: addressData.errors.city || addressData.city || isFieldActive(1) ? 'none' : '1px solid rgba(16, 16, 16, 0.5)',
+                border: addressData.errors.city || addressData.city || isFieldActive(1) ? 'none' : '0.1px solid rgba(16, 16, 16, 0.5)',
               }}
             >
               {addressData.city && !addressData.errors.city ? (
@@ -564,12 +566,13 @@ function AddressFormContent() {
               style={{
                 width: 16,
                 height: 16,
+                boxSizing: 'content-box',
                 background: addressData.errors.street
                   ? 'rgb(239, 68, 68)'
                   : isFieldActive(2) || addressData.street
                     ? '#000000'
                     : '#FFFFFF',
-                border: addressData.errors.street || addressData.street || isFieldActive(2) ? 'none' : '1px solid rgba(16, 16, 16, 0.5)',
+                border: addressData.errors.street || addressData.street || isFieldActive(2) ? 'none' : '0.1px solid rgba(16, 16, 16, 0.5)',
               }}
             >
               {addressData.street && !addressData.errors.street ? (
@@ -628,12 +631,13 @@ function AddressFormContent() {
               style={{
                 width: 16,
                 height: 16,
+                boxSizing: 'content-box',
                 background: addressData.errors.houseNumber
                   ? 'rgb(239, 68, 68)'
                   : isFieldActive(3) || addressData.houseNumber
                     ? '#000000'
                     : '#FFFFFF',
-                border: addressData.errors.houseNumber || addressData.houseNumber || isFieldActive(3) ? 'none' : '1px solid rgba(16, 16, 16, 0.5)',
+                border: addressData.errors.houseNumber || addressData.houseNumber || isFieldActive(3) ? 'none' : '0.1px solid rgba(16, 16, 16, 0.5)',
               }}
             >
               {addressData.houseNumber && !addressData.errors.houseNumber ? (

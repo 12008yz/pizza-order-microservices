@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import AnimatedCheck from './AnimatedCheck';
 
 interface CheckboxOptionProps {
   label: string;
@@ -52,15 +53,7 @@ export default function CheckboxOption({
         }}
       >
         {checked && (
-          <svg width="8" height="8" viewBox="0 0 12 12" fill="none">
-            <path
-              d="M2.5 6L5 8.5L9.5 3.5"
-              stroke="#FFFFFF"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
+          <AnimatedCheck size={8} color="#FFFFFF" strokeWidth={1.5} />
         )}
       </div>
     </div>

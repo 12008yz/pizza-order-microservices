@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
+import AnimatedCheck from '../../../common/AnimatedCheck';
 import type {
   EquipmentState,
   RouterNeedOption,
@@ -55,13 +56,20 @@ interface OrderSummaryStepProps {
   callbacks: OrderSummaryCallbacks;
 }
 
-// Иконка галочки в круге
-const CheckCircleIcon = ({ active = true }: { active?: boolean }) => (
-  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-    <circle cx="8" cy="8" r="7" stroke={active ? '#101010' : 'rgba(16, 16, 16, 0.25)'} strokeWidth="1.5" fill="none" />
-    <path d="M5 8L7 10L11 6" stroke={active ? '#101010' : 'rgba(16, 16, 16, 0.25)'} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-  </svg>
-);
+// Иконка галочки в круге (как в 1 фрейме)
+const CheckCircleIcon = ({ active = true }: { active?: boolean }) => {
+  const color = active ? '#101010' : 'rgba(16, 16, 16, 0.25)';
+  return (
+    <span className="relative inline-block" style={{ width: 16, height: 16 }}>
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="absolute inset-0">
+        <circle cx="8" cy="8" r="7" stroke={color} strokeWidth="1.5" fill="none" />
+      </svg>
+      <span className="absolute" style={{ left: 4, top: 4 }}>
+        <AnimatedCheck size={8} color={color} strokeWidth={1.5} />
+      </span>
+    </span>
+  );
+};
 
 // Иконка крестика в круге (для "Не предусмотрено")
 const CrossCircleIcon = () => (

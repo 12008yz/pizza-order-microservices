@@ -1,10 +1,14 @@
+import AnimatedCheck from '../AnimatedCheck';
+
 export default function CheckCircleIcon() {
   return (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-      {/* Круг с белым фоном и черной обводкой */}
-      <circle cx="8" cy="8" r="7.5" fill="#FFFFFF" stroke="#101010" strokeWidth="1" />
-      {/* Галочка черного цвета */}
-      <path d="M11.7071 6.70711L7.70711 10.7071C7.51957 10.8946 7.26522 11 7 11C6.73478 11 6.48043 10.8946 6.29289 10.7071L4.29289 8.70711C3.90237 8.31658 3.90237 7.68342 4.29289 7.29289C4.68342 6.90237 5.31658 6.90237 5.70711 7.29289L7 8.58579L10.2929 5.29289C10.6834 4.90237 11.3166 4.90237 11.7071 5.29289C12.0976 5.68342 12.0976 6.31658 11.7071 6.70711Z" fill="#101010" />
-    </svg>
+    <span className="relative inline-block" style={{ width: 16, height: 16 }}>
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" className="absolute inset-0">
+        <circle cx="8" cy="8" r="7.5" fill="#FFFFFF" stroke="#101010" strokeWidth="1" />
+      </svg>
+      <span className="absolute" style={{ left: 4, top: 4 }}>
+        <AnimatedCheck size={8} color="#101010" strokeWidth={1.5} />
+      </span>
+    </span>
   );
 }

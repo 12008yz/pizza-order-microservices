@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { Check } from '@phosphor-icons/react';
+import AnimatedCheck from '../common/AnimatedCheck';
 import { useAddress } from '../../contexts/AddressContext';
 import { locationsService } from '../../services/locations.service';
 import type { AddressSuggestion } from '../../services/api/types';
@@ -902,7 +902,7 @@ export default function AddressInputModal({
                           border: isSelected ? 'none' : '1px solid rgba(16, 16, 16, 0.5)',
                         }}
                       >
-                        {isSelected && <Check size={10} weight="bold" color="white" />}
+                        {isSelected && <AnimatedCheck size={8} color="#FFFFFF" strokeWidth={1.5} />}
                       </div>
                     </div>
                   );

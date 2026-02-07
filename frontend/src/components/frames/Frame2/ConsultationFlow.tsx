@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
+import AnimatedCheck from '../../common/AnimatedCheck';
 
 type ContactMethod = 'max' | 'telegram' | 'phone';
 type ConsultationStep = 'contact-method' | 'phone-after-method';
@@ -365,9 +366,7 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
               }}
             >
               {selectedMethod === 'telegram' && (
-                <svg width="8" height="8" viewBox="0 0 12 12" fill="none">
-                  <path d="M2.5 6L5 8.5L9.5 3.5" stroke="#FFFFFF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
+                <AnimatedCheck size={8} color="#FFFFFF" strokeWidth={1.5} />
               )}
             </div>
           </div>
@@ -403,9 +402,7 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
               }}
             >
               {selectedMethod === 'phone' && (
-                <svg width="8" height="8" viewBox="0 0 12 12" fill="none">
-                  <path d="M2.5 6L5 8.5L9.5 3.5" stroke="#FFFFFF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
+                <AnimatedCheck size={8} color="#FFFFFF" strokeWidth={1.5} />
               )}
             </div>
           </div>

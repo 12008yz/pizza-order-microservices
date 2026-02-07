@@ -22,17 +22,15 @@ const CHEVRON_PATH = 'M0.112544 5.34082L5.70367 0.114631C5.7823 0.0412287 5.8888
 
 function FieldArrowIcon({ active, error }: { active: boolean; error?: boolean }) {
   const circleFill = error ? 'rgb(239, 68, 68)' : active ? '#000000' : '#FFFFFF';
+  const circleStroke = error ? 'rgb(239, 68, 68)' : active ? '#000000' : 'rgba(16, 16, 16, 0.35)';
   const arrowFill = error || active ? '#FFFFFF' : '#101010';
   return (
     <span className="relative inline-block" style={{ width: 16, height: 16 }}>
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" className="absolute inset-0">
-        <path
-          d="M0 8C0 9.58225 0.469192 11.129 1.34824 12.4446C2.22729 13.7602 3.47672 14.7855 4.93853 15.391C6.40034 15.9965 8.00887 16.155 9.56072 15.8463C11.1126 15.5376 12.538 14.7757 13.6569 13.6569C14.7757 12.538 15.5376 11.1126 15.8463 9.56072C16.155 8.00887 15.9965 6.40034 15.391 4.93853C14.7855 3.47672 13.7602 2.22729 12.4446 1.34824C11.129 0.469192 9.58225 0 8 0C5.87895 0.00224088 3.84542 0.845815 2.34562 2.34562C0.845813 3.84543 0.00223942 5.87895 0 8Z"
-          fill={circleFill}
-        />
+        <circle cx="8" cy="8" r="8" fill={circleFill} stroke={circleStroke} strokeWidth={1} />
       </svg>
-      <svg width="12" height="6" viewBox="0 0 12 6" fill="none" xmlns="http://www.w3.org/2000/svg" className="absolute" style={{ left: 2, top: 5 }} aria-hidden>
-        <path d={CHEVRON_PATH} fill={arrowFill} transform="rotate(-90 6 3)" />
+      <svg width="12" height="6" viewBox="0 0 12 6" fill="none" xmlns="http://www.w3.org/2000/svg" className="absolute" style={{ left: 1, top: 5 }} aria-hidden>
+        <path d={CHEVRON_PATH} fill={arrowFill} transform="rotate(90 6 3)" />
       </svg>
     </span>
   );

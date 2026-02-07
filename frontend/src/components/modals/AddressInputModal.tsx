@@ -923,8 +923,8 @@ export default function AddressInputModal({
             />
           </div>
 
-          {/* Кнопки навигации */}
-          <div className="flex-shrink-0 flex gap-[5px] px-[15px] pb-[15px] pt-[10px]">
+          {/* Кнопки навигации — стрелочки и «Далее» по центру по вертикали */}
+          <div className="flex-shrink-0 flex items-center gap-[5px] px-[15px] pb-[15px] pt-[10px]">
             <button
               onClick={handleScrollUp}
               disabled={!hasSuggestions}
@@ -944,7 +944,7 @@ export default function AddressInputModal({
             <button
               onClick={handleNext}
               disabled={!canProceed}
-              className="flex-1 rounded-[10px] flex items-center justify-center text-center text-white min-h-[50px] disabled:cursor-not-allowed"
+              className="flex-1 rounded-[10px] flex items-center justify-center text-center text-white h-[50px] disabled:cursor-not-allowed"
               style={{
                 boxSizing: 'border-box',
                 background: canProceed ? '#101010' : 'rgba(16, 16, 16, 0.25)',

@@ -812,7 +812,7 @@ export default function AddressInputModal({
           className="flex-shrink-0 flex flex-col rounded-[20px] bg-white overflow-hidden min-h-0"
           style={{
             width: '360px',
-            maxWidth: 'calc(100% - 40px)',
+            maxWidth: 'min(360px, calc(100vw - 40px))',
             marginLeft: 'auto',
             marginRight: 'auto',
             marginTop: 'auto',

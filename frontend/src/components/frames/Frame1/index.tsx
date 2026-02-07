@@ -372,7 +372,10 @@ function AddressFormContent() {
             borderRadius: 20,
             display: 'flex',
             flexDirection: 'column',
-            padding: '12px 15px 20px 15px',
+            paddingTop: 12,
+            paddingRight: 15,
+            paddingBottom: 'calc(20px + env(safe-area-inset-bottom, 0px))',
+            paddingLeft: 15,
             boxSizing: 'border-box',
             gap: 8,
           }}

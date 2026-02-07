@@ -1162,8 +1162,9 @@ function Frame3Content() {
         </div>
       )}
 
-      {/* Контейнер карусели: на всю ширину 400px; отступы 20px задаются в globals.css (padding / спейсеры на мобильных) */}
+      {/* Контейнер карусели: 400px (на мобильных 397px через .carousel-wrapper для подглядывания 7px второй карточки) */}
       <div
+        className="carousel-wrapper"
         style={{
           position: 'absolute',
           left: 0,

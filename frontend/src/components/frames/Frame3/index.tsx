@@ -1159,20 +1159,15 @@ function Frame3Content() {
         </div>
       )}
 
-     {/* Белый блок карусели — как в Frame1: 15px от краёв, 20px от низа браузера, скругление 20px */}
+      {/* Контейнер карусели: отступы как в Frame1 — 20px от низа браузера */}
       <div
-        className="absolute box-border bg-white"
         style={{
-          left: 15,
-          right: 15,
+          position: 'absolute',
+          left: '5%',
+          right: '5%',
           top: '32.18%',
           bottom: 'max(20px, env(safe-area-inset-bottom, 0px))',
-          background: '#FFFFFF',
-          borderRadius: 20,
           zIndex: 1,
-          display: 'flex',
-          flexDirection: 'column',
-          overflow: 'hidden',
         }}
         onClick={(e) => {
           if (showFavoritesMode && e.target === e.currentTarget) {
@@ -1185,16 +1180,16 @@ function Frame3Content() {
         {/* Горизонтальный скролл с карточками — 360×445, gap 5px */}
         <div
           ref={scrollRef}
-          className="flex overflow-x-auto scrollbar-hide flex-nowrap carousel-container flex-1 min-h-0"
+          className="flex overflow-x-auto scrollbar-hide flex-nowrap carousel-container h-full"
           style={{
             gap: '5px',
             scrollSnapType: 'x mandatory',
             WebkitOverflowScrolling: 'touch',
             scrollbarWidth: 'none',
             msOverflowStyle: 'none',
-            paddingLeft: 20,
-            paddingRight: 20,
-            paddingBottom: 20,
+            paddingLeft: '20px',
+            paddingRight: '20px',
+            paddingBottom: '20px',
           }}
           onClick={(e) => {
             if (showFavoritesMode && e.target === e.currentTarget) {

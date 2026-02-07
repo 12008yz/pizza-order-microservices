@@ -1053,7 +1053,7 @@ function Frame3Content() {
         onClose={() => setShowFavoriteToast(false)}
       />
 
-      {/* Стрелка переключения тарифа — выше блока с карточкой: выравнивание по верху карточки минус высота кнопки и отступ */}
+      {/* Стрелка переключения тарифа — выше блока с карточкой, выровнена по правому краю карточки (карточка заканчивается в 15px от правого края фрейма) */}
       {!showFavoritesMode && (
         <div
           className="cursor-pointer"
@@ -1061,7 +1061,7 @@ function Frame3Content() {
             position: 'absolute',
             width: '40px',
             height: '40px',
-            left: '340px',
+            right: '15px',
             top: 230,
             zIndex: 5,
           }}

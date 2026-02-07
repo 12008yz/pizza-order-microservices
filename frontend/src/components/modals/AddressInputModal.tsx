@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { Check, CaretUp, CaretDown } from '@phosphor-icons/react';
+import { Check } from '@phosphor-icons/react';
 import { useAddress } from '../../contexts/AddressContext';
 import { locationsService } from '../../services/locations.service';
 import type { AddressSuggestion } from '../../services/api/types';
@@ -102,7 +102,8 @@ export default function AddressInputModal({
       setScrollOffset(0);
       setBuildingStructure(null);
       setKeyboardHeight(0);
-      setTimeout(() => inputRef.current?.focus(), 100);
+      // Задержка для iOS: фокус только в поле ввода, курсор не уходит в кнопки/подсказки
+      setTimeout(() => inputRef.current?.focus(), 200);
     }
   }, [isOpen, initialStep]);
 
@@ -491,9 +492,14 @@ export default function AddressInputModal({
     };
   }, [query, currentStep, addressData.cityId, addressData.city, addressData.streetId, addressData.buildingId, addressData.entrance, addressData.floor]);
 
+  const refocusInput = () => {
+    setTimeout(() => inputRef.current?.focus(), 0);
+  };
+
   const handleSelect = (realIndex: number) => {
     if (realIndex < suggestions.length) {
       setSelectedIndex(realIndex);
+      refocusInput();
     }
   };
 
@@ -509,6 +515,7 @@ export default function AddressInputModal({
       if (lastIndex >= scrollOffset + maxVisible) {
         setScrollOffset(Math.max(0, lastIndex - maxVisible + 1));
       }
+      refocusInput();
       return;
     }
     
@@ -521,6 +528,7 @@ export default function AddressInputModal({
     if (newIndex < scrollOffset) {
       setScrollOffset(newIndex);
     }
+    refocusInput();
   };
 
   const handleScrollDown = () => {
@@ -530,6 +538,7 @@ export default function AddressInputModal({
     if (selectedIndex === null) {
       setSelectedIndex(0);
       setScrollOffset(0);
+      refocusInput();
       return;
     }
     
@@ -542,6 +551,7 @@ export default function AddressInputModal({
     if (newIndex >= scrollOffset + maxVisible) {
       setScrollOffset(newIndex - maxVisible + 1);
     }
+    refocusInput();
   };
 
   const handleNext = () => {
@@ -707,6 +717,7 @@ export default function AddressInputModal({
       updateApartmentNumber(selected?.apartmentId || undefined, cleanApartment);
       onComplete();
     }
+    refocusInput();
   };
 
   const [isAnimating, setIsAnimating] = useState(false);
@@ -859,6 +870,8 @@ export default function AddressInputModal({
                   return (
                     <div
                       key={suggestion.id ?? index}
+                      role="option"
+                      tabIndex={-1}
                       onClick={() => handleSelect(index)}
                       className="flex items-center justify-between px-[15px] cursor-pointer w-full"
                       style={{
@@ -903,6 +916,8 @@ export default function AddressInputModal({
             <input
               ref={inputRef}
               type="text"
+              autoComplete="off"
+              enterKeyHint="next"
               value={query}
               onChange={(e) => {
                 setQuery(e.target.value);
@@ -923,36 +938,52 @@ export default function AddressInputModal({
             />
           </div>
 
-          {/* Кнопки навигации — стрелочки и «Далее» по центру по вертикали */}
+          {/* Кнопки навигации — стрелочки выровнены по центру главной кнопки */}
           <div className="flex-shrink-0 flex items-center gap-[5px] px-[15px] pb-[15px] pt-[10px]">
             <button
+              type="button"
+              tabIndex={-1}
               onClick={handleScrollUp}
+              onPointerDown={(e) => e.currentTarget.blur()}
               disabled={!hasSuggestions}
               className="rounded-[10px] flex items-center justify-center flex-shrink-0 w-[50px] h-[50px] border border-[rgba(16,16,16,0.15)] bg-transparent disabled:opacity-25"
               style={{ cursor: hasSuggestions ? 'pointer' : 'default' }}
             >
-              <CaretUp size={12} weight="regular" color="#101010" />
+              <svg width="12" height="6" viewBox="0 0 12 6" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ transform: 'rotate(180deg)' }}>
+                <path d="M0.112544 5.34082L5.70367 0.114631C5.7823 0.0412287 5.88888 -5.34251e-07 6 -5.24537e-07C6.11112 -5.14822e-07 6.2177 0.0412287 6.29633 0.114631L11.8875 5.34082C11.9615 5.41513 12.0019 5.5134 11.9999 5.61495C11.998 5.7165 11.954 5.81338 11.8772 5.8852C11.8004 5.95701 11.6967 5.99815 11.5881 5.99994C11.4794 6.00173 11.3743 5.96404 11.2948 5.8948L6 0.946249L0.705204 5.8948C0.625711 5.96404 0.520573 6.00173 0.411936 5.99994C0.3033 5.99815 0.199649 5.95701 0.12282 5.88519C0.04599 5.81338 0.00198176 5.71649 6.48835e-05 5.61495C-0.00185199 5.5134 0.0384722 5.41513 0.112544 5.34082Z" fill="#101010" />
+              </svg>
             </button>
             <button
+              type="button"
+              tabIndex={-1}
               onClick={handleScrollDown}
+              onPointerDown={(e) => e.currentTarget.blur()}
               disabled={!hasSuggestions}
               className="rounded-[10px] flex items-center justify-center flex-shrink-0 w-[50px] h-[50px] border border-[rgba(16,16,16,0.15)] bg-transparent disabled:opacity-25"
               style={{ cursor: hasSuggestions ? 'pointer' : 'default' }}
             >
-              <CaretDown size={12} weight="regular" color="#101010" />
+              <svg width="12" height="6" viewBox="0 0 12 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M0.112544 5.34082L5.70367 0.114631C5.7823 0.0412287 5.88888 -5.34251e-07 6 -5.24537e-07C6.11112 -5.14822e-07 6.2177 0.0412287 6.29633 0.114631L11.8875 5.34082C11.9615 5.41513 12.0019 5.5134 11.9999 5.61495C11.998 5.7165 11.954 5.81338 11.8772 5.8852C11.8004 5.95701 11.6967 5.99815 11.5881 5.99994C11.4794 6.00173 11.3743 5.96404 11.2948 5.8948L6 0.946249L0.705204 5.8948C0.625711 5.96404 0.520573 6.00173 0.411936 5.99994C0.3033 5.99815 0.199649 5.95701 0.12282 5.88519C0.04599 5.81338 0.00198176 5.71649 6.48835e-05 5.61495C-0.00185199 5.5134 0.0384722 5.41513 0.112544 5.34082Z" fill="#101010" />
+              </svg>
             </button>
             <button
+              type="button"
+              tabIndex={-1}
               onClick={handleNext}
+              onPointerDown={(e) => e.currentTarget.blur()}
               disabled={!canProceed}
-              className="flex-1 rounded-[10px] flex items-center justify-center text-center text-white h-[50px] disabled:cursor-not-allowed"
+              className="flex-1 rounded-[10px] flex items-center justify-center text-center text-white min-h-[50px] max-h-[50px] disabled:cursor-not-allowed"
               style={{
                 boxSizing: 'border-box',
+                height: 50,
+                minHeight: 50,
+                maxHeight: 50,
                 background: canProceed ? '#101010' : 'rgba(16, 16, 16, 0.25)',
                 border: '1px solid rgba(16, 16, 16, 0.25)',
                 fontFamily: 'TT Firs Neue, sans-serif',
                 fontWeight: 400,
                 fontSize: '16px',
-                lineHeight: '315%',
+                lineHeight: 1,
                 cursor: canProceed ? 'pointer' : 'not-allowed',
                 transition: 'background-color 0.2s ease',
               }}

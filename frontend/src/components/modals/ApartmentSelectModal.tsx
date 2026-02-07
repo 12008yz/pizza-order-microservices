@@ -148,7 +148,7 @@ export default function ApartmentSelectModal({
             </div>
           </div>
 
-          <div className="flex gap-[10px]">
+          <div className="flex gap-[5px]">
             <button
               onClick={onClose}
               className="flex-1 px-4 py-3 border border-[rgba(16,16,16,0.15)] rounded-[10px] hover:bg-gray-50 transition-colors"

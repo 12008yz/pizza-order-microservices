@@ -430,7 +430,7 @@ function Frame4Content() {
       style={{
         minHeight: '100dvh',
         paddingTop: 'var(--sat, 0px)',
-        paddingBottom: 'max(20px, var(--sab, 0px))',
+        paddingBottom: 'var(--sab, 0px)',
         boxSizing: 'border-box',
       }}
     >

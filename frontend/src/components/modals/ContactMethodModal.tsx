@@ -22,8 +22,8 @@ export default function ContactMethodModal({
       style={{ paddingTop: 'var(--sat, 0px)', paddingBottom: 'calc(20px + env(safe-area-inset-bottom, 0px))' }}
     >
       <div
-        className="bg-white rounded-[20px] p-6 max-w-[400px] w-full mx-4 overflow-y-auto"
-        style={{ maxHeight: 'calc(100dvh - var(--sat, 0px) - var(--sab, 0px) - 80px)' }}
+        className="bg-white rounded-[20px] p-6 w-full mx-4 overflow-y-auto"
+      style={{ width: '360px', maxWidth: 'calc(100vw - 32px)', maxHeight: 'calc(100dvh - var(--sat, 0px) - var(--sab, 0px) - 80px)' }}
       >
         <h2 className="text-xl mb-4">Выбор способа связи</h2>
         <div className="space-y-2 mb-4">

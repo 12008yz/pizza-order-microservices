@@ -38,7 +38,7 @@ export default function EquipmentModal({
     >
       {/* Контейнер — как во Frame2: шапка сверху, карточка прижата вниз и подстраивается по высоте под контент */}
       <div
-        className={`relative w-full max-w-[400px] flex flex-col h-full overflow-hidden bg-[#F5F5F5] ${className}`}
+        className={`relative w-full max-w-[360px] flex flex-col h-full overflow-hidden bg-[#F5F5F5] ${className}`}
         style={{ boxSizing: 'border-box' }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -72,10 +72,10 @@ export default function EquipmentModal({
 
         {/* Карточка — прижата вниз (без лишнего отступа, только safe-area); высота по контенту, при переполнении — прокрутка внутри */}
         <div
-          className="flex flex-col rounded-[20px] bg-white mx-[5%] overflow-y-auto overflow-x-hidden"
+          className="flex flex-col rounded-[20px] bg-white overflow-y-auto overflow-x-hidden"
           style={{
             width: '360px',
-            maxWidth: '360px',
+            maxWidth: 'calc(100% - 40px)',
             marginLeft: 'auto',
             marginRight: 'auto',
             marginTop: 'auto',

@@ -780,7 +780,7 @@ export default function AddressInputModal({
       {/* Контейнер — header и карточка влезают в экран, прокрутка только внутри карточки */}
       <div
         onClick={handleContainerClick}
-        className="relative w-full max-w-[400px] flex flex-col flex-1 min-h-0 overflow-hidden bg-[#F5F5F5]"
+        className="relative w-full max-w-[360px] flex flex-col flex-1 min-h-0 overflow-hidden bg-[#F5F5F5]"
         style={{
           transform: isAnimating ? 'translateY(0)' : 'translateY(100px)',
           transition: 'opacity 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
@@ -811,7 +811,8 @@ export default function AddressInputModal({
         <div
           className="flex-shrink-0 flex flex-col rounded-[20px] bg-white overflow-hidden min-h-0"
           style={{
-            maxWidth: '360px',
+            width: '360px',
+            maxWidth: 'calc(100% - 40px)',
             marginLeft: 'auto',
             marginRight: 'auto',
             marginTop: 'auto',

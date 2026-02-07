@@ -52,7 +52,7 @@ export default function SortingModal({
     >
       {/* Контейнер — header и карточка, карточка прижата вниз */}
       <div
-        className="relative w-full max-w-[400px] flex flex-col h-full overflow-hidden bg-[#F5F5F5]"
+        className="relative w-full max-w-[360px] flex flex-col h-full overflow-hidden bg-[#F5F5F5]"
         style={{ boxSizing: 'border-box' }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -82,9 +82,10 @@ export default function SortingModal({
 
         {/* Карточка — компактная, прижата вниз с отступом 20px */}
         <div
-          className="flex flex-col frame-card mx-[5%]"
+          className="flex flex-col frame-card"
           style={{
-            maxWidth: '360px',
+            width: '360px',
+            maxWidth: 'calc(100% - 40px)',
             marginLeft: 'auto',
             marginRight: 'auto',
             marginTop: 'auto',

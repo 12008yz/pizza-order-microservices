@@ -102,7 +102,7 @@ export default function ConnectionTypeModal({
     >
       {/* Контейнер — header и карточка влезают в экран, карточка прижата вниз */}
       <div
-        className="relative w-full max-w-[400px] flex flex-col h-full overflow-hidden bg-[#F5F5F5]"
+        className="relative w-full max-w-[360px] flex flex-col h-full overflow-hidden bg-[#F5F5F5]"
         style={{
           transform: isAnimating ? 'translateY(0)' : 'translateY(100px)',
           opacity: isAnimating ? 1 : 0,
@@ -125,13 +125,13 @@ export default function ConnectionTypeModal({
             className="font-normal flex items-center justify-center text-center"
             style={{
               width: '240px',
-              margin: '0 auto',
-              paddingTop: '75px',
               height: '30px',
+              margin: '0 auto',
+              paddingTop: '84px',
               fontFamily: 'TT Firs Neue, sans-serif',
               fontSize: '14px',
-              lineHeight: '105%',
-              color: 'rgba(16, 16, 16, 0.15)',
+              lineHeight: '15px',
+              color: 'rgba(16, 16, 16, 0.25)',
               letterSpacing: '0.5px',
             }}
           >
@@ -141,14 +141,15 @@ export default function ConnectionTypeModal({
 
         {/* Карточка по макету: 20px отступы по бокам, 360px ширина, padding 20px, radius 20px */}
         <div
-          className="flex flex-col frame-card flex-shrink-0"
+          className="flex flex-col frame-card flex-shrink-0 rounded-[20px]"
           style={{
             width: '360px',
-            maxWidth: 'calc(100% - 40px)',
+            maxWidth: 'min(360px, calc(100vw - 40px))',
             marginLeft: 'auto',
             marginRight: 'auto',
             marginTop: 'auto',
             marginBottom: 0,
+            background: '#FFFFFF',
             backdropFilter: 'blur(7.5px)',
             maxHeight: 'min(420px, calc(100dvh - 145px))',
             overflow: 'hidden',
@@ -161,7 +162,7 @@ export default function ConnectionTypeModal({
               style={{
                 fontFamily: 'TT Firs Neue, sans-serif',
                 fontSize: '20px',
-                lineHeight: '125%',
+                lineHeight: '25px',
                 color: '#101010',
               }}
             >
@@ -173,8 +174,8 @@ export default function ConnectionTypeModal({
                 marginTop: '12px',
                 fontFamily: 'TT Firs Neue, sans-serif',
                 fontSize: '14px',
-                lineHeight: '105%',
-                color: 'rgba(16, 16, 16, 0.5)',
+                lineHeight: '15px',
+                color: 'rgba(16, 16, 16, 0.25)',
               }}
             >
               Мы подготовили доступные тарифные планы. Пожалуйста, проверьте правильность
@@ -206,7 +207,7 @@ export default function ConnectionTypeModal({
                       fontFamily: 'TT Firs Neue, sans-serif',
                       fontWeight: 400,
                       fontSize: '16px',
-                      lineHeight: '125%',
+                      lineHeight: '20px',
                       color: selectedType === type.value ? '#101010' : 'rgba(16, 16, 16, 0.5)',
                     }}
                   >
@@ -253,10 +254,11 @@ export default function ConnectionTypeModal({
                 boxSizing: 'border-box',
                 height: '50px',
                 background: selectedType ? '#101010' : 'rgba(16, 16, 16, 0.25)',
-                border: 'none',
+                border: '1px solid rgba(16, 16, 16, 0.25)',
                 fontFamily: 'TT Firs Neue, sans-serif',
                 fontWeight: 400,
                 fontSize: '16px',
+                lineHeight: '50px',
                 cursor: selectedType ? 'pointer' : 'not-allowed',
                 transition: 'background-color 0.2s ease',
               }}

@@ -1159,14 +1159,14 @@ function Frame3Content() {
         </div>
       )}
 
-      {/* Rectangle 30 — карточка по макету: left 5% right 5% top 32.18% bottom 16.67%, без скролла */}
+      {/* Rectangle 30 — карточка: left 5% right 5% top 32.18%, 20px от нижней строки браузера (мобильная версия) */}
       <div
         style={{
           position: 'absolute',
           left: '5%',
           right: '5%',
           top: '32.18%',
-          bottom: '16.67%',
+          bottom: 'calc(20px + env(safe-area-inset-bottom, 0px))',
           zIndex: 1,
         }}
         onClick={(e) => {

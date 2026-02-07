@@ -728,11 +728,12 @@ function Frame3Content() {
       }}
       onClick={showFavoritesMode ? handleFavoritesModeBackgroundClick : undefined}
     >
-      {/* 400×viewport: высота по видимой области (100svh), карусель до 20px от браузерной строки */}
+      {/* Адаптивная ширина: 100% на малых экранах, макс 400px — карусель и карточки подстраиваются */}
       <div
         className="relative flex flex-col overflow-hidden"
         style={{
-          width: '400px',
+          width: '100%',
+          maxWidth: '400px',
           height: '100%',
           minHeight: 0,
           background: '#F5F5F5',
@@ -1200,10 +1201,8 @@ function Frame3Content() {
         >
           {tariffsLoading ? (
             <div
-              className="flex-shrink-0"
+              className="flex-shrink-0 carousel-card"
               style={{
-                width: '360px',
-                minWidth: '360px',
                 minHeight: '445px',
                 background: '#FFFFFF',
                 borderRadius: '20px',
@@ -1220,10 +1219,8 @@ function Frame3Content() {
             </div>
           ) : tariffsError ? (
             <div
-              className="flex-shrink-0"
+              className="flex-shrink-0 carousel-card"
               style={{
-                width: '360px',
-                minWidth: '360px',
                 minHeight: '445px',
                 background: '#FFFFFF',
                 borderRadius: '20px',
@@ -1240,10 +1237,8 @@ function Frame3Content() {
             </div>
           ) : !tariffsLoading && displayedTariffs.length === 0 ? (
             <div
-              className="flex-shrink-0"
+              className="flex-shrink-0 carousel-card"
               style={{
-                width: '360px',
-                minWidth: '360px',
                 minHeight: '445px',
                 background: '#FFFFFF',
                 borderRadius: '20px',
@@ -1272,15 +1267,14 @@ function Frame3Content() {
             {displayedTariffs.map((tariff, index) => (
               <div
                 key={`tariff-${tariff.id}-${tariff.providerId}-${index}`}
-                className="flex-shrink-0"
+                className="flex-shrink-0 carousel-card"
                 style={{
                   position: 'relative',
-                  width: '360px',
-                  minWidth: '360px',
                   height: '100%',
                   minHeight: 0,
                   background: '#FFFFFF',
                   borderRadius: '20px',
+                  boxShadow: '0 2px 12px rgba(16, 16, 16, 0.08)',
                   scrollSnapAlign: 'start',
                   boxSizing: 'border-box',
                   overflow: 'hidden',
@@ -1317,13 +1311,13 @@ function Frame3Content() {
                   >
                     {tariff.tariffName}
                   </div>
-                  {/* Line 8: top 75px from card → marginTop 18px (15+20+18≈53+22 line) */}
+                  {/* Line 8: разделитель на всю ширину контента (карточка гибкая) */}
                   <div
                     style={{
                       marginTop: '18px',
                       height: '1px',
                       background: 'rgba(16, 16, 16, 0.1)',
-                      width: '330px',
+                      width: '100%',
                     }}
                   />
                 </div>
@@ -1485,8 +1479,8 @@ function Frame3Content() {
                   </div>
                 </div>
 
-                {/* Футер с ценой и кнопками — отступы 20px */}
-                <div style={{ padding: '0 20px 20px 20px', flexShrink: 0, position: 'relative' }}>
+                {/* Футер с ценой и кнопками — по макету 8.75% = 15px от края карточки */}
+                <div style={{ padding: '0 15px 20px 15px', flexShrink: 0, position: 'relative' }}>
                   {/* Line 9 - Разделитель перед ценой */}
                   <div
                     style={{

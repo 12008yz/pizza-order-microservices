@@ -28,7 +28,7 @@ export default function SortingOptions() {
         className="absolute flex items-center gap-2"
         style={{
           left: '20px',
-          top: '180px',
+          top: 120,
         }}
       >
         <button

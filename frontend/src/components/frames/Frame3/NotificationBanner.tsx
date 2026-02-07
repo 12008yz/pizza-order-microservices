@@ -42,10 +42,10 @@ export default function NotificationBanner({
     <div
       className="absolute left-1/2 -translate-x-1/2 bg-white backdrop-blur-[7.5px] rounded-[20px]"
       style={{
-        width: '360px',
-        height: '85px',
-        top: '75px',
-        padding: '15px',
+        width: 360,
+        height: 85,
+        top: 120,
+        padding: 15,
       }}
       onClick={(e) => e.stopPropagation()}
     >

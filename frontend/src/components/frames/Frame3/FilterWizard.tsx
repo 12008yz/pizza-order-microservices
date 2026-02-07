@@ -155,15 +155,15 @@ export default function FilterWizard({ isOpen, onClose, onApply }: FilterWizardP
                boxSizing: 'border-box',
             }}
          >
-            {/* Шапка: подсказка (клик по пустоте закрывает — обрабатывается корневым onClick) */}
-            <div className="flex-shrink-0 cursor-pointer" style={{ minHeight: '105px' }}>
+            {/* Шапка: подсказка (клик по пустоте закрывает — обрабатывается корневым onClick), всплывающие окна 120px от верха */}
+            <div className="flex-shrink-0 cursor-pointer" style={{ minHeight: 150 }}>
                <div
                   className="font-normal flex items-center justify-center text-center"
                   style={{
-                     width: '240px',
+                     width: 240,
                      margin: '0 auto',
-                     paddingTop: '75px',
-                     height: '30px',
+                     paddingTop: 120,
+                     height: 30,
                      fontFamily: 'TT Firs Neue, sans-serif',
                      fontSize: '14px',
                      lineHeight: '105%',

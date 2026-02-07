@@ -21,14 +21,14 @@ export default function HintTooltip({ text, onAccept, onDecline, position }: Hin
    const getPositionStyles = () => {
       if (position === 'consultation') {
          return {
-            left: '175px',
-            top: '120px',
+            left: 175,
+            top: 120,
          };
       } else {
-         // Фильтрация: под воронкой, right 64.6px
+         // Фильтрация: под воронкой, right 65px
          return {
-            right: '64.6px',
-            top: '120px',
+            right: 65,
+            top: 120,
          };
       }
    };

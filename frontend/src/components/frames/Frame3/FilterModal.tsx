@@ -34,19 +34,19 @@ export default function FilterModal({ isOpen, onClose }: FilterModalProps) {
           style={{ boxSizing: 'border-box' }}
           onClick={(e) => e.stopPropagation()}
         >
-          {/* Шапка: подсказка */}
+          {/* Шапка: подсказка, всплывающие окна 120px от верха */}
           <div
             className="flex-shrink-0 cursor-pointer"
-            style={{ minHeight: '105px' }}
+            style={{ minHeight: 150 }}
             onClick={onClose}
           >
             <div
               className="font-normal flex items-center justify-center text-center"
               style={{
-                width: '240px',
+                width: 240,
                 margin: '0 auto',
-                paddingTop: '75px',
-                height: '30px',
+                paddingTop: 120,
+                height: 30,
                 fontFamily: 'TT Firs Neue, sans-serif',
                 fontSize: '14px',
                 lineHeight: '105%',

@@ -1058,7 +1058,7 @@ function Frame3Content() {
             width: '40px',
             height: '40px',
             left: '340px',
-            top: 180,
+            top: 230,
             zIndex: 5,
           }}
           onClick={withClickGuard((e) => {
@@ -1135,7 +1135,7 @@ function Frame3Content() {
             width: '40px',
             height: '40px',
             left: '20px',
-            top: 180,
+            top: 230,
             zIndex: 5,
           }}
           onClick={withClickGuard(handleClearFilters)}
@@ -1165,7 +1165,7 @@ function Frame3Content() {
           position: 'absolute',
           left: 20,
           right: 20,
-          top: 230,
+          top: 280,
           bottom: 20,
           zIndex: 1,
         }}

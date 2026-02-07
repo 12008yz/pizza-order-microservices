@@ -47,7 +47,7 @@ export default function FavoriteToast({ isVisible, onClose }: FavoriteToastProps
             width: '205px',
             height: '90px',
             left: '85px',
-            top: '120px',
+            top: 120,
             background: '#FFFFFF',
             borderRadius: '20px 10px 20px 20px',
             boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',

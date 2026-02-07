@@ -134,6 +134,37 @@ body {
   color: var(--frame-color-muted);
 }
 
+/* Карусель Frame3: отступы через padding на десктопе, через спейсер (часть контента) на мобильных */
+.carousel-container {
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+/* Спейсеры на десктопе не занимают места */
+.carousel-spacer-left,
+.carousel-spacer-right {
+  min-width: 0;
+  width: 0;
+  flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+  .carousel-container {
+    padding-left: 0;
+    padding-right: 0;
+    scroll-padding-left: 20px;
+    scroll-padding-right: 20px;
+  }
+
+  /* На мобильных спейсеры — 20px часть прокручиваемого контента: при скролле уезжают, карточку не обрезает padding */
+  .carousel-container > .carousel-spacer-left,
+  .carousel-container > .carousel-spacer-right {
+    min-width: 20px !important;
+    width: 20px !important;
+    flex-shrink: 0;
+  }
+}
+
 /* Отступ между полями в формах */
 .frame-fields-gap {
   gap: var(--frame-field-gap);

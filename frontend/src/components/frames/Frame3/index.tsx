@@ -1162,12 +1162,12 @@ function Frame3Content() {
         </div>
       )}
 
-      {/* Контейнер карусели: 20px от низа видимой области (браузерной строки), учёт safe-area */}
+      {/* Контейнер карусели: на всю ширину 400px; отступы 20px задаются в globals.css (padding / спейсеры на мобильных) */}
       <div
         style={{
           position: 'absolute',
-          left: 20,
-          right: 20,
+          left: 0,
+          right: 0,
           top: 280,
           bottom: 'calc(20px + env(safe-area-inset-bottom, 0px))',
           zIndex: 1,
@@ -1190,8 +1190,6 @@ function Frame3Content() {
             WebkitOverflowScrolling: 'touch',
             scrollbarWidth: 'none',
             msOverflowStyle: 'none',
-            paddingLeft: '20px',
-            paddingRight: '20px',
           }}
           onClick={(e) => {
             if (showFavoritesMode && e.target === e.currentTarget) {
@@ -1269,6 +1267,7 @@ function Frame3Content() {
             </div>
           ) : (
             <>
+            <div className="carousel-spacer-left" aria-hidden="true" />
             {displayedTariffs.map((tariff, index) => (
               <div
                 key={`tariff-${tariff.id}-${tariff.providerId}-${index}`}
@@ -1645,6 +1644,7 @@ function Frame3Content() {
                 </div>
               </div>
             ))}
+            <div className="carousel-spacer-right" aria-hidden="true" />
             </>
           )}
         </div>

@@ -720,12 +720,12 @@ function Frame3Content() {
       style={{
         fontFamily: 'TT Firs Neue, sans-serif',
         paddingTop: 'var(--sat, 0px)',
-        paddingBottom: 'var(--sab, 0px)',
+        paddingBottom: 'max(20px, env(safe-area-inset-bottom, 0px))',
         background: '#F5F5F5',
       }}
       onClick={showFavoritesMode ? handleFavoritesModeBackgroundClick : undefined}
     >
-      {/* 400×viewport: без скролла, карточка по макету 5% / 32.18% / 16.67% */}
+      {/* 400×viewport: как в Frame1 — контент + 20px от низа (белый блок карусели не доходит до низа) */}
       <div
         className="relative flex flex-col overflow-hidden"
         style={{
@@ -734,7 +734,6 @@ function Frame3Content() {
           maxHeight: '100dvh',
           background: '#F5F5F5',
           boxSizing: 'border-box',
-          paddingBottom: 'max(20px, env(safe-area-inset-bottom, 0px))',
         }}
       >
         {showFavoritesMode ? (
@@ -1160,15 +1159,20 @@ function Frame3Content() {
         </div>
       )}
 
-      {/* Rectangle 30 — карточка: left 5% right 5% top 32.18%, 20px от нижней строки браузера (мобильная версия) */}
+     {/* Белый блок карусели — как в Frame1: 15px от краёв, 20px от низа браузера, скругление 20px */}
       <div
+        className="absolute box-border bg-white"
         style={{
-          position: 'absolute',
-          left: '5%',
-          right: '5%',
+          left: 15,
+          right: 15,
           top: '32.18%',
           bottom: 'max(20px, env(safe-area-inset-bottom, 0px))',
+          background: '#FFFFFF',
+          borderRadius: 20,
           zIndex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          overflow: 'hidden',
         }}
         onClick={(e) => {
           if (showFavoritesMode && e.target === e.currentTarget) {
@@ -1181,16 +1185,16 @@ function Frame3Content() {
         {/* Горизонтальный скролл с карточками — 360×445, gap 5px */}
         <div
           ref={scrollRef}
-          className="flex overflow-x-auto scrollbar-hide flex-nowrap carousel-container h-full"
+          className="flex overflow-x-auto scrollbar-hide flex-nowrap carousel-container flex-1 min-h-0"
           style={{
             gap: '5px',
             scrollSnapType: 'x mandatory',
             WebkitOverflowScrolling: 'touch',
             scrollbarWidth: 'none',
             msOverflowStyle: 'none',
-            paddingLeft: '20px',
-            paddingRight: '20px',
-            paddingBottom: '20px',
+            paddingLeft: 20,
+            paddingRight: 20,
+            paddingBottom: 20,
           }}
           onClick={(e) => {
             if (showFavoritesMode && e.target === e.currentTarget) {

@@ -319,8 +319,9 @@ function Frame4Content() {
         // Подключение текущего номера — спрашиваем статус клиента МТС
         setCurrentStep('sim_client_status');
       } else if (connectionType === 'new_number') {
-        // Подключение нового номера — переходим к количеству смартфонов
-        setCurrentStep('sim_smartphone_count');
+        // Подключение нового номера — сразу на 5 фрейм (оформление заказа)
+        saveEquipment(equipmentState);
+        router.push('/order');
       }
     } else if (currentStep === 'sim_client_status') {
       // После выбора статуса клиента показываем информационный экран о регистрации на человека

@@ -249,7 +249,7 @@ export default function FilterWizard({ isOpen, onClose, onApply }: FilterWizardP
                </div>
 
                {/* Кнопки навигации */}
-               <div className="flex gap-[10px]">
+               <div className="flex items-center gap-[10px]">
                   <button
                      type="button"
                      onClick={handleBack}

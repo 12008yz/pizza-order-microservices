@@ -109,7 +109,7 @@ export default function TechAccessModal({ isOpen, onClose }: TechAccessModalProp
               Выбрать квартиру
             </button>
 
-            <div className="flex gap-[10px]">
+            <div className="flex items-center gap-[10px]">
               <button
                 type="button"
                 onClick={onClose}

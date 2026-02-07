@@ -412,7 +412,7 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
         </div>
 
         {/* Кнопки внизу */}
-        <div className="flex gap-[10px]">
+        <div className="flex items-center gap-[10px]">
           <button
             type="button"
             onClick={handleBack}
@@ -551,7 +551,7 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
           />
         </div>
 
-        <div className="flex gap-[10px]">
+        <div className="flex items-center gap-[10px]">
           <button
             type="button"
             onClick={handleBack}

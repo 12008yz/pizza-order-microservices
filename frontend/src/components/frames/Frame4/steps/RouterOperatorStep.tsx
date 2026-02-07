@@ -89,7 +89,7 @@ export default function RouterOperatorStep({
         </div>
       </div>
 
-      <div className="flex-shrink-0 flex gap-[10px] px-[15px] pb-[15px] pt-[10px]">
+      <div className="flex-shrink-0 flex items-center gap-[10px] px-[15px] pb-[15px] pt-[10px]">
         <button
           type="button"
           onClick={onBack}

@@ -113,11 +113,11 @@ export default function TechAccessModal({ isOpen, onClose }: TechAccessModalProp
               <button
                 type="button"
                 onClick={onClose}
-                className="outline-none cursor-pointer flex-1 px-4 py-3 border border-[rgba(16,16,16,0.15)] rounded-[10px] hover:bg-gray-50 transition-colors"
+                className="outline-none cursor-pointer flex-1 px-4 py-3 border border-[rgba(16,16,16,0.15)] rounded-[10px] hover:bg-gray-50 transition-colors h-[50px]"
                 style={{
                   fontFamily: 'TT Firs Neue, sans-serif',
                   fontSize: '16px',
-                  minHeight: '50px',
+                  height: '50px',
                 }}
               >
                 Назад
@@ -125,11 +125,11 @@ export default function TechAccessModal({ isOpen, onClose }: TechAccessModalProp
               <button
                 type="button"
                 onClick={onClose}
-                className="outline-none cursor-pointer flex-1 px-4 py-3 bg-[#101010] text-white rounded-[10px] hover:bg-gray-800 transition-colors"
+                className="outline-none cursor-pointer flex-1 px-4 py-3 bg-[#101010] text-white rounded-[10px] hover:bg-gray-800 transition-colors h-[50px]"
                 style={{
                   fontFamily: 'TT Firs Neue, sans-serif',
                   fontSize: '16px',
-                  minHeight: '50px',
+                  height: '50px',
                 }}
               >
                 Далее

@@ -284,10 +284,10 @@ export default function FilterWizard({ isOpen, onClose, onApply }: FilterWizardP
                      onMouseLeave={() => setIsNextBtnPressed(false)}
                      onTouchStart={() => setIsNextBtnPressed(true)}
                      onTouchEnd={() => setIsNextBtnPressed(false)}
-                     className="outline-none cursor-pointer flex-1 rounded-[10px] flex items-center justify-center text-white min-h-[50px]"
+                     className="outline-none cursor-pointer flex-1 rounded-[10px] flex items-center justify-center text-white h-[50px]"
                      style={{
                         background: '#101010',
-                        minHeight: '50px',
+                        height: '50px',
                         fontFamily: 'TT Firs Neue, sans-serif',
                         fontSize: '16px',
                         transform: isNextBtnPressed ? 'scale(0.97)' : 'scale(1)',

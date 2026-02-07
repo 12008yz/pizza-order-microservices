@@ -133,7 +133,7 @@ export default function SimInfoStep({ infoType, showBothWarningsWithDelay = fals
           onMouseLeave={() => setIsNextPressed(false)}
           onTouchStart={() => canProceed && setIsNextPressed(true)}
           onTouchEnd={() => setIsNextPressed(false)}
-          className="outline-none flex-1 rounded-[10px] flex items-center justify-center text-center min-h-[50px] border border-solid"
+          className="outline-none flex-1 rounded-[10px] flex items-center justify-center text-center h-[50px] border border-solid"
           style={{
             borderColor: 'rgba(16, 16, 16, 0.25)',
             fontFamily: 'TT Firs Neue, sans-serif',

@@ -151,7 +151,7 @@ export default function TvBoxOperatorStep({
           onMouseLeave={() => setIsNextPressed(false)}
           onTouchStart={() => setIsNextPressed(true)}
           onTouchEnd={() => setIsNextPressed(false)}
-          className="outline-none rounded-[10px] flex items-center justify-center text-center text-white min-h-[50px] flex-1"
+          className="outline-none rounded-[10px] flex items-center justify-center text-center text-white h-[50px] flex-1"
           style={{
             background: '#101010',
             border: '1px solid rgba(16, 16, 16, 0.25)',

@@ -164,7 +164,7 @@ export default function SimOperatorStep({
           onMouseLeave={() => setIsNextPressed(false)}
           onTouchStart={() => setIsNextPressed(true)}
           onTouchEnd={() => setIsNextPressed(false)}
-          className="outline-none cursor-pointer flex-1 rounded-[10px] flex items-center justify-center text-center text-white min-h-[50px]"
+          className="outline-none cursor-pointer flex-1 rounded-[10px] flex items-center justify-center text-center text-white h-[50px]"
           style={{
             background: '#101010',
             border: '1px solid rgba(16, 16, 16, 0.25)',

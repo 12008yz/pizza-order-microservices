@@ -444,10 +444,10 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
             onTouchStart={() => setIsNextBtnPressed(true)}
             onTouchEnd={() => setIsNextBtnPressed(false)}
             disabled={!selectedMethod}
-            className="outline-none flex-1 rounded-[10px] flex items-center justify-center text-white cursor-pointer min-h-[50px] disabled:cursor-not-allowed"
+            className="outline-none flex-1 rounded-[10px] flex items-center justify-center text-white cursor-pointer h-[50px] disabled:cursor-not-allowed"
             style={{
               background: selectedMethod ? '#101010' : 'rgba(16, 16, 16, 0.25)',
-              minHeight: '50px',
+              height: '50px',
               fontFamily: 'TT Firs Neue, sans-serif',
               fontSize: '16px',
               transform: isNextBtnPressed && selectedMethod ? 'scale(0.97)' : 'scale(1)',
@@ -583,10 +583,10 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
             onTouchStart={() => setIsPhoneNextBtnPressed(true)}
             onTouchEnd={() => setIsPhoneNextBtnPressed(false)}
             disabled={!isPhoneValid}
-            className="outline-none flex-1 rounded-[10px] flex items-center justify-center text-white cursor-pointer min-h-[50px] disabled:cursor-not-allowed"
+            className="outline-none flex-1 rounded-[10px] flex items-center justify-center text-white cursor-pointer h-[50px] disabled:cursor-not-allowed"
             style={{
               background: isPhoneValid ? '#101010' : 'rgba(16, 16, 16, 0.25)',
-              minHeight: '50px',
+              height: '50px',
               fontFamily: 'TT Firs Neue, sans-serif',
               fontSize: '16px',
               transform: isPhoneNextBtnPressed && isPhoneValid ? 'scale(0.97)' : 'scale(1)',

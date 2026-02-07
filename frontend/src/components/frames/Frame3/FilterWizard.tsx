@@ -138,7 +138,7 @@ export default function FilterWizard({ isOpen, onClose, onApply }: FilterWizardP
             background: '#F5F5F5',
             backdropFilter: 'blur(12.5px)',
             paddingTop: 'var(--sat, 0px)',
-            paddingBottom: 'calc(20px + env(safe-area-inset-bottom, 0px))',
+            paddingBottom: 'var(--sab, 0px)',
             height: '100dvh',
             boxSizing: 'border-box',
             opacity: isAnimating ? 1 : 0,

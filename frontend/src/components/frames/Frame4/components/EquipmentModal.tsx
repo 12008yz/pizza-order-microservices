@@ -25,7 +25,7 @@ export default function EquipmentModal({
 
   return (
     <div
-      className="fixed inset-0 z-[10000] flex flex-col items-center overflow-hidden"
+      className="fixed inset-0 z-[10000] flex flex-col items-center overflow-hidden cursor-pointer"
       style={{
         background: '#F5F5F5',
         backdropFilter: 'blur(12.5px)',
@@ -36,14 +36,22 @@ export default function EquipmentModal({
       }}
       onClick={handleBackdropClick}
     >
-      {/* Контейнер — header и карточка влезают в экран, прокрутка только внутри карточки */}
+      {/* Контейнер — как во Frame2: шапка сверху, карточка прижата вниз и подстраивается по высоте под контент */}
       <div
         className={`relative w-full max-w-[400px] flex flex-col h-full overflow-hidden bg-[#F5F5F5] ${className}`}
         style={{ boxSizing: 'border-box' }}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Шапка: подсказка */}
-        <div className="flex-shrink-0" style={{ minHeight: '105px' }}>
+        {/* Шапка: подсказка (клик по пустому месту закрывает модалку, как во Frame2) */}
+        <div
+          className="flex-shrink-0 cursor-pointer"
+          style={{ minHeight: '105px' }}
+          onClick={onClose}
+          onKeyDown={(e) => e.key === 'Enter' && onClose()}
+          role="button"
+          tabIndex={0}
+          aria-label="Закрыть"
+        >
           <div
             className="font-normal flex items-center justify-center text-center"
             style={{
@@ -54,7 +62,7 @@ export default function EquipmentModal({
               fontFamily: 'TT Firs Neue, sans-serif',
               fontSize: '14px',
               lineHeight: '105%',
-              color: 'rgba(16, 16, 16, 0.25)',
+              color: 'rgba(16, 16, 16, 0.15)',
               letterSpacing: '0.5px',
             }}
           >
@@ -62,18 +70,17 @@ export default function EquipmentModal({
           </div>
         </div>
 
-        {/* Карточка — занимает остаток экрана, контент шага прокручивается внутри */}
+        {/* Карточка — прижата вниз (без лишнего отступа, только safe-area); высота по контенту, при переполнении — прокрутка внутри */}
         <div
-          className="flex flex-col rounded-[20px] bg-white mx-[5%] overflow-hidden"
+          className="flex flex-col rounded-[20px] bg-white mx-[5%] overflow-y-auto overflow-x-hidden"
           style={{
-            width: '100%',
             maxWidth: '360px',
             marginLeft: 'auto',
             marginRight: 'auto',
             marginTop: 'auto',
-            marginBottom: '20px',
-            backdropFilter: 'blur(7.5px)',
+            marginBottom: 0,
             maxHeight: 'calc(100dvh - 145px)',
+            WebkitOverflowScrolling: 'touch',
           }}
           onClick={(e) => e.stopPropagation()}
         >

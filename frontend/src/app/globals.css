@@ -94,14 +94,14 @@ body {
   padding-right: var(--sar);
 }
 
-/* Общий контейнер для фреймов 1–4: 400px, отступ снизу от браузерной строки */
+/* Общий контейнер для фреймов 1–4: 400px, без лишнего отступа снизу (только safe-area при необходимости) */
 .frame-container {
   width: 100%;
   max-width: var(--frame-width);
   margin-left: auto;
   margin-right: auto;
   min-height: 100dvh;
-  padding-bottom: max(var(--frame-side), env(safe-area-inset-bottom, 0px));
+  padding-bottom: var(--sab);
   box-sizing: border-box;
 }
 

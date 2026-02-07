@@ -1171,7 +1171,7 @@ function Frame3Content() {
           left: 0,
           right: 0,
           top: 280,
-          bottom: 'calc(20px + env(safe-area-inset-bottom, 0px))',
+          bottom: 'var(--sab, 0px)',
           zIndex: 1,
         }}
         onClick={(e) => {

@@ -1192,7 +1192,6 @@ function Frame3Content() {
             msOverflowStyle: 'none',
             paddingLeft: '20px',
             paddingRight: '20px',
-            paddingBottom: '20px',
           }}
           onClick={(e) => {
             if (showFavoritesMode && e.target === e.currentTarget) {

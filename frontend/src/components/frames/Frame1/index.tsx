@@ -270,8 +270,10 @@ function AddressFormContent() {
     <div
       className="fixed inset-0 z-[9999] flex flex-col items-center overflow-hidden"
       style={{
+        height: '100dvh',
+        boxSizing: 'border-box',
         paddingTop: 'var(--sat, 0px)',
-        paddingBottom: 'calc(20px + var(--sab, 0px))',
+        paddingBottom: 'calc(28px + env(safe-area-inset-bottom, 0px))',
         background: '#F5F5F5',
       }}
     >

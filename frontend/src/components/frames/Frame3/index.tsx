@@ -1059,7 +1059,7 @@ function Frame3Content() {
             width: '40px',
             height: '40px',
             left: '340px',
-            top: 'calc(32.18% - 48px)',
+            top: 'calc(32.18% - 50px)',
             zIndex: 5,
           }}
           onClick={withClickGuard((e) => {
@@ -1136,7 +1136,7 @@ function Frame3Content() {
             width: '40px',
             height: '40px',
             left: '20px',
-            top: 'calc(32.18% - 48px)',
+            top: 'calc(32.18% - 50px)',
             zIndex: 5,
           }}
           onClick={withClickGuard(handleClearFilters)}

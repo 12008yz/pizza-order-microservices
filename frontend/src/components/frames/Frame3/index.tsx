@@ -716,22 +716,25 @@ function Frame3Content() {
 
   return (
     <div
-      className="fixed inset-0 flex items-center justify-center overflow-hidden"
+      className="fixed inset-0 flex justify-center overflow-hidden"
       style={{
         fontFamily: 'TT Firs Neue, sans-serif',
         paddingTop: 'var(--sat, 0px)',
-        paddingBottom: 20,
         background: '#F5F5F5',
+        height: '100svh',
+        maxHeight: '100svh',
+        boxSizing: 'border-box',
+        alignItems: 'stretch',
       }}
       onClick={showFavoritesMode ? handleFavoritesModeBackgroundClick : undefined}
     >
-      {/* 400×viewport: как в Frame1 — контент + 20px от низа (белый блок карусели не доходит до низа) */}
+      {/* 400×viewport: высота по видимой области (100svh), карусель до 20px от браузерной строки */}
       <div
         className="relative flex flex-col overflow-hidden"
         style={{
           width: '400px',
-          height: '100dvh',
-          maxHeight: '100dvh',
+          height: '100%',
+          minHeight: 0,
           background: '#F5F5F5',
           boxSizing: 'border-box',
         }}
@@ -1159,14 +1162,14 @@ function Frame3Content() {
         </div>
       )}
 
-      {/* Контейнер карусели: отступы как в Frame1 — 20px от низа браузера */}
+      {/* Контейнер карусели: 20px от низа видимой области (браузерной строки), учёт safe-area */}
       <div
         style={{
           position: 'absolute',
           left: 20,
           right: 20,
           top: 280,
-          bottom: 20,
+          bottom: 'calc(20px + env(safe-area-inset-bottom, 0px))',
           zIndex: 1,
         }}
         onClick={(e) => {

@@ -734,6 +734,7 @@ function Frame3Content() {
           maxHeight: '100dvh',
           background: '#F5F5F5',
           boxSizing: 'border-box',
+          paddingBottom: 'max(20px, env(safe-area-inset-bottom, 0px))',
         }}
       >
         {showFavoritesMode ? (
@@ -1049,7 +1050,7 @@ function Frame3Content() {
         onClose={() => setShowFavoriteToast(false)}
       />
 
-      {/* Group 7509 — по макету: 40×40, left 340px top 230px */}
+      {/* Стрелка переключения тарифа — выше блока с карточкой: выравнивание по верху карточки минус высота кнопки и отступ */}
       {!showFavoritesMode && (
         <div
           className="cursor-pointer"
@@ -1058,7 +1059,7 @@ function Frame3Content() {
             width: '40px',
             height: '40px',
             left: '340px',
-            top: '230px',
+            top: 'calc(32.18% - 48px)',
             zIndex: 5,
           }}
           onClick={withClickGuard((e) => {
@@ -1126,7 +1127,7 @@ function Frame3Content() {
         </div>
       )}
 
-      {/* Кнопка сброса фильтра — left 20px top 230px (рядом со стрелкой по макету нет, оставляем для UX) */}
+      {/* Кнопка сброса фильтра — слева, на одной линии со стрелкой (выше блока карточки) */}
       {isFilterActive && !showFavoritesMode && (
         <div
           className="cursor-pointer"
@@ -1135,7 +1136,7 @@ function Frame3Content() {
             width: '40px',
             height: '40px',
             left: '20px',
-            top: '230px',
+            top: 'calc(32.18% - 48px)',
             zIndex: 5,
           }}
           onClick={withClickGuard(handleClearFilters)}
@@ -1166,7 +1167,7 @@ function Frame3Content() {
           left: '5%',
           right: '5%',
           top: '32.18%',
-          bottom: 'calc(20px + env(safe-area-inset-bottom, 0px))',
+          bottom: 'max(20px, env(safe-area-inset-bottom, 0px))',
           zIndex: 1,
         }}
         onClick={(e) => {

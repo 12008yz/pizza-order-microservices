@@ -267,10 +267,11 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
         {renderNotifications}
       </div>
 
-      {/* Карточка — прижата вниз, 20px от браузерной строки за счёт paddingBottom оверлея */}
+      {/* Карточка — прижата вниз, 20px от браузерной строки за счёт paddingBottom оверлея; 360×460px */}
       <div
         className="flex flex-col rounded-[20px] bg-white mx-[5%]"
         style={{
+          width: '360px',
           maxWidth: '360px',
           marginLeft: 'auto',
           marginRight: 'auto',
@@ -490,6 +491,7 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
       <div
         className="flex flex-col rounded-[20px] bg-white mx-[5%]"
         style={{
+          width: '360px',
           maxWidth: '360px',
           marginLeft: 'auto',
           marginRight: 'auto',
@@ -620,7 +622,7 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
         opacity: isAnimating ? 1 : 0,
         transition: 'opacity 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
         paddingTop: 'var(--sat, 0px)',
-        paddingBottom: 'var(--sab, 0px)',
+        paddingBottom: 'calc(20px + var(--sab, 0px))',
         height: '100dvh',
         boxSizing: 'border-box',
       }}

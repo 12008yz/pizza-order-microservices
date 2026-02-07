@@ -430,7 +430,7 @@ function Frame4Content() {
       style={{
         minHeight: '100dvh',
         paddingTop: 'var(--sat, 0px)',
-        paddingBottom: 'var(--sab, 0px)',
+        paddingBottom: 'max(20px, var(--sab, 0px))',
         boxSizing: 'border-box',
       }}
     >
@@ -607,7 +607,7 @@ function Frame4Content() {
             onClick={(e) => e.stopPropagation()}
             className="flex flex-col rounded-[20px] bg-white overflow-hidden"
             style={{
-              width: 'calc(100% - 40px)',
+              width: '360px',
               maxWidth: '360px',
               marginLeft: 'auto',
               marginRight: 'auto',

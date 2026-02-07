@@ -271,18 +271,18 @@ function AddressFormContent() {
       className="fixed inset-0 z-[9999] flex flex-col items-center overflow-hidden"
       style={{
         paddingTop: 'var(--sat, 0px)',
-        paddingBottom: 'var(--sab, 0px)',
+        paddingBottom: 'max(20px, var(--sab, 0px))',
         background: '#F5F5F5',
       }}
     >
-      {/* 400px ширина; высота до низа без лишнего отступа (только safe-area при необходимости) */}
+      {/* 400px ширина; отступ снизу 20px + safe-area */}
       <div
         className="relative bg-[#F5F5F5]"
         style={{
           width: 400,
           minWidth: 400,
           maxWidth: 400,
-          minHeight: 230 + 495,
+          minHeight: 230 + 495 + 20,
           boxSizing: 'border-box',
         }}
       >

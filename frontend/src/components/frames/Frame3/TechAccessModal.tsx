@@ -21,7 +21,7 @@ export default function TechAccessModal({ isOpen, onClose }: TechAccessModalProp
           background: '#F5F5F5',
           backdropFilter: 'blur(12.5px)',
           paddingTop: 'var(--sat, 0px)',
-          paddingBottom: 'var(--sab, 0px)',
+          paddingBottom: 'calc(20px + env(safe-area-inset-bottom, 0px))',
           height: '100dvh',
           boxSizing: 'border-box',
         }}
@@ -57,7 +57,7 @@ export default function TechAccessModal({ isOpen, onClose }: TechAccessModalProp
             </div>
           </div>
 
-          {/* Карточка — компактная, прижата вниз с отступом 20px */}
+          {/* Карточка — прижата вниз, 20px от низа за счёт paddingBottom оверлея (как в Frame2) */}
           <div
             className="flex flex-col rounded-[20px] bg-white mx-[5%]"
             style={{
@@ -65,7 +65,7 @@ export default function TechAccessModal({ isOpen, onClose }: TechAccessModalProp
               marginLeft: 'auto',
               marginRight: 'auto',
               marginTop: 'auto',
-              marginBottom: '20px',
+              marginBottom: 0,
               padding: '15px',
             }}
             onClick={(e) => e.stopPropagation()}

@@ -720,7 +720,7 @@ function Frame3Content() {
       style={{
         fontFamily: 'TT Firs Neue, sans-serif',
         paddingTop: 'var(--sat, 0px)',
-        paddingBottom: 'max(20px, env(safe-area-inset-bottom, 0px))',
+        paddingBottom: 20,
         background: '#F5F5F5',
       }}
       onClick={showFavoritesMode ? handleFavoritesModeBackgroundClick : undefined}

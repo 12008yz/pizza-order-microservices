@@ -17,22 +17,19 @@ const ConsultationFlow = dynamic(() => import('../Frame2/ConsultationFlow'), {
   ssr: false,
 });
 
-/** Стрелка назад (как в модалках): тот же шеврон, error/active — цвет заливки */
-const CHEVRON_PATH = 'M0.112544 5.34082L5.70367 0.114631C5.7823 0.0412287 5.88888 -5.34251e-07 6 -5.24537e-07C6.11112 -5.14822e-07 6.2177 0.0412287 6.29633 0.114631L11.8875 5.34082C11.9615 5.41513 12.0019 5.5134 11.9999 5.61495C11.998 5.7165 11.954 5.81338 11.8772 5.8852C11.8004 5.95701 11.6967 5.99815 11.5881 5.99994C11.4794 6.00173 11.3743 5.96404 11.2948 5.8948L6 0.946249L0.705204 5.8948C0.625711 5.96404 0.520573 6.00173 0.411936 5.99994C0.3033 5.99815 0.199649 5.95701 0.12282 5.88519C0.04599 5.81338 0.00198176 5.71649 6.48835e-05 5.61495C-0.00185199 5.5134 0.0384722 5.41513 0.112544 5.34082Z';
+/** Круг + стрелка вправо из макета (один path разбит на круг и стрелку для разной заливки по состояниям) */
+const CIRCLE_PATH = 'M-3.49691e-07 8C-2.80529e-07 9.58225 0.469192 11.129 1.34824 12.4446C2.22729 13.7602 3.47672 14.7855 4.93853 15.391C6.40034 15.9965 8.00887 16.155 9.56072 15.8463C11.1126 15.5376 12.538 14.7757 13.6569 13.6569C14.7757 12.538 15.5376 11.1126 15.8463 9.56072C16.155 8.00887 15.9965 6.40034 15.391 4.93853C14.7855 3.47672 13.7602 2.22729 12.4446 1.34824C11.129 0.469192 9.58225 5.34821e-07 8 6.03983e-07C5.87895 0.00224088 3.84542 0.845815 2.34562 2.34562C0.845813 3.84543 0.00223942 5.87895 -3.49691e-07 8Z';
+const ARROW_PATH = 'M7.20461 4.48769L10.2815 7.56461C10.3388 7.62177 10.3841 7.68964 10.4151 7.76434C10.4461 7.83905 10.462 7.91913 10.462 8C10.462 8.08087 10.4461 8.16095 10.4151 8.23565C10.3841 8.31036 10.3388 8.37823 10.2815 8.43538L7.20461 11.5123C7.08914 11.6278 6.93253 11.6926 6.76923 11.6926C6.60593 11.6926 6.44932 11.6278 6.33384 11.5123C6.21837 11.3968 6.1535 11.2402 6.1535 11.0769C6.1535 10.9136 6.21837 10.757 6.33384 10.6415L8.97615 8L6.33384 5.35846C6.27667 5.30129 6.23132 5.23341 6.20037 5.1587C6.16943 5.084 6.1535 5.00393 6.1535 4.92308C6.1535 4.84222 6.16943 4.76215 6.20037 4.68745C6.23132 4.61274 6.27667 4.54487 6.33384 4.48769C6.39102 4.43052 6.4589 4.38516 6.5336 4.35422C6.6083 4.32328 6.68837 4.30735 6.76923 4.30735C6.85009 4.30735 6.93015 4.32328 7.00486 4.35422C7.07956 4.38516 7.14744 4.43052 7.20461 4.48769Z';
 
 function FieldArrowIcon({ active, error }: { active: boolean; error?: boolean }) {
   const circleFill = error ? 'rgb(239, 68, 68)' : active ? '#000000' : '#FFFFFF';
   const circleStroke = error ? 'rgb(239, 68, 68)' : active ? '#000000' : 'rgba(16, 16, 16, 0.35)';
   const arrowFill = error || active ? '#FFFFFF' : '#101010';
   return (
-    <span className="relative inline-block" style={{ width: 16, height: 16 }}>
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" className="absolute inset-0">
-        <circle cx="8" cy="8" r="7.5" fill={circleFill} stroke={circleStroke} strokeWidth={1} />
-      </svg>
-      <svg width="12" height="6" viewBox="0 0 12 6" fill="none" xmlns="http://www.w3.org/2000/svg" className="absolute" style={{ left: 1, top: 5 }} aria-hidden>
-        <path d={CHEVRON_PATH} fill={arrowFill} transform="rotate(90 6 3)" />
-      </svg>
-    </span>
+    <svg width={16} height={16} viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" className="block shrink-0" aria-hidden>
+      <path d={CIRCLE_PATH} fill={circleFill} stroke={circleStroke} strokeWidth={1} />
+      <path d={ARROW_PATH} fill={arrowFill} />
+    </svg>
   );
 }
 
@@ -444,10 +441,12 @@ function AddressFormContent() {
                 boxSizing: 'content-box',
                 background: addressData.errors.connectionType
                   ? 'rgb(239, 68, 68)'
-                  : isFieldActive(0) || addressData.connectionType
-                    ? '#000000'
-                    : '#FFFFFF',
-                border: addressData.errors.connectionType || addressData.connectionType || isFieldActive(0) ? 'none' : '0.1px solid rgba(16, 16, 16, 0.2)',
+                  : addressData.connectionType
+                    ? '#6B6B6B'
+                    : isFieldActive(0)
+                      ? '#000000'
+                      : '#FFFFFF',
+                border: 'none',
               }}
             >
               {addressData.connectionType && !addressData.errors.connectionType ? (
@@ -506,10 +505,12 @@ function AddressFormContent() {
                 boxSizing: 'content-box',
                 background: addressData.errors.city
                   ? 'rgb(239, 68, 68)'
-                  : isFieldActive(1) || addressData.city
-                    ? '#000000'
-                    : '#FFFFFF',
-                border: addressData.errors.city || addressData.city || isFieldActive(1) ? 'none' : '0.1px solid rgba(16, 16, 16, 0.5)',
+                  : addressData.city
+                    ? '#6B6B6B'
+                    : isFieldActive(1)
+                      ? '#000000'
+                      : '#FFFFFF',
+                border: 'none',
               }}
             >
               {addressData.city && !addressData.errors.city ? (
@@ -569,10 +570,12 @@ function AddressFormContent() {
                 boxSizing: 'content-box',
                 background: addressData.errors.street
                   ? 'rgb(239, 68, 68)'
-                  : isFieldActive(2) || addressData.street
-                    ? '#000000'
-                    : '#FFFFFF',
-                border: addressData.errors.street || addressData.street || isFieldActive(2) ? 'none' : '0.1px solid rgba(16, 16, 16, 0.5)',
+                  : addressData.street
+                    ? '#6B6B6B'
+                    : isFieldActive(2)
+                      ? '#000000'
+                      : '#FFFFFF',
+                border: 'none',
               }}
             >
               {addressData.street && !addressData.errors.street ? (
@@ -634,10 +637,12 @@ function AddressFormContent() {
                 boxSizing: 'content-box',
                 background: addressData.errors.houseNumber
                   ? 'rgb(239, 68, 68)'
-                  : isFieldActive(3) || addressData.houseNumber
-                    ? '#000000'
-                    : '#FFFFFF',
-                border: addressData.errors.houseNumber || addressData.houseNumber || isFieldActive(3) ? 'none' : '0.1px solid rgba(16, 16, 16, 0.5)',
+                  : addressData.houseNumber
+                    ? '#6B6B6B'
+                    : isFieldActive(3)
+                      ? '#000000'
+                      : '#FFFFFF',
+                border: 'none',
               }}
             >
               {addressData.houseNumber && !addressData.errors.houseNumber ? (

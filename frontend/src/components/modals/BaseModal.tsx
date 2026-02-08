@@ -8,6 +8,8 @@ interface BaseModalProps {
   children: React.ReactNode;
   backdropBlur?: boolean;
   className?: string;
+  /** Скрыть подсказку «Нажмите в открытое пустое место…» */
+  hideHint?: boolean;
 }
 
 export default function BaseModal({
@@ -16,6 +18,7 @@ export default function BaseModal({
   children,
   backdropBlur = true,
   className = '',
+  hideHint = false,
 }: BaseModalProps) {
   if (!isOpen) return null;
 
@@ -37,29 +40,30 @@ export default function BaseModal({
       }}
       onClick={handleBackdropClick}
     >
-      {/* Подсказка сверху */}
-      <div
-        style={{
-          position: 'absolute',
-          width: '240px',
-          height: '30px',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          top: '75px',
-          fontFamily: 'TT Firs Neue, sans-serif',
-          fontStyle: 'normal',
-          fontWeight: 400,
-          fontSize: '14px',
-          lineHeight: '105%',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          textAlign: 'center',
-          color: 'rgba(16, 16, 16, 0.15)',
-        }}
-      >
-        Нажмите в открытое пустое место, чтобы выйти из этого режима
-      </div>
+      {!hideHint && (
+        <div
+          style={{
+            position: 'absolute',
+            width: '240px',
+            height: '30px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            top: '75px',
+            fontFamily: 'TT Firs Neue, sans-serif',
+            fontStyle: 'normal',
+            fontWeight: 400,
+            fontSize: '14px',
+            lineHeight: '105%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            textAlign: 'center',
+            color: 'rgba(16, 16, 16, 0.15)',
+          }}
+        >
+          Нажмите в открытое пустое место, чтобы выйти из этого режима
+        </div>
+      )}
 
       <div onClick={(e) => e.stopPropagation()} className={className}>
         {children}

@@ -229,6 +229,18 @@ body {
   }
 }
 
+/* Frame5 — появление шага формы */
+@keyframes frame5StepIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* Frame4 — подсказка при первом появлении */
 @keyframes frame4HintIn {
   from {

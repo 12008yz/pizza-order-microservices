@@ -315,8 +315,8 @@ function Frame5Content() {
               maxWidth: '360px',
               marginLeft: 'auto',
               marginRight: 'auto',
-              marginTop: showHeader ? 0 : 'auto',
-              marginBottom: '20px',
+              marginTop: (step === 'confirmation' || step === 'success') ? 'auto' : (showHeader ? 0 : 'auto'),
+              marginBottom: (step === 'confirmation' || step === 'success') ? 'calc(20px + var(--sab, 0px))' : '20px',
               maxHeight: showHeader ? 'calc(100dvh - 115px)' : 'calc(100dvh - 145px)',
             }}
           >

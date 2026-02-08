@@ -1182,16 +1182,17 @@ function Frame3Content() {
           }
         }}
       >
-        {/* Горизонтальный скролл с карточками — 360×445, gap 5px */}
+        {/* Горизонтальный скролл с карточками. Одна карточка — по центру без скролла; пустой список — блок не двигается. */}
         <div
           ref={scrollRef}
-          className="flex overflow-x-auto scrollbar-hide flex-nowrap carousel-container h-full"
+          className={`flex scrollbar-hide flex-nowrap carousel-container h-full ${displayedTariffs.length > 1 ? 'overflow-x-auto' : 'overflow-x-hidden'} ${displayedTariffs.length === 1 ? 'carousel-container--single-card' : ''}`}
           style={{
             gap: '5px',
-            scrollSnapType: 'x mandatory',
+            scrollSnapType: displayedTariffs.length > 1 ? 'x mandatory' : 'none',
             WebkitOverflowScrolling: 'touch',
             scrollbarWidth: 'none',
             msOverflowStyle: 'none',
+            touchAction: displayedTariffs.length > 1 ? undefined : 'pan-y',
           }}
           onClick={(e) => {
             if (showFavoritesMode && e.target === e.currentTarget) {
@@ -1236,31 +1237,35 @@ function Frame3Content() {
               </p>
             </div>
           ) : !tariffsLoading && displayedTariffs.length === 0 ? (
-            <div
-              className="flex-shrink-0 carousel-card"
-              style={{
-                minHeight: '445px',
-                background: '#FFFFFF',
-                borderRadius: '20px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: '40px',
-                textAlign: 'center',
-              }}
-            >
+            <>
+              <div className="carousel-spacer-left" aria-hidden="true" />
               <div
+                className="flex-shrink-0 carousel-card"
                 style={{
-                  fontFamily: 'TT Firs Neue, sans-serif',
-                  fontSize: '16px',
-                  color: 'rgba(16, 16, 16, 0.5)',
+                  minHeight: '445px',
+                  background: '#FFFFFF',
+                  borderRadius: '20px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: '40px',
+                  textAlign: 'center',
                 }}
               >
-                {showFavoritesMode
-                  ? 'Нет избранных тарифов. Добавьте тарифы в избранное.'
-                  : 'Нет тарифов по выбранным фильтрам. Попробуйте изменить параметры фильтрации.'}
+                <div
+                  style={{
+                    fontFamily: 'TT Firs Neue, sans-serif',
+                    fontSize: '16px',
+                    color: 'rgba(16, 16, 16, 0.5)',
+                  }}
+                >
+                  {showFavoritesMode
+                    ? 'Нет избранных тарифов. Добавьте тарифы в избранное.'
+                    : 'Нет тарифов по выбранным фильтрам. Попробуйте изменить параметры фильтрации.'}
+                </div>
               </div>
-            </div>
+              <div className="carousel-spacer-right" aria-hidden="true" />
+            </>
           ) : (
             <>
             <div className="carousel-spacer-left" aria-hidden="true" />

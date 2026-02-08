@@ -168,13 +168,41 @@ body {
     min-width: calc(100% - 35px);
   }
 
-  /* На мобильных спейсеры — 20px часть прокручиваемого контента */
-  .carousel-container > .carousel-spacer-left,
-  .carousel-container > .carousel-spacer-right {
+  /* На мобильных спейсеры — 20px часть прокручиваемого контента (не для одной карточки, см. ниже) */
+  .carousel-container:not(.carousel-container--single-card) > .carousel-spacer-left,
+  .carousel-container:not(.carousel-container--single-card) > .carousel-spacer-right {
     min-width: 20px !important;
     width: 20px !important;
     flex-shrink: 0;
   }
+
+  /* Одна карточка на мобильных: отступ 20px (15px спейсер + 5px gap), ширина карточки под 15+5+card+5+15 */
+  .carousel-container.carousel-container--single-card > .carousel-spacer-left,
+  .carousel-container.carousel-container--single-card > .carousel-spacer-right {
+    min-width: 15px !important;
+    width: 15px !important;
+    flex: none;
+  }
+  .carousel-container.carousel-container--single-card > .carousel-card {
+    width: calc(100% - 40px) !important;
+    min-width: calc(100% - 40px) !important;
+  }
+}
+
+/* Одна карточка — отступ 20px слева и справа (15px спейсер + 5px gap), ширина карточки 100% − 40px чтобы влезало */
+.carousel-container.carousel-container--single-card {
+  padding-left: 0;
+  padding-right: 0;
+}
+.carousel-container.carousel-container--single-card > .carousel-spacer-left,
+.carousel-container.carousel-container--single-card > .carousel-spacer-right {
+  flex: none;
+  min-width: 15px !important;
+  width: 15px !important;
+}
+.carousel-container.carousel-container--single-card > .carousel-card {
+  width: calc(100% - 40px) !important;
+  min-width: calc(100% - 40px) !important;
 }
 
 /* Отступ между полями в формах */

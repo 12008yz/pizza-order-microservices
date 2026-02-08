@@ -1254,6 +1254,7 @@ function Frame3Content() {
           top: 280,
           bottom: 'calc(20px + var(--sab, 0px))',
           zIndex: 1,
+          background: '#F5F5F5',
         }}
         onClick={(e) => {
           if (showFavoritesMode && e.target === e.currentTarget) {
@@ -1354,14 +1355,13 @@ function Frame3Content() {
             {displayedTariffs.map((tariff, index) => (
               <div
                 key={`tariff-${tariff.id}-${tariff.providerId}-${index}`}
-                className="flex-shrink-0 carousel-card"
+                className="flex-shrink-0 carousel-card carousel-card--shadow-top"
                 style={{
                   position: 'relative',
                   height: '100%',
                   minHeight: 0,
                   background: '#FFFFFF',
                   borderRadius: '20px',
-                  boxShadow: '0 2px 12px rgba(16, 16, 16, 0.08)',
                   scrollSnapAlign: 'start',
                   boxSizing: 'border-box',
                   overflow: 'hidden',
@@ -1660,6 +1660,20 @@ function Frame3Content() {
 
       {/* Стили для скрытия скроллбара, анимации ripple и адаптивных размеров текста */}
       <style jsx>{`
+        /* Тень только у верхних 80% карточки тарифа */
+        .carousel-card--shadow-top::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          height: 80%;
+          border-radius: 20px;
+          background: #FFFFFF;
+          box-shadow: 0 2px 12px rgba(16, 16, 16, 0.08);
+          z-index: -1;
+          pointer-events: none;
+        }
         .scrollbar-hide::-webkit-scrollbar {
           display: none;
         }

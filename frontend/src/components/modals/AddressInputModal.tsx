@@ -157,7 +157,7 @@ export default function AddressInputModal({
               region: item.region,
             }));
           }
-          
+
           // Добавляем опцию "Нет в списке моего адреса" в конец списка
           const notInListOption = {
             id: 'not-in-list-city',
@@ -204,7 +204,7 @@ export default function AddressInputModal({
               streetId: item.streetId,
             }));
           }
-          
+
           // Добавляем опцию "Нет в списке моего адреса" в конец списка
           const notInListOption = {
             id: 'not-in-list-street',
@@ -505,7 +505,7 @@ export default function AddressInputModal({
 
   const handleScrollUp = () => {
     if (suggestions.length === 0) return;
-    
+
     // Если ничего не выбрано, выбираем последнюю подсказку
     if (selectedIndex === null) {
       setSelectedIndex(suggestions.length - 1);
@@ -518,11 +518,11 @@ export default function AddressInputModal({
       refocusInput();
       return;
     }
-    
+
     // Переходим к предыдущей подсказке
     const newIndex = Math.max(0, selectedIndex - 1);
     setSelectedIndex(newIndex);
-    
+
     // Если новая выбранная подсказка не видна, скроллим к ней
     const maxVisible = 3;
     if (newIndex < scrollOffset) {
@@ -533,7 +533,7 @@ export default function AddressInputModal({
 
   const handleScrollDown = () => {
     if (suggestions.length === 0) return;
-    
+
     // Если ничего не выбрано, выбираем первую подсказку
     if (selectedIndex === null) {
       setSelectedIndex(0);
@@ -541,11 +541,11 @@ export default function AddressInputModal({
       refocusInput();
       return;
     }
-    
+
     // Переходим к следующей подсказке
     const newIndex = Math.min(suggestions.length - 1, selectedIndex + 1);
     setSelectedIndex(newIndex);
-    
+
     // Если новая выбранная подсказка не видна, скроллим к ней
     const maxVisible = 3;
     if (newIndex >= scrollOffset + maxVisible) {
@@ -615,7 +615,7 @@ export default function AddressInputModal({
         onComplete();
         return;
       }
-      
+
       // Если выбрана подсказка с квартирой из БД
       if (selected?.isApartmentSuggestion && selected.buildingId && selected.apartmentNumber) {
         const buildingId = selected.buildingId;
@@ -873,16 +873,21 @@ export default function AddressInputModal({
                       role="option"
                       tabIndex={-1}
                       onClick={() => handleSelect(index)}
-                      className="flex items-center justify-between px-[15px] cursor-pointer w-full"
+                      onFocus={() => inputRef.current?.focus()}
+                      className="flex items-center justify-between px-[15px] cursor-pointer w-full select-none"
                       style={{
                         boxSizing: 'border-box',
                         minHeight: suggestions.length === 1 ? 50 : 40,
                         transition: 'background-color 0.2s ease',
                         backgroundColor: 'transparent',
+                        WebkitUserSelect: 'none',
+                        userSelect: 'none',
+                        WebkitTapHighlightColor: 'transparent',
+                        caretColor: 'transparent',
                       }}
                     >
                       <span
-                        className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap"
+                        className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap select-none"
                         style={{
                           fontFamily: 'TT Firs Neue, sans-serif',
                           fontWeight: 400,
@@ -890,6 +895,9 @@ export default function AddressInputModal({
                           lineHeight: '125%',
                           letterSpacing: '1.2px',
                           color: isSelected ? '#101010' : 'rgba(16, 16, 16, 0.5)',
+                          WebkitUserSelect: 'none',
+                          userSelect: 'none',
+                          caretColor: 'transparent',
                         }}
                       >
                         {suggestion.formatted || suggestion.text}
@@ -945,9 +953,16 @@ export default function AddressInputModal({
               tabIndex={-1}
               onClick={handleScrollUp}
               onPointerDown={(e) => e.currentTarget.blur()}
+              onFocus={(e) => { e.currentTarget.blur(); inputRef.current?.focus(); }}
               disabled={!hasSuggestions}
-              className="rounded-[10px] flex items-center justify-center flex-shrink-0 w-[50px] h-[50px] border border-[rgba(16,16,16,0.15)] bg-transparent disabled:opacity-25"
-              style={{ cursor: hasSuggestions ? 'pointer' : 'default' }}
+              className="rounded-[10px] flex items-center justify-center flex-shrink-0 w-[50px] h-[50px] border border-[rgba(16,16,16,0.15)] bg-transparent disabled:opacity-25 select-none"
+              style={{
+                cursor: hasSuggestions ? 'pointer' : 'default',
+                WebkitUserSelect: 'none',
+                userSelect: 'none',
+                WebkitTapHighlightColor: 'transparent',
+                caretColor: 'transparent',
+              }}
             >
               <svg width="12" height="6" viewBox="0 0 12 6" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ transform: 'rotate(180deg)' }}>
                 <path d="M0.112544 5.34082L5.70367 0.114631C5.7823 0.0412287 5.88888 -5.34251e-07 6 -5.24537e-07C6.11112 -5.14822e-07 6.2177 0.0412287 6.29633 0.114631L11.8875 5.34082C11.9615 5.41513 12.0019 5.5134 11.9999 5.61495C11.998 5.7165 11.954 5.81338 11.8772 5.8852C11.8004 5.95701 11.6967 5.99815 11.5881 5.99994C11.4794 6.00173 11.3743 5.96404 11.2948 5.8948L6 0.946249L0.705204 5.8948C0.625711 5.96404 0.520573 6.00173 0.411936 5.99994C0.3033 5.99815 0.199649 5.95701 0.12282 5.88519C0.04599 5.81338 0.00198176 5.71649 6.48835e-05 5.61495C-0.00185199 5.5134 0.0384722 5.41513 0.112544 5.34082Z" fill="#101010" />
@@ -958,9 +973,16 @@ export default function AddressInputModal({
               tabIndex={-1}
               onClick={handleScrollDown}
               onPointerDown={(e) => e.currentTarget.blur()}
+              onFocus={(e) => { e.currentTarget.blur(); inputRef.current?.focus(); }}
               disabled={!hasSuggestions}
-              className="rounded-[10px] flex items-center justify-center flex-shrink-0 w-[50px] h-[50px] border border-[rgba(16,16,16,0.15)] bg-transparent disabled:opacity-25"
-              style={{ cursor: hasSuggestions ? 'pointer' : 'default' }}
+              className="rounded-[10px] flex items-center justify-center flex-shrink-0 w-[50px] h-[50px] border border-[rgba(16,16,16,0.15)] bg-transparent disabled:opacity-25 select-none"
+              style={{
+                cursor: hasSuggestions ? 'pointer' : 'default',
+                WebkitUserSelect: 'none',
+                userSelect: 'none',
+                WebkitTapHighlightColor: 'transparent',
+                caretColor: 'transparent',
+              }}
             >
               <svg width="12" height="6" viewBox="0 0 12 6" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M0.112544 5.34082L5.70367 0.114631C5.7823 0.0412287 5.88888 -5.34251e-07 6 -5.24537e-07C6.11112 -5.14822e-07 6.2177 0.0412287 6.29633 0.114631L11.8875 5.34082C11.9615 5.41513 12.0019 5.5134 11.9999 5.61495C11.998 5.7165 11.954 5.81338 11.8772 5.8852C11.8004 5.95701 11.6967 5.99815 11.5881 5.99994C11.4794 6.00173 11.3743 5.96404 11.2948 5.8948L6 0.946249L0.705204 5.8948C0.625711 5.96404 0.520573 6.00173 0.411936 5.99994C0.3033 5.99815 0.199649 5.95701 0.12282 5.88519C0.04599 5.81338 0.00198176 5.71649 6.48835e-05 5.61495C-0.00185199 5.5134 0.0384722 5.41513 0.112544 5.34082Z" fill="#101010" />
@@ -971,8 +993,9 @@ export default function AddressInputModal({
               tabIndex={-1}
               onClick={handleNext}
               onPointerDown={(e) => e.currentTarget.blur()}
+              onFocus={(e) => { e.currentTarget.blur(); inputRef.current?.focus(); }}
               disabled={!canProceed}
-              className="flex-1 rounded-[10px] flex items-center justify-center text-center text-white min-h-[50px] max-h-[50px] disabled:cursor-not-allowed"
+              className="flex-1 rounded-[10px] flex items-center justify-center text-center text-white min-h-[50px] max-h-[50px] disabled:cursor-not-allowed select-none"
               style={{
                 boxSizing: 'border-box',
                 height: 50,
@@ -986,6 +1009,10 @@ export default function AddressInputModal({
                 lineHeight: 1,
                 cursor: canProceed ? 'pointer' : 'not-allowed',
                 transition: 'background-color 0.2s ease',
+                WebkitUserSelect: 'none',
+                userSelect: 'none',
+                WebkitTapHighlightColor: 'transparent',
+                caretColor: 'transparent',
               }}
             >
               Далее

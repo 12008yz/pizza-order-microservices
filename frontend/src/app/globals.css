@@ -277,3 +277,35 @@ body {
     overflow-y: auto;
   }
 }
+
+/* Предотвращение появления курсора ввода (каретки) в кнопках и неинтерактивных элементах на мобильных устройствах */
+button,
+[role="button"],
+[role="option"],
+.no-caret {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  caret-color: transparent;
+}
+
+/* Дополнительная защита для iOS Safari */
+button:focus,
+[role="button"]:focus,
+[role="option"]:focus {
+  caret-color: transparent;
+  outline: none;
+}
+
+/* Сохраняем курсор только для реальных полей ввода */
+input[type="text"],
+input[type="tel"],
+input[type="email"],
+input[type="number"],
+input[type="search"],
+input[type="password"],
+textarea {
+  caret-color: auto;
+  -webkit-user-select: text;
+  user-select: text;
+}

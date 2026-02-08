@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useMemo, useEffect } from 'react';
+import { useState, useRef, useMemo, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import {
@@ -354,6 +354,7 @@ function Frame3Content() {
   const [clickedButton, setClickedButton] = useState<string | null>(null);
   const [isArrowPressed, setIsArrowPressed] = useState(false);
   const [arrowClicked, setArrowClicked] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
   const [isClearFilterPressed, setIsClearFilterPressed] = useState(false);
   const [showConsultation, setShowConsultation] = useState(false);
   const [showFilterWizard, setShowFilterWizard] = useState(false);
@@ -697,14 +698,32 @@ function Frame3Content() {
     setHintStep('none');
   };
 
+  // Проверка: можно ли ещё листать вправо (не на последней карточке)
+  const updateCanScrollRight = useCallback(() => {
+    const el = scrollRef.current;
+    if (!el || displayedTariffs.length <= 1) {
+      setCanScrollRight(false);
+      return;
+    }
+    const threshold = 2;
+    const atEnd = el.scrollLeft + el.clientWidth >= el.scrollWidth - threshold;
+    setCanScrollRight(!atEnd);
+  }, [displayedTariffs.length]);
+
+  useEffect(() => {
+    updateCanScrollRight();
+  }, [displayedTariffs, updateCanScrollRight]);
+
   // Скролл ровно на одну карточку (ширина карточки + зазор 5px)
   const CARD_GAP = 5;
   const handleScrollRight = () => {
     const el = scrollRef.current;
-    if (!el) return;
+    if (!el || !canScrollRight) return;
+    const threshold = 2;
+    if (el.scrollLeft + el.clientWidth >= el.scrollWidth - threshold) return;
     setArrowClicked(true);
     setTimeout(() => setArrowClicked(false), 400);
-    const firstCard = el.firstElementChild;
+    const firstCard = el.querySelector('.carousel-card');
     const step = firstCard
       ? (firstCard as HTMLElement).offsetWidth + CARD_GAP
       : 390; // fallback: minWidth 385 + gap 5
@@ -1056,7 +1075,7 @@ function Frame3Content() {
       {/* Стрелка переключения тарифа — выше блока с карточкой, выровнена по правому краю карточки (карточка заканчивается в 15px от правого края фрейма) */}
       {!showFavoritesMode && (
         <div
-          className="cursor-pointer"
+          className={canScrollRight && displayedTariffs.length > 1 ? 'cursor-pointer' : ''}
           style={{
             position: 'absolute',
             width: '40px',
@@ -1064,10 +1083,12 @@ function Frame3Content() {
             right: '15px',
             top: 230,
             zIndex: 5,
+            opacity: canScrollRight && displayedTariffs.length > 1 ? 1 : 0.4,
+            pointerEvents: canScrollRight && displayedTariffs.length > 1 ? 'auto' : 'none',
           }}
           onClick={withClickGuard((e) => {
             e.stopPropagation();
-            handleScrollRight();
+            if (canScrollRight && displayedTariffs.length > 1) handleScrollRight();
           })}
           onMouseDown={() => setIsArrowPressed(true)}
           onMouseUp={() => setIsArrowPressed(false)}
@@ -1185,6 +1206,7 @@ function Frame3Content() {
         {/* Горизонтальный скролл с карточками. Одна карточка — по центру без скролла; пустой список — блок не двигается. */}
         <div
           ref={scrollRef}
+          onScroll={updateCanScrollRight}
           className={`flex scrollbar-hide flex-nowrap carousel-container h-full ${displayedTariffs.length > 1 ? 'overflow-x-auto' : 'overflow-x-hidden'} ${displayedTariffs.length === 1 ? 'carousel-container--single-card' : ''}`}
           style={{
             gap: '5px',

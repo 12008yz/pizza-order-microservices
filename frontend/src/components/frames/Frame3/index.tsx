@@ -1072,8 +1072,68 @@ function Frame3Content() {
         onClose={() => setShowFavoriteToast(false)}
       />
 
-      {/* Стрелка переключения тарифа — выше блока с карточкой, выровнена по правому краю карточки (карточка заканчивается в 15px от правого края фрейма) */}
-      {!showFavoritesMode && (
+      {/* Стрелка переключения тарифа — выше блока с карточкой */}
+      {/* В режиме избранного показываем блок с сердечком + стрелкой, иначе — только стрелку */}
+      {showFavoritesMode ? (
+        /* Блок с сердечком и стрелкой в режиме избранного — 70x40 */
+        <div
+          className={canScrollRight && displayedTariffs.length > 1 ? 'cursor-pointer' : ''}
+          style={{
+            position: 'absolute',
+            width: '70px',
+            height: '40px',
+            right: '15px',
+            top: 230,
+            zIndex: 5,
+          }}
+          onClick={(e) => {
+            e.stopPropagation();
+            if (canScrollRight && displayedTariffs.length > 1) {
+              withClickGuard(() => handleScrollRight())();
+            }
+          }}
+        >
+          {/* Белый фон с закруглёнными краями */}
+          <div
+            style={{
+              position: 'absolute',
+              inset: 0,
+              background: '#FFFFFF',
+              borderRadius: '100px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              padding: '0 10px',
+              boxSizing: 'border-box',
+            }}
+          >
+            {/* Красное сердечко слева */}
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M16.6865 4.25C18.0951 4.25159 19.4463 4.81157 20.4424 5.80762C21.3762 6.74144 21.9267 7.98708 21.9932 9.2998L22 9.56348C21.9995 12.6104 19.7234 15.4496 17.2539 17.6123C14.8105 19.7521 12.3114 21.1131 12.1211 21.2139L12.1182 21.2158C12.0818 21.2353 12.0413 21.2461 12 21.2461C11.9587 21.2461 11.9182 21.2353 11.8818 21.2158L11.8789 21.2148L11.3398 20.9102C10.4423 20.3843 8.57862 19.2171 6.74609 17.6123C4.27656 15.4496 2.00049 12.6104 2 9.56348C2.00159 8.15485 2.56157 6.80367 3.55762 5.80762C4.55353 4.8117 5.90408 4.25174 7.3125 4.25C9.10232 4.25 10.645 5.0173 11.6006 6.29004L12 6.82227L12.3994 6.29004C13.3549 5.01753 14.8971 4.25028 16.6865 4.25Z"
+                fill="#FF1000"
+              />
+            </svg>
+
+            {/* Чёрный круг со стрелкой справа */}
+            <div
+              style={{
+                width: '20px',
+                height: '20px',
+                borderRadius: '100px',
+                background: '#101010',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                opacity: canScrollRight && displayedTariffs.length > 1 ? 1 : 0.4,
+              }}
+            >
+              <ArrowCircleRightIcon color="#FFFFFF" isAnimating={arrowClicked} arrowOnly />
+            </div>
+          </div>
+        </div>
+      ) : (
+        /* Обычная стрелка вне режима избранного */
         <div
           className={canScrollRight && displayedTariffs.length > 1 ? 'cursor-pointer' : ''}
           style={{
@@ -1096,7 +1156,7 @@ function Frame3Content() {
           onTouchStart={() => setIsArrowPressed(true)}
           onTouchEnd={() => setIsArrowPressed(false)}
         >
-          {/* Скрин 2: 1) белый внешний круг, 2) чёрный внутренний, 3) белая стрелка вправо */}
+          {/* Белый внешний круг, чёрный внутренний, белая стрелка вправо */}
           <div
             className="w-full h-full flex items-center justify-center relative overflow-hidden"
             style={{
@@ -1121,7 +1181,7 @@ function Frame3Content() {
                 }}
               />
             )}
-            {/* Чёрный круг по центру — меньше, чтобы белого фона было больше */}
+            {/* Чёрный круг по центру */}
             <div
               style={{
                 width: '16.25px',

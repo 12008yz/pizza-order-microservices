@@ -1350,155 +1350,81 @@ function Frame3Content() {
                 </div>
 
                 {/* Контент: left 35px viewport = 15px padding, Group 7574/7573/7499/7575 — gap 5px */}
-                <div style={{ padding: '10px 15px 0 15px', flex: 1, minHeight: 0 }}>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+                <div
+                  className="features-section"
+                  style={{
+                    padding: '10px 15px 0 15px',
+                    flex: 1,
+                    minHeight: 0,
+                    overflowY: 'auto',
+                    WebkitOverflowScrolling: 'touch',
+                  }}
+                >
+                  <div className="features-container" style={{ display: 'flex', flexDirection: 'column' }}>
                     {/* Скорость — 16px 155%, подпись 14px 105% */}
-                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '9px' }}>
-                      <div style={{ width: '16px', height: '16px', flexShrink: 0, marginTop: '2px' }}>
+                    <div className="feature-row" style={{ display: 'flex', alignItems: 'flex-start' }}>
+                      <div className="feature-icon" style={{ flexShrink: 0, marginTop: '2px' }}>
                         <CheckCircleIcon />
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <div
-                          style={{
-                            fontFamily: 'TT Firs Neue, sans-serif',
-                            fontWeight: 400,
-                            fontSize: '16px',
-                            lineHeight: '155%',
-                            color: '#101010',
-                            whiteSpace: 'nowrap',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                          }}
-                        >
+                        <div className="feature-text">
                           {tariff.speed}
                         </div>
-                        <div
-                          style={{
-                            fontFamily: 'TT Firs Neue, sans-serif',
-                            fontWeight: 400,
-                            fontSize: '14px',
-                            lineHeight: '105%',
-                            color: 'rgba(16, 16, 16, 0.5)',
-                            marginTop: '2px',
-                            whiteSpace: 'nowrap',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                          }}
-                        >
+                        <div className="feature-desc">
                           {tariff.speedDesc}
                         </div>
                       </div>
                     </div>
 
                     {/* Каналы — 16px 155%, 14px 105% */}
-                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '9px' }}>
-                      <div style={{ width: '16px', height: '16px', flexShrink: 0, marginTop: '2px' }}>
+                    <div className="feature-row" style={{ display: 'flex', alignItems: 'flex-start' }}>
+                      <div className="feature-icon" style={{ flexShrink: 0, marginTop: '2px' }}>
                         <CheckCircleIcon />
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div
-                          style={{
-                            fontFamily: 'TT Firs Neue, sans-serif',
-                            fontWeight: 400,
-                            fontSize: '16px',
-                            lineHeight: '155%',
-                            color: tariff.channels ? '#101010' : 'rgba(16, 16, 16, 0.35)',
-                            whiteSpace: 'nowrap',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                          }}
+                          className="feature-text"
+                          style={{ color: tariff.channels ? '#101010' : 'rgba(16, 16, 16, 0.35)' }}
                         >
                           {tariff.channels || '—'}
                         </div>
-                        <div
-                          style={{
-                            fontFamily: 'TT Firs Neue, sans-serif',
-                            fontWeight: 400,
-                            fontSize: '14px',
-                            lineHeight: '105%',
-                            color: 'rgba(16, 16, 16, 0.5)',
-                            marginTop: '2px',
-                            whiteSpace: 'nowrap',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                          }}
-                        >
+                        <div className="feature-desc">
                           {tariff.channelsDesc || ' '}
                         </div>
                       </div>
                     </div>
 
                     {/* Мобильная связь — 16px 155%, 14px 105% */}
-                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '9px' }}>
-                      <div style={{ width: '16px', height: '16px', flexShrink: 0, marginTop: '2px' }}>
+                    <div className="feature-row" style={{ display: 'flex', alignItems: 'flex-start' }}>
+                      <div className="feature-icon" style={{ flexShrink: 0, marginTop: '2px' }}>
                         <CheckCircleIcon />
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div
-                          style={{
-                            fontFamily: 'TT Firs Neue, sans-serif',
-                            fontWeight: 400,
-                            fontSize: '16px',
-                            lineHeight: '155%',
-                            color: tariff.mobile ? '#101010' : 'rgba(16, 16, 16, 0.35)',
-                            whiteSpace: 'nowrap',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                          }}
+                          className="feature-text"
+                          style={{ color: tariff.mobile ? '#101010' : 'rgba(16, 16, 16, 0.35)' }}
                         >
                           {tariff.mobile || '—'}
                         </div>
-                        <div
-                          style={{
-                            fontFamily: 'TT Firs Neue, sans-serif',
-                            fontWeight: 400,
-                            fontSize: '14px',
-                            lineHeight: '105%',
-                            color: 'rgba(16, 16, 16, 0.5)',
-                            marginTop: '2px',
-                            whiteSpace: 'nowrap',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                          }}
-                        >
+                        <div className="feature-desc">
                           {tariff.mobileDesc || ' '}
                         </div>
                       </div>
                     </div>
 
                     {/* Кинотеатр / доп. приложение — 16px 155%, 14px 105% */}
-                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '9px' }}>
-                      <div style={{ width: '16px', height: '16px', flexShrink: 0, marginTop: '2px' }}>
+                    <div className="feature-row" style={{ display: 'flex', alignItems: 'flex-start' }}>
+                      <div className="feature-icon" style={{ flexShrink: 0, marginTop: '2px' }}>
                         <CheckCircleIcon />
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div
-                          style={{
-                            fontFamily: 'TT Firs Neue, sans-serif',
-                            fontWeight: 400,
-                            fontSize: '16px',
-                            lineHeight: '155%',
-                            color: tariff.favoriteLabel ? '#101010' : 'rgba(16, 16, 16, 0.35)',
-                            whiteSpace: 'nowrap',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                          }}
+                          className="feature-text"
+                          style={{ color: tariff.favoriteLabel ? '#101010' : 'rgba(16, 16, 16, 0.35)' }}
                         >
                           {tariff.favoriteLabel || '—'}
                         </div>
-                        <div
-                          style={{
-                            fontFamily: 'TT Firs Neue, sans-serif',
-                            fontWeight: 400,
-                            fontSize: '14px',
-                            lineHeight: '105%',
-                            color: 'rgba(16, 16, 16, 0.5)',
-                            marginTop: '2px',
-                            whiteSpace: 'nowrap',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                          }}
-                        >
+                        <div className="feature-desc">
                           {tariff.favoriteDesc || ' '}
                         </div>
                       </div>
@@ -1672,7 +1598,7 @@ function Frame3Content() {
         </div>
       </div>
 
-      {/* Стили для скрытия скроллбара и анимации ripple */}
+      {/* Стили для скрытия скроллбара, анимации ripple и адаптивных размеров текста */}
       <style jsx>{`
         .scrollbar-hide::-webkit-scrollbar {
           display: none;
@@ -1689,6 +1615,140 @@ function Frame3Content() {
           100% {
             transform: scale(2);
             opacity: 0;
+          }
+        }
+
+        /* Скрытие скроллбара в секции фич */
+        .features-section::-webkit-scrollbar {
+          display: none;
+        }
+        .features-section {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+
+        /* Базовые стили для текста фич */
+        .feature-text {
+          font-family: 'TT Firs Neue', sans-serif;
+          font-weight: 400;
+          font-size: 16px;
+          line-height: 155%;
+          color: #101010;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+        .feature-desc {
+          font-family: 'TT Firs Neue', sans-serif;
+          font-weight: 400;
+          font-size: 14px;
+          line-height: 105%;
+          color: rgba(16, 16, 16, 0.5);
+          margin-top: 2px;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+        .features-container {
+          gap: 5px;
+        }
+        .feature-row {
+          gap: 9px;
+        }
+        .feature-icon {
+          width: 16px;
+          height: 16px;
+        }
+
+        /* Адаптация для экранов с высотой < 750px */
+        @media (max-height: 750px) {
+          .feature-text {
+            font-size: 15px;
+            line-height: 145%;
+          }
+          .feature-desc {
+            font-size: 13px;
+            line-height: 100%;
+          }
+          .features-container {
+            gap: 4px !important;
+          }
+          .features-section {
+            padding-top: 8px !important;
+          }
+        }
+
+        /* Адаптация для экранов с высотой < 700px */
+        @media (max-height: 700px) {
+          .feature-text {
+            font-size: 14px;
+            line-height: 135%;
+          }
+          .feature-desc {
+            font-size: 12px;
+            line-height: 95%;
+            margin-top: 1px;
+          }
+          .features-container {
+            gap: 3px !important;
+          }
+          .feature-row {
+            gap: 7px !important;
+          }
+          .features-section {
+            padding-top: 6px !important;
+          }
+        }
+
+        /* Адаптация для экранов с высотой < 650px */
+        @media (max-height: 650px) {
+          .feature-text {
+            font-size: 13px;
+            line-height: 125%;
+          }
+          .feature-desc {
+            font-size: 11px;
+            line-height: 90%;
+            margin-top: 0px;
+          }
+          .features-container {
+            gap: 2px !important;
+          }
+          .feature-row {
+            gap: 6px !important;
+          }
+          .feature-icon {
+            width: 14px !important;
+            height: 14px !important;
+          }
+          .features-section {
+            padding-top: 4px !important;
+          }
+        }
+
+        /* Адаптация для очень маленьких экранов < 600px */
+        @media (max-height: 600px) {
+          .feature-text {
+            font-size: 12px;
+            line-height: 120%;
+          }
+          .feature-desc {
+            font-size: 10px;
+            line-height: 85%;
+          }
+          .features-container {
+            gap: 1px !important;
+          }
+          .feature-row {
+            gap: 5px !important;
+          }
+          .feature-icon {
+            width: 12px !important;
+            height: 12px !important;
+            margin-top: 1px !important;
+          }
+          .features-section {
+            padding: 2px 15px 0 15px !important;
           }
         }
       `}</style>

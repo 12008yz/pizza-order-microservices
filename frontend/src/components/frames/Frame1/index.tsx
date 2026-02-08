@@ -144,7 +144,7 @@ function AddressFormContent() {
         city: sanitizeString(addressData.city, 100),
         street: sanitizeString(addressData.street, 200),
         houseNumber: sanitizeString(addressData.houseNumber, 20),
-        apartmentNumber: sanitizeString(addressData.apartmentNumber, 20),
+        corpusNumber: sanitizeString(addressData.corpusNumber, 20),
       };
       sessionStorage.setItem('addressData', JSON.stringify(sanitizedAddressData));
       sessionStorage.removeItem('addressFormData');
@@ -185,7 +185,7 @@ function AddressFormContent() {
       city: sanitizeString(addressData.city, 100),
       street: sanitizeString(addressData.street, 200),
       house: sanitizeString(addressData.houseNumber, 20),
-      apartment: sanitizeString(addressData.apartmentNumber, 20) || undefined,
+      corpus: sanitizeString(addressData.corpusNumber, 20) || undefined,
       connectionType: addressData.connectionType || undefined,
       contactMethod: method || undefined,
     };
@@ -225,7 +225,7 @@ function AddressFormContent() {
         city: sanitizeString(addressData.city, 100),
         street: sanitizeString(addressData.street, 200),
         houseNumber: sanitizeString(addressData.houseNumber, 20),
-        apartmentNumber: sanitizeString(addressData.apartmentNumber, 20),
+        corpusNumber: sanitizeString(addressData.corpusNumber, 20),
       };
 
       try {
@@ -627,7 +627,7 @@ function AddressFormContent() {
               }}
             >
               {addressData.houseNumber
-                ? (addressData.apartmentNumber ? `д. ${addressData.houseNumber} кв. ${addressData.apartmentNumber}` : addressData.houseNumber)
+                ? (addressData.corpusNumber ? `д. ${addressData.houseNumber} к ${addressData.corpusNumber}` : addressData.houseNumber)
                 : 'Номер дома'}
             </span>
             <div
@@ -647,7 +647,7 @@ function AddressFormContent() {
               }}
             >
               {addressData.houseNumber && !addressData.errors.houseNumber ? (
-                <AnimatedCheck key={`house-${addressData.houseNumber}-${addressData.apartmentNumber ?? ''}`} size={8} color="#FFFFFF" strokeWidth={1.5} />
+                <AnimatedCheck key={`house-${addressData.houseNumber}-${addressData.corpusNumber ?? ''}`} size={8} color="#FFFFFF" strokeWidth={1.5} />
               ) : (
                 <FieldArrowIcon active={isFieldActive(3) || !!addressData.errors.houseNumber} error={!!addressData.errors.houseNumber} />
               )}

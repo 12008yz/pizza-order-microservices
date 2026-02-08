@@ -1,11 +1,11 @@
 'use client';
 
 import React from 'react';
-import { FormField, StepNavigation, ApartmentSelectModal } from '../components';
-import type { AddressData, ApartmentOption } from '../types';
+import { FormField, StepNavigation } from '../components';
+import type { AddressData } from '../types';
 import type { ValidationErrors } from '../types';
 
-type AddressModalStep = 'city' | 'street' | 'house';
+type AddressModalStep = 'city' | 'street' | 'house' | 'apartment';
 
 interface AddressStepProps {
   data: AddressData;
@@ -14,11 +14,6 @@ interface AddressStepProps {
   onNext: () => void;
   onBack: () => void;
   onOpenAddressModal: (step: AddressModalStep) => void;
-  apartmentOptions: ApartmentOption[];
-  selectedApartmentId: string | null;
-  onApartmentSelect: (apartmentId: string, apartmentNumber: string, floor?: number) => void;
-  apartmentModalOpen: boolean;
-  onApartmentModalOpen: (open: boolean) => void;
 }
 
 export default function AddressStep({
@@ -28,11 +23,6 @@ export default function AddressStep({
   onNext,
   onBack,
   onOpenAddressModal,
-  apartmentOptions,
-  selectedApartmentId,
-  onApartmentSelect,
-  apartmentModalOpen,
-  onApartmentModalOpen,
 }: AddressStepProps) {
   const apartmentDisplay = data.apartment ? `кв. ${data.apartment}` : '';
 
@@ -95,7 +85,7 @@ export default function AddressStep({
           <FormField
             value={apartmentDisplay}
             placeholder="Квартира"
-            onClick={() => onApartmentModalOpen(true)}
+            onClick={() => onOpenAddressModal('apartment')}
             disabled={!data.building.trim()}
             error={errors.apartment}
             isValid={apartmentValid}
@@ -106,15 +96,6 @@ export default function AddressStep({
           <StepNavigation onBack={onBack} onNext={onNext} nextLabel="Далее" />
         </div>
       </div>
-
-      <ApartmentSelectModal
-        isOpen={apartmentModalOpen}
-        onClose={() => onApartmentModalOpen(false)}
-        options={apartmentOptions}
-        selectedId={selectedApartmentId}
-        onSelect={onApartmentSelect}
-        initialFloor={data.floor}
-      />
     </div>
   );
 }

@@ -16,10 +16,9 @@ import {
 } from './steps';
 import { NotificationBanner } from './components';
 import { validatePersonalData, validateAddressData } from './hooks/useFormValidation';
-import type { PersonalData, AddressData, FormStep, OrderFormState, ValidationErrors } from './types';
-import type { ApartmentOption } from './types';
+import type { PersonalData, AddressData, FormStep, ValidationErrors } from './types';
 
-type AddressModalStep = 'city' | 'street' | 'house';
+type AddressModalStep = 'city' | 'street' | 'house' | 'apartment';
 
 const SELECTED_TARIFF_KEY = 'selectedTariff';
 
@@ -47,13 +46,6 @@ const DEFAULT_ADDRESS: AddressData = {
   floor: null,
 };
 
-// Мок списка квартир (в реальности можно загружать по buildingId)
-const MOCK_APARTMENT_OPTIONS: ApartmentOption[] = [
-  { id: '65', number: '65' },
-  { id: '66', number: '66' },
-  { id: '69', number: '69' },
-];
-
 function formatOrderNumber(orderId: number, createdAt?: string): string {
   const d = createdAt ? new Date(createdAt) : new Date();
   const yy = String(d.getFullYear()).slice(-2);
@@ -75,8 +67,6 @@ function Frame5Content() {
   const [errors, setErrors] = useState<ValidationErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [orderNumber, setOrderNumber] = useState<string | null>(null);
-  const [apartmentModalOpen, setApartmentModalOpen] = useState(false);
-  const [selectedApartmentId, setSelectedApartmentId] = useState<string | null>(null);
   const [notificationVisible, setNotificationVisible] = useState(true);
   const [showAddressModal, setShowAddressModal] = useState(false);
   const [addressModalStep, setAddressModalStep] = useState<AddressModalStep>('city');
@@ -95,26 +85,36 @@ function Frame5Content() {
 
   useEffect(() => {
     if (savedAddress?.city || savedAddress?.street || savedAddress?.houseNumber) {
+      const buildingStr = savedAddress.houseNumber
+        ? (savedAddress.corpusNumber ? `д. ${savedAddress.houseNumber} к ${savedAddress.corpusNumber}` : savedAddress.houseNumber)
+        : '';
       setAddressData((prev) => ({
         ...prev,
         city: savedAddress.city ?? prev.city,
         street: savedAddress.street ?? prev.street,
-        building: savedAddress.houseNumber ?? prev.building,
+        building: buildingStr || prev.building,
       }));
     }
-  }, [savedAddress?.city, savedAddress?.street, savedAddress?.houseNumber]);
+  }, [savedAddress?.city, savedAddress?.street, savedAddress?.houseNumber, savedAddress?.corpusNumber]);
 
-  // После закрытия модалки адреса синхронизируем контекст (AddressInputModal) в локальный addressData
+  // После закрытия модалки адреса (AddressInputModal из Frame1) синхронизируем контекст в локальный addressData; в заявку идёт только квартира
   useEffect(() => {
     const wasOpen = prevShowAddressModalRef.current;
     prevShowAddressModalRef.current = showAddressModal;
     if (wasOpen && !showAddressModal && savedAddress) {
+      const buildingStr = savedAddress.houseNumber
+        ? (savedAddress.corpusNumber ? `д. ${savedAddress.houseNumber} к ${savedAddress.corpusNumber}` : savedAddress.houseNumber)
+        : '';
       setAddressData((prev) => ({
         ...prev,
         city: savedAddress.city ?? prev.city,
         street: savedAddress.street ?? prev.street,
-        building: savedAddress.houseNumber ?? prev.building,
+        building: buildingStr || prev.building,
+        apartment: savedAddress.apartmentNumber ?? prev.apartment,
       }));
+      if (savedAddress.apartmentNumber) {
+        setErrors((prevErrors) => ({ ...prevErrors, apartment: undefined }));
+      }
     }
   }, [showAddressModal, savedAddress]);
 
@@ -135,16 +135,6 @@ function Frame5Content() {
   const openAddressModal = useCallback((step: AddressModalStep) => {
     setAddressModalStep(step);
     setShowAddressModal(true);
-  }, []);
-
-  const handleApartmentSelect = useCallback((apartmentId: string, apartmentNumber: string, floor?: number) => {
-    setSelectedApartmentId(apartmentId);
-    setAddressData((prev) => ({
-      ...prev,
-      apartment: apartmentNumber,
-      floor: floor ?? prev.floor,
-    }));
-    setErrors((prev) => ({ ...prev, apartment: undefined }));
   }, []);
 
   const handleConfirm = useCallback(async () => {
@@ -355,11 +345,6 @@ function Frame5Content() {
                   onNext={handleAddressNext}
                   onBack={() => setStep('personal_data')}
                   onOpenAddressModal={openAddressModal}
-                  apartmentOptions={MOCK_APARTMENT_OPTIONS}
-                  selectedApartmentId={selectedApartmentId}
-                  onApartmentSelect={handleApartmentSelect}
-                  apartmentModalOpen={apartmentModalOpen}
-                  onApartmentModalOpen={setApartmentModalOpen}
                 />
               )}
 

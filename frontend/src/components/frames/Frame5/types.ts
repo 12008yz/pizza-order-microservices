@@ -6,6 +6,12 @@ export interface PersonalData {
   phone: string; // формат +7 XXX XXX XX XX
 }
 
+// Опция квартиры (для совместимости, если где-то ещё импортируется)
+export interface ApartmentOption {
+  id: string;
+  number: string;
+}
+
 // Состояние формы адреса
 export interface AddressData {
   city: string;
@@ -40,11 +46,4 @@ export interface ValidationErrors {
   street?: string;
   building?: string;
   apartment?: string;
-}
-
-// Опции для выбора квартиры
-export interface ApartmentOption {
-  id: string;
-  number: string;
-  floor?: number;
 }

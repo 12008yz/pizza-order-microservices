@@ -16,6 +16,7 @@ export interface AddressData {
   street?: string;
   buildingId?: number;
   houseNumber?: string;
+  corpusNumber?: string; // Корпус
   entrance?: number; // Номер подъезда
   floor?: number; // Номер этажа
   apartmentId?: number;
@@ -41,6 +42,7 @@ interface AddressContextType {
   updateCity: (cityId?: number, city?: string, regionId?: number) => void;
   updateStreet: (streetId?: number, street?: string) => void;
   updateHouseNumber: (buildingId?: number, houseNumber?: string, apartmentId?: number) => void;
+  updateCorpusNumber: (corpusNumber?: string) => void;
   updateEntrance: (entrance?: number) => void;
   updateFloor: (floor?: number) => void;
   updateApartmentNumber: (apartmentId?: number, apartmentNumber?: string) => void;
@@ -120,6 +122,7 @@ export const AddressProvider: React.FC<{ children: ReactNode }> = ({ children })
       street: undefined,
       buildingId: undefined,
       houseNumber: undefined,
+      corpusNumber: undefined,
       apartmentId: undefined,
       errors: { ...prev.errors, city: undefined, street: undefined, houseNumber: undefined },
     }));
@@ -133,6 +136,7 @@ export const AddressProvider: React.FC<{ children: ReactNode }> = ({ children })
       // Очищаем зависимые поля при изменении улицы
       buildingId: undefined,
       houseNumber: undefined,
+      corpusNumber: undefined,
       apartmentId: undefined,
       errors: { ...prev.errors, street: undefined, houseNumber: undefined },
     }));
@@ -149,13 +153,20 @@ export const AddressProvider: React.FC<{ children: ReactNode }> = ({ children })
         floor: undefined,
         // Если передан apartmentId, используем его, иначе очищаем
         apartmentId: apartmentId ?? undefined,
-        // Очищаем номер квартиры при изменении дома (если не передан apartmentId)
         apartmentNumber: apartmentId ? prev.apartmentNumber : undefined,
         errors: { ...prev.errors, houseNumber: undefined, apartmentNumber: undefined },
       }));
     },
     []
   );
+
+  const updateCorpusNumber = useCallback((corpusNumber?: string) => {
+    setAddressData((prev) => ({
+      ...prev,
+      corpusNumber,
+      errors: { ...prev.errors },
+    }));
+  }, []);
 
   const updateEntrance = useCallback((entrance?: number) => {
     setAddressData((prev) => ({
@@ -253,6 +264,7 @@ export const AddressProvider: React.FC<{ children: ReactNode }> = ({ children })
     updateCity,
     updateStreet,
     updateHouseNumber,
+    updateCorpusNumber,
     updateEntrance,
     updateFloor,
     updateApartmentNumber,

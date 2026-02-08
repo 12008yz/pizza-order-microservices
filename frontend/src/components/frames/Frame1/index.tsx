@@ -25,8 +25,9 @@ function FieldArrowIcon({ active, error }: { active: boolean; error?: boolean })
   const circleFill = error ? 'rgb(239, 68, 68)' : active ? '#000000' : '#FFFFFF';
   const circleStroke = error ? 'rgb(239, 68, 68)' : active ? '#000000' : 'rgba(16, 16, 16, 0.35)';
   const arrowFill = error || active ? '#FFFFFF' : '#101010';
+  // viewBox с запасом -0.5..16.5, чтобы обводка круга (stroke 1px) не обрезалась по краям
   return (
-    <svg width={16} height={16} viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" className="block shrink-0" aria-hidden>
+    <svg width={18} height={18} viewBox="-0.5 -0.5 17 17" fill="none" xmlns="http://www.w3.org/2000/svg" className="block shrink-0 overflow-visible" style={{ overflow: 'visible' }} aria-hidden>
       <path d={CIRCLE_PATH} fill={circleFill} stroke={circleStroke} strokeWidth={1} />
       <path d={ARROW_PATH} fill={arrowFill} />
     </svg>
@@ -436,8 +437,8 @@ function AddressFormContent() {
             <div
               className="rounded-full flex items-center justify-center flex-shrink-0"
               style={{
-                width: 16,
-                height: 16,
+                width: 18,
+                height: 18,
                 boxSizing: 'content-box',
                 background: addressData.errors.connectionType
                   ? 'rgb(239, 68, 68)'
@@ -500,8 +501,8 @@ function AddressFormContent() {
             <div
               className="rounded-full flex items-center justify-center flex-shrink-0"
               style={{
-                width: 16,
-                height: 16,
+                width: 18,
+                height: 18,
                 boxSizing: 'content-box',
                 background: addressData.errors.city
                   ? 'rgb(239, 68, 68)'
@@ -565,8 +566,8 @@ function AddressFormContent() {
             <div
               className="rounded-full flex items-center justify-center flex-shrink-0"
               style={{
-                width: 16,
-                height: 16,
+                width: 18,
+                height: 18,
                 boxSizing: 'content-box',
                 background: addressData.errors.street
                   ? 'rgb(239, 68, 68)'
@@ -632,8 +633,8 @@ function AddressFormContent() {
             <div
               className="rounded-full flex items-center justify-center flex-shrink-0"
               style={{
-                width: 16,
-                height: 16,
+                width: 18,
+                height: 18,
                 boxSizing: 'content-box',
                 background: addressData.errors.houseNumber
                   ? 'rgb(239, 68, 68)'

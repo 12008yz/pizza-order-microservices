@@ -33,10 +33,10 @@ export default function TechAccessModal({ isOpen, onClose }: TechAccessModalProp
           style={{ boxSizing: 'border-box' }}
           onClick={(e) => e.stopPropagation()}
         >
-          {/* Шапка: подсказка, всплывающие окна 120px от верха */}
+          {/* Шапка: подсказка, всплывающие окна 75px от верха */}
           <div
             className="flex-shrink-0 cursor-pointer"
-            style={{ minHeight: 150 }}
+            style={{ minHeight: 105 }}
             onClick={onClose}
           >
             <div
@@ -44,7 +44,7 @@ export default function TechAccessModal({ isOpen, onClose }: TechAccessModalProp
               style={{
                 width: 240,
                 margin: '0 auto',
-                paddingTop: 120,
+                paddingTop: 75,
                 height: 30,
                 fontFamily: 'TT Firs Neue, sans-serif',
                 fontSize: '14px',

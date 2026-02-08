@@ -127,7 +127,7 @@ export default function ConnectionTypeModal({
               width: '240px',
               height: '30px',
               margin: '0 auto',
-              paddingTop: '84px',
+              paddingTop: '75px',
               fontFamily: 'TT Firs Neue, sans-serif',
               fontSize: '14px',
               lineHeight: '15px',

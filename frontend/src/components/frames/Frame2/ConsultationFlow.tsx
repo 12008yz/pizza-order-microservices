@@ -249,11 +249,11 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
       <div className="flex-shrink-0 relative cursor-pointer" style={{ minHeight: '105px' }} onClick={handleBackgroundClick}>
         {notifications.length === 0 && (
           <div
-            className="font-normal flex items-center justify-center text-center"
+            className="font-normal flex items-center justify-center text-center absolute left-0 right-0"
             style={{
+              top: 75,
               width: '240px',
               margin: '0 auto',
-              paddingTop: '75px',
               height: '30px',
               fontFamily: 'TT Firs Neue, sans-serif',
               fontSize: '14px',
@@ -465,11 +465,11 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
       <div className="flex-shrink-0 relative cursor-pointer" style={{ minHeight: '105px' }} onClick={handleBackgroundClick}>
         {notifications.length === 0 && (
           <div
-            className="font-normal flex items-center justify-center text-center"
+            className="font-normal flex items-center justify-center text-center absolute left-0 right-0"
             style={{
+              top: 75,
               width: '240px',
               margin: '0 auto',
-              paddingTop: '75px',
               height: '30px',
               fontFamily: 'TT Firs Neue, sans-serif',
               fontSize: '14px',

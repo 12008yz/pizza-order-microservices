@@ -553,12 +553,12 @@ function Frame3Content() {
     }
   };
 
-  // Обработчик закрытия режима избранного (клик на пустое место)
+  // Обработчик закрытия режима избранного (клик по пустому месту — везде, кроме карточки тарифа)
   const handleFavoritesModeBackgroundClick = (e: React.MouseEvent) => {
-    // Закрываем только если клик был именно на фон, а не на дочерний элемент
-    if (e.target === e.currentTarget) {
-      setShowFavoritesMode(false);
-    }
+    if (!showFavoritesMode) return;
+    // Не закрываем, если клик был по карточке тарифа (внутри можно листать, нажимать сердечко и т.д.)
+    if ((e.target as HTMLElement).closest?.('.carousel-card')) return;
+    setShowFavoritesMode(false);
   };
 
   // Тарифы для отображения в зависимости от режима

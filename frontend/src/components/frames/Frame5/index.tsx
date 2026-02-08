@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { AddressProvider, useAddress } from '../../../contexts/AddressContext';
+import AddressInputModal from '../../modals/AddressInputModal';
 import { useEquipment } from '../../../contexts/EquipmentContext';
 import { ordersService } from '../../../services';
 import type { CreateOrderData } from '../../../services/orders.service';
@@ -17,6 +18,8 @@ import { NotificationBanner } from './components';
 import { validatePersonalData, validateAddressData } from './hooks/useFormValidation';
 import type { PersonalData, AddressData, FormStep, OrderFormState, ValidationErrors } from './types';
 import type { ApartmentOption } from './types';
+
+type AddressModalStep = 'city' | 'street' | 'house';
 
 const SELECTED_TARIFF_KEY = 'selectedTariff';
 
@@ -75,6 +78,9 @@ function Frame5Content() {
   const [apartmentModalOpen, setApartmentModalOpen] = useState(false);
   const [selectedApartmentId, setSelectedApartmentId] = useState<string | null>(null);
   const [notificationVisible, setNotificationVisible] = useState(true);
+  const [showAddressModal, setShowAddressModal] = useState(false);
+  const [addressModalStep, setAddressModalStep] = useState<AddressModalStep>('city');
+  const prevShowAddressModalRef = useRef(false);
 
   useEffect(() => {
     try {
@@ -98,6 +104,20 @@ function Frame5Content() {
     }
   }, [savedAddress?.city, savedAddress?.street, savedAddress?.houseNumber]);
 
+  // После закрытия модалки адреса синхронизируем контекст (AddressInputModal) в локальный addressData
+  useEffect(() => {
+    const wasOpen = prevShowAddressModalRef.current;
+    prevShowAddressModalRef.current = showAddressModal;
+    if (wasOpen && !showAddressModal && savedAddress) {
+      setAddressData((prev) => ({
+        ...prev,
+        city: savedAddress.city ?? prev.city,
+        street: savedAddress.street ?? prev.street,
+        building: savedAddress.houseNumber ?? prev.building,
+      }));
+    }
+  }, [showAddressModal, savedAddress]);
+
   const handlePersonalNext = useCallback(() => {
     const nextErrors = validatePersonalData(personalData);
     setErrors(nextErrors);
@@ -111,6 +131,11 @@ function Frame5Content() {
     if (Object.keys(nextErrors).length > 0) return;
     setStep('confirmation');
   }, [addressData]);
+
+  const openAddressModal = useCallback((step: AddressModalStep) => {
+    setAddressModalStep(step);
+    setShowAddressModal(true);
+  }, []);
 
   const handleApartmentSelect = useCallback((apartmentId: string, apartmentNumber: string, floor?: number) => {
     setSelectedApartmentId(apartmentId);
@@ -329,6 +354,7 @@ function Frame5Content() {
                   onChange={setAddressData}
                   onNext={handleAddressNext}
                   onBack={() => setStep('personal_data')}
+                  onOpenAddressModal={openAddressModal}
                   apartmentOptions={MOCK_APARTMENT_OPTIONS}
                   selectedApartmentId={selectedApartmentId}
                   onApartmentSelect={handleApartmentSelect}
@@ -352,6 +378,13 @@ function Frame5Content() {
           </div>
         </div>
       </div>
+
+      <AddressInputModal
+        isOpen={showAddressModal}
+        onClose={() => setShowAddressModal(false)}
+        onComplete={() => setShowAddressModal(false)}
+        initialStep={addressModalStep}
+      />
     </div>
   );
 }

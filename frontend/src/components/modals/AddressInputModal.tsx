@@ -498,6 +498,10 @@ export default function AddressInputModal({
 
   const handleSelect = (realIndex: number) => {
     if (realIndex < suggestions.length) {
+      // iOS: сбрасываем выделение, чтобы оно не оставалось на экране после выбора подсказки
+      if (typeof window !== 'undefined' && window.getSelection) {
+        window.getSelection()?.removeAllRanges();
+      }
       setSelectedIndex(realIndex);
       refocusInput();
     }
@@ -738,6 +742,11 @@ export default function AddressInputModal({
         setIsAnimating(true);
       });
     } else {
+      // iOS: убираем фокус и выделение, чтобы голубая обводка и выделенный текст не оставались на экране
+      inputRef.current?.blur();
+      if (typeof window !== 'undefined' && window.getSelection) {
+        window.getSelection()?.removeAllRanges();
+      }
       // Запускаем анимацию закрытия и откладываем полное размонтирование
       setIsAnimating(false);
       closeTimeoutRef.current = setTimeout(() => {
@@ -775,7 +784,7 @@ export default function AddressInputModal({
 
   return (
     <div
-      className="fixed inset-0 z-[10000] flex flex-col items-center overflow-hidden"
+      className="address-input-modal fixed inset-0 z-[10000] flex flex-col items-center overflow-hidden"
       style={{
         background: '#F5F5F5',
         backdropFilter: 'blur(12.5px)',
@@ -932,7 +941,12 @@ export default function AddressInputModal({
                 setSelectedIndex(null);
               }}
               placeholder={stepConfig[currentStep].placeholder}
-              className="w-full rounded-[10px] outline-none px-[15px]"
+              onBlur={() => {
+                if (typeof window !== 'undefined' && window.getSelection) {
+                  window.getSelection()?.removeAllRanges();
+                }
+              }}
+              className="address-input-modal-input w-full rounded-[10px] outline-none px-[15px]"
               style={{
                 boxSizing: 'border-box',
                 height: '50px',
@@ -942,6 +956,7 @@ export default function AddressInputModal({
                 fontSize: '16px',
                 lineHeight: '125%',
                 color: '#101010',
+                WebkitTapHighlightColor: 'transparent',
               }}
             />
           </div>

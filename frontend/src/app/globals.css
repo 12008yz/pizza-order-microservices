@@ -321,3 +321,18 @@ textarea {
   -webkit-user-select: text;
   user-select: text;
 }
+
+/* Модалки: iOS — убираем голубую обводку фокуса и делаем выделение текста нейтральным */
+.address-input-modal input:focus,
+.address-input-modal .address-input-modal-input:focus {
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.address-input-modal input::selection,
+.address-input-modal .address-input-modal-input::selection {
+  background: rgba(16, 16, 16, 0.2);
+  color: #101010;
+}
+.address-input-modal *:focus {
+  outline: none;
+}

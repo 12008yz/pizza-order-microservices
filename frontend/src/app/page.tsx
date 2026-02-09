@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef } from 'react';
 import AddressFormPage from '../components/frames/Frame1';
-import PageLoadingSkeleton from '../components/PageLoadingSkeleton';
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(true);

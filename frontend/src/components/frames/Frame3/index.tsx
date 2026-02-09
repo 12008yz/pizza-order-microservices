@@ -1073,8 +1073,8 @@ function Frame3Content() {
       />
 
       {/* Стрелка переключения тарифа — выше блока с карточкой */}
-      {/* В режиме избранного показываем блок с сердечком + стрелкой, иначе — только стрелку */}
-      {showFavoritesMode ? (
+      {/* В режиме избранного показываем блок с сердечком + стрелкой только если есть избранные; иначе — только стрелку (вне режима избранного) */}
+      {showFavoritesMode && displayedTariffs.length > 0 ? (
         /* Блок с сердечком и стрелкой в режиме избранного — 70x40 */
         <div
           className={canScrollRight && displayedTariffs.length > 1 ? 'cursor-pointer' : ''}
@@ -1132,7 +1132,7 @@ function Frame3Content() {
             </div>
           </div>
         </div>
-      ) : (
+      ) : !showFavoritesMode ? (
         /* Обычная стрелка вне режима избранного */
         <div
           className={canScrollRight && displayedTariffs.length > 1 ? 'cursor-pointer' : ''}
@@ -1209,7 +1209,7 @@ function Frame3Content() {
             </div>
           </div>
         </div>
-      )}
+      ) : null}
 
       {/* Кнопка сброса фильтра — слева, на одной линии со стрелкой (выше блока карточки) */}
       {isFilterActive && !showFavoritesMode && (
@@ -1343,7 +1343,7 @@ function Frame3Content() {
                     whiteSpace: 'nowrap',
                   }}
                 >
-                  Тут ничего нет ;(
+                  Теперь тут ничего нет ;(
                 </div>
               </div>
             ) : (

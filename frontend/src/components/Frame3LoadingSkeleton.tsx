@@ -128,14 +128,14 @@ export default function Frame3LoadingSkeleton() {
           />
         </div>
 
-        {/* Rectangle 30 — основной белый блок (без старых точек с %) */}
+        {/* Rectangle 30 — основной белый блок */}
         <div
           style={{
             position: 'absolute',
             left: 20,
             right: 20,
-            top: '28%',
-            bottom: '14%',
+            top: 280,
+            bottom: 100,
             background: '#FFFFFF',
             borderRadius: 20,
           }}
@@ -321,8 +321,8 @@ export default function Frame3LoadingSkeleton() {
           style={{
             position: 'absolute',
             right: 0,
-            top: '32.18%',
-            bottom: '16.67%',
+            top: 230,
+            bottom: 120,
             width: 6,
             background: 'rgba(0,0,0,0.08)',
             borderRadius: 3,

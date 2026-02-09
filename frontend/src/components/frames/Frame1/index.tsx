@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { CloseIcon } from '../../common/icons';
 import { AddressProvider, useAddress, ConnectionType } from '../../../contexts/AddressContext';
@@ -9,11 +9,12 @@ import AddressInputModal from '../../modals/AddressInputModal';
 import PrivacyConsent from './PrivacyConsent';
 import Header from '../../layout/Header';
 import LoadingScreen from '../../LoadingScreen';
+import PageLoadingSkeleton from '../../PageLoadingSkeleton';
 import AnimatedCheck from '../../common/AnimatedCheck';
 import dynamic from 'next/dynamic';
 
 const ConsultationFlow = dynamic(() => import('../Frame2/ConsultationFlow'), {
-  loading: () => <div>Загрузка...</div>,
+  loading: () => <PageLoadingSkeleton />,
   ssr: false,
 });
 
@@ -37,7 +38,12 @@ function FieldArrowIcon({ active, error }: { active: boolean; error?: boolean })
 type FlowState = 'form' | 'loading' | 'consultation';
 type ContactMethod = 'max' | 'telegram' | 'phone';
 
-function AddressFormContent() {
+interface AddressFormContentProps {
+  isAppLoading?: boolean;
+  appLoadingProgress?: number;
+}
+
+function AddressFormContent({ isAppLoading = false, appLoadingProgress = 0 }: AddressFormContentProps) {
   const router = useRouter();
   const { addressData, validateForm, clearErrors, clearAddress } = useAddress();
   const [showConnectionModal, setShowConnectionModal] = useState(false);
@@ -49,8 +55,31 @@ function AddressFormContent() {
 
   const [flowState, setFlowState] = useState<FlowState>('form');
   const [loadingProgress, setLoadingProgress] = useState(0);
+  const [showSkeletonAfterAppLoad, setShowSkeletonAfterAppLoad] = useState(false);
+  const [showSkeletonBeforeConsultation, setShowSkeletonBeforeConsultation] = useState(false);
 
   const [isSubmitPressed, setIsSubmitPressed] = useState(false);
+
+  // После завершения загрузки приложения — коротко показываем скелетон, потом форму
+  const prevAppLoadingRef = useRef(true);
+  useEffect(() => {
+    if (prevAppLoadingRef.current && !isAppLoading) {
+      setShowSkeletonAfterAppLoad(true);
+    }
+    prevAppLoadingRef.current = isAppLoading;
+  }, [isAppLoading]);
+
+  useEffect(() => {
+    if (!showSkeletonAfterAppLoad) return;
+    const t = setTimeout(() => setShowSkeletonAfterAppLoad(false), 400);
+    return () => clearTimeout(t);
+  }, [showSkeletonAfterAppLoad]);
+
+  useEffect(() => {
+    if (!showSkeletonBeforeConsultation) return;
+    const t = setTimeout(() => setShowSkeletonBeforeConsultation(false), 400);
+    return () => clearTimeout(t);
+  }, [showSkeletonBeforeConsultation]);
 
   useEffect(() => {
     if (showCookieBanner && cookieTimer > 0) {
@@ -81,6 +110,7 @@ function AddressFormContent() {
           if (prev >= 100) {
             if (intervalId) clearInterval(intervalId);
             setFlowState('consultation');
+            setShowSkeletonBeforeConsultation(true);
             return 100;
           }
           return prev + 5;
@@ -251,8 +281,19 @@ function AddressFormContent() {
     await saveUserDataAndNavigate();
   };
 
+  // 2) После загрузки приложения — при необходимости скелетон
+  if (showSkeletonAfterAppLoad) {
+    return <PageLoadingSkeleton />;
+  }
+
+  // 3) Переход к консультации: сначала LoadingScreen
   if (flowState === 'loading') {
     return <LoadingScreen progress={loadingProgress} />;
+  }
+
+  // 4) Перед консультацией — при необходимости скелетон
+  if (flowState === 'consultation' && showSkeletonBeforeConsultation) {
+    return <PageLoadingSkeleton />;
   }
 
   if (flowState === 'consultation') {
@@ -265,10 +306,13 @@ function AddressFormContent() {
     );
   }
 
-  return (
+  // 1) Начальная загрузка: показываем LoadingScreen, форму держим в DOM скрыто (для подгрузки ресурсов)
+  const formContent = (
     <div
       className="fixed inset-0 z-[9999] flex flex-col items-center overflow-hidden"
       style={{
+        visibility: isAppLoading ? 'hidden' : 'visible',
+        position: isAppLoading ? 'absolute' : undefined,
         height: '100dvh',
         boxSizing: 'border-box',
         paddingTop: 'var(--sat, 0px)',
@@ -706,12 +750,24 @@ function AddressFormContent() {
       </div>
     </div>
   );
+
+  return (
+    <>
+      {isAppLoading && <LoadingScreen progress={appLoadingProgress} />}
+      {formContent}
+    </>
+  );
 }
 
-export default function AddressFormPage() {
+export interface AddressFormPageProps {
+  isAppLoading?: boolean;
+  appLoadingProgress?: number;
+}
+
+export default function AddressFormPage({ isAppLoading = false, appLoadingProgress = 0 }: AddressFormPageProps) {
   return (
     <AddressProvider>
-      <AddressFormContent />
+      <AddressFormContent isAppLoading={isAppLoading} appLoadingProgress={appLoadingProgress} />
     </AddressProvider>
   );
 }

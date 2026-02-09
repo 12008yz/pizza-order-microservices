@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import LoadingScreen from '../components/LoadingScreen';
 import AddressFormPage from '../components/frames/Frame1';
+import PageLoadingSkeleton from '../components/PageLoadingSkeleton';
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
@@ -164,19 +164,8 @@ export default function Home() {
   }, []);
 
   return (
-    <>
-      {isLoading && <LoadingScreen progress={loadingProgress} />}
-      {/* Загружаем Frame1 в фоне, скрываем через opacity пока не загрузится */}
-      <div
-        ref={frameContainerRef}
-        style={{
-          opacity: isLoading ? 0 : 1,
-          pointerEvents: isLoading ? 'none' : 'auto',
-          transition: 'opacity 0.3s ease-in',
-        }}
-      >
-        <AddressFormPage />
-      </div>
-    </>
+    <div ref={frameContainerRef}>
+      <AddressFormPage isAppLoading={isLoading} appLoadingProgress={loadingProgress} />
+    </div>
   );
 }

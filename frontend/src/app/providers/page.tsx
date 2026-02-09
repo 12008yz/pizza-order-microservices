@@ -1,16 +1,19 @@
 'use client';
 
 import dynamic from 'next/dynamic';
+import Frame3LoadingSkeleton from '../../components/Frame3LoadingSkeleton';
+
+// Временно: постоянный показ скелетона. Вернуть обычную страницу: SHOW_SKELETON = false.
+const SHOW_SKELETON = true;
 
 const Frame3 = dynamic(() => import('../../components/frames/Frame3'), {
-  loading: () => (
-    <div className="flex min-h-[100dvh] w-full max-w-[400px] mx-auto items-center justify-center bg-[#F5F5F5]" style={{ paddingTop: 'var(--sat, 0px)', paddingBottom: 'var(--sab, 0px)' }}>
-      <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#E30611] border-t-transparent" />
-    </div>
-  ),
+  loading: () => <Frame3LoadingSkeleton />,
   ssr: false,
 });
 
 export default function ProvidersPage() {
+  if (SHOW_SKELETON) {
+    return <Frame3LoadingSkeleton />;
+  }
   return <Frame3 />;
 }

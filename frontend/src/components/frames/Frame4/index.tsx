@@ -103,6 +103,8 @@ function Frame4Content() {
   const [showConsultation, setShowConsultation] = useState(false);
   // Экран загрузки при переходе на 5 фрейм (страница заказа)
   const [showLoadingToOrder, setShowLoadingToOrder] = useState(false);
+  // После отмены с итоговой карточки: при + на роутере/ТВ/SIM ведём в модалку выбора, затем снова на итоговую
+  const [returnToOrderSummaryAfter, setReturnToOrderSummaryAfter] = useState<'router' | 'tvbox' | 'sim' | null>(null);
 
   // Инициализация из сохранённого выбора при монтировании
   useEffect(() => {
@@ -294,43 +296,69 @@ function Frame4Content() {
       } else if (need === 'own') {
         setCurrentStep('router_config');
       } else {
-        // no_thanks — переходим к выбору ТВ
-        setCurrentStep('tvbox_need');
+        // no_thanks — переходим к выбору ТВ или обратно на итоговую (если пришли с +)
+        if (returnToOrderSummaryAfter === 'router') {
+          setCurrentStep('order_summary');
+          setReturnToOrderSummaryAfter(null);
+        } else {
+          setCurrentStep('tvbox_need');
+        }
       }
     } else if (currentStep === 'router_purchase') {
-      setCurrentStep('tvbox_need');
+      if (returnToOrderSummaryAfter === 'router') {
+        setCurrentStep('order_summary');
+        setReturnToOrderSummaryAfter(null);
+      } else {
+        setCurrentStep('tvbox_need');
+      }
     } else if (currentStep === 'router_operator') {
-      // «Имеется, но от оператора»: после выбора оператора (ДОМ.RU и др.) сразу на ТВ-приставку, без блока настройки
-      setCurrentStep('tvbox_need');
+      if (returnToOrderSummaryAfter === 'router') {
+        setCurrentStep('order_summary');
+        setReturnToOrderSummaryAfter(null);
+      } else {
+        setCurrentStep('tvbox_need');
+      }
     } else if (currentStep === 'router_config') {
-      setCurrentStep('tvbox_need');
+      if (returnToOrderSummaryAfter === 'router') {
+        setCurrentStep('order_summary');
+        setReturnToOrderSummaryAfter(null);
+      } else {
+        setCurrentStep('tvbox_need');
+      }
     } else if (currentStep === 'tvbox_need') {
       const need = equipmentState.tvBox?.need;
 
       if (need === 'need') {
-        setCurrentStep('tvbox_purchase'); // сначала цена (покупка/рассрочка/аренда)
+        setCurrentStep('tvbox_purchase');
       } else if (need === 'have_from_operator') {
         setCurrentStep('tvbox_operator');
       } else {
-        // have_own | smart_tv — переходим к SIM карте
-        setCurrentStep('sim_connection_type');
+        if (returnToOrderSummaryAfter === 'tvbox') {
+          setCurrentStep('order_summary');
+          setReturnToOrderSummaryAfter(null);
+        } else {
+          setCurrentStep('sim_connection_type');
+        }
       }
     } else if (currentStep === 'tvbox_purchase') {
-      setCurrentStep('tvbox_tvcount'); // после цены — количество
+      setCurrentStep('tvbox_tvcount');
     } else if (currentStep === 'tvbox_tvcount') {
       setCurrentStep('tvbox_operator');
     } else if (currentStep === 'tvbox_operator') {
-      // После ТВ-бокса переходим к SIM карте
-      setCurrentStep('sim_connection_type');
+      if (returnToOrderSummaryAfter === 'tvbox') {
+        setCurrentStep('order_summary');
+        setReturnToOrderSummaryAfter(null);
+      } else {
+        setCurrentStep('sim_connection_type');
+      }
     } else if (currentStep === 'sim_connection_type') {
       const connectionType = equipmentState.simCard?.connectionType;
 
       if (connectionType === 'keep_number') {
-        // Подключение текущего номера — спрашиваем статус клиента МТС
         setCurrentStep('sim_client_status');
       } else if (connectionType === 'new_number') {
-        // Подключение нового номера — сначала итоговая карточка, затем по кнопке на /order
         setCurrentStep('order_summary');
+        if (returnToOrderSummaryAfter === 'sim') setReturnToOrderSummaryAfter(null);
       }
     } else if (currentStep === 'sim_client_status') {
       // После выбора статуса клиента показываем информационный экран о регистрации на человека
@@ -339,24 +367,29 @@ function Frame4Content() {
       // Для обоих вариантов («клиент» и «не клиент») — после первого инфо идём на второй (регион), затем к количеству смартфонов
       setCurrentStep('sim_info_region');
     } else if (currentStep === 'sim_info_region') {
-      // После инфо-экранов переходим в итоговую карточку
       setCurrentStep('order_summary');
+      if (returnToOrderSummaryAfter === 'sim') setReturnToOrderSummaryAfter(null);
     } else if (currentStep === 'sim_smartphone_count') {
-      // После выбора количества смартфонов — итоговая карточка: тариф из Frame3 + оборудование
       setCurrentStep('order_summary');
+      if (returnToOrderSummaryAfter === 'sim') setReturnToOrderSummaryAfter(null);
     } else if (currentStep === 'order_summary') {
       saveEquipment(equipmentState);
       setShowLoadingToOrder(true);
       router.push('/order');
     } else if (currentStep === 'sim_operator') {
-      // После выбора оператора SIM — итоговая карточка, затем по кнопке на /order
       setCurrentStep('order_summary');
+      if (returnToOrderSummaryAfter === 'sim') setReturnToOrderSummaryAfter(null);
     }
   };
 
   const handleBack = () => {
     if (currentStep === 'router_need') {
-      router.push('/providers');
+      if (returnToOrderSummaryAfter === 'router') {
+        setCurrentStep('order_summary');
+        setReturnToOrderSummaryAfter(null);
+      } else {
+        router.push('/providers');
+      }
     } else if (currentStep === 'router_purchase') {
       setCurrentStep('router_need');
     } else if (currentStep === 'router_operator') {
@@ -368,15 +401,17 @@ function Frame4Content() {
         setCurrentStep('router_need');
       }
     } else if (currentStep === 'tvbox_need') {
-      // Возврат: need→purchase→tvbox | from_operator→operator→tvbox (без config) | own→config→tvbox | no_thanks→tvbox
-      if (equipmentState.router.need === 'need') {
+      if (returnToOrderSummaryAfter === 'tvbox') {
+        setCurrentStep('order_summary');
+        setReturnToOrderSummaryAfter(null);
+      } else if (equipmentState.router.need === 'need') {
         setCurrentStep('router_purchase');
       } else if (equipmentState.router.need === 'from_operator') {
         setCurrentStep('router_operator');
       } else if (equipmentState.router.need === 'own') {
         setCurrentStep('router_config');
       } else {
-        setCurrentStep('router_need'); // no_thanks
+        setCurrentStep('router_need');
       }
     } else if (currentStep === 'tvbox_purchase') {
       setCurrentStep('tvbox_need');
@@ -389,14 +424,21 @@ function Frame4Content() {
         setCurrentStep('tvbox_tvcount');
       }
     } else if (currentStep === 'sim_connection_type') {
-      // Возврат к ТВ-боксу
-      const tvNeed = equipmentState.tvBox?.need;
-      if (tvNeed === 'need') {
-        setCurrentStep('tvbox_operator');
-      } else if (tvNeed === 'have_from_operator') {
-        setCurrentStep('tvbox_operator');
+      if (returnToOrderSummaryAfter === 'sim') {
+        setCurrentStep('order_summary');
+        setReturnToOrderSummaryAfter(null);
+      } else if (returnToOrderSummaryAfter === 'tvbox') {
+        setCurrentStep('order_summary');
+        setReturnToOrderSummaryAfter(null);
       } else {
-        setCurrentStep('tvbox_need');
+        const tvNeed = equipmentState.tvBox?.need;
+        if (tvNeed === 'need') {
+          setCurrentStep('tvbox_operator');
+        } else if (tvNeed === 'have_from_operator') {
+          setCurrentStep('tvbox_operator');
+        } else {
+          setCurrentStep('tvbox_need');
+        }
       }
     } else if (currentStep === 'sim_client_status') {
       setCurrentStep('sim_connection_type');
@@ -772,6 +814,30 @@ function Frame4Content() {
                   router.push('/order');
                 }}
                 onBack={handleBack}
+                onGoToRouterStep={() => {
+                  setEquipmentState((prev) => ({
+                    ...prev,
+                    router: { ...prev.router, need: 'need', purchase: 'rent' },
+                  }));
+                  setReturnToOrderSummaryAfter('router');
+                  setCurrentStep('router_need');
+                }}
+                onGoToSimStep={() => {
+                  setEquipmentState((prev) => ({
+                    ...prev,
+                    simCard: { ...prev.simCard!, connectionType: 'keep_number', smartphoneCount: 1 },
+                  }));
+                  setReturnToOrderSummaryAfter('sim');
+                  setCurrentStep('sim_connection_type');
+                }}
+                onGoToTvBoxStep={() => {
+                  setEquipmentState((prev) => ({
+                    ...prev,
+                    tvBox: { ...prev.tvBox!, need: 'need', tvCount: 1 },
+                  }));
+                  setReturnToOrderSummaryAfter('tvbox');
+                  setCurrentStep('tvbox_need');
+                }}
                 callbacks={{
                   onRouterNeedChange: handleRouterNeedSelect,
                   onRouterPurchaseChange: handleRouterPurchaseSelect,

@@ -54,7 +54,7 @@ export default function TvBoxPurchaseStep({
             color: '#101010',
           }}
         >
-          Телевизионная приставка
+          TV-приставка
         </div>
         <div
           className="font-normal pt-[15px]"

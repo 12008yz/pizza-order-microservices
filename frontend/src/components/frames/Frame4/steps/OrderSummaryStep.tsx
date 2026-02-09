@@ -17,7 +17,8 @@ const SELECTED_TARIFF_KEY = 'selectedTariff';
 // Надбавки к тарифу за оборудование (р./мес.)
 const ROUTER_RENT_MONTHLY = 80;
 const ROUTER_INSTALLMENT_MONTHLY = 200;
-const TV_BOX_EXTRA_PER_UNIT = 50;
+const TV_BOX_RENT_MONTHLY = 80; // аренда за 1 приставку
+const TV_BOX_INSTALLMENT_MONTHLY = 200; // рассрочка за 1 приставку (24 мес.)
 const SIM_EXTRA_PER_UNIT = 30;
 
 export interface StoredTariff {
@@ -53,6 +54,12 @@ interface OrderSummaryStepProps {
   equipmentState: EquipmentState;
   onConnect: () => void;
   onBack: () => void;
+  /** При клике на + у роутера — перейти в модалку выбора роутера, затем снова на итоговую карточку */
+  onGoToRouterStep?: () => void;
+  /** При клике на + у ТВ-приставки — перейти в модалку выбора ТВ, затем снова на итоговую карточку */
+  onGoToTvBoxStep?: () => void;
+  /** При клике на + у SIM — перейти в модалку выбора SIM, затем снова на итоговую карточку */
+  onGoToSimStep?: () => void;
   callbacks: OrderSummaryCallbacks;
 }
 
@@ -137,12 +144,14 @@ interface RouterDisplayInfo {
   needsAdd: boolean;
   priceText: string;
   noteText: string;
+  /** Выбор пользователя: Аренда / Покупка / Рассрочка — показывается напротив роутера */
+  choiceLabel: string;
 }
 
 function getRouterLabel(state: EquipmentState): RouterDisplayInfo {
   const need = state.router?.need;
   if (need === 'no_thanks' || !need) {
-    return { main: 'Дополнить', sub: 'Роутер', isActive: false, needsAdd: true, priceText: '', noteText: '' };
+    return { main: 'Дополнить', sub: 'Роутер', isActive: false, needsAdd: true, priceText: '', noteText: '', choiceLabel: '' };
   }
   const purchase = state.router?.purchase;
   if (purchase === 'installment') {
@@ -152,7 +161,8 @@ function getRouterLabel(state: EquipmentState): RouterDisplayInfo {
       isActive: true,
       needsAdd: false,
       priceText: '+200 р./мес.',
-      noteText: 'только на 24 мес.'
+      noteText: 'только на 24 мес.',
+      choiceLabel: 'Рассрочка',
     };
   }
   if (purchase === 'rent') {
@@ -162,7 +172,8 @@ function getRouterLabel(state: EquipmentState): RouterDisplayInfo {
       isActive: true,
       needsAdd: false,
       priceText: '+80 р./мес.',
-      noteText: 'только на время'
+      noteText: 'только на время',
+      choiceLabel: 'Аренда',
     };
   }
   if (purchase === 'buy') {
@@ -172,10 +183,11 @@ function getRouterLabel(state: EquipmentState): RouterDisplayInfo {
       isActive: true,
       needsAdd: false,
       priceText: '',
-      noteText: 'единоразово'
+      noteText: 'единоразово',
+      choiceLabel: 'Покупка',
     };
   }
-  return { main: 'Дополнить', sub: 'Роутер', isActive: false, needsAdd: true, priceText: '', noteText: '' };
+  return { main: 'Дополнить', sub: 'Роутер', isActive: false, needsAdd: true, priceText: '', noteText: '', choiceLabel: '' };
 }
 
 function getRouterAddOnPrice(state: EquipmentState): number {
@@ -197,7 +209,11 @@ function getTvBoxLabel(state: EquipmentState): { main: string; sub: string; isAc
 function getTvBoxAddOnPrice(state: EquipmentState): number {
   if (state.tvBox?.need !== 'need') return 0;
   const n = state.tvBox?.tvCount ?? 1;
-  return (n - 1) * TV_BOX_EXTRA_PER_UNIT;
+  const purchase = state.tvBox?.purchaseOption;
+  if (purchase === 'rent') return n * TV_BOX_RENT_MONTHLY;
+  if (purchase === 'installment') return n * TV_BOX_INSTALLMENT_MONTHLY;
+  if (purchase === 'buy') return 0;
+  return 0;
 }
 
 function getSimLabel(state: EquipmentState): { main: string; sub: string; extra: string; isActive: boolean } {
@@ -220,6 +236,9 @@ export default function OrderSummaryStep({
   equipmentState,
   onConnect,
   onBack,
+  onGoToRouterStep,
+  onGoToTvBoxStep,
+  onGoToSimStep,
   callbacks,
 }: OrderSummaryStepProps) {
   const [selectedTariff, setSelectedTariff] = useState<StoredTariff | null>(null);
@@ -243,34 +262,59 @@ export default function OrderSummaryStep({
   const tvInfo = getTvBoxLabel(equipmentState);
   const simInfo = getSimLabel(equipmentState);
 
-  const { totalMonthly, routerAddOn } = useMemo(() => {
+  const { totalMonthly, routerAddOn, tvAddOn, simAddOn } = useMemo(() => {
     const base = selectedTariff?.priceValue ?? 0;
     const routerAdd = getRouterAddOnPrice(equipmentState);
     const tvAdd = getTvBoxAddOnPrice(equipmentState);
     const simAdd = getSimAddOnPrice(equipmentState);
     const total = base + routerAdd + tvAdd + simAdd;
-    return { totalMonthly: total, routerAddOn: routerAdd };
+    return { totalMonthly: total, routerAddOn: routerAdd, tvAddOn: tvAdd, simAddOn: simAdd };
   }, [selectedTariff?.priceValue, equipmentState]);
 
-  // Handler для роутера - если выбран, убираем выбор; если нет - добавляем
+  // Handler для роутера - если выбран, убираем выбор; если нет - переходим в модалку выбора и затем снова на итоговую
   const handleRouterClick = () => {
     if (routerInfo.needsAdd) {
-      // Роутер не выбран - переходим к выбору (устанавливаем need и purchase)
-      callbacks.onRouterNeedChange('need');
-      callbacks.onRouterPurchaseChange('rent'); // По умолчанию аренда
+      if (onGoToRouterStep) {
+        onGoToRouterStep(); // переход в модалку роутера, после выбора — снова на итоговую карточку
+      } else {
+        callbacks.onRouterNeedChange('need');
+        callbacks.onRouterPurchaseChange('rent');
+      }
     } else {
-      // Роутер выбран - убираем выбор
       callbacks.onRouterNeedChange('no_thanks');
     }
   };
 
-  // Handler для SIM-карты - как роутер: если не выбрана — добавляем, если выбрана — убираем
+  // Handler для ТВ-приставки: если не выбрана — в модалку; если выбрана — минус по 1 (4→3→2→1, с 1 — убрать)
+  const handleTvBoxClick = () => {
+    if (tvInfo.isActive) {
+      const current = equipmentState.tvBox?.tvCount ?? 1;
+      if (current > 1) {
+        callbacks.onTvBoxCountChange((current - 1) as TvCountOption);
+      } else {
+        callbacks.onTvBoxNeedChange('smart_tv');
+      }
+    } else {
+      if (onGoToTvBoxStep) {
+        onGoToTvBoxStep();
+      } else {
+        callbacks.onTvBoxNeedChange('need');
+        callbacks.onTvBoxCountChange(1);
+      }
+    }
+  };
+
+  // Handler для SIM-карты: если не выбрана — переходим в модалку выбора и затем снова на итоговую; если выбрана — убираем
   const handleSimClick = () => {
     if (simInfo.isActive) {
       callbacks.onSimConnectionTypeChange('no_thanks');
     } else {
-      callbacks.onSimConnectionTypeChange('keep_number');
-      callbacks.onSimCountChange(1);
+      if (onGoToSimStep) {
+        onGoToSimStep(); // переход в модалку SIM, после выбора — снова на итоговую карточку
+      } else {
+        callbacks.onSimConnectionTypeChange('keep_number');
+        callbacks.onSimCountChange(1);
+      }
     }
   };
 
@@ -486,18 +530,32 @@ export default function OrderSummaryStep({
               >
                 {routerInfo.main}
               </span>
-              {routerInfo.priceText && (
-                <span
-                  style={{
-                    fontSize: '14px',
-                    lineHeight: '175%',
-                    color: 'rgba(16, 16, 16, 0.5)',
-                    textAlign: 'right',
-                  }}
-                >
-                  {routerInfo.priceText}
-                </span>
-              )}
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '2px' }}>
+                {routerInfo.choiceLabel && (
+                  <span
+                    style={{
+                      fontSize: '16px',
+                      lineHeight: '155%',
+                      color: '#101010',
+                      fontWeight: 500,
+                    }}
+                  >
+                    {routerInfo.choiceLabel}
+                  </span>
+                )}
+                {routerInfo.priceText && (
+                  <span
+                    style={{
+                      fontSize: '14px',
+                      lineHeight: '175%',
+                      color: 'rgba(16, 16, 16, 0.5)',
+                      textAlign: 'right',
+                    }}
+                  >
+                    {routerInfo.priceText}
+                  </span>
+                )}
+              </div>
             </div>
             <div
               style={{
@@ -531,17 +589,25 @@ export default function OrderSummaryStep({
           </div>
             </div>
 
-            {/* TV-приставка */}
-            <div style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '14px' }}>
+            {/* TV-приставка — кликабельно как роутер и SIM */}
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'flex-start',
+                marginBottom: '14px',
+                cursor: 'pointer',
+              }}
+              onClick={handleTvBoxClick}
+            >
           <div style={{ marginRight: '12px', marginTop: '2px', flexShrink: 0 }}>
-            {tvInfo.isActive ? <MinusCircleIcon /> : <CrossCircleIcon />}
+            {tvInfo.isActive ? <MinusCircleIcon /> : <PlusCircleRedIcon />}
           </div>
           <div style={{ flex: 1 }}>
             <div
               style={{
                 fontSize: '16px',
                 lineHeight: '155%',
-                color: tvInfo.isActive ? '#101010' : 'rgba(16, 16, 16, 0.25)',
+                color: tvInfo.isActive ? '#101010' : 'rgba(255, 16, 0, 0.75)',
               }}
             >
               {tvInfo.main}
@@ -550,7 +616,7 @@ export default function OrderSummaryStep({
               style={{
                 fontSize: '14px',
                 lineHeight: '105%',
-                color: 'rgba(16, 16, 16, 0.5)',
+                color: tvInfo.isActive ? 'rgba(16, 16, 16, 0.5)' : 'rgba(255, 16, 0, 0.5)',
               }}
             >
               {tvInfo.sub}
@@ -622,7 +688,7 @@ export default function OrderSummaryStep({
 
           {/* Блок цены — как в TariffCard: 16px 20px */}
           <div style={{ padding: '16px 20px' }}>
-            <div style={{ marginBottom: '4px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ marginBottom: '4px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '4px' }}>
               <div
                 style={{
                   fontSize: '22px',
@@ -632,18 +698,11 @@ export default function OrderSummaryStep({
               >
                 {totalMonthly} р./мес.
               </div>
-              {routerAddOn > 0 && (
-                <span
-                  style={{
-                    fontSize: '14px',
-                    lineHeight: '175%',
-                    color: '#101010',
-                    textAlign: 'right',
-                  }}
-                >
-                  +{routerAddOn} р./мес.
-                </span>
-              )}
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center', fontSize: '14px', lineHeight: '175%', color: '#101010' }}>
+                {routerAddOn > 0 && <span>+{routerAddOn} р./мес.</span>}
+                {tvAddOn > 0 && <span>+{tvAddOn} р./мес.</span>}
+                {simAddOn > 0 && <span>+{simAddOn} р./мес.</span>}
+              </div>
             </div>
 
             {/* Промо текст и огонёк на одной линии — как в Frame3 */}

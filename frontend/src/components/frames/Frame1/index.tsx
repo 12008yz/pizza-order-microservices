@@ -322,14 +322,14 @@ function AddressFormContent() {
             >
               Автоматически закроется через {cookieTimer}
             </p>
-            {/* Основной текст — left 35px, top 120px относительно фрейма = 15px от левого, 45px от верха баннера; 330×60 */}
+            {/* Основной текст — 330×60 px; «политики конфиденциальности портала» на следующей строке */}
             <p
               className="absolute m-0"
               style={{
                 left: 15,
                 top: 45,
                 width: 330,
-                minHeight: 60,
+                height: 60,
                 fontFamily: "'TT Firs Neue', sans-serif",
                 fontStyle: 'normal',
                 fontWeight: 400,
@@ -338,11 +338,16 @@ function AddressFormContent() {
                 color: '#101010',
               }}
             >
-              Если продолжаете использовать этот портал, вы выражаете согласие на использование файлов куки в соответствии с условиями{' '}
+              Если продолжаете использовать этот портал,
+              <br />
+              вы выражаете согласие на использование
+              <br />
+              файлов куки в соответствии с условиями
+              <br />
               <a href="/privacy-policy" target="_blank" rel="noopener noreferrer" className="text-[#0075FF] underline">
                 политики конфиденциальности
               </a>{' '}
-              портала
+              портал
             </p>
             {/* Кнопка закрытия — крестик по центру кнопки */}
             <button

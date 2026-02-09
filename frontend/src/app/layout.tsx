@@ -4,7 +4,7 @@ import AppProviders from '../components/providers/AppProviders'
 
 export const metadata: Metadata = {
   title: 'Гигапоиск',
-  description: 'Проверьте доступность интернета по вашему адресу и сравните тарифы провайдеров',
+  description: 'lorem10',
 }
 
 export default function RootLayout({

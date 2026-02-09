@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { HomeIcon, PlaneIcon } from '../../../common/icons';
 
@@ -17,9 +17,34 @@ const STATUS_STEPS = [
 
 export default function SuccessStep({ orderNumber, onFaq }: SuccessStepProps) {
   const router = useRouter();
+  const captureRef = useRef<HTMLDivElement>(null);
+
+  const handleScreenshot = useCallback(async () => {
+    if (!captureRef.current) return;
+    try {
+      const html2canvas = (await import('html2canvas')).default;
+      const canvas = await html2canvas(captureRef.current, {
+        useCORS: true,
+        scale: 2,
+        backgroundColor: '#F5F5F5',
+        logging: false,
+      });
+      canvas.toBlob((blob) => {
+        if (!blob) return;
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `Заявка-${orderNumber}.png`;
+        a.click();
+        URL.revokeObjectURL(url);
+      }, 'image/png');
+    } catch {
+      // fallback: не блокируем интерфейс при ошибке
+    }
+  }, [orderNumber]);
 
   return (
-    <div className="flex flex-col w-full">
+    <div className="flex flex-col w-full" ref={captureRef}>
       <div className="flex-shrink-0 px-[15px] pt-[12px] pb-[20px]">
         <h2
           style={{
@@ -63,7 +88,12 @@ export default function SuccessStep({ orderNumber, onFaq }: SuccessStepProps) {
             padding: '12px 15px',
           }}
         >
-          {STATUS_STEPS.map((step, index) => (
+          {STATUS_STEPS.map((step, index) => {
+            const isThirdRow = index === 2;
+            const rowColor = step.active ? '#101010' : isThirdRow ? 'rgba(16, 16, 16, 0.35)' : 'rgba(16, 16, 16, 0.5)';
+            const circleColor = step.active ? '#FFFFFF' : isThirdRow ? 'rgba(16, 16, 16, 0.5)' : '#101010';
+            const circleBorder = step.active ? 'none' : isThirdRow ? '1px solid rgba(16, 16, 16, 0.18)' : '1px solid rgba(16, 16, 16, 0.25)';
+            return (
             <div
               key={step.label}
               className="flex items-center gap-[10px]"
@@ -71,7 +101,7 @@ export default function SuccessStep({ orderNumber, onFaq }: SuccessStepProps) {
                 height: 36,
                 fontFamily: 'TT Firs Neue, sans-serif',
                 fontSize: '16px',
-                color: step.active ? '#101010' : 'rgba(16, 16, 16, 0.5)',
+                color: rowColor,
               }}
             >
               <span
@@ -79,33 +109,50 @@ export default function SuccessStep({ orderNumber, onFaq }: SuccessStepProps) {
                 style={{
                   width: 20,
                   height: 20,
-                  background: step.active ? '#FF1000' : 'rgba(16, 16, 16, 0.25)',
-                  color: step.active ? '#FFFFFF' : '#101010',
+                  background: step.active ? '#FF1000' : '#FFFFFF',
+                  border: circleBorder,
+                  color: circleColor,
                   fontSize: 12,
+                  fontWeight: 500,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
                 }}
               >
                 {step.active ? (
-                  <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+                  <svg width="10" height="8" viewBox="0 0 10 8" fill="none" style={{ display: 'block' }}>
                     <path d="M1 4L4 7L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 ) : (
-                  index + 1
+                  <span
+                    style={{
+                      display: 'block',
+                      lineHeight: '20px',
+                      height: 20,
+                      width: 20,
+                      textAlign: 'center',
+                      boxSizing: 'border-box',
+                    }}
+                  >
+                    {index + 1}
+                  </span>
                 )}
               </span>
               {step.label}
             </div>
-          ))}
+          );
+          })}
         </div>
 
         <button
           type="button"
-          disabled
-          className="w-full rounded-[10px] flex items-center justify-center outline-none cursor-default border mb-[8px]"
+          onClick={handleScreenshot}
+          className="w-full rounded-[10px] flex items-center justify-center outline-none cursor-pointer border mb-[5px]"
           style={{
             height: 50,
             border: '1px solid rgba(16, 16, 16, 0.25)',
             background: 'transparent',
-            color: 'rgba(16, 16, 16, 0.5)',
+            color: '#101010',
             fontFamily: 'TT Firs Neue, sans-serif',
             fontSize: '16px',
           }}

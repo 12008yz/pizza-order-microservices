@@ -306,6 +306,12 @@ function Frame3Content() {
   const [tariffsLoading, setTariffsLoading] = useState(true);
   const [tariffsError, setTariffsError] = useState<string | null>(null);
 
+  // Прелоад Frame4 и Frame5, чтобы при переходе на /equipment и /order контент показывался сразу
+  useEffect(() => {
+    import('../Frame4');
+    import('../Frame5');
+  }, []);
+
   // Проверка заполненности всех обязательных полей при монтировании
   useEffect(() => {
     if (typeof window === 'undefined') return;

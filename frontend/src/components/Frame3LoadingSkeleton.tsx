@@ -316,16 +316,16 @@ export default function Frame3LoadingSkeleton() {
           }}
         />
 
-        {/* Scrollbar — Rectangle 31, тонкая полоса справа */}
+        {/* Rectangle 31 — следующая карточка карусели, видна на 7px справа (как в макете) */}
         <div
           style={{
             position: 'absolute',
-            right: 0,
-            top: 230,
-            bottom: 120,
-            width: 6,
-            background: 'rgba(0,0,0,0.08)',
-            borderRadius: 3,
+            left: 393,
+            top: 280,
+            bottom: 100,
+            width: 360,
+            background: '#FFFFFF',
+            borderRadius: 20,
           }}
         />
       </div>

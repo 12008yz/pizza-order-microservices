@@ -229,9 +229,13 @@ function Frame5Content() {
   //   );
   // }
 
+  const goToFrame3 = useCallback(() => {
+    router.push('/providers');
+  }, [router]);
+
   return (
     <div
-      className="relative w-full max-w-[400px] mx-auto flex flex-col overflow-y-auto overflow-x-hidden bg-[#F5F5F5]"
+      className="relative w-full max-w-[400px] mx-auto flex flex-col overflow-y-auto overflow-x-hidden bg-[#F5F5F5] cursor-pointer"
       style={{
         fontFamily: 'TT Firs Neue, sans-serif',
         minHeight: '100dvh',
@@ -239,13 +243,18 @@ function Frame5Content() {
         paddingBottom: 'var(--sab, 0px)',
         boxSizing: 'border-box',
       }}
+      onClick={goToFrame3}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); goToFrame3(); } }}
+      aria-label="Выйти в список тарифов"
     >
       {/* Экран загрузки после отправки заявки */}
-      {isSubmitting && <LoadingScreen />}
+      {isSubmitting && <div onClick={(e) => e.stopPropagation()}><LoadingScreen /></div>}
 
       <div className="flex flex-col flex-1 min-h-0 w-full" style={{ background: '#F5F5F5' }}>
         {showHeader && (
-          <div className="flex-shrink-0 relative" style={{ minHeight: '120px' }}>
+          <div className="flex-shrink-0 relative" style={{ minHeight: '120px' }} onClick={(e) => e.stopPropagation()}>
             <div
               style={{
                 position: 'relative',
@@ -295,7 +304,9 @@ function Frame5Content() {
         {!showHeader && (
           <div className="flex-shrink-0 relative" style={{ minHeight: '105px' }}>
             {showNotification && (
-              <NotificationBanner initialCountdown={7} onClose={() => setNotificationVisible(false)} />
+              <div onClick={(e) => e.stopPropagation()}>
+                <NotificationBanner initialCountdown={7} onClose={() => setNotificationVisible(false)} />
+              </div>
             )}
             <div
               className="font-normal flex items-center justify-center text-center"
@@ -320,7 +331,7 @@ function Frame5Content() {
 
         <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
           <div
-            className="flex flex-col rounded-[20px] bg-white overflow-hidden"
+            className="flex flex-col rounded-[20px] bg-white overflow-hidden cursor-default"
             style={{
               width: '360px',
               maxWidth: '360px',
@@ -330,6 +341,7 @@ function Frame5Content() {
               marginBottom: (step === 'confirmation' || step === 'success') ? 'calc(20px + var(--sab, 0px))' : '20px',
               maxHeight: showHeader ? 'calc(100dvh - 115px)' : 'calc(100dvh - 145px)',
             }}
+            onClick={(e) => e.stopPropagation()}
           >
             <div
               key={step}

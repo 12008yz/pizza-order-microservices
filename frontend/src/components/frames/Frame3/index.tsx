@@ -1320,35 +1320,62 @@ function Frame3Content() {
               </p>
             </div>
           ) : !tariffsLoading && displayedTariffs.length === 0 ? (
-            <>
-              <div className="carousel-spacer-left" aria-hidden="true" />
+            showFavoritesMode ? (
+              /* В режиме избранного — лаконичное сообщение в небольшом белом блоке по центру */
               <div
-                className="flex-shrink-0 carousel-card"
                 style={{
-                  minHeight: '445px',
-                  background: '#FFFFFF',
-                  borderRadius: '20px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  padding: '40px',
-                  textAlign: 'center',
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  transform: 'translate(-50%, -50%)',
                 }}
               >
                 <div
                   style={{
+                    background: '#FFFFFF',
+                    borderRadius: '16px',
+                    padding: '20px 32px',
                     fontFamily: 'TT Firs Neue, sans-serif',
                     fontSize: '16px',
+                    fontWeight: 400,
                     color: 'rgba(16, 16, 16, 0.5)',
+                    textAlign: 'center',
+                    whiteSpace: 'nowrap',
                   }}
                 >
-                  {showFavoritesMode
-                    ? 'Нет избранных тарифов. Добавьте тарифы в избранное.'
-                    : 'Нет тарифов по выбранным фильтрам. Попробуйте изменить параметры фильтрации.'}
+                  Тут ничего нет ;(
                 </div>
               </div>
-              <div className="carousel-spacer-right" aria-hidden="true" />
-            </>
+            ) : (
+              /* Обычный режим — белый блок с сообщением о фильтрах */
+              <>
+                <div className="carousel-spacer-left" aria-hidden="true" />
+                <div
+                  className="flex-shrink-0 carousel-card"
+                  style={{
+                    minHeight: '445px',
+                    background: '#FFFFFF',
+                    borderRadius: '20px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: '40px',
+                    textAlign: 'center',
+                  }}
+                >
+                  <div
+                    style={{
+                      fontFamily: 'TT Firs Neue, sans-serif',
+                      fontSize: '16px',
+                      color: 'rgba(16, 16, 16, 0.5)',
+                    }}
+                  >
+                    Нет тарифов по выбранным фильтрам. Попробуйте изменить параметры фильтрации.
+                  </div>
+                </div>
+                <div className="carousel-spacer-right" aria-hidden="true" />
+              </>
+            )
           ) : (
             <>
             <div className="carousel-spacer-left" aria-hidden="true" />

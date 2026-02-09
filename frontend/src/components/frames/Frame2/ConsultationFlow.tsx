@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import AnimatedCheck from '../../common/AnimatedCheck';
+import { CloseIcon } from '../../common/icons';
 
 type ContactMethod = 'max' | 'telegram' | 'phone';
 type ConsultationStep = 'contact-method' | 'phone-after-method';
@@ -166,25 +167,17 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
             }}
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Close button - right: 37px from right, top: 9.5px */}
+            {/* Кнопка закрытия — крестик по центру */}
             <button
               onClick={() => handleCloseNotification(notification.id)}
-              className="absolute flex items-center justify-center"
+              className="absolute flex items-center justify-center bg-transparent border-none p-0 cursor-pointer w-6 h-6"
               style={{
                 right: '37px',
                 top: '9.5px',
-                width: '16px',
-                height: '16px',
-                background: 'none',
-                border: 'none',
-                padding: 0,
-                cursor: 'pointer',
               }}
+              aria-label="Закрыть"
             >
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                <circle cx="8" cy="8" r="8" fill="rgba(16, 16, 16, 0.15)" />
-                <path d="M10.5 5.5L5.5 10.5M5.5 5.5L10.5 10.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" />
-              </svg>
+              <CloseIcon width={16} height={16} />
             </button>
 
             {/* Timer text - top: 15px from card */}

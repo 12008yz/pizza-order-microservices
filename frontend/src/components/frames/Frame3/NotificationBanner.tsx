@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { X } from '@phosphor-icons/react';
+import { CloseIcon } from '../../common/icons';
 
 interface NotificationBannerProps {
   timer?: number;
@@ -49,22 +49,18 @@ export default function NotificationBanner({
       }}
       onClick={(e) => e.stopPropagation()}
     >
-      {/* Close button */}
+      {/* Кнопка закрытия — крестик по центру */}
       <button
+        type="button"
         onClick={() => {
           setIsVisible(false);
           if (onClose) onClose();
         }}
-        className="absolute"
-        style={{
-          right: '15px',
-          top: '15px',
-          width: '16px',
-          height: '16px',
-          opacity: 0.15,
-        }}
+        className="absolute flex items-center justify-center bg-transparent border-0 p-0 cursor-pointer w-6 h-6"
+        style={{ right: 15, top: 15 }}
+        aria-label="Закрыть"
       >
-        <X size={16} weight="regular" color="#101010" />
+        <CloseIcon width={16} height={16} />
       </button>
 
       {/* Timer text */}

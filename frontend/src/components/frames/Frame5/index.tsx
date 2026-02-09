@@ -8,6 +8,7 @@ import { useEquipment } from '../../../contexts/EquipmentContext';
 import { ordersService } from '../../../services';
 import type { CreateOrderData } from '../../../services/orders.service';
 import { HomeIcon, PlaneIcon } from '../../common/icons';
+import LoadingScreen from '../../LoadingScreen';
 import {
   PersonalDataStep,
   AddressStep,
@@ -239,6 +240,9 @@ function Frame5Content() {
         boxSizing: 'border-box',
       }}
     >
+      {/* Экран загрузки после отправки заявки */}
+      {isSubmitting && <LoadingScreen />}
+
       <div className="flex flex-col flex-1 min-h-0 w-full" style={{ background: '#F5F5F5' }}>
         {showHeader && (
           <div className="flex-shrink-0 relative" style={{ minHeight: '120px' }}>

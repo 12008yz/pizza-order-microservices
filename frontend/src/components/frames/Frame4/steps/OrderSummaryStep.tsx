@@ -103,17 +103,10 @@ const InfoIcon = () => (
   </svg>
 );
 
-// Иконка сердца (outline)
-const HeartOutlineIcon = () => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-    <path
-      d="M12 21C12 21 3 14.5 3 8.5C3 5.5 5.5 3 8.5 3C10.04 3 11.54 3.99 12 4.5C12.46 3.99 13.96 3 15.5 3C18.5 3 21 5.5 21 8.5C21 14.5 12 21 12 21Z"
-      stroke="#101010"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      fill="none"
-    />
+// Стрелка назад (как в других шагах Frame4)
+const BackArrowIcon = () => (
+  <svg width="12" height="6" viewBox="0 0 12 6" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ transform: 'rotate(-90deg)' }}>
+    <path d="M0.112544 5.34082L5.70367 0.114631C5.7823 0.0412287 5.88888 -5.34251e-07 6 -5.24537e-07C6.11112 -5.14822e-07 6.2177 0.0412287 6.29633 0.114631L11.8875 5.34082C11.9615 5.41513 12.0019 5.5134 11.9999 5.61495C11.998 5.7165 11.954 5.81338 11.8772 5.8852C11.8004 5.95701 11.6967 5.99815 11.5881 5.99994C11.4794 6.00173 11.3743 5.96404 11.2948 5.8948L6 0.946249L0.705204 5.8948C0.625711 5.96404 0.520573 6.00173 0.411936 5.99994C0.3033 5.99815 0.199649 5.95701 0.12282 5.88519C0.04599 5.81338 0.00198176 5.71649 6.48835e-05 5.61495C-0.00185199 5.5134 0.0384722 5.41513 0.112544 5.34082Z" fill="#101010" />
   </svg>
 );
 
@@ -230,7 +223,7 @@ export default function OrderSummaryStep({
   callbacks,
 }: OrderSummaryStepProps) {
   const [selectedTariff, setSelectedTariff] = useState<StoredTariff | null>(null);
-  const [isHeartPressed, setIsHeartPressed] = useState(false);
+  const [isBackPressed, setIsBackPressed] = useState(false);
   const [isConnectPressed, setIsConnectPressed] = useState(false);
 
   useEffect(() => {
@@ -341,12 +334,12 @@ export default function OrderSummaryStep({
             </div>
           </div>
 
-          {/* Разделитель — как в TariffCard: 16px 20px 0 20px */}
-          <div style={{ padding: '16px 20px 0 20px' }}>
+          {/* Разделитель: 15px от заголовка тарифа до карточки товара */}
+          <div style={{ padding: '15px 20px 0 20px' }}>
             <div style={{ height: '1px', background: 'rgba(16, 16, 16, 0.1)' }} />
           </div>
 
-          {/* Блок фич — как в TariffCard: padding 16px 20px, между пунктами 14px */}
+          {/* Блок фич (карточка товара) — как в TariffCard: padding 16px 20px, между пунктами 14px */}
           <div style={{ padding: '16px 20px' }}>
             {/* Скорость интернета */}
             <div style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '14px' }}>
@@ -696,15 +689,15 @@ export default function OrderSummaryStep({
             paddingTop: '10px',
           }}
         >
-        {/* Кнопка сердце */}
+        {/* Кнопка «Назад» — стрелка влево, как на других шагах */}
         <button
           type="button"
           onClick={onBack}
-          onMouseDown={() => setIsHeartPressed(true)}
-          onMouseUp={() => setIsHeartPressed(false)}
-          onMouseLeave={() => setIsHeartPressed(false)}
-          onTouchStart={() => setIsHeartPressed(true)}
-          onTouchEnd={() => setIsHeartPressed(false)}
+          onMouseDown={() => setIsBackPressed(true)}
+          onMouseUp={() => setIsBackPressed(false)}
+          onMouseLeave={() => setIsBackPressed(false)}
+          onTouchStart={() => setIsBackPressed(true)}
+          onTouchEnd={() => setIsBackPressed(false)}
           className="outline-none cursor-pointer"
           style={{
             width: '50px',
@@ -717,11 +710,12 @@ export default function OrderSummaryStep({
             justifyContent: 'center',
             flexShrink: 0,
             boxSizing: 'border-box',
-            transform: isHeartPressed ? 'scale(0.92)' : 'scale(1)',
+            transform: isBackPressed ? 'scale(0.92)' : 'scale(1)',
             transition: 'transform 0.15s ease-out',
           }}
+          aria-label="Назад"
         >
-          <HeartOutlineIcon />
+          <BackArrowIcon />
         </button>
 
         {/* Кнопка Подключить */}

@@ -11,3 +11,4 @@ export { default as HeartFilledIcon } from './HeartFilledIcon';
 export { default as HeartHeaderFilledIcon } from './HeartHeaderFilledIcon';
 export { default as HeartHeaderBlackFilledIcon } from './HeartHeaderBlackFilledIcon';
 export { default as ClearFilterIcon } from './ClearFilterIcon';
+export { default as CloseIcon } from './CloseIcon';

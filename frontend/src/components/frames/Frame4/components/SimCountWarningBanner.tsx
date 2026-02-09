@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { CloseIcon } from '../../../common/icons';
 
 interface SimCountWarningBannerProps {
   onClose?: () => void;
@@ -70,21 +71,10 @@ export default function SimCountWarningBanner({
         <button
           type="button"
           onClick={handleClose}
-          style={{
-            background: 'transparent',
-            border: 'none',
-            cursor: 'pointer',
-            padding: '4px',
-          }}
+          className="flex items-center justify-center bg-transparent border-0 p-0 cursor-pointer w-6 h-6 shrink-0"
+          aria-label="Закрыть"
         >
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-            <path
-              d="M1 1L11 11M1 11L11 1"
-              stroke="rgba(16, 16, 16, 0.5)"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-            />
-          </svg>
+          <CloseIcon width={16} height={16} />
         </button>
       </div>
 

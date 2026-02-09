@@ -42,6 +42,7 @@ import type {
 } from './types';
 import { AddressProvider } from '../../../contexts/AddressContext';
 import { useEquipment } from '../../../contexts/EquipmentContext';
+import LoadingScreen from '../../LoadingScreen';
 
 const defaultTvBox = {
   need: null as TvBoxNeedOption | null,
@@ -100,6 +101,8 @@ function Frame4Content() {
   const [showSimCountWarning, setShowSimCountWarning] = useState(false);
   // Модалка консультации (в хедере — всегда доступна, в т.ч. на шаге итогового тарифа)
   const [showConsultation, setShowConsultation] = useState(false);
+  // Экран загрузки при переходе на 5 фрейм (страница заказа)
+  const [showLoadingToOrder, setShowLoadingToOrder] = useState(false);
 
   // Инициализация из сохранённого выбора при монтировании
   useEffect(() => {
@@ -131,9 +134,15 @@ function Frame4Content() {
   };
 
   useEffect(() => {
-    if (currentStep === 'router_operator' && equipmentState.router.operator != null) {
+    // Уведомление показываем на всех шагах, кроме когда выбран ДОМ.RU (для шагов выбора оператора)
+    const routerOperator = equipmentState.router.operator;
+    const tvBoxOperator = equipmentState.tvBox?.operatorId;
+    const isDomRuRouter = routerOperator === 'domru';
+    const isDomRuTvBox = tvBoxOperator === 'domru';
+
+    if (currentStep === 'router_operator' && routerOperator != null && !isDomRuRouter) {
       setFrameNotification((prev) => (prev?.type === 'router_operator' ? prev : { type: 'router_operator', countdown: 7 }));
-    } else if (currentStep === 'tvbox_operator' && equipmentState.tvBox?.operatorId != null) {
+    } else if (currentStep === 'tvbox_operator' && tvBoxOperator != null && !isDomRuTvBox) {
       setFrameNotification((prev) => (prev?.type === 'tvbox_operator' ? prev : { type: 'tvbox_operator', countdown: 7 }));
     } else if (currentStep === 'tvbox_tvcount' && (equipmentState.tvBox?.tvCount ?? 0) > 1) {
       setFrameNotification((prev) => (prev?.type === 'tvbox_tvcount' ? prev : { type: 'tvbox_tvcount', countdown: 7 }));
@@ -291,7 +300,8 @@ function Frame4Content() {
     } else if (currentStep === 'router_purchase') {
       setCurrentStep('tvbox_need');
     } else if (currentStep === 'router_operator') {
-      setCurrentStep('router_config');
+      // «Имеется, но от оператора»: после выбора оператора (ДОМ.RU и др.) сразу на ТВ-приставку, без блока настройки
+      setCurrentStep('tvbox_need');
     } else if (currentStep === 'router_config') {
       setCurrentStep('tvbox_need');
     } else if (currentStep === 'tvbox_need') {
@@ -319,9 +329,8 @@ function Frame4Content() {
         // Подключение текущего номера — спрашиваем статус клиента МТС
         setCurrentStep('sim_client_status');
       } else if (connectionType === 'new_number') {
-        // Подключение нового номера — сразу на 5 фрейм (оформление заказа)
-        saveEquipment(equipmentState);
-        router.push('/order');
+        // Подключение нового номера — сначала итоговая карточка, затем по кнопке на /order
+        setCurrentStep('order_summary');
       }
     } else if (currentStep === 'sim_client_status') {
       // После выбора статуса клиента показываем информационный экран о регистрации на человека
@@ -337,10 +346,11 @@ function Frame4Content() {
       setCurrentStep('order_summary');
     } else if (currentStep === 'order_summary') {
       saveEquipment(equipmentState);
+      setShowLoadingToOrder(true);
       router.push('/order');
     } else if (currentStep === 'sim_operator') {
-      saveEquipment(equipmentState);
-      router.push('/order');
+      // После выбора оператора SIM — итоговая карточка, затем по кнопке на /order
+      setCurrentStep('order_summary');
     }
   };
 
@@ -358,10 +368,12 @@ function Frame4Content() {
         setCurrentStep('router_need');
       }
     } else if (currentStep === 'tvbox_need') {
-      // Возврат зависит от того, откуда пришли в блок роутера: need→purchase→tvbox | from_operator→operator→config→tvbox | own→config→tvbox | no_thanks→tvbox
+      // Возврат: need→purchase→tvbox | from_operator→operator→tvbox (без config) | own→config→tvbox | no_thanks→tvbox
       if (equipmentState.router.need === 'need') {
         setCurrentStep('router_purchase');
-      } else if (equipmentState.router.need === 'from_operator' || equipmentState.router.need === 'own') {
+      } else if (equipmentState.router.need === 'from_operator') {
+        setCurrentStep('router_operator');
+      } else if (equipmentState.router.need === 'own') {
         setCurrentStep('router_config');
       } else {
         setCurrentStep('router_need'); // no_thanks
@@ -756,6 +768,7 @@ function Frame4Content() {
                 equipmentState={equipmentState}
                 onConnect={() => {
                   saveEquipment(equipmentState);
+                  setShowLoadingToOrder(true);
                   router.push('/order');
                 }}
                 onBack={handleBack}
@@ -773,6 +786,9 @@ function Frame4Content() {
           </div>
         </div>
       </div>
+
+      {/* Экран загрузки при переходе с 4 на 5 фрейм */}
+      {showLoadingToOrder && <LoadingScreen />}
 
       {/* Модалка консультации — доступна на всех шагах, в т.ч. на итоговом тарифе */}
       {showConsultation && (

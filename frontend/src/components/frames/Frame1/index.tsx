@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { X } from '@phosphor-icons/react';
+import { CloseIcon } from '../../common/icons';
 import { AddressProvider, useAddress, ConnectionType } from '../../../contexts/AddressContext';
 import ConnectionTypeModal from '../../modals/ConnectionTypeModal';
 import AddressInputModal from '../../modals/AddressInputModal';
@@ -344,20 +344,18 @@ function AddressFormContent() {
               </a>{' '}
               портала
             </p>
-            {/* Vector — кнопка закрытия в зоне left 86.75% / right 9.25% / top 10.57%; цвет иконки rgba(16,16,16,0.25) */}
+            {/* Кнопка закрытия — крестик по центру кнопки */}
             <button
               type="button"
               onClick={() => setShowCookieBanner(false)}
-              className="absolute cursor-pointer flex items-center justify-center bg-transparent border-0 outline-none"
+              className="absolute cursor-pointer flex items-center justify-center bg-transparent border-0 outline-none w-6 h-6"
               style={{
-                left: '86.75%',
                 right: '9.25%',
                 top: '10.57%',
-                bottom: '87.59%',
               }}
               aria-label="Закрыть"
             >
-              <X size={16} weight="regular" color="rgba(16, 16, 16, 0.25)" />
+              <CloseIcon width={16} height={16} />
             </button>
           </div>
         )}

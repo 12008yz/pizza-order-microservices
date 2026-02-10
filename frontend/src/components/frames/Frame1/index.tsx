@@ -343,7 +343,7 @@ function AddressFormContent({ isAppLoading = false, appLoadingProgress = 0 }: Ad
               width: 360,
               height: 120,
               left: 'calc(50% - 360px / 2)',
-              top: 50,
+              top: 'var(--header-top, 50px)',
               background: '#FFFFFF',
               borderRadius: 20,
             }}

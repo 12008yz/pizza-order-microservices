@@ -343,38 +343,38 @@ export default function OrderSummaryStep({
             WebkitOverflowScrolling: 'touch',
           }}
         >
-          {/* Тариф: по макету padding 15 17 15 15, 10px до разделителя */}
+          {/* Тариф: по макету padding 15 17 15 15, 10px до разделителя; значок информации на 1-й строке (провайдер) */}
           <div style={{ padding: '15px 17px 10px 15px', position: 'relative' }}>
-            <div
-              style={{
-                fontSize: '14px',
-                lineHeight: '125%',
-                color: 'rgba(16, 16, 16, 0.5)',
-                marginBottom: '5px',
-              }}
-            >
-              {selectedTariff?.providerName ?? 'МТС'}
-            </div>
             <div
               style={{
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
+                marginBottom: '5px',
               }}
             >
               <span
                 style={{
-                  fontSize: '18px',
-                  lineHeight: '165%',
-                  color: '#101010',
-                  fontWeight: 400,
+                  fontSize: '14px',
+                  lineHeight: '125%',
+                  color: 'rgba(16, 16, 16, 0.5)',
                 }}
               >
-                {selectedTariff?.tariffName ?? 'РИИЛ. NEW'}
+                {selectedTariff?.providerName ?? 'МТС'}
               </span>
               <div style={{ flexShrink: 0 }}>
                 <InfoIcon />
               </div>
+            </div>
+            <div
+              style={{
+                fontSize: '18px',
+                lineHeight: '165%',
+                color: '#101010',
+                fontWeight: 400,
+              }}
+            >
+              {selectedTariff?.tariffName ?? 'РИИЛ. NEW'}
             </div>
           </div>
 

@@ -570,10 +570,10 @@ function Frame4Content() {
           </div>
         )}
 
-        {/* Зона подсказки и уведомлений: как во Frame2 — уведомления 75px от верха */}
+        {/* Зона подсказки и уведомлений: уведомления с отступом сверху по --header-top (как в Frame1, 2, 5) */}
         {currentStep !== 'order_summary' && (
           <div className="flex-shrink-0 relative" style={{ minHeight: '105px' }}>
-            {/* Уведомление — белая карточка 75px от верха, пиксель-перфект как во Frame2 */}
+            {/* Уведомление — белая карточка по --header-top, единый стиль для всех фреймов */}
             {frameNotification && (
               <div
                 className="absolute left-1/2 -translate-x-1/2 bg-white rounded-[20px] flex flex-col"

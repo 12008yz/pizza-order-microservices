@@ -160,7 +160,7 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
             style={{
               width: '360px',
               height: '90px',
-              top: `calc(var(--header-top, 50px) + var(--sat, 0px) + ${index * 95}px)`,
+              top: `calc(var(--header-top, 50px) + ${index * 95}px)`,
               boxSizing: 'border-box',
               backdropFilter: 'blur(7.5px)',
               transition: 'top 0.3s ease-in-out',
@@ -238,7 +238,7 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
   // Экран выбора способа связи — компактная карточка прижата вниз (по образцу TechAccessModal)
   const renderContactMethod = () => (
     <div className="relative w-full max-w-[400px] flex flex-col h-full overflow-hidden bg-[#F5F5F5]">
-      {/* Шапка: подсказка скрыта при показе уведомления; уведомления с отступом сверху 75px + var(--sat) */}
+      {/* Шапка: подсказка скрыта при показе уведомления; уведомления с отступом сверху по --header-top (как в Frame1, 4, 5) */}
       <div className="flex-shrink-0 relative cursor-pointer" style={{ minHeight: '105px' }} onClick={handleBackgroundClick}>
         {notifications.length === 0 && (
           <div
@@ -454,7 +454,7 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
   // Экран ввода телефона — компактная карточка прижата вниз (по образцу TechAccessModal)
   const renderPhoneAfterMethod = () => (
     <div className="relative w-full max-w-[400px] flex flex-col h-full overflow-hidden bg-[#F5F5F5]">
-      {/* Шапка: подсказка скрыта при показе уведомления; уведомления с отступом сверху 75px + var(--sat) */}
+      {/* Шапка: подсказка скрыта при показе уведомления; уведомления с отступом сверху по --header-top (как в Frame1, 4, 5) */}
       <div className="flex-shrink-0 relative cursor-pointer" style={{ minHeight: '105px' }} onClick={handleBackgroundClick}>
         {notifications.length === 0 && (
           <div

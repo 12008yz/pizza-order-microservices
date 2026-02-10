@@ -1081,7 +1081,7 @@ function Frame3Content() {
         onClose={() => setShowFavoriteToast(false)}
       />
 
-      {/* Стрелка переключения тарифа — выше блока с карточкой */}
+      {/* Стрелка переключения тарифа — 10px от верхнего края карточки (по макету) */}
       {/* В режиме избранного показываем блок с сердечком + стрелкой только если есть избранные; иначе — только стрелку (вне режима избранного) */}
       {showFavoritesMode && displayedTariffs.length > 0 ? (
         /* Блок с сердечком и стрелкой в режиме избранного — 70x40 */
@@ -1092,7 +1092,7 @@ function Frame3Content() {
             width: '70px',
             height: '40px',
             right: '15px',
-            top: 230,
+            top: 'calc(var(--header-top, 50px) + 40px + 165px - 40px - 10px)',
             zIndex: 5,
           }}
           onClick={(e) => {
@@ -1150,7 +1150,7 @@ function Frame3Content() {
             width: '40px',
             height: '40px',
             right: '15px',
-            top: 230,
+            top: 'calc(var(--header-top, 50px) + 40px + 165px - 40px - 10px)',
             zIndex: 5,
             opacity: canScrollRight && displayedTariffs.length > 1 ? 1 : 0.4,
             pointerEvents: canScrollRight && displayedTariffs.length > 1 ? 'auto' : 'none',
@@ -1219,7 +1219,7 @@ function Frame3Content() {
         </div>
       ) : null}
 
-      {/* Кнопка сброса фильтра — слева, на одной линии со стрелкой (выше блока карточки) */}
+      {/* Кнопка сброса фильтра — слева, на одной линии со стрелкой (10px от карточки) */}
       {isFilterActive && !showFavoritesMode && (
         <div
           className="cursor-pointer"
@@ -1228,7 +1228,7 @@ function Frame3Content() {
             width: '40px',
             height: '40px',
             left: '20px',
-            top: 230,
+            top: 'calc(var(--header-top, 50px) + 40px + 165px - 40px - 10px)',
             zIndex: 5,
           }}
           onClick={withClickGuard(handleClearFilters)}
@@ -1252,14 +1252,14 @@ function Frame3Content() {
         </div>
       )}
 
-      {/* Контейнер карусели: 400px (на мобильных 397px через .carousel-wrapper для подглядывания 7px второй карточки) */}
+      {/* Контейнер карусели: 165px от низа header (по макету), снизу отступ 20px */}
       <div
         className="carousel-wrapper"
         style={{
           position: 'absolute',
           left: 0,
           right: 0,
-          top: 280,
+          top: 'calc(var(--header-top, 50px) + 40px + 165px)',
           bottom: 'calc(20px + var(--sab, 0px))',
           zIndex: 1,
           background: '#F5F5F5',
@@ -1279,7 +1279,7 @@ function Frame3Content() {
           className={`flex scrollbar-hide flex-nowrap carousel-container h-full ${displayedTariffs.length > 1 ? 'overflow-x-auto' : 'overflow-x-hidden'} ${displayedTariffs.length === 1 ? 'carousel-container--single-card' : ''}`}
           style={{
             gap: '5px',
-            alignItems: 'flex-start',
+            alignItems: 'stretch',
             scrollSnapType: displayedTariffs.length > 1 ? 'x mandatory' : 'none',
             WebkitOverflowScrolling: 'touch',
             scrollbarWidth: 'none',
@@ -1296,7 +1296,8 @@ function Frame3Content() {
             <div
               className="flex-shrink-0 carousel-card"
               style={{
-                minHeight: '445px',
+                height: '100%',
+                minHeight: 0,
                 background: '#FFFFFF',
                 borderRadius: '20px',
                 display: 'flex',
@@ -1314,7 +1315,8 @@ function Frame3Content() {
             <div
               className="flex-shrink-0 carousel-card"
               style={{
-                minHeight: '445px',
+                height: '100%',
+                minHeight: 0,
                 background: '#FFFFFF',
                 borderRadius: '20px',
                 display: 'flex',
@@ -1362,7 +1364,8 @@ function Frame3Content() {
                 <div
                   className="flex-shrink-0 carousel-card"
                   style={{
-                    minHeight: '445px',
+                    height: '100%',
+                    minHeight: 0,
                     background: '#FFFFFF',
                     borderRadius: '20px',
                     display: 'flex',
@@ -1394,8 +1397,8 @@ function Frame3Content() {
                 className="flex-shrink-0 carousel-card carousel-card--shadow-top"
                 style={{
                   position: 'relative',
-                  height: '445px',
-                  minHeight: '445px',
+                  height: '100%',
+                  minHeight: 0,
                   background: '#FFFFFF',
                   borderRadius: '20px',
                   scrollSnapAlign: 'start',
@@ -1467,8 +1470,7 @@ function Frame3Content() {
                     padding: '10px 15px 0 15px',
                     flex: 1,
                     minHeight: 0,
-                    overflowY: 'auto',
-                    WebkitOverflowScrolling: 'touch',
+                    overflowY: 'hidden',
                   }}
                 >
                   <div className="features-container" style={{ display: 'flex', flexDirection: 'column' }}>

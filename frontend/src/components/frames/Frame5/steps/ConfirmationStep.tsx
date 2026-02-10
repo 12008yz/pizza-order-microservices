@@ -61,8 +61,10 @@ export default function ConfirmationStep({
       <p
         style={{
           fontFamily: 'TT Firs Neue, sans-serif',
+          fontStyle: 'normal',
+          fontWeight: 400,
           fontSize: '16px',
-          lineHeight: '155%',
+          lineHeight: '125%',
           color: '#101010',
           marginBottom: 15,
         }}

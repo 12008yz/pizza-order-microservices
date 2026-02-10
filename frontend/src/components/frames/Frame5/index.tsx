@@ -22,6 +22,8 @@ import type { PersonalData, AddressData, FormStep, ValidationErrors } from './ty
 type AddressModalStep = 'city' | 'street' | 'house' | 'apartment';
 
 const SELECTED_TARIFF_KEY = 'selectedTariff';
+const ADDRESS_DATA_KEY = 'addressData';
+const ORDER_PERSONAL_DATA_KEY = 'orderPersonalData';
 
 interface SelectedTariff {
   id: number;
@@ -84,6 +86,34 @@ function Frame5Content() {
     }
   }, []);
 
+  // Загрузка персональных данных из sessionStorage при монтировании
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    try {
+      const saved = sessionStorage.getItem(ORDER_PERSONAL_DATA_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved) as PersonalData;
+        if (parsed.firstName || parsed.lastName || parsed.phone || parsed.birthDate) {
+          setPersonalData((prev) => ({ ...DEFAULT_PERSONAL, ...parsed }));
+        }
+      }
+    } catch {
+      // игнорируем
+    }
+  }, []);
+
+  // Сохранение персональных данных в sessionStorage при изменении (для восстановления и отправки в CRM)
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    try {
+      if (personalData.firstName || personalData.lastName || personalData.phone || personalData.birthDate) {
+        sessionStorage.setItem(ORDER_PERSONAL_DATA_KEY, JSON.stringify(personalData));
+      }
+    } catch {
+      // игнорируем
+    }
+  }, [personalData]);
+
   useEffect(() => {
     if (savedAddress?.city || savedAddress?.street || savedAddress?.houseNumber) {
       const buildingStr = savedAddress.houseNumber
@@ -98,7 +128,7 @@ function Frame5Content() {
     }
   }, [savedAddress?.city, savedAddress?.street, savedAddress?.houseNumber, savedAddress?.corpusNumber]);
 
-  // После закрытия модалки адреса (AddressInputModal из Frame1) синхронизируем контекст в локальный addressData; в заявку идёт только квартира
+  // После закрытия модалки адреса синхронизируем контекст в локальный addressData и перезаписываем sessionStorage addressData
   useEffect(() => {
     const wasOpen = prevShowAddressModalRef.current;
     prevShowAddressModalRef.current = showAddressModal;
@@ -116,8 +146,43 @@ function Frame5Content() {
       if (savedAddress.apartmentNumber) {
         setErrors((prevErrors) => ({ ...prevErrors, apartment: undefined }));
       }
+      try {
+        sessionStorage.setItem(
+          ADDRESS_DATA_KEY,
+          JSON.stringify({
+            city: savedAddress.city,
+            street: savedAddress.street,
+            houseNumber: savedAddress.houseNumber,
+            corpusNumber: savedAddress.corpusNumber,
+            apartmentNumber: savedAddress.apartmentNumber,
+          })
+        );
+      } catch {
+        // игнорируем
+      }
     }
   }, [showAddressModal, savedAddress]);
+
+  // При любом изменении адреса во Frame5 перезаписываем sessionStorage addressData (город, улица, дом, квартира)
+  useEffect(() => {
+    if (typeof window === 'undefined' || (!addressData.city && !addressData.street && !addressData.building)) return;
+    try {
+      const houseNum = addressData.building?.replace(/^д\.\s?| к .*$/g, '').trim() || '';
+      const corpus = addressData.building?.match(/ к (.+)$/)?.[1] || undefined;
+      sessionStorage.setItem(
+        ADDRESS_DATA_KEY,
+        JSON.stringify({
+          city: addressData.city || undefined,
+          street: addressData.street || undefined,
+          houseNumber: houseNum || undefined,
+          corpusNumber: corpus || undefined,
+          apartmentNumber: addressData.apartment || undefined,
+        })
+      );
+    } catch {
+      // игнорируем
+    }
+  }, [addressData.city, addressData.street, addressData.building, addressData.apartment]);
 
   const handlePersonalNext = useCallback(() => {
     const nextErrors = validatePersonalData(personalData);
@@ -149,6 +214,7 @@ function Frame5Content() {
           tariffId: selectedTariff.id,
           fullName: `${personalData.firstName.trim()} ${personalData.lastName.trim()}`,
           phone: personalData.phone.replace(/\D/g, ''),
+          ...(personalData.birthDate?.trim() && { birthDate: personalData.birthDate.trim() }),
           addressString: [
             addressData.city,
             addressData.street,

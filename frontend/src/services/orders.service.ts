@@ -12,6 +12,7 @@ export interface CreateOrderData {
   tariffId: number;
   fullName: string;
   phone: string;
+  birthDate?: string;
   email?: string;
   /** Адрес (для API передаётся как addressString) */
   address?: string;

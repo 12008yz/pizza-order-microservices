@@ -66,17 +66,34 @@ export const AddressProvider: React.FC<{ children: ReactNode }> = ({ children })
   const [addressData, setAddressData] = useState<AddressData>(defaultAddressData);
   const [isHydrated, setIsHydrated] = useState(false);
 
-  // Загружаем данные из sessionStorage только на клиенте после монтирования
+  // Загружаем данные из sessionStorage только на клиенте после монтирования.
+  // Сначала addressFormData (черновик из формы), если пусто — берём addressData (итог из Frame1 или перезапись из Frame5).
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    
+
     try {
-      const saved = sessionStorage.getItem('addressFormData');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        // Восстанавливаем данные, но не ошибки валидации
+      const formData = sessionStorage.getItem('addressFormData');
+      if (formData) {
+        const parsed = JSON.parse(formData);
+        if (parsed.city || parsed.street || parsed.houseNumber) {
+          setAddressData({ ...parsed, errors: {} });
+          setIsHydrated(true);
+          return;
+        }
+      }
+
+      const savedAddress = sessionStorage.getItem('addressData');
+      if (savedAddress) {
+        const parsed = JSON.parse(savedAddress);
         setAddressData({
-          ...parsed,
+          ...defaultAddressData,
+          city: parsed.city ?? defaultAddressData.city,
+          street: parsed.street ?? defaultAddressData.street,
+          houseNumber: parsed.houseNumber ?? defaultAddressData.houseNumber,
+          corpusNumber: parsed.corpusNumber ?? defaultAddressData.corpusNumber,
+          apartmentNumber: parsed.apartmentNumber ?? defaultAddressData.apartmentNumber,
+          connectionType: parsed.connectionType ?? defaultAddressData.connectionType,
+          privacyConsent: parsed.privacyConsent ?? defaultAddressData.privacyConsent,
           errors: {},
         });
       }

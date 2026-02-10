@@ -468,6 +468,8 @@ function Frame4Content() {
   };
 
   const handleBackdropClick = () => {
+    // На итоговой карточке клик по пустоте не перекидывает на другие страницы
+    if (currentStep === 'order_summary') return;
     router.push('/providers');
   };
 

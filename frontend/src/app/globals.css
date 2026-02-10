@@ -31,6 +31,8 @@
   /* Header: отступ сверху и высота зоны (отступ + 40px высота шапки) */
   --header-top: 50px;
   --header-zone: 90px;
+  /* Всплывающие подсказки на Frame3: 5px от низа иконок header */
+  --header-tooltip-top: calc(var(--header-top) + 40px + 5px);
 }
 
 /* TT Firs Neue - только необходимые шрифты (4 файла) */

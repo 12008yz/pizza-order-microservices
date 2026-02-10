@@ -752,12 +752,12 @@ function Frame3Content() {
       }}
       onClick={showFavoritesMode ? handleFavoritesModeBackgroundClick : undefined}
     >
-      {/* Адаптивная ширина: 100% на малых экранах, макс 400px — карусель и карточки подстраиваются */}
+      {/* Адаптивная ширина: 100% на малых экранах, макс 425px — ровно при 400px и 425px, без обрезанной полоски справа */}
       <div
         className="relative flex flex-col overflow-hidden"
         style={{
           width: '100%',
-          maxWidth: '400px',
+          maxWidth: '425px',
           height: '100%',
           minHeight: 0,
           background: '#F5F5F5',
@@ -789,14 +789,14 @@ function Frame3Content() {
           </div>
         ) : null}
 
-        {/* Group 7545: absolute 360×40, left 20px, top по --header-top */}
+        {/* Header: растягивается по ширине (left/right 20px), чтобы при 400px и 425px правый край иконок совпадал с подсказками */}
         {!showFavoritesMode && (
           <div
             style={{
               position: 'absolute',
-              width: '360px',
-              height: '40px',
               left: '20px',
+              right: '20px',
+              height: '40px',
               top: 'var(--header-top, 50px)',
             }}
           >
@@ -856,13 +856,13 @@ function Frame3Content() {
               </div>
             </div>
 
-            {/* гигапоиск 2: 140×10, left 69px top 90px → in header left 49px top 15px */}
+            {/* Логотип: 5px от иконки дома (40+5=45) */}
             <div
               style={{
                 position: 'absolute',
                 width: '140px',
                 height: '10px',
-                left: '49px',
+                left: '45px',
                 top: '15px',
               }}
             >
@@ -888,14 +888,14 @@ function Frame3Content() {
               </svg>
             </div>
 
-            {/* Heart: 40×40 at left 250px viewport = 230px in header */}
+            {/* Heart: 40×40, 5px между иконками → right 90 (45+40+5) */}
             <div
               className="cursor-pointer"
               style={{
                 position: 'absolute',
                 width: '40px',
                 height: '40px',
-                left: '230px',
+                right: '90px',
                 top: 0,
               }}
               onClick={withClickGuard(() => {
@@ -948,14 +948,14 @@ function Frame3Content() {
                 </div>
               </div>
 
-            {/* Group 7511 — Funnel: 40×40 at left 295px viewport = 275px in header */}
+            {/* Funnel: 40×40, 5px перед самолётом → right 45 (40+5) */}
             <div
               className="cursor-pointer"
               style={{
                 position: 'absolute',
                 width: '40px',
                 height: '40px',
-                left: '275px',
+                right: '45px',
                 top: 0,
               }}
               onClick={withClickGuard(() => {
@@ -1004,14 +1004,14 @@ function Frame3Content() {
                 </div>
               </div>
 
-            {/* Group 7509 — PaperPlane: 40×40 at left 340px viewport = 320px in header */}
+            {/* Group 7509 — PaperPlane: 40×40, привязка к правому краю header (ровно по краю) */}
             <div
               className="cursor-pointer"
               style={{
                 position: 'absolute',
                 width: '40px',
                 height: '40px',
-                left: '320px',
+                right: 0,
                 top: 0,
               }}
               onClick={withClickGuard(() => {
@@ -1062,15 +1062,19 @@ function Frame3Content() {
       )}
         </div>
 
-      {/* HintTooltip — Figma Group 7585: left 175px top 120px */}
-      {hintStep !== 'none' && !showFavoritesMode && (
-        <HintTooltip
-          text={hintStep === 'consultation' ? 'Консультация, это здесь' : 'Фильтрация, это здесь'}
-          position={hintStep}
-          onAccept={handleHintAccept}
-          onDecline={handleHintDecline}
-        />
-      )}
+      {/* Подсказки в том же контейнере, что и header — right: 20px от правого края блока (ровно по иконке самолёта) */}
+      <div style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, pointerEvents: 'none' }}>
+        {hintStep !== 'none' && !showFavoritesMode && (
+          <div style={{ position: 'absolute', left: 0, right: 0, top: 0, pointerEvents: 'auto' }}>
+            <HintTooltip
+              text={hintStep === 'consultation' ? 'Консультация, это здесь' : 'Фильтрация, это здесь'}
+              position={hintStep}
+              onAccept={handleHintAccept}
+              onDecline={handleHintDecline}
+            />
+          </div>
+        )}
+      </div>
 
       <FavoriteToast
         isVisible={showFavoriteToast}
@@ -1275,7 +1279,7 @@ function Frame3Content() {
           className={`flex scrollbar-hide flex-nowrap carousel-container h-full ${displayedTariffs.length > 1 ? 'overflow-x-auto' : 'overflow-x-hidden'} ${displayedTariffs.length === 1 ? 'carousel-container--single-card' : ''}`}
           style={{
             gap: '5px',
-            alignItems: 'flex-end',
+            alignItems: 'flex-start',
             scrollSnapType: displayedTariffs.length > 1 ? 'x mandatory' : 'none',
             WebkitOverflowScrolling: 'touch',
             scrollbarWidth: 'none',

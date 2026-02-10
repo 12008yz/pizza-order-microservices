@@ -17,20 +17,15 @@ export default function HintTooltip({ text, onAccept, onDecline, position }: Hin
       }, 3000);
       return () => clearTimeout(timer);
    }, [onAccept]);
-   // Figma Group 7585: 205×90, left 175px, top 120px
+   // 5px от иконок header; правый край подсказки = правый край соответствующей иконки
+   const tooltipTop = 'var(--header-tooltip-top)';
    const getPositionStyles = () => {
       if (position === 'consultation') {
-         return {
-            left: 175,
-            top: 120,
-         };
-      } else {
-         // Фильтрация: под воронкой, right 65px
-         return {
-            right: 65,
-            top: 120,
-         };
+         // Под самолётом: правый край = правый край иконки самолёта (20px от края контента)
+         return { left: 'auto' as const, right: '20px', top: tooltipTop };
       }
+      // Под воронкой (фильтры): правый край = правый край иконки (header right 20px + иконка right 45px = 65px)
+      return { left: 'auto' as const, right: '65px', top: tooltipTop };
    };
 
    const positionStyles = getPositionStyles();

@@ -1558,7 +1558,7 @@ function Frame3Content() {
 
                 {/* Футер: отступ 15px от краёв карточки */}
                 <div style={{ padding: '15px 15px 15px 15px', flexShrink: 0, position: 'relative' }}>
-                  {/* Цена: 22px, line-height 115% */}
+                  {/* Цена: 22px, line-height 115%, 5px до промо по макету */}
                   <div
                     style={{
                       fontFamily: 'TT Firs Neue, sans-serif',
@@ -1566,7 +1566,7 @@ function Frame3Content() {
                       fontSize: '22px',
                       lineHeight: '115%',
                       color: '#101010',
-                      marginBottom: '4px',
+                      marginBottom: '5px',
                     }}
                   >
                     {tariff.price}
@@ -1618,7 +1618,7 @@ function Frame3Content() {
                     ) : null}
                   </div>
 
-                  {/* Подключение от оператора: 14px 145% */}
+                  {/* Подключение от оператора: 14px 145%, 20px до кнопок по макету */}
                   <div
                     style={{
                       fontFamily: 'TT Firs Neue, sans-serif',
@@ -1626,7 +1626,7 @@ function Frame3Content() {
                       fontSize: '14px',
                       lineHeight: '145%',
                       color: 'rgba(16, 16, 16, 0.5)',
-                      marginBottom: '15px',
+                      marginBottom: '20px',
                     }}
                   >
                     {tariff.connectionPrice}

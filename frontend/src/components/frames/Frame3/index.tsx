@@ -8,7 +8,6 @@ import {
   HeartIcon,
   FunnelIcon,
   PlaneIcon,
-  InfoIcon,
   CheckCircleIcon,
   PlusCircleIcon,
   ArrowCircleRightIcon,
@@ -1276,6 +1275,7 @@ function Frame3Content() {
           className={`flex scrollbar-hide flex-nowrap carousel-container h-full ${displayedTariffs.length > 1 ? 'overflow-x-auto' : 'overflow-x-hidden'} ${displayedTariffs.length === 1 ? 'carousel-container--single-card' : ''}`}
           style={{
             gap: '5px',
+            alignItems: 'flex-end',
             scrollSnapType: displayedTariffs.length > 1 ? 'x mandatory' : 'none',
             WebkitOverflowScrolling: 'touch',
             scrollbarWidth: 'none',
@@ -1390,8 +1390,8 @@ function Frame3Content() {
                 className="flex-shrink-0 carousel-card carousel-card--shadow-top"
                 style={{
                   position: 'relative',
-                  height: '100%',
-                  minHeight: 0,
+                  height: '445px',
+                  minHeight: '445px',
                   background: '#FFFFFF',
                   borderRadius: '20px',
                   scrollSnapAlign: 'start',
@@ -1401,9 +1401,9 @@ function Frame3Content() {
                   flexDirection: 'column',
                 }}
               >
-                {/* Group 7572: left 35px top 295 viewport → 15px from card, 15px from card top */}
+                {/* Заголовок: отступ 15px от краёв карточки */}
                 <div style={{ padding: '15px 15px 0 15px', flexShrink: 0 }}>
-                  <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '5px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '5px' }}>
                     <div
                       style={{
                         fontFamily: 'TT Firs Neue, sans-serif',
@@ -1415,8 +1415,22 @@ function Frame3Content() {
                     >
                       {tariff.providerName}
                     </div>
-                    <div style={{ width: '16px', height: '16px', flexShrink: 0 }}>
-                      <InfoIcon />
+                    <div
+                      style={{
+                        width: '16px',
+                        height: '16px',
+                        flexShrink: 0,
+                        borderRadius: '50%',
+                        background: 'rgba(16, 16, 16, 0.25)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        border: 'none',
+                      }}
+                    >
+                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ display: 'block' }}>
+                        <path d="M8.75 7V11.5C8.75 11.6989 8.67098 11.8897 8.53033 12.0303C8.38968 12.171 8.19891 12.25 8 12.25C7.80109 12.25 7.61032 12.171 7.46967 12.0303C7.32902 11.8897 7.25 11.6989 7.25 11.5V7C7.25 6.80109 7.32902 6.61032 7.46967 6.46967C7.61032 6.32902 7.80109 6.25 8 6.25ZM9 4.5C9 4.69778 8.94135 4.89112 8.83147 5.05557C8.72159 5.22002 8.56541 5.34819 8.38268 5.42388C8.19996 5.49957 7.99889 5.51937 7.80491 5.48079C7.61093 5.4422 7.43275 5.34696 7.29289 5.20711C7.15304 5.06725 7.0578 4.88907 7.01922 4.69509C6.98063 4.50111 7.00043 4.30004 7.07612 4.11732C7.15181 3.93459 7.27998 3.77841 7.44443 3.66853C7.60888 3.55865 7.80222 3.5 8 3.5C8.26522 3.5 8.51957 3.60536 8.70711 3.79289C8.89464 3.98043 9 4.23478 9 4.5Z" fill="#FFFFFF" />
+                      </svg>
                     </div>
                   </div>
                   <div
@@ -1430,18 +1444,19 @@ function Frame3Content() {
                   >
                     {tariff.tariffName}
                   </div>
-                  {/* Line 8: разделитель на всю ширину контента (карточка гибкая) */}
+                  {/* Line 8: разделитель 330px по макету, border 1px solid rgba(16,16,16,0.1) */}
                   <div
                     style={{
-                      marginTop: '18px',
-                      height: '1px',
-                      background: 'rgba(16, 16, 16, 0.1)',
+                      marginTop: '10px',
+                      height: '0',
+                      borderTop: '1px solid rgba(16, 16, 16, 0.1)',
                       width: '100%',
+                      maxWidth: '330px',
                     }}
                   />
                 </div>
 
-                {/* Контент: left 35px viewport = 15px padding, Group 7574/7573/7499/7575 — gap 5px */}
+                {/* Контент: отступ 15px от краёв карточки */}
                 <div
                   className="features-section"
                   style={{
@@ -1453,8 +1468,8 @@ function Frame3Content() {
                   }}
                 >
                   <div className="features-container" style={{ display: 'flex', flexDirection: 'column' }}>
-                    {/* Скорость — 16px 155%, подпись 14px 105% */}
-                    <div className="feature-row" style={{ display: 'flex', alignItems: 'flex-start' }}>
+                    {/* Скорость — 16px 155%, подпись 14px 105%, высота строки 40px по макету */}
+                    <div className="feature-row" style={{ display: 'flex', alignItems: 'flex-start', minHeight: '40px' }}>
                       <div className="feature-icon" style={{ flexShrink: 0, marginTop: '2px' }}>
                         <CheckCircleIcon />
                       </div>
@@ -1469,7 +1484,7 @@ function Frame3Content() {
                     </div>
 
                     {/* Каналы — 16px 155%, 14px 105% */}
-                    <div className="feature-row" style={{ display: 'flex', alignItems: 'flex-start' }}>
+                    <div className="feature-row" style={{ display: 'flex', alignItems: 'flex-start', minHeight: '40px' }}>
                       <div className="feature-icon" style={{ flexShrink: 0, marginTop: '2px' }}>
                         <CheckCircleIcon />
                       </div>
@@ -1487,7 +1502,7 @@ function Frame3Content() {
                     </div>
 
                     {/* Мобильная связь — 16px 155%, 14px 105% */}
-                    <div className="feature-row" style={{ display: 'flex', alignItems: 'flex-start' }}>
+                    <div className="feature-row" style={{ display: 'flex', alignItems: 'flex-start', minHeight: '40px' }}>
                       <div className="feature-icon" style={{ flexShrink: 0, marginTop: '2px' }}>
                         <CheckCircleIcon />
                       </div>
@@ -1505,7 +1520,7 @@ function Frame3Content() {
                     </div>
 
                     {/* Кинотеатр / доп. приложение — 16px 155%, 14px 105% */}
-                    <div className="feature-row" style={{ display: 'flex', alignItems: 'flex-start' }}>
+                    <div className="feature-row" style={{ display: 'flex', alignItems: 'flex-start', minHeight: '40px' }}>
                       <div className="feature-icon" style={{ flexShrink: 0, marginTop: '2px' }}>
                         <CheckCircleIcon />
                       </div>
@@ -1524,18 +1539,20 @@ function Frame3Content() {
                   </div>
                 </div>
 
-                {/* Футер с ценой и кнопками — по макету 8.75% = 15px от края карточки */}
-                <div style={{ padding: '0 15px 20px 15px', flexShrink: 0, position: 'relative' }}>
-                  {/* Line 9 - Разделитель перед ценой */}
+                {/* Футер: отступ 15px от краёв карточки */}
+                <div style={{ padding: '0 15px 15px 15px', flexShrink: 0, position: 'relative' }}>
+                  {/* Line 9 — разделитель перед ценой, 330px по макету */}
                   <div
                     style={{
                       marginBottom: '15px',
-                      height: '1px',
-                      background: 'rgba(16, 16, 16, 0.1)',
+                      height: '0',
+                      borderTop: '1px solid rgba(16, 16, 16, 0.1)',
+                      width: '100%',
+                      maxWidth: '330px',
                     }}
                   />
 
-                  {/* Цена */}
+                  {/* Цена: 22px, line-height 115% */}
                   <div
                     style={{
                       fontFamily: 'TT Firs Neue, sans-serif',
@@ -1549,14 +1566,14 @@ function Frame3Content() {
                     {tariff.price}
                   </div>
 
-                  {/* Промо-акция и огонёк на одной линии */}
+                  {/* Промо-акция: текст слева, красный огонёк 17px от правого края карточки */}
                   <div
                     style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
+                      position: 'relative',
                       marginBottom: '2px',
                       minHeight: '20px',
+                      display: 'flex',
+                      alignItems: 'center',
                     }}
                   >
                     {tariff.promoText ? (
@@ -1571,29 +1588,31 @@ function Frame3Content() {
                       >
                         {tariff.promoText}
                       </div>
-                    ) : (
-                      <span />
-                    )}
-                    {/* Красный огонёк справа, на уровне с промо-текстом */}
-                    <div
-                      style={{
-                        width: '16px',
-                        height: '16px',
-                        flexShrink: 0,
-                        background: '#FF1000',
-                        borderRadius: '50%',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}
-                    >
-                      <svg width="7" height="8" viewBox="0 0 7 8" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M3.75927 0.0684591C3.72341 0.0380912 3.68091 0.0169502 3.63534 0.00681841C3.58978 -0.00331335 3.54249 -0.00213889 3.49746 0.0102428C3.45244 0.0226244 3.411 0.0458503 3.37663 0.0779624C3.34227 0.110074 3.31598 0.150131 3.3 0.194756L2.5 2.43218L1.62145 1.56514C1.59195 1.53599 1.55672 1.51354 1.51808 1.49927C1.47943 1.485 1.43826 1.47924 1.39727 1.48235C1.35629 1.48546 1.31641 1.49739 1.28028 1.51734C1.24414 1.53729 1.21257 1.56482 1.18764 1.5981C0.4 2.64922 0 3.70663 0 4.74072C0 5.60513 0.337142 6.43414 0.937258 7.04538C1.53737 7.65661 2.35131 8 3.2 8C4.04869 8 4.86263 7.65661 5.46274 7.04538C6.06286 6.43414 6.4 5.60513 6.4 4.74072C6.4 2.53885 4.55309 0.740686 3.75927 0.0684591Z" fill="white"/>
-                      </svg>
-                    </div>
+                    ) : null}
+                    {tariff.promoText ? (
+                      <div
+                        style={{
+                          position: 'absolute',
+                          right: '17px',
+                          top: '50%',
+                          transform: 'translateY(-50%)',
+                          width: '16px',
+                          height: '16px',
+                          background: '#FF1000',
+                          borderRadius: '50%',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                        }}
+                      >
+                        <svg width="7" height="8" viewBox="0 0 7 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M3.75927 0.0684591C3.72341 0.0380912 3.68091 0.0169502 3.63534 0.00681841C3.58978 -0.00331335 3.54249 -0.00213889 3.49746 0.0102428C3.45244 0.0226244 3.411 0.0458503 3.37663 0.0779624C3.34227 0.110074 3.31598 0.150131 3.3 0.194756L2.5 2.43218L1.62145 1.56514C1.59195 1.53599 1.55672 1.51354 1.51808 1.49927C1.47943 1.485 1.43826 1.47924 1.39727 1.48235C1.35629 1.48546 1.31641 1.49739 1.28028 1.51734C1.24414 1.53729 1.21257 1.56482 1.18764 1.5981C0.4 2.64922 0 3.70663 0 4.74072C0 5.60513 0.337142 6.43414 0.937258 7.04538C1.53737 7.65661 2.35131 8 3.2 8C4.04869 8 4.86263 7.65661 5.46274 7.04538C6.06286 6.43414 6.4 5.60513 6.4 4.74072C6.4 2.53885 4.55309 0.740686 3.75927 0.0684591Z" fill="white"/>
+                        </svg>
+                      </div>
+                    ) : null}
                   </div>
 
-                  {/* Подключение */}
+                  {/* Подключение от оператора: 14px 145% */}
                   <div
                     style={{
                       fontFamily: 'TT Firs Neue, sans-serif',

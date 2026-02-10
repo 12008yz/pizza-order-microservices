@@ -125,6 +125,13 @@ function Frame4Content() {
 
   const [currentStep, setCurrentStep] = useState<Step>('router_need');
 
+  // Прелоад Frame5 при показе итоговой карточки, чтобы переход по «Подключить» не показывал пустой экран
+  useEffect(() => {
+    if (currentStep === 'order_summary') {
+      import('../Frame5');
+    }
+  }, [currentStep]);
+
   // Уведомления над карточкой, 75px от верха (как во Frame2)
   type NotificationType = 'router_operator' | 'tvbox_operator' | 'tvbox_tvcount' | 'sim_smartphone';
   const [frameNotification, setFrameNotification] = useState<{ type: NotificationType; countdown: number } | null>(null);
@@ -495,12 +502,12 @@ function Frame4Content() {
         onClick={handleBackdropClick}
         style={{ background: '#F5F5F5' }}
       >
-        {/* Header только на последней странице — отступ 75px как во Frame1, логотип ближе к иконке дома */}
+        {/* Header только на последней странице — высота по контенту (50+41px), затем 15px до карточки */}
         {currentStep === 'order_summary' && (
           <div
             className="flex-shrink-0 relative"
             style={{
-              minHeight: '120px',
+              minHeight: 'calc(var(--header-top, 50px) + 41px)',
             }}
           >
             <div
@@ -668,7 +675,7 @@ function Frame4Content() {
               marginTop: currentStep === 'order_summary' ? 15 : 'auto',
               marginBottom: 'calc(20px + env(safe-area-inset-bottom, 0px))',
               backdropFilter: 'blur(7.5px)',
-              maxHeight: currentStep === 'order_summary' ? 'calc(100dvh - 155px)' : 'calc(100dvh - 145px)',
+              maxHeight: currentStep === 'order_summary' ? 'calc(100dvh - (var(--header-top, 50px) + 41px + 15px + 20px) - var(--sab, 0px))' : 'calc(100dvh - 145px)',
             }}
           >
             {/* Контент шага — компактная flex-компоновка как в Frame1/Frame2 */}

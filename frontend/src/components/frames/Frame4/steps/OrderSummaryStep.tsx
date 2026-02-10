@@ -328,12 +328,12 @@ export default function OrderSummaryStep({
       {/* Spacer: прижимает контент к низу, как в карточках тарифа Frame3 */}
       <div className="flex-1 min-h-0" aria-hidden />
 
-      {/* Основной контейнер — внизу, отступы как в TariffCard */}
+      {/* Основной контейнер — внизу, по макету отступ 20px от низа карточки */}
       <div
         className="flex flex-col flex-shrink-0 w-full overflow-hidden"
         style={{
           marginTop: 'auto',
-          paddingBottom: '15px',
+          paddingBottom: '20px',
           boxSizing: 'border-box',
         }}
       >

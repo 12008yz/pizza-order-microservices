@@ -1,3 +1,7 @@
+'use client';
+
+import LoadingScreen from '../../components/LoadingScreen';
+
 export default function OrderLoading() {
-  return null;
+  return <LoadingScreen />;
 }

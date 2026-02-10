@@ -1542,22 +1542,22 @@ function Frame3Content() {
                         </div>
                       </div>
                     </div>
+
+                    {/* Line 9 — разделитель 5px от последнего пункта, 330px по макету */}
+                    <div
+                      style={{
+                        marginTop: '5px',
+                        height: '0',
+                        borderTop: '1px solid rgba(16, 16, 16, 0.1)',
+                        width: '100%',
+                        maxWidth: '330px',
+                      }}
+                    />
                   </div>
                 </div>
 
                 {/* Футер: отступ 15px от краёв карточки */}
-                <div style={{ padding: '0 15px 15px 15px', flexShrink: 0, position: 'relative' }}>
-                  {/* Line 9 — разделитель перед ценой, 330px по макету */}
-                  <div
-                    style={{
-                      marginBottom: '15px',
-                      height: '0',
-                      borderTop: '1px solid rgba(16, 16, 16, 0.1)',
-                      width: '100%',
-                      maxWidth: '330px',
-                    }}
-                  />
-
+                <div style={{ padding: '15px 15px 15px 15px', flexShrink: 0, position: 'relative' }}>
                   {/* Цена: 22px, line-height 115% */}
                   <div
                     style={{

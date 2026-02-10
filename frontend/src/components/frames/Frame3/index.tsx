@@ -1170,7 +1170,6 @@ function Frame3Content() {
               inset: 0,
               background: '#FFFFFF',
               borderRadius: "40px",
-              boxShadow: '0 0 0 1px rgba(16, 16, 16, 0.06)',
               transform: isArrowPressed ? 'scale(0.85)' : 'scale(1)',
               transition: 'transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)',
             }}

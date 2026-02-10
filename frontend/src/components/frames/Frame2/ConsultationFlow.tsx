@@ -160,7 +160,7 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
             style={{
               width: '360px',
               height: '90px',
-              top: `calc(75px + var(--sat, 0px) + ${index * 95}px)`,
+              top: `calc(var(--header-top, 50px) + var(--sat, 0px) + ${index * 95}px)`,
               boxSizing: 'border-box',
               backdropFilter: 'blur(7.5px)',
               transition: 'top 0.3s ease-in-out',
@@ -244,7 +244,7 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
           <div
             className="font-normal flex items-center justify-center text-center absolute left-0 right-0"
             style={{
-              top: 75,
+              top: 50,
               width: '240px',
               margin: '0 auto',
               height: '30px',
@@ -460,7 +460,7 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
           <div
             className="font-normal flex items-center justify-center text-center absolute left-0 right-0"
             style={{
-              top: 75,
+              top: 50,
               width: '240px',
               margin: '0 auto',
               height: '30px',

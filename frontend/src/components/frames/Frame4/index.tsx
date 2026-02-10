@@ -507,7 +507,7 @@ function Frame4Content() {
               onClick={(e) => e.stopPropagation()}
               style={{
                 position: 'relative',
-                top: '75px',
+                top: 'var(--header-top, 50px)',
                 marginLeft: '20px',
                 marginRight: '20px',
                 height: '41px',
@@ -572,7 +572,7 @@ function Frame4Content() {
                 className="absolute left-1/2 -translate-x-1/2 bg-white rounded-[20px] flex flex-col"
                 style={{
                   width: 'min(360px, calc(100vw - 40px))',
-                  top: '75px',
+                  top: 'var(--header-top, 50px)',
                   boxSizing: 'border-box',
                   backdropFilter: 'blur(7.5px)',
                   zIndex: 10,
@@ -637,7 +637,7 @@ function Frame4Content() {
               style={{
                 width: '240px',
                 margin: '0 auto',
-                paddingTop: '75px',
+                paddingTop: 'var(--header-zone, 90px)',
                 minHeight: '30px',
                 fontFamily: 'TT Firs Neue, sans-serif',
                 fontSize: '14px',

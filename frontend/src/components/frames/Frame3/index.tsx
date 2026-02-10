@@ -767,7 +767,7 @@ function Frame3Content() {
         {showFavoritesMode ? (
           <div
             className="w-full flex justify-center cursor-pointer"
-            style={{ position: 'absolute', left: 0, right: 0, top: '75px', zIndex: 10 }}
+            style={{ position: 'absolute', left: 0, right: 0, top: 'var(--header-top, 50px)', zIndex: 10 }}
             onClick={() => setShowFavoritesMode(false)}
             role="button"
             tabIndex={0}
@@ -789,7 +789,7 @@ function Frame3Content() {
           </div>
         ) : null}
 
-        {/* Group 7545: absolute 360×40, left 20px, top 75px */}
+        {/* Group 7545: absolute 360×40, left 20px, top по --header-top */}
         {!showFavoritesMode && (
           <div
             style={{
@@ -797,7 +797,7 @@ function Frame3Content() {
               width: '360px',
               height: '40px',
               left: '20px',
-              top: '75px',
+              top: 'var(--header-top, 50px)',
             }}
           >
             {/* Group 7510 — Home: 40×40 at left 0 (viewport 20px) */}

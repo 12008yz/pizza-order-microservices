@@ -48,7 +48,7 @@ export default function BaseModal({
             height: '30px',
             left: '50%',
             transform: 'translateX(-50%)',
-            top: '75px',
+            top: 'var(--header-top, 50px)',
             fontFamily: 'TT Firs Neue, sans-serif',
             fontStyle: 'normal',
             fontWeight: 400,

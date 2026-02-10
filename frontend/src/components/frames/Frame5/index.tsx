@@ -258,7 +258,7 @@ function Frame5Content() {
             <div
               style={{
                 position: 'relative',
-                top: '75px',
+                top: 'var(--header-top, 50px)',
                 marginLeft: '20px',
                 marginRight: '20px',
                 height: '41px',
@@ -313,7 +313,7 @@ function Frame5Content() {
               style={{
                 width: '240px',
                 margin: '0 auto',
-                paddingTop: '75px',
+                paddingTop: 'var(--header-zone, 90px)',
                 minHeight: '30px',
                 fontFamily: 'TT Firs Neue, sans-serif',
                 fontSize: '14px',
@@ -339,7 +339,7 @@ function Frame5Content() {
               marginRight: 'auto',
               marginTop: (step === 'confirmation' || step === 'success') ? 'auto' : (showHeader ? 0 : 'auto'),
               marginBottom: (step === 'confirmation' || step === 'success') ? 'calc(20px + var(--sab, 0px))' : '20px',
-              maxHeight: showHeader ? 'calc(100dvh - 115px)' : 'calc(100dvh - 145px)',
+              maxHeight: showHeader ? 'calc(100dvh - var(--header-zone, 90px))' : 'calc(100dvh - 145px)',
             }}
             onClick={(e) => e.stopPropagation()}
           >

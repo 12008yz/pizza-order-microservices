@@ -30,7 +30,7 @@ export default function PageLoadingSkeleton() {
             width: 360,
             height: 120,
             left: 20,
-            top: 75,
+            top: 50,
             background: '#FFFFFF',
             borderRadius: 20,
           }}
@@ -90,7 +90,7 @@ export default function PageLoadingSkeleton() {
               right: 15,
               top: 12,
               width: 330,
-              height: 75,
+              height: 90,
               background: '#F5F5F5',
               borderRadius: 10,
             }}

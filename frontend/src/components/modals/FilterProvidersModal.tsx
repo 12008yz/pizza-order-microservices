@@ -72,7 +72,7 @@ export default function FilterProvidersModal({
             style={{
               width: '240px',
               margin: '0 auto',
-              paddingTop: '75px',
+              paddingTop: 'var(--header-zone, 90px)',
               height: '30px',
               fontFamily: 'TT Firs Neue, sans-serif',
               fontSize: '14px',

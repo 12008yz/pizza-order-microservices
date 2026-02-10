@@ -47,7 +47,7 @@ export default function NotificationBanner({
       className="absolute left-1/2 -translate-x-1/2 bg-white rounded-[20px] flex flex-col z-20"
       style={{
         width: 'min(360px, calc(100vw - 40px))',
-        top: 75,
+        top: 50,
         padding: 15,
         boxSizing: 'border-box',
       }}

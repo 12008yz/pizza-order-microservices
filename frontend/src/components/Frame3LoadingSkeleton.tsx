@@ -30,7 +30,7 @@ export default function Frame3LoadingSkeleton() {
             width: 40,
             height: 40,
             left: 20,
-            top: 75,
+            top: 50,
             background: '#FFFFFF',
             borderRadius: 100,
           }}
@@ -41,7 +41,7 @@ export default function Frame3LoadingSkeleton() {
             width: 40,
             height: 40,
             left: 250,
-            top: 75,
+            top: 50,
             background: '#FFFFFF',
             borderRadius: 100,
           }}
@@ -52,7 +52,7 @@ export default function Frame3LoadingSkeleton() {
             width: 40,
             height: 40,
             left: 295,
-            top: 75,
+            top: 50,
             background: '#FFFFFF',
             borderRadius: 100,
           }}
@@ -63,7 +63,7 @@ export default function Frame3LoadingSkeleton() {
             width: 40,
             height: 40,
             left: 340,
-            top: 75,
+            top: 50,
             background: '#FFFFFF',
             borderRadius: 100,
           }}

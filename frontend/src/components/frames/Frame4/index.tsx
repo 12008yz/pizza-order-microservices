@@ -665,10 +665,10 @@ function Frame4Content() {
               maxWidth: '360px',
               marginLeft: 'auto',
               marginRight: 'auto',
-              marginTop: 'auto',
-              marginBottom: '20px',
+              marginTop: currentStep === 'order_summary' ? 15 : 'auto',
+              marginBottom: 'calc(20px + env(safe-area-inset-bottom, 0px))',
               backdropFilter: 'blur(7.5px)',
-              maxHeight: currentStep === 'order_summary' ? 'calc(100dvh - 115px)' : 'calc(100dvh - 145px)',
+              maxHeight: currentStep === 'order_summary' ? 'calc(100dvh - 155px)' : 'calc(100dvh - 145px)',
             }}
           >
             {/* Контент шага — компактная flex-компоновка как в Frame1/Frame2 */}

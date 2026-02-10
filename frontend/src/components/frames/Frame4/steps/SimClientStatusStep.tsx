@@ -60,7 +60,7 @@ export default function SimClientStatusStep({
           style={{
             fontFamily: 'TT Firs Neue, sans-serif',
             fontSize: '14px',
-            lineHeight: '145%',
+            lineHeight: '105%',
             color: 'rgba(16, 16, 16, 0.5)',
           }}
         >

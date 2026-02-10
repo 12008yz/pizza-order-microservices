@@ -11,9 +11,13 @@ interface SimInfoStepProps {
   onBack: () => void;
 }
 
-const infoTexts = {
-  person: 'SIM-карта должна быть зарегистрирована только на того же человека, на которого, собираетесь оформлять интернет и пр.',
-  region: 'SIM-карта должна быть зарегистрирована в том же регионе, в котором, собираетесь оформлять интернет и пр.',
+const textStyles = {
+  fontFamily: 'TT Firs Neue, sans-serif',
+  fontStyle: 'normal' as const,
+  fontWeight: 400,
+  fontSize: '16px',
+  lineHeight: '125%',
+  color: '#101010',
 };
 
 export default function SimInfoStep({ infoType, showBothWarningsWithDelay = false, onNext, onBack }: SimInfoStepProps) {
@@ -58,7 +62,7 @@ export default function SimInfoStep({ infoType, showBothWarningsWithDelay = fals
           style={{
             fontFamily: 'TT Firs Neue, sans-serif',
             fontSize: '14px',
-            lineHeight: '145%',
+            lineHeight: '105%',
             color: 'rgba(16, 16, 16, 0.5)',
           }}
         >
@@ -71,30 +75,22 @@ export default function SimInfoStep({ infoType, showBothWarningsWithDelay = fals
       {/* Контент с предупреждениями */}
       <div className="flex-1 overflow-y-auto px-[15px] pt-[20px] pb-2" style={{ WebkitOverflowScrolling: 'touch' }}>
         {showPerson && (
-          <div
-            style={{
-              fontFamily: 'TT Firs Neue, sans-serif',
-              fontWeight: 400,
-              fontSize: '14px',
-              lineHeight: '145%',
-              color: '#101010',
-            }}
-          >
-            {infoTexts.person}
+          <div style={textStyles}>
+            <span style={{ whiteSpace: 'nowrap' }}>SIM-карта должна быть зарегистрирована</span>
+            <br />
+            только на того же человека, на которого,
+            <br />
+            собираетесь оформлять интернет и пр.
           </div>
         )}
 
         {showRegion && (
-          <div
-            style={{
-              fontFamily: 'TT Firs Neue, sans-serif',
-              fontWeight: 400,
-              fontSize: '14px',
-              lineHeight: '145%',
-              color: '#101010',
-            }}
-          >
-            {infoTexts.region}
+          <div style={textStyles}>
+            <span style={{ whiteSpace: 'nowrap' }}>SIM-карта должна быть зарегистрирована</span>
+            <br />
+            только в том же регионе, в котором,
+            <br />
+            собираетесь оформлять интернет и пр.
           </div>
         )}
       </div>

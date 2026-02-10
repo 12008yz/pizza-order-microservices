@@ -636,6 +636,7 @@ export default function AddressInputModal({
   }, [isOpen, closeTimeoutRef]);
 
   const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.stopPropagation(); // не даём клику дойти до Frame5 (иначе сработает «пустое место» → переход на 3 фрейм)
     // Закрываем модалку ТОЛЬКО при клике по полупрозрачному фону
     if (e.target === e.currentTarget) {
       onClose(); // родитель переключит isOpen=false, а анимацию/shouldRender обработает useEffect выше
@@ -643,6 +644,7 @@ export default function AddressInputModal({
   };
 
   const handleContainerClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.stopPropagation(); // не даём клику дойти до Frame5
     // Клик по пустому месту внутри "экрана" (а не по внутренним элементам) тоже закрывает модалку
     if (e.target === e.currentTarget) {
       onClose(); // всё остальное делает эффект по isOpen

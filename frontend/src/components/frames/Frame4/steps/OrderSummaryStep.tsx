@@ -343,14 +343,14 @@ export default function OrderSummaryStep({
             WebkitOverflowScrolling: 'touch',
           }}
         >
-          {/* Тариф: провайдер и название — как в TariffCard: 24px 20px 0 20px */}
-          <div style={{ padding: '24px 20px 0 20px', position: 'relative' }}>
+          {/* Тариф: по макету padding 15 17 15 15, 10px до разделителя */}
+          <div style={{ padding: '15px 17px 10px 15px', position: 'relative' }}>
             <div
               style={{
                 fontSize: '14px',
                 lineHeight: '125%',
                 color: 'rgba(16, 16, 16, 0.5)',
-                marginBottom: '4px',
+                marginBottom: '5px',
               }}
             >
               {selectedTariff?.providerName ?? 'МТС'}
@@ -378,15 +378,15 @@ export default function OrderSummaryStep({
             </div>
           </div>
 
-          {/* Разделитель: 15px от заголовка тарифа до карточки товара */}
-          <div style={{ padding: '15px 20px 0 20px' }}>
-            <div style={{ height: '1px', background: 'rgba(16, 16, 16, 0.1)' }} />
+          {/* Разделитель: 330px по макету, отступ уже в блоке тарифа (10px) */}
+          <div style={{ padding: '0 17px 0 15px' }}>
+            <div style={{ height: '1px', background: 'rgba(16, 16, 16, 0.1)', maxWidth: '330px' }} />
           </div>
 
-          {/* Блок фич (карточка товара) — как в TariffCard: padding 16px 20px, между пунктами 14px */}
-          <div style={{ padding: '16px 20px' }}>
+          {/* Блок фич — по макету padding 16px 17px 16px 15px, между пунктами 10px */}
+          <div style={{ padding: '16px 17px 16px 15px' }}>
             {/* Скорость интернета */}
-            <div style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '14px' }}>
+            <div style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '10px' }}>
               <div style={{ marginRight: '12px', marginTop: '2px', flexShrink: 0 }}>
                 <CheckCircleIcon active={true} />
               </div>
@@ -413,7 +413,7 @@ export default function OrderSummaryStep({
             </div>
 
             {/* Телевидение - Не предусмотрено */}
-            <div style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '14px' }}>
+            <div style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '10px' }}>
               <div style={{ marginRight: '12px', marginTop: '2px', flexShrink: 0 }}>
                 <CrossCircleIcon />
               </div>
@@ -441,7 +441,7 @@ export default function OrderSummaryStep({
 
             {/* Мобильное соединение */}
             {selectedTariff?.mobile && (
-              <div style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '14px' }}>
+              <div style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '10px' }}>
                 <div style={{ marginRight: '12px', marginTop: '2px', flexShrink: 0 }}>
                   <CheckCircleIcon active={true} />
                 </div>
@@ -470,7 +470,7 @@ export default function OrderSummaryStep({
 
             {/* Кинотеатр KION */}
             {selectedTariff?.favoriteLabel && (
-              <div style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '14px' }}>
+              <div style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '10px' }}>
                 <div style={{ marginRight: '12px', marginTop: '2px', flexShrink: 0 }}>
                   <CheckCircleIcon active={true} />
                 </div>
@@ -497,15 +497,16 @@ export default function OrderSummaryStep({
               </div>
             )}
 
-            {/* Разделитель перед оборудованием — как в TariffCard */}
-            <div style={{ height: '1px', background: 'rgba(16, 16, 16, 0.1)', marginBottom: '14px' }} />
+            {/* Разделитель перед оборудованием — по макету 330×0, 10px до первого ряда */}
+            <div style={{ height: '1px', background: 'rgba(16, 16, 16, 0.1)', marginBottom: '10px', maxWidth: '330px' }} />
 
-            {/* Роутер */}
+            {/* Роутер — по макету 330×40, между рядами 5px */}
             <div
               style={{
                 display: 'flex',
                 alignItems: 'flex-start',
-                marginBottom: '14px',
+                marginBottom: '5px',
+                minHeight: '40px',
                 cursor: 'pointer',
               }}
               onClick={handleRouterClick}
@@ -594,7 +595,8 @@ export default function OrderSummaryStep({
               style={{
                 display: 'flex',
                 alignItems: 'flex-start',
-                marginBottom: '14px',
+                marginBottom: '5px',
+                minHeight: '40px',
                 cursor: 'pointer',
               }}
               onClick={handleTvBoxClick}
@@ -629,7 +631,8 @@ export default function OrderSummaryStep({
               style={{
                 display: 'flex',
                 alignItems: 'flex-start',
-                marginBottom: '14px',
+                marginBottom: '5px',
+                minHeight: '40px',
                 position: 'relative',
                 cursor: 'pointer',
               }}
@@ -681,14 +684,14 @@ export default function OrderSummaryStep({
             </div>
           </div>
 
-          {/* Разделитель перед ценой — как в TariffCard: 0 20px */}
-          <div style={{ padding: '0 20px' }}>
-            <div style={{ height: '1px', background: 'rgba(16, 16, 16, 0.1)' }} />
+          {/* Разделитель перед ценой — по макету 330×0, 20px до цены */}
+          <div style={{ padding: '0 17px 0 15px' }}>
+            <div style={{ height: '1px', background: 'rgba(16, 16, 16, 0.1)', maxWidth: '330px' }} />
           </div>
 
-          {/* Блок цены — как в TariffCard: 16px 20px */}
-          <div style={{ padding: '16px 20px' }}>
-            <div style={{ marginBottom: '4px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '4px' }}>
+          {/* Блок цены — по макету: 20px от разделителя, 5px цена→промо, 20px до кнопок (marginBottom у текста подключения) */}
+          <div style={{ padding: '20px 17px 0 15px' }}>
+            <div style={{ marginBottom: '5px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '4px' }}>
               <div
                 style={{
                   fontSize: '22px',
@@ -705,13 +708,13 @@ export default function OrderSummaryStep({
               </div>
             </div>
 
-            {/* Промо текст и огонёк на одной линии — как в Frame3 */}
+            {/* Промо текст и огонёк на одной линии — как в Frame3, 5px от цены */}
             <div
               style={{
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
-                marginBottom: '2px',
+                marginBottom: '5px',
                 minHeight: '20px',
               }}
             >
@@ -731,6 +734,7 @@ export default function OrderSummaryStep({
                 fontSize: '14px',
                 lineHeight: '105%',
                 color: 'rgba(16, 16, 16, 0.5)',
+                marginBottom: '20px',
               }}
             >
               {selectedTariff?.connectionPrice ?? 'Бесплатное подключение от оператора'}
@@ -738,14 +742,13 @@ export default function OrderSummaryStep({
           </div>
         </div>
 
-        {/* Кнопки навигации — как в TariffCard: 0 20px */}
+        {/* Кнопки навигации — отступ 20px сверху задан marginBottom у текста подключения */}
         <div
           style={{
             flexShrink: 0,
             display: 'flex',
             gap: '10px',
-            padding: '0 20px',
-            paddingTop: '10px',
+            padding: '0 17px 0 15px',
           }}
         >
         {/* Кнопка «Назад» — стрелка влево, как на других шагах */}

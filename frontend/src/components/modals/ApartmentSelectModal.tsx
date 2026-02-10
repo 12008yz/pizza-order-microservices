@@ -260,13 +260,13 @@ export default function ApartmentSelectModal({
                   }}
                 >
                   <span
-                    className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap select-none"
+                    className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap select-none flex items-center"
                     style={{
                       fontFamily: 'TT Firs Neue, sans-serif',
+                      fontStyle: 'normal',
                       fontWeight: 400,
-                      fontSize: '14px',
+                      fontSize: '16px',
                       lineHeight: '125%',
-                      letterSpacing: '1.2px',
                       color: isSelected ? '#101010' : 'rgba(16, 16, 16, 0.5)',
                       WebkitUserSelect: 'none',
                       userSelect: 'none',

@@ -61,6 +61,8 @@ export default function PersonalDataStep({
         <p
           style={{
             fontFamily: 'TT Firs Neue, sans-serif',
+            fontStyle: 'normal',
+            fontWeight: 400,
             fontSize: '14px',
             lineHeight: '105%',
             color: 'rgba(16, 16, 16, 0.25)',

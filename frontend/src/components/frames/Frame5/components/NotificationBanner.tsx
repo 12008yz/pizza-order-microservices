@@ -53,7 +53,17 @@ export default function NotificationBanner({
       }}
       onClick={(e) => e.stopPropagation()}
     >
-      <div className="flex items-center justify-between flex-shrink-0" style={{ minHeight: 20 }}>
+      {/* Кнопка закрытия — справа напротив «Автоматически закроется через», 17px от края */}
+      <button
+        type="button"
+        onClick={handleClose}
+        className="absolute flex items-center justify-center w-6 h-6 cursor-pointer border-0 p-0 bg-transparent"
+        style={{ right: 17, top: 13 }}
+        aria-label="Закрыть"
+      >
+        <CloseIcon width={16} height={16} />
+      </button>
+      <div className="flex-shrink-0" style={{ minHeight: 20 }}>
         <div
           style={{
             flex: 1,
@@ -66,14 +76,6 @@ export default function NotificationBanner({
         >
           Автоматически закроется через {countdown}
         </div>
-        <button
-          type="button"
-          onClick={handleClose}
-          className="flex-shrink-0 flex items-center justify-center w-6 h-6 cursor-pointer border-0 p-0 ml-2 bg-transparent"
-          aria-label="Закрыть"
-        >
-          <CloseIcon width={16} height={16} />
-        </button>
       </div>
       <div
         style={{

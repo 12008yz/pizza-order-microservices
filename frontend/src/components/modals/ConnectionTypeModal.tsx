@@ -203,11 +203,13 @@ export default function ConnectionTypeModal({
                   }}
                 >
                   <span
+                    className="flex items-center"
                     style={{
                       fontFamily: 'TT Firs Neue, sans-serif',
+                      fontStyle: 'normal',
                       fontWeight: 400,
                       fontSize: '16px',
-                      lineHeight: '20px',
+                      lineHeight: '125%',
                       color: selectedType === type.value ? '#101010' : 'rgba(16, 16, 16, 0.5)',
                     }}
                   >

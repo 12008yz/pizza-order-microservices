@@ -167,13 +167,13 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
             }}
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Кнопка закрытия — крестик по центру */}
+            {/* Кнопка закрытия — справа напротив строки «Автоматически закроется через», 17px от края */}
             <button
               onClick={() => handleCloseNotification(notification.id)}
               className="absolute flex items-center justify-center bg-transparent border-none p-0 cursor-pointer w-6 h-6"
               style={{
-                right: '37px',
-                top: '9.5px',
+                right: '17px',
+                top: '13px',
               }}
               aria-label="Закрыть"
             >

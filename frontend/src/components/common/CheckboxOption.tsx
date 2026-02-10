@@ -35,10 +35,11 @@ export default function CheckboxOption({
           left: '15px',
           top: '15px',
           fontFamily: 'TT Firs Neue, sans-serif',
+          fontStyle: 'normal',
+          fontWeight: 400,
           fontSize: '16px',
           lineHeight: '125%',
           color: checked ? '#101010' : 'rgba(16, 16, 16, 0.5)',
-          letterSpacing: '0.5px',
         }}
       >
         {label}

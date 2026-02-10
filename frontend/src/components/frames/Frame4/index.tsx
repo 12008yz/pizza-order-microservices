@@ -19,7 +19,7 @@ import {
   SimInfoStep,
   OrderSummaryStep,
 } from './steps';
-import { HomeIcon, PlaneIcon } from '../../common/icons';
+import { CloseIcon, HomeIcon, PlaneIcon } from '../../common/icons';
 
 const ConsultationFlow = dynamic(() => import('../Frame2/ConsultationFlow'), {
   loading: () => <div>Загрузка...</div>,
@@ -580,8 +580,18 @@ function Frame4Content() {
                 }}
                 onClick={(e) => e.stopPropagation()}
               >
-                {/* Строка: таймер + кнопка закрытия */}
-                <div className="flex items-center justify-between flex-shrink-0" style={{ minHeight: '20px' }}>
+                {/* Кнопка закрытия — справа напротив «Автоматически закроется через», 17px от края */}
+                <button
+                  type="button"
+                  onClick={closeFrameNotification}
+                  className="absolute flex items-center justify-center w-6 h-6 cursor-pointer border-0 p-0 bg-transparent"
+                  style={{ right: 17, top: 13 }}
+                  aria-label="Закрыть"
+                >
+                  <CloseIcon width={16} height={16} />
+                </button>
+                {/* Строка таймера */}
+                <div className="flex-shrink-0" style={{ minHeight: '20px' }}>
                   <div
                     className="font-normal"
                     style={{
@@ -595,17 +605,6 @@ function Frame4Content() {
                   >
                     Автоматически закроется через {frameNotification.countdown}
                   </div>
-                  <button
-                    type="button"
-                    onClick={closeFrameNotification}
-                    className="flex-shrink-0 flex items-center justify-center w-4 h-4 rounded-full cursor-pointer border-0 p-0 ml-2"
-                    style={{ background: 'rgba(16, 16, 16, 0.25)' }}
-                    aria-label="Закрыть"
-                  >
-                    <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-                      <path d="M1 1L9 9M9 1L1 9" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                  </button>
                 </div>
                 {/* Основной текст: по размеру контента */}
                 <div

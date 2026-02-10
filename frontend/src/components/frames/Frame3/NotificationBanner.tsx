@@ -49,7 +49,7 @@ export default function NotificationBanner({
       }}
       onClick={(e) => e.stopPropagation()}
     >
-      {/* Кнопка закрытия — крестик по центру */}
+      {/* Кнопка закрытия — справа напротив «Автоматически закроется через», 17px от края */}
       <button
         type="button"
         onClick={() => {
@@ -57,7 +57,7 @@ export default function NotificationBanner({
           if (onClose) onClose();
         }}
         className="absolute flex items-center justify-center bg-transparent border-0 p-0 cursor-pointer w-6 h-6"
-        style={{ right: 15, top: 15 }}
+        style={{ right: 17, top: 13 }}
         aria-label="Закрыть"
       >
         <CloseIcon width={16} height={16} />

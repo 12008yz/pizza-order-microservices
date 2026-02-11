@@ -168,35 +168,35 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
             }}
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Кнопка закрытия — 17px справа и сверху */}
-            <button
-              onClick={() => handleCloseNotification(notification.id)}
-              className="absolute flex items-center justify-center bg-transparent border-none p-0 cursor-pointer w-6 h-6"
-              style={{
-                right: 17,
-                top: 15,
-              }}
-              aria-label="Закрыть"
-            >
-              <CloseIcon width={16} height={16} />
-            </button>
-
-            {/* Timer text — отступ 15px сверху от карточки */}
+            {/* Строка: «Автоматически закроется через» слева, крестик закрытия справа */}
             <div
-              className="absolute font-normal"
+              className="absolute flex items-center justify-between"
               style={{
-                width: '300px',
-                height: '20px',
-                left: '15px',
-                top: '15px',
-                fontFamily: 'TT Firs Neue, sans-serif',
-                fontSize: '12px',
-                lineHeight: '165%',
-                color: 'rgba(16, 16, 16, 0.25)',
-                letterSpacing: '0.5px',
+                left: 15,
+                right: 15,
+                top: 15,
+                height: 20,
+                boxSizing: 'border-box',
               }}
             >
-              Автоматически закроется через {notification.timer}
+              <span
+                style={{
+                  fontFamily: 'TT Firs Neue, sans-serif',
+                  fontSize: '12px',
+                  lineHeight: '165%',
+                  color: 'rgba(16, 16, 16, 0.25)',
+                  letterSpacing: '0.5px',
+                }}
+              >
+                Автоматически закроется через {notification.timer}
+              </span>
+              <button
+                onClick={() => handleCloseNotification(notification.id)}
+                className="flex items-center justify-center bg-transparent border-none p-0 cursor-pointer w-6 h-6 flex-shrink-0"
+                aria-label="Закрыть"
+              >
+                <CloseIcon width={16} height={16} />
+              </button>
             </div>
 
             {/* Content — 8px от строки таймера (15 + 20 + 8 = 43) */}

@@ -50,23 +50,12 @@ export default function SimCountWarningBanner({
         zIndex: 100,
       }}
     >
-      {/* Кнопка закрытия — справа напротив «Автоматически закроется через», 17px от края */}
-      <button
-        type="button"
-        onClick={handleClose}
-        className="absolute flex items-center justify-center bg-transparent border-0 p-0 cursor-pointer w-6 h-6"
-        style={{ right: 17, top: 15 }}
-        aria-label="Закрыть"
-      >
-        <CloseIcon width={16} height={16} />
-      </button>
-      {/* Заголовок с таймером */}
+      {/* Строка: «Автоматически закроется через» слева, крестик закрытия справа */}
       <div
-        style={{
-          marginBottom: '10px',
-        }}
+        className="flex items-center justify-between"
+        style={{ marginBottom: '10px', minHeight: 24 }}
       >
-        <div
+        <span
           style={{
             fontFamily: 'TT Firs Neue, sans-serif',
             fontSize: '14px',
@@ -74,7 +63,15 @@ export default function SimCountWarningBanner({
           }}
         >
           Автоматически закроется через {countdown}
-        </div>
+        </span>
+        <button
+          type="button"
+          onClick={handleClose}
+          className="flex items-center justify-center bg-transparent border-0 p-0 cursor-pointer w-6 h-6 flex-shrink-0"
+          aria-label="Закрыть"
+        >
+          <CloseIcon width={16} height={16} />
+        </button>
       </div>
 
       {/* Текст предупреждения — отступ 8px от строки «Автоматически закроется через» */}

@@ -7,6 +7,7 @@ import type {
   RouterNeedOption,
   RouterPurchaseOption,
   TvBoxNeedOption,
+  TvBoxPurchaseOption,
   TvCountOption,
   SimSmartphoneCount,
   SimConnectionType,
@@ -93,11 +94,11 @@ const PlusCircleRedIcon = () => (
   </svg>
 );
 
-// Иконка минуса в круге
+// Иконка минуса в круге — чёрный фон, белый минус (кнопка отмены/удаления)
 const MinusCircleIcon = () => (
   <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-    <circle cx="8" cy="8" r="7" stroke="#101010" strokeWidth="1.5" fill="none" />
-    <path d="M5 8H11" stroke="#101010" strokeWidth="1.5" strokeLinecap="round" />
+    <circle cx="8" cy="8" r="8" fill="#101010" />
+    <path d="M5 8H11" stroke="#FFFFFF" strokeWidth="1.5" strokeLinecap="round" />
   </svg>
 );
 
@@ -223,13 +224,65 @@ function getRouterAddOnPrice(state: EquipmentState): number {
   return 0;
 }
 
-function getTvBoxLabel(state: EquipmentState): { main: string; sub: string; isActive: boolean } {
+interface TvBoxDisplayInfo {
+  main: string;
+  sub: string;
+  isActive: boolean;
+  priceText: string;
+  noteText: string;
+  /** Рассрочка / Аренда / Покупка — показывается напротив ТВ-приставки, как у роутера */
+  choiceLabel: string;
+}
+
+function getTvBoxDisplayInfo(state: EquipmentState): TvBoxDisplayInfo {
   const need = state.tvBox?.need;
+  const n = state.tvBox?.tvCount ?? 1;
+  const sub = n > 1 ? `TV-приставка · ${n} шт.` : 'TV-приставка';
+
   if (need === 'need') {
-    const n = state.tvBox?.tvCount ?? 1;
-    return { main: `TV-приставка · ${n} шт.`, sub: 'TV-приставка', isActive: true };
+    const purchase = state.tvBox?.purchaseOption;
+    if (purchase === 'installment') {
+      return {
+        main: 'Рассрочка на 24 мес.',
+        sub,
+        isActive: true,
+        priceText: n > 1 ? `+${n * TV_BOX_INSTALLMENT_MONTHLY} р./мес.` : '+200 р./мес.',
+        noteText: 'только на 24 мес.',
+        choiceLabel: 'Рассрочка',
+      };
+    }
+    if (purchase === 'rent') {
+      return {
+        main: 'Аренда на время',
+        sub,
+        isActive: true,
+        priceText: n > 1 ? `+${n * TV_BOX_RENT_MONTHLY} р./мес.` : '+80 р./мес.',
+        noteText: 'только на время',
+        choiceLabel: 'Аренда',
+      };
+    }
+    if (purchase === 'buy') {
+      return {
+        main: 'Покупка',
+        sub,
+        isActive: true,
+        priceText: '',
+        noteText: 'единоразово',
+        choiceLabel: 'Покупка',
+      };
+    }
+    // выбор ещё не сделан — показываем количество и заголовок
+    return {
+      main: `TV-приставка · ${n} шт.`,
+      sub: 'TV-приставка',
+      isActive: true,
+      priceText: '',
+      noteText: '',
+      choiceLabel: '',
+    };
   }
-  return { main: 'Не предусмотрено', sub: 'TV-приставка', isActive: false };
+
+  return { main: 'Не предусмотрено', sub: 'TV-приставка', isActive: false, priceText: '', noteText: '', choiceLabel: '' };
 }
 
 function getTvBoxAddOnPrice(state: EquipmentState): number {
@@ -285,16 +338,16 @@ export default function OrderSummaryStep({
   }, []);
 
   const routerInfo = getRouterLabel(equipmentState);
-  const tvInfo = getTvBoxLabel(equipmentState);
+  const tvInfo = getTvBoxDisplayInfo(equipmentState);
   const simInfo = getSimLabel(equipmentState);
 
-  const { totalMonthly, routerAddOn, tvAddOn, simAddOn } = useMemo(() => {
+  const { totalMonthly, totalAddOn } = useMemo(() => {
     const base = selectedTariff?.priceValue ?? 0;
     const routerAdd = getRouterAddOnPrice(equipmentState);
     const tvAdd = getTvBoxAddOnPrice(equipmentState);
     const simAdd = getSimAddOnPrice(equipmentState);
-    const total = base + routerAdd + tvAdd + simAdd;
-    return { totalMonthly: total, routerAddOn: routerAdd, tvAddOn: tvAdd, simAddOn: simAdd };
+    const addOn = routerAdd + tvAdd + simAdd;
+    return { totalMonthly: base + addOn, totalAddOn: addOn };
   }, [selectedTariff?.priceValue, equipmentState]);
 
   // Handler для роутера - если выбран, убираем выбор; если нет - переходим в модалку выбора и затем снова на итоговую
@@ -556,7 +609,7 @@ export default function OrderSummaryStep({
               </div>
             </div>
 
-            {/* TV-приставка — без правой колонки, серый цвет по макету */}
+            {/* TV-приставка — по аналогии с роутером: левый блок + правая колонка (рассрочка/аренда/покупка и цена) */}
             <div
               style={{
                 display: 'flex',
@@ -571,7 +624,7 @@ export default function OrderSummaryStep({
               <div style={{ width: '16px', height: '16px', flexShrink: 0, marginRight: '9px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 {tvInfo.isActive ? <MinusCircleIcon /> : <CrossCircleIcon />}
               </div>
-              <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+              <div style={{ flex: 1, minWidth: 0, maxWidth: '170px', display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 0 }}>
                 <span
                   style={{
                     fontFamily: 'TT Firs Neue, sans-serif',
@@ -596,6 +649,44 @@ export default function OrderSummaryStep({
                 >
                   {tvInfo.sub}
                 </span>
+              </div>
+              <div
+                style={{
+                  width: '120px',
+                  flexShrink: 0,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'flex-end',
+                  justifyContent: 'center',
+                  gap: 0,
+                }}
+              >
+                {(tvInfo.priceText || tvInfo.choiceLabel) && (
+                  <span
+                    style={{
+                      fontFamily: 'TT Firs Neue, sans-serif',
+                      fontSize: '14px',
+                      lineHeight: '175%',
+                      color: 'rgba(16, 16, 16, 0.5)',
+                      textAlign: 'right',
+                    }}
+                  >
+                    {tvInfo.priceText || tvInfo.choiceLabel}
+                  </span>
+                )}
+                {tvInfo.noteText && (
+                  <span
+                    style={{
+                      fontFamily: 'TT Firs Neue, sans-serif',
+                      fontSize: '14px',
+                      lineHeight: '105%',
+                      color: 'rgba(16, 16, 16, 0.5)',
+                      textAlign: 'right',
+                    }}
+                  >
+                    {tvInfo.noteText}
+                  </span>
+                )}
               </div>
             </div>
 
@@ -675,9 +766,7 @@ export default function OrderSummaryStep({
                 {totalMonthly} р./мес.
               </div>
               <div style={{ display: 'flex', gap: '8px', alignItems: 'center', fontSize: '14px', lineHeight: '175%', color: '#101010' }}>
-                {routerAddOn > 0 && <span>+{routerAddOn} р./мес.</span>}
-                {tvAddOn > 0 && <span>+{tvAddOn} р./мес.</span>}
-                {simAddOn > 0 && <span>+{simAddOn} р./мес.</span>}
+                {totalAddOn > 0 && <span>+{totalAddOn} р./мес.</span>}
               </div>
             </div>
 

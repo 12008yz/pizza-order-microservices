@@ -60,7 +60,7 @@ export default function AddressStep({
           Напишите так, как это есть на самом деле. Пожалуйста, проверьте правильность
         </p>
 
-        <div className="flex flex-col gap-[8px]">
+        <div className="flex flex-col gap-[5px]">
           <FormField
             value={data.city}
             placeholder="Название населённого пункта"

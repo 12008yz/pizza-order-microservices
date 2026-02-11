@@ -368,24 +368,38 @@ function AddressFormContent({ isAppLoading = false, appLoadingProgress = 0 }: Ad
               borderRadius: 20,
             }}
           >
-            {/* Автоматически закроется через 7 — left 35px, top 90px относительно фрейма = 15px от левого/верхнего края баннера */}
-            <p
-              className="absolute m-0"
+            {/* Строка: «Автоматически закроется через» слева, крестик закрытия справа */}
+            <div
+              className="absolute flex items-center justify-between"
               style={{
                 left: 15,
+                right: 15,
                 top: 15,
-                width: 300,
                 height: 20,
-                fontFamily: "'TT Firs Neue', sans-serif",
-                fontStyle: 'normal',
-                fontWeight: 400,
-                fontSize: 14,
-                lineHeight: '145%',
-                color: 'rgba(16, 16, 16, 0.25)',
+                boxSizing: 'border-box',
               }}
             >
-              Автоматически закроется через {cookieTimer}
-            </p>
+              <span
+                style={{
+                  fontFamily: "'TT Firs Neue', sans-serif",
+                  fontStyle: 'normal',
+                  fontWeight: 400,
+                  fontSize: 14,
+                  lineHeight: '145%',
+                  color: 'rgba(16, 16, 16, 0.25)',
+                }}
+              >
+                Автоматически закроется через {cookieTimer}
+              </span>
+              <button
+                type="button"
+                onClick={() => setShowCookieBanner(false)}
+                className="flex items-center justify-center bg-transparent border-0 outline-none w-6 h-6 cursor-pointer flex-shrink-0"
+                aria-label="Закрыть"
+              >
+                <CloseIcon width={16} height={16} />
+              </button>
+            </div>
             {/* Основной текст — 330×60 px; «политики конфиденциальности портала» на следующей строке */}
             <p
               className="absolute m-0"
@@ -413,19 +427,6 @@ function AddressFormContent({ isAppLoading = false, appLoadingProgress = 0 }: Ad
               </a>{' '}
               портал
             </p>
-            {/* Кнопка закрытия — 17px справа и сверху */}
-            <button
-              type="button"
-              onClick={() => setShowCookieBanner(false)}
-              className="absolute cursor-pointer flex items-center justify-center bg-transparent border-0 outline-none w-6 h-6"
-              style={{
-                right: 17,
-                top: 15,
-              }}
-              aria-label="Закрыть"
-            >
-              <CloseIcon width={16} height={16} />
-            </button>
           </div>
         )}
 

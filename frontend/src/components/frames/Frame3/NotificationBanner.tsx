@@ -49,29 +49,31 @@ export default function NotificationBanner({
       }}
       onClick={(e) => e.stopPropagation()}
     >
-      {/* Кнопка закрытия — справа напротив «Автоматически закроется через», 17px от края */}
-      <button
-        type="button"
-        onClick={() => {
-          setIsVisible(false);
-          if (onClose) onClose();
-        }}
-        className="absolute flex items-center justify-center bg-transparent border-0 p-0 cursor-pointer w-6 h-6"
-        style={{ right: 17, top: 15 }}
-        aria-label="Закрыть"
-      >
-        <CloseIcon width={16} height={16} />
-      </button>
-
-      {/* Timer text */}
+      {/* Строка: «Автоматически закроется через» слева, крестик закрытия справа */}
       <div
-        className="font-normal text-xs leading-[165%]"
-        style={{
-          color: 'rgba(16, 16, 16, 0.5)',
-          letterSpacing: '0.5px',
-        }}
+        className="flex items-center justify-between"
+        style={{ minHeight: 24 }}
       >
-        {title} {currentTimer}
+        <span
+          className="font-normal text-xs leading-[165%]"
+          style={{
+            color: 'rgba(16, 16, 16, 0.5)',
+            letterSpacing: '0.5px',
+          }}
+        >
+          {title} {currentTimer}
+        </span>
+        <button
+          type="button"
+          onClick={() => {
+            setIsVisible(false);
+            if (onClose) onClose();
+          }}
+          className="flex items-center justify-center bg-transparent border-0 p-0 cursor-pointer w-6 h-6 flex-shrink-0"
+          aria-label="Закрыть"
+        >
+          <CloseIcon width={16} height={16} />
+        </button>
       </div>
 
       {/* Content — отступ 8px от строки таймера */}

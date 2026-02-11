@@ -88,7 +88,7 @@ export default function ConfirmationStep({
             border: '1px solid rgba(16, 16, 16, 0.25)',
             fontFamily: 'TT Firs Neue, sans-serif',
             fontSize: canProceed ? 16 : 14,
-            background: canProceed ? '#101010' : 'rgba(16, 16, 16, 0.06)',
+            background: canProceed ? '#101010' : '#FFFFFF',
             color: canProceed ? '#FFFFFF' : '#101010',
             cursor: canProceed && !isSubmitting ? 'pointer' : 'default',
             transform: confirmPressed ? 'scale(0.97)' : 'scale(1)',

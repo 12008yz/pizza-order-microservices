@@ -428,7 +428,7 @@ export default function OrderSummaryStep({
           {/* Блок фич — отступы по макету, между пунктами адаптивно */}
           <div style={{ padding: `${padBlockV} 17px ${padBlockV} 15px` }}>
             {/* Скорость интернета */}
-            <div style={{ display: 'flex', alignItems: 'center', marginBottom: rowGap, minHeight: rowMinH }}>
+            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '5px', minHeight: rowMinH }}>
               <div style={{ marginRight: '12px', flexShrink: 0 }}>
                 <CheckCircleIcon active={true} />
               </div>
@@ -443,7 +443,7 @@ export default function OrderSummaryStep({
             </div>
 
             {/* Телевидение - Не предусмотрено */}
-            <div style={{ display: 'flex', alignItems: 'center', marginBottom: rowGap, minHeight: rowMinH }}>
+            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '5px', minHeight: rowMinH }}>
               <div style={{ marginRight: '12px', flexShrink: 0 }}>
                 <CrossCircleIcon />
               </div>
@@ -455,7 +455,7 @@ export default function OrderSummaryStep({
 
             {/* Мобильное соединение */}
             {selectedTariff?.mobile && (
-              <div style={{ display: 'flex', alignItems: 'center', marginBottom: rowGap, minHeight: rowMinH }}>
+              <div style={{ display: 'flex', alignItems: 'center', marginBottom: '5px', minHeight: rowMinH }}>
                 <div style={{ marginRight: '12px', flexShrink: 0 }}>
                   <CheckCircleIcon active={true} />
                 </div>
@@ -468,7 +468,7 @@ export default function OrderSummaryStep({
 
             {/* Кинотеатр KION */}
             {selectedTariff?.favoriteLabel && (
-              <div style={{ display: 'flex', alignItems: 'center', marginBottom: rowGap, minHeight: rowMinH }}>
+              <div style={{ display: 'flex', alignItems: 'center', marginBottom: '5px', minHeight: rowMinH }}>
                 <div style={{ marginRight: '12px', flexShrink: 0 }}>
                   <CheckCircleIcon active={true} />
                 </div>
@@ -480,14 +480,14 @@ export default function OrderSummaryStep({
             )}
 
             {/* Разделитель перед оборудованием */}
-            <div style={{ height: '1px', background: 'rgba(16, 16, 16, 0.1)', marginBottom: rowGap, maxWidth: '330px' }} />
+            <div style={{ height: '1px', background: 'rgba(16, 16, 16, 0.1)', marginBottom: '5px', maxWidth: '330px' }} />
 
             {/* Роутер — иконка по центру, левый блок 170px, правый — цена и подпись */}
             <div
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                marginBottom: rowGapSmall,
+                marginBottom: '5px',
                 minHeight: rowMinH,
                 maxWidth: '330px',
                 cursor: 'pointer',
@@ -568,7 +568,7 @@ export default function OrderSummaryStep({
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                marginBottom: rowGapSmall,
+                marginBottom: '5px',
                 minHeight: rowMinH,
                 maxWidth: '330px',
                 cursor: 'pointer',
@@ -611,7 +611,7 @@ export default function OrderSummaryStep({
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                marginBottom: rowGapSmall,
+                marginBottom: '5px',
                 minHeight: rowMinH,
                 maxWidth: '330px',
                 position: 'relative',
@@ -671,7 +671,7 @@ export default function OrderSummaryStep({
 
           {/* Блок цены — отступ от разделителя по макету */}
           <div style={{ padding: `${pricePadTop} 17px 0 15px` }}>
-            <div style={{ marginBottom: rowGapSmall, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '4px' }}>
+            <div style={{ marginBottom: '5px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '4px' }}>
               <div
                 style={{
                   fontSize: '22px',
@@ -694,7 +694,7 @@ export default function OrderSummaryStep({
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
-                marginBottom: rowGapSmall,
+                marginBottom: '5px',
                 minHeight: '20px',
               }}
             >

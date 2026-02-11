@@ -671,7 +671,8 @@ function Frame4Content() {
               marginTop: currentStep === 'order_summary' ? 15 : 'auto',
               marginBottom: 'calc(20px + env(safe-area-inset-bottom, 0px))',
               backdropFilter: 'blur(7.5px)',
-              maxHeight: currentStep === 'order_summary' ? 'calc(100dvh - (var(--header-top, 50px) + 41px + 15px + 20px) - var(--sab, 0px))' : 'calc(100dvh - 145px)',
+              // Для итоговой карточки вычитаем ещё 56px под панель браузера (Safari/Chrome на iPhone), чтобы кнопка «Подключить» помещалась на экран
+              maxHeight: currentStep === 'order_summary' ? 'calc(100dvh - (var(--header-top, 50px) + 41px + 15px + 20px) - var(--sab, 0px) - 56px)' : 'calc(100dvh - 145px)',
             }}
           >
             {/* Контент шага. Итоговая карточка (order_summary) — без скролла, всё вмещается за счёт адаптивных отступов */}

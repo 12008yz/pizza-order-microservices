@@ -150,50 +150,83 @@ interface RouterDisplayInfo {
 
 function getRouterLabel(state: EquipmentState): RouterDisplayInfo {
   const need = state.router?.need;
+
+  // Роутер не нужен — в итоге показываем «Роутер не требуется», по клику можно «Дополнить»
   if (need === 'no_thanks' || !need) {
-    return { main: 'Дополнить', sub: 'Роутер', isActive: false, needsAdd: true, priceText: '', noteText: '', choiceLabel: '' };
+    return { main: 'Роутер не требуется', sub: 'Роутер', isActive: true, needsAdd: true, priceText: '', noteText: '', choiceLabel: '' };
   }
-  const purchase = state.router?.purchase;
-  if (purchase === 'installment') {
-    return {
-      main: 'Рассрочка на 24 мес.',
-      sub: 'Роутер',
-      isActive: true,
-      needsAdd: false,
-      priceText: '+200 р./мес.',
-      noteText: 'только на 24 мес.',
-      choiceLabel: 'Рассрочка',
-    };
+
+  // Роутер есть от оператора — не требуется, без доп. платы
+  if (need === 'from_operator') {
+    return { main: 'Роутер не требуется', sub: 'Роутер', isActive: true, needsAdd: false, priceText: '', noteText: 'имеется от оператора', choiceLabel: '' };
   }
-  if (purchase === 'rent') {
-    return {
-      main: 'Аренда на время',
-      sub: 'Роутер',
-      isActive: true,
-      needsAdd: false,
-      priceText: '+80 р./мес.',
-      noteText: 'только на время',
-      choiceLabel: 'Аренда',
-    };
+
+  // Роутер свой (не от оператора) — либо настройка за 200 р., либо настройка не требуется
+  if (need === 'own') {
+    const config = state.router?.config;
+    if (config === 'with_config') {
+      return {
+        main: 'Настройка за 200 р.',
+        sub: 'Роутер',
+        isActive: true,
+        needsAdd: false,
+        priceText: '200 р.',
+        noteText: 'единоразово',
+        choiceLabel: '',
+      };
+    }
+    return { main: 'Роутер не требуется', sub: 'Роутер', isActive: true, needsAdd: false, priceText: '', noteText: 'настройка не требуется', choiceLabel: '' };
   }
-  if (purchase === 'buy') {
-    return {
-      main: 'Покупка',
-      sub: 'Роутер',
-      isActive: true,
-      needsAdd: false,
-      priceText: '',
-      noteText: 'единоразово',
-      choiceLabel: 'Покупка',
-    };
+
+  // Роутер нужен — показываем выбранный вариант: аренда / покупка / рассрочка
+  if (need === 'need') {
+    const purchase = state.router?.purchase;
+    if (purchase === 'installment') {
+      return {
+        main: 'Рассрочка на 24 мес.',
+        sub: 'Роутер',
+        isActive: true,
+        needsAdd: false,
+        priceText: '+200 р./мес.',
+        noteText: 'только на 24 мес.',
+        choiceLabel: 'Рассрочка',
+      };
+    }
+    if (purchase === 'rent') {
+      return {
+        main: 'Аренда на время',
+        sub: 'Роутер',
+        isActive: true,
+        needsAdd: false,
+        priceText: '+80 р./мес.',
+        noteText: 'только на время',
+        choiceLabel: 'Аренда',
+      };
+    }
+    if (purchase === 'buy') {
+      return {
+        main: 'Покупка',
+        sub: 'Роутер',
+        isActive: true,
+        needsAdd: false,
+        priceText: '',
+        noteText: 'единоразово',
+        choiceLabel: 'Покупка',
+      };
+    }
   }
+
+  // Не выбрано или неизвестное состояние — предлагаем дополнить
   return { main: 'Дополнить', sub: 'Роутер', isActive: false, needsAdd: true, priceText: '', noteText: '', choiceLabel: '' };
 }
 
 function getRouterAddOnPrice(state: EquipmentState): number {
-  if (state.router?.need === 'no_thanks') return 0;
-  if (state.router?.purchase === 'rent') return ROUTER_RENT_MONTHLY;
-  if (state.router?.purchase === 'installment') return ROUTER_INSTALLMENT_MONTHLY;
+  const need = state.router?.need;
+  if (need === 'no_thanks' || need === 'from_operator' || need === 'own') return 0; // нет ежемесячной надбавки
+  if (need === 'need') {
+    if (state.router?.purchase === 'rent') return ROUTER_RENT_MONTHLY;
+    if (state.router?.purchase === 'installment') return ROUTER_INSTALLMENT_MONTHLY;
+  }
   return 0;
 }
 
@@ -326,8 +359,8 @@ export default function OrderSummaryStep({
   const rowGapSmall = 'clamp(3px, 0.8vh, 5px)';
   const pricePadTop = 'clamp(12px, 3vh, 20px)';
   const priceToButtons = 'clamp(12px, 2.5vh, 20px)';
-  // Нижний отступ: макет + safe-area (на iPhone XR и др. с «чёлкой» кнопка не уходит под индикатор)
-  const padBottom = 'calc(clamp(12px, 2.5vh, 20px) + env(safe-area-inset-bottom, 0px))';
+  // Нижний отступ: макет + safe-area + запас под панель браузера (Safari/Chrome на iPhone), чтобы кнопка «Подключить» не обрезалась
+  const padBottom = 'max(56px, calc(clamp(12px, 2.5vh, 20px) + env(safe-area-inset-bottom, 0px)))';
 
   return (
     <div

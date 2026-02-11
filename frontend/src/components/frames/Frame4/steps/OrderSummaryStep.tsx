@@ -386,8 +386,8 @@ export default function OrderSummaryStep({
           {/* Блок фич — по макету padding 16px 17px 16px 15px, между пунктами 10px */}
           <div style={{ padding: '16px 17px 16px 15px' }}>
             {/* Скорость интернета */}
-            <div style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '10px' }}>
-              <div style={{ marginRight: '12px', marginTop: '2px', flexShrink: 0 }}>
+            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+              <div style={{ marginRight: '12px', flexShrink: 0 }}>
                 <CheckCircleIcon active={true} />
               </div>
               <div style={{ flex: 1 }}>
@@ -413,8 +413,8 @@ export default function OrderSummaryStep({
             </div>
 
             {/* Телевидение - Не предусмотрено */}
-            <div style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '10px' }}>
-              <div style={{ marginRight: '12px', marginTop: '2px', flexShrink: 0 }}>
+            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+              <div style={{ marginRight: '12px', flexShrink: 0 }}>
                 <CrossCircleIcon />
               </div>
               <div style={{ flex: 1 }}>
@@ -441,8 +441,8 @@ export default function OrderSummaryStep({
 
             {/* Мобильное соединение */}
             {selectedTariff?.mobile && (
-              <div style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '10px' }}>
-                <div style={{ marginRight: '12px', marginTop: '2px', flexShrink: 0 }}>
+              <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+                <div style={{ marginRight: '12px', flexShrink: 0 }}>
                   <CheckCircleIcon active={true} />
                 </div>
                 <div style={{ flex: 1 }}>
@@ -470,8 +470,8 @@ export default function OrderSummaryStep({
 
             {/* Кинотеатр KION */}
             {selectedTariff?.favoriteLabel && (
-              <div style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '10px' }}>
-                <div style={{ marginRight: '12px', marginTop: '2px', flexShrink: 0 }}>
+              <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+                <div style={{ marginRight: '12px', flexShrink: 0 }}>
                   <CheckCircleIcon active={true} />
                 </div>
                 <div style={{ flex: 1 }}>
@@ -500,187 +500,185 @@ export default function OrderSummaryStep({
             {/* Разделитель перед оборудованием — по макету 330×0, 10px до первого ряда */}
             <div style={{ height: '1px', background: 'rgba(16, 16, 16, 0.1)', marginBottom: '10px', maxWidth: '330px' }} />
 
-            {/* Роутер — по макету 330×40, между рядами 5px */}
+            {/* Роутер — по макету Group 7573: 330×40px, иконка по центру, левый блок 170px, правый — цена и подпись */}
             <div
               style={{
                 display: 'flex',
-                alignItems: 'flex-start',
+                alignItems: 'center',
                 marginBottom: '5px',
-                minHeight: '40px',
+                height: '40px',
+                maxWidth: '330px',
                 cursor: 'pointer',
               }}
               onClick={handleRouterClick}
             >
-          <div style={{ marginRight: '12px', marginTop: '2px', flexShrink: 0 }}>
-            {routerInfo.needsAdd ? <PlusCircleRedIcon /> : <MinusCircleIcon />}
-          </div>
-          <div style={{ flex: 1 }}>
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-              }}
-            >
-              <span
+              <div style={{ width: '16px', height: '16px', flexShrink: 0, marginRight: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                {routerInfo.needsAdd ? <PlusCircleRedIcon /> : <MinusCircleIcon />}
+              </div>
+              <div style={{ flex: 1, minWidth: 0, maxWidth: '170px', display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 0 }}>
+                <span
+                  style={{
+                    fontFamily: 'TT Firs Neue, sans-serif',
+                    fontSize: '16px',
+                    lineHeight: '155%',
+                    color: routerInfo.needsAdd ? 'rgba(255, 16, 0, 0.75)' : '#101010',
+                    display: 'flex',
+                    alignItems: 'center',
+                  }}
+                >
+                  {routerInfo.main}
+                </span>
+                <span
+                  style={{
+                    fontFamily: 'TT Firs Neue, sans-serif',
+                    fontSize: '14px',
+                    lineHeight: '105%',
+                    color: routerInfo.needsAdd ? 'rgba(255, 16, 0, 0.5)' : 'rgba(16, 16, 16, 0.5)',
+                    display: 'flex',
+                    alignItems: 'center',
+                  }}
+                >
+                  {routerInfo.sub}
+                </span>
+              </div>
+              <div
                 style={{
-                  fontSize: '16px',
-                  lineHeight: '155%',
-                  color: routerInfo.needsAdd ? 'rgba(255, 16, 0, 0.75)' : '#101010',
+                  width: '120px',
+                  flexShrink: 0,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'flex-end',
+                  justifyContent: 'center',
+                  gap: 0,
                 }}
               >
-                {routerInfo.main}
-              </span>
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '2px' }}>
-                {routerInfo.choiceLabel && (
+                {(routerInfo.priceText || routerInfo.choiceLabel) && (
                   <span
                     style={{
-                      fontSize: '16px',
-                      lineHeight: '155%',
-                      color: '#101010',
-                      fontWeight: 500,
-                    }}
-                  >
-                    {routerInfo.choiceLabel}
-                  </span>
-                )}
-                {routerInfo.priceText && (
-                  <span
-                    style={{
+                      fontFamily: 'TT Firs Neue, sans-serif',
                       fontSize: '14px',
                       lineHeight: '175%',
                       color: 'rgba(16, 16, 16, 0.5)',
                       textAlign: 'right',
                     }}
                   >
-                    {routerInfo.priceText}
+                    {routerInfo.priceText || routerInfo.choiceLabel}
+                  </span>
+                )}
+                {routerInfo.noteText && (
+                  <span
+                    style={{
+                      fontFamily: 'TT Firs Neue, sans-serif',
+                      fontSize: '14px',
+                      lineHeight: '105%',
+                      color: 'rgba(16, 16, 16, 0.5)',
+                      textAlign: 'right',
+                    }}
+                  >
+                    {routerInfo.noteText}
                   </span>
                 )}
               </div>
             </div>
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-              }}
-            >
-              <span
-                style={{
-                  fontSize: '14px',
-                  lineHeight: '105%',
-                  color: routerInfo.needsAdd ? 'rgba(255, 16, 0, 0.5)' : 'rgba(16, 16, 16, 0.5)',
-                }}
-              >
-                {routerInfo.sub}
-              </span>
-              {routerInfo.noteText && (
-                <span
-                  style={{
-                    fontSize: '14px',
-                    lineHeight: '105%',
-                    color: 'rgba(16, 16, 16, 0.5)',
-                    textAlign: 'right',
-                  }}
-                >
-                  {routerInfo.noteText}
-                </span>
-              )}
-            </div>
-          </div>
-            </div>
 
-            {/* TV-приставка — кликабельно как роутер и SIM */}
+            {/* TV-приставка — Group 7576: 330×40px, Group 7546 контент 305px, без правой колонки; серый цвет по макету */}
             <div
               style={{
                 display: 'flex',
-                alignItems: 'flex-start',
+                alignItems: 'center',
                 marginBottom: '5px',
-                minHeight: '40px',
+                height: '40px',
+                maxWidth: '330px',
                 cursor: 'pointer',
               }}
               onClick={handleTvBoxClick}
             >
-          <div style={{ marginRight: '12px', marginTop: '2px', flexShrink: 0 }}>
-            {tvInfo.isActive ? <MinusCircleIcon /> : <PlusCircleRedIcon />}
-          </div>
-          <div style={{ flex: 1 }}>
-            <div
-              style={{
-                fontSize: '16px',
-                lineHeight: '155%',
-                color: tvInfo.isActive ? '#101010' : 'rgba(255, 16, 0, 0.75)',
-              }}
-            >
-              {tvInfo.main}
-            </div>
-            <div
-              style={{
-                fontSize: '14px',
-                lineHeight: '105%',
-                color: tvInfo.isActive ? 'rgba(16, 16, 16, 0.5)' : 'rgba(255, 16, 0, 0.5)',
-              }}
-            >
-              {tvInfo.sub}
-            </div>
-          </div>
+              <div style={{ width: '16px', height: '16px', flexShrink: 0, marginRight: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                {tvInfo.isActive ? <MinusCircleIcon /> : <CrossCircleIcon />}
+              </div>
+              <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                <span
+                  style={{
+                    fontFamily: 'TT Firs Neue, sans-serif',
+                    fontSize: '16px',
+                    lineHeight: '155%',
+                    color: tvInfo.isActive ? '#101010' : 'rgba(16, 16, 16, 0.25)',
+                    display: 'flex',
+                    alignItems: 'center',
+                  }}
+                >
+                  {tvInfo.main}
+                </span>
+                <span
+                  style={{
+                    fontFamily: 'TT Firs Neue, sans-serif',
+                    fontSize: '14px',
+                    lineHeight: '105%',
+                    color: tvInfo.isActive ? 'rgba(16, 16, 16, 0.5)' : 'rgba(16, 16, 16, 0.5)',
+                    display: 'flex',
+                    alignItems: 'center',
+                  }}
+                >
+                  {tvInfo.sub}
+                </span>
+              </div>
             </div>
 
-            {/* SIM-карта — кликабельно как роутер */}
+            {/* SIM-карта — 330×40px: строка 1 — заголовок, строка 2 — «SIM-карта» и «один экз.» в одну линию напротив */}
             <div
               style={{
                 display: 'flex',
-                alignItems: 'flex-start',
+                alignItems: 'center',
                 marginBottom: '5px',
-                minHeight: '40px',
+                height: '40px',
+                maxWidth: '330px',
                 position: 'relative',
                 cursor: 'pointer',
               }}
               onClick={handleSimClick}
             >
-          <div style={{ marginRight: '12px', marginTop: '2px', flexShrink: 0 }}>
-            {simInfo.isActive ? <MinusCircleIcon /> : <PlusCircleRedIcon />}
-          </div>
-          <div style={{ flex: 1 }}>
-            <div
-              style={{
-                fontSize: '16px',
-                lineHeight: '155%',
-                color: simInfo.isActive ? '#101010' : 'rgba(255, 16, 0, 0.75)',
-              }}
-            >
-              {simInfo.main}
-            </div>
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-              }}
-            >
-              <span
-                style={{
-                  fontSize: '14px',
-                  lineHeight: '105%',
-                  color: simInfo.isActive ? 'rgba(16, 16, 16, 0.5)' : 'rgba(255, 16, 0, 0.5)',
-                }}
-              >
-                {simInfo.sub}
-              </span>
-              {simInfo.extra && (
+              <div style={{ width: '16px', height: '16px', flexShrink: 0, marginRight: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                {simInfo.isActive ? <MinusCircleIcon /> : <PlusCircleRedIcon />}
+              </div>
+              <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
                 <span
                   style={{
-                    fontSize: '14px',
-                    lineHeight: '105%',
-                    color: 'rgba(16, 16, 16, 0.5)',
-                    textAlign: 'right',
+                    fontFamily: 'TT Firs Neue, sans-serif',
+                    fontSize: '16px',
+                    lineHeight: '155%',
+                    color: simInfo.isActive ? '#101010' : 'rgba(255, 16, 0, 0.75)',
+                    display: 'flex',
+                    alignItems: 'center',
                   }}
                 >
-                  {simInfo.extra}
+                  {simInfo.main}
                 </span>
-              )}
-            </div>
-          </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span
+                    style={{
+                      fontFamily: 'TT Firs Neue, sans-serif',
+                      fontSize: '14px',
+                      lineHeight: '105%',
+                      color: simInfo.isActive ? 'rgba(16, 16, 16, 0.5)' : 'rgba(255, 16, 0, 0.5)',
+                    }}
+                  >
+                    {simInfo.sub}
+                  </span>
+                  {simInfo.extra && (
+                    <span
+                      style={{
+                        fontFamily: 'TT Firs Neue, sans-serif',
+                        fontSize: '14px',
+                        lineHeight: '105%',
+                        color: 'rgba(16, 16, 16, 0.5)',
+                        flexShrink: 0,
+                      }}
+                    >
+                      {simInfo.extra}
+                    </span>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
 

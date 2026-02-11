@@ -1475,8 +1475,8 @@ function Frame3Content() {
                 >
                   <div className="features-container" style={{ display: 'flex', flexDirection: 'column' }}>
                     {/* Скорость — 16px 155%, подпись 14px 105%, высота строки 40px по макету */}
-                    <div className="feature-row" style={{ display: 'flex', alignItems: 'flex-start', minHeight: '40px' }}>
-                      <div className="feature-icon" style={{ flexShrink: 0, marginTop: '2px' }}>
+                    <div className="feature-row" style={{ display: 'flex', alignItems: 'center', minHeight: '40px' }}>
+                      <div className="feature-icon" style={{ flexShrink: 0 }}>
                         <CheckCircleIcon />
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
@@ -1490,8 +1490,8 @@ function Frame3Content() {
                     </div>
 
                     {/* Каналы — 16px 155%, 14px 105% */}
-                    <div className="feature-row" style={{ display: 'flex', alignItems: 'flex-start', minHeight: '40px' }}>
-                      <div className="feature-icon" style={{ flexShrink: 0, marginTop: '2px' }}>
+                    <div className="feature-row" style={{ display: 'flex', alignItems: 'center', minHeight: '40px' }}>
+                      <div className="feature-icon" style={{ flexShrink: 0 }}>
                         <CheckCircleIcon />
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
@@ -1508,8 +1508,8 @@ function Frame3Content() {
                     </div>
 
                     {/* Мобильная связь — 16px 155%, 14px 105% */}
-                    <div className="feature-row" style={{ display: 'flex', alignItems: 'flex-start', minHeight: '40px' }}>
-                      <div className="feature-icon" style={{ flexShrink: 0, marginTop: '2px' }}>
+                    <div className="feature-row" style={{ display: 'flex', alignItems: 'center', minHeight: '40px' }}>
+                      <div className="feature-icon" style={{ flexShrink: 0 }}>
                         <CheckCircleIcon />
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
@@ -1526,8 +1526,8 @@ function Frame3Content() {
                     </div>
 
                     {/* Кинотеатр / доп. приложение — 16px 155%, 14px 105% */}
-                    <div className="feature-row" style={{ display: 'flex', alignItems: 'flex-start', minHeight: '40px' }}>
-                      <div className="feature-icon" style={{ flexShrink: 0, marginTop: '2px' }}>
+                    <div className="feature-row" style={{ display: 'flex', alignItems: 'center', minHeight: '40px' }}>
+                      <div className="feature-icon" style={{ flexShrink: 0 }}>
                         <CheckCircleIcon />
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>

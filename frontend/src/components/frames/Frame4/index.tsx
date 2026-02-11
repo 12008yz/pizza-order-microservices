@@ -87,6 +87,43 @@ type Step =
   | 'sim_operator'
   | 'order_summary';
 
+const FRAME4_FLOW_STORAGE_KEY = 'frame4Flow';
+const VALID_STEPS: Step[] = [
+  'router_need', 'router_purchase', 'router_operator', 'router_config',
+  'tvbox_need', 'tvbox_tvcount', 'tvbox_purchase', 'tvbox_operator',
+  'sim_connection_type', 'sim_client_status', 'sim_info_person', 'sim_info_region',
+  'sim_smartphone_count', 'sim_operator', 'order_summary',
+];
+
+function loadFrame4FlowFromStorage(): { step: Step; lastStepBeforeOrderSummary: Step | null; returnToOrderSummaryAfter: 'router' | 'tvbox' | 'sim' | null } | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    const raw = sessionStorage.getItem(FRAME4_FLOW_STORAGE_KEY);
+    if (!raw) return null;
+    const data = JSON.parse(raw) as { currentStep?: string; lastStepBeforeOrderSummary?: string | null; returnToOrderSummaryAfter?: string | null };
+    const step = data.currentStep && VALID_STEPS.includes(data.currentStep as Step) ? (data.currentStep as Step) : null;
+    const lastStep = data.lastStepBeforeOrderSummary && VALID_STEPS.includes(data.lastStepBeforeOrderSummary as Step) ? (data.lastStepBeforeOrderSummary as Step) : null;
+    const returnTo = data.returnToOrderSummaryAfter === 'router' || data.returnToOrderSummaryAfter === 'tvbox' || data.returnToOrderSummaryAfter === 'sim' ? data.returnToOrderSummaryAfter : null;
+    if (!step) return null;
+    return { step, lastStepBeforeOrderSummary: lastStep, returnToOrderSummaryAfter: returnTo };
+  } catch {
+    return null;
+  }
+}
+
+function saveFrame4FlowToStorage(currentStep: Step, lastStepBeforeOrderSummary: Step | null, returnToOrderSummaryAfter: 'router' | 'tvbox' | 'sim' | null) {
+  if (typeof window === 'undefined') return;
+  try {
+    sessionStorage.setItem(FRAME4_FLOW_STORAGE_KEY, JSON.stringify({
+      currentStep,
+      lastStepBeforeOrderSummary,
+      returnToOrderSummaryAfter,
+    }));
+  } catch {
+    // ignore
+  }
+}
+
 function Frame4Content() {
   const router = useRouter();
   const { equipmentState: savedEquipment, setEquipmentState: saveEquipment } = useEquipment();
@@ -109,6 +146,23 @@ function Frame4Content() {
   // С какого шага пришли на итоговую карточку — по «Назад» возвращаем именно туда, а не в модалку SIM
   const [lastStepBeforeOrderSummary, setLastStepBeforeOrderSummary] = useState<Step | null>(null);
 
+  const [currentStep, setCurrentStep] = useState<Step>('router_need');
+
+  // Восстановление шага и флагов из sessionStorage при монтировании (после переключения вкладок/страниц)
+  useEffect(() => {
+    const saved = loadFrame4FlowFromStorage();
+    if (saved) {
+      setCurrentStep(saved.step);
+      if (saved.lastStepBeforeOrderSummary != null) setLastStepBeforeOrderSummary(saved.lastStepBeforeOrderSummary);
+      if (saved.returnToOrderSummaryAfter != null) setReturnToOrderSummaryAfter(saved.returnToOrderSummaryAfter);
+    }
+  }, []);
+
+  // Сохранение шага и флагов в sessionStorage при каждом изменении (чтобы не терять место при переключении вкладок)
+  useEffect(() => {
+    saveFrame4FlowToStorage(currentStep, lastStepBeforeOrderSummary, returnToOrderSummaryAfter);
+  }, [currentStep, lastStepBeforeOrderSummary, returnToOrderSummaryAfter]);
+
   // Инициализация из сохранённого выбора при монтировании
   useEffect(() => {
     if (savedEquipment) {
@@ -125,8 +179,6 @@ function Frame4Content() {
   useEffect(() => {
     saveEquipment(equipmentState);
   }, [equipmentState, saveEquipment]);
-
-  const [currentStep, setCurrentStep] = useState<Step>('router_need');
 
   const goToOrderSummary = useCallback(() => {
     setLastStepBeforeOrderSummary(currentStep);

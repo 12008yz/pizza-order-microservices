@@ -67,6 +67,8 @@ function AddressFormContent({ isAppLoading = false, appLoadingProgress = 0 }: Ad
   const [showSkeletonBeforeConsultation, setShowSkeletonBeforeConsultation] = useState(false);
 
   const [isSubmitPressed, setIsSubmitPressed] = useState(false);
+  // После нажатия на кнопку при неполной форме — кнопка становится неактивной (серая), пока форму не заполнят
+  const [hasSubmitAttempted, setHasSubmitAttempted] = useState(false);
 
   // После завершения загрузки приложения — коротко показываем скелетон, потом форму
   const prevAppLoadingRef = useRef(true);
@@ -153,14 +155,24 @@ function AddressFormContent({ isAppLoading = false, appLoadingProgress = 0 }: Ad
 
   const isFieldActive = (step: number) => step === activeStep;
 
+  // Форма заполнена. Кнопка неактивна (серая) только после нажатия при неполной форме — пока не заполнят
+  const isFormValid =
+    !!addressData.connectionType &&
+    !!(addressData.cityId || addressData.city) &&
+    !!(addressData.streetId || addressData.street) &&
+    !!(addressData.buildingId || addressData.houseNumber) &&
+    !!addressData.privacyConsent;
+  const isButtonDisabled = hasSubmitAttempted && !isFormValid;
+
   const handleConnectionTypeClick = () => {
     setShowConnectionModal(true);
   };
 
   const handleSubmit = async () => {
     setSubmitError(null);
-    // Не сбрасываем ошибки — при невалидной форме показываем красную обводку и стрелочки в полях
+    // Не сбрасываем ошибки — при невалидной форме показываем красную обводку; кнопка потом станет неактивной
     if (!validateForm()) {
+      setHasSubmitAttempted(true);
       return;
     }
 
@@ -690,29 +702,30 @@ function AddressFormContent({ isAppLoading = false, appLoadingProgress = 0 }: Ad
             <PrivacyConsent />
           </div>
 
-          {/* Кнопка — bg #101010, border 1px solid rgba(16,16,16,0.25), border-radius 10px, 16px line-height 315% (по макету), color #FFFFFF */}
+          {/* Кнопка — изначально активна; после нажатия при неполной форме становится неактивной (серая), пока не заполнят */}
           <button
             type="button"
-            onClick={handleSubmit}
-            onMouseDown={() => setIsSubmitPressed(true)}
+            disabled={isButtonDisabled}
+            onClick={isButtonDisabled ? undefined : handleSubmit}
+            onMouseDown={() => !isButtonDisabled && setIsSubmitPressed(true)}
             onMouseUp={() => setIsSubmitPressed(false)}
             onMouseLeave={() => setIsSubmitPressed(false)}
-            onTouchStart={() => setIsSubmitPressed(true)}
+            onTouchStart={() => !isButtonDisabled && setIsSubmitPressed(true)}
             onTouchEnd={() => setIsSubmitPressed(false)}
-            className="w-full flex items-center justify-center text-white outline-none cursor-pointer rounded-[10px] box-border"
+            className={`w-full flex items-center justify-center text-white outline-none rounded-[10px] box-border ${isButtonDisabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}
             style={{
               height: 50,
               minHeight: 50,
-              background: '#101010',
+              background: isButtonDisabled ? 'rgba(16, 16, 16, 0.25)' : '#101010',
               border: '1px solid rgba(16, 16, 16, 0.25)',
               borderRadius: 10,
               fontFamily: "'TT Firs Neue', sans-serif",
               fontWeight: 400,
               fontSize: 16,
-              lineHeight: '125%',
+              lineHeight: '315%',
               color: '#FFFFFF',
-              transform: isSubmitPressed ? 'scale(0.97)' : 'scale(1)',
-              transition: 'transform 0.15s ease-out',
+              transform: !isButtonDisabled && isSubmitPressed ? 'scale(0.97)' : 'scale(1)',
+              transition: 'transform 0.15s ease-out, background 0.2s ease',
             }}
           >
             Показать всех операторов

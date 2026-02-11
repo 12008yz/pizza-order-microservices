@@ -23,7 +23,8 @@ export default function PersonalDataStep({
 }: PersonalDataStepProps) {
   const handleChange = (field: keyof PersonalData) => (value: string) => {
     if (field === 'phone') {
-      onChange({ ...data, [field]: formatPhone(value) });
+      const formatted = formatPhone(value) || '+7 ';
+      onChange({ ...data, [field]: formatted });
     } else if (field === 'birthDate') {
       onChange({ ...data, [field]: formatBirthDate(value) });
     } else {
@@ -93,12 +94,15 @@ export default function PersonalDataStep({
             placeholder="Дата рождения"
             error={errors.birthDate}
             isValid={dateValid}
+            type="tel"
+            inputMode="tel"
           />
           <FormField
             value={data.phone}
             onChange={handleChange('phone')}
             placeholder="Номер сотового телефона"
             type="tel"
+            inputMode="tel"
             error={errors.phone}
             isValid={phoneValid}
           />

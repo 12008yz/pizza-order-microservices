@@ -806,7 +806,8 @@ export default function AddressInputModal({
           <div className="flex-shrink-0 px-[15px] pb-[10px]">
             <input
               ref={inputRef}
-              type="text"
+              type={currentStep === 'house' || currentStep === 'apartment' ? 'tel' : 'text'}
+              inputMode={currentStep === 'house' || currentStep === 'apartment' ? 'tel' : undefined}
               autoComplete="off"
               enterKeyHint="next"
               value={query}

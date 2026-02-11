@@ -22,7 +22,7 @@ interface ConsultationFlowProps {
 
 export default function ConsultationFlow({ onClose, onSubmit, onSkip }: ConsultationFlowProps) {
   const [step, setStep] = useState<ConsultationStep>('contact-method');
-  const [phoneNumber, setPhoneNumber] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('+7 ');
   const [selectedMethod, setSelectedMethod] = useState<ContactMethod | null>(null);
   const [phoneError, setPhoneError] = useState(false);
   const [showSkipAfterError, setShowSkipAfterError] = useState(false);
@@ -87,7 +87,7 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
   }, []);
 
   const handlePhoneChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const formatted = formatPhoneNumber(e.target.value);
+    const formatted = formatPhoneNumber(e.target.value) || '+7 ';
     setPhoneNumber(formatted);
     setPhoneError(false);
     setShowSkipAfterError(false);

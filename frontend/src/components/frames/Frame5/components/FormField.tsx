@@ -12,6 +12,7 @@ interface FormFieldProps {
   isValid?: boolean;
   error?: string;
   type?: 'text' | 'tel';
+  inputMode?: React.HTMLAttributes<HTMLInputElement>['inputMode'];
   disabled?: boolean;
   onClick?: () => void;
   status?: FieldStatus;
@@ -47,6 +48,7 @@ export default function FormField({
   isValid = false,
   error,
   type = 'text',
+  inputMode,
   disabled = false,
   onClick,
   status: statusProp,
@@ -79,6 +81,7 @@ export default function FormField({
     <>
       <input
         type={type}
+        inputMode={inputMode}
         value={value}
         onChange={(e) => handleChange(e.target.value)}
         placeholder={placeholder}

@@ -38,7 +38,7 @@ const DEFAULT_PERSONAL: PersonalData = {
   firstName: '',
   lastName: '',
   birthDate: '',
-  phone: '',
+  phone: '+7 ',
 };
 
 const DEFAULT_ADDRESS: AddressData = {

@@ -29,8 +29,8 @@
   --frame-color-border-active: rgba(16, 16, 16, 0.5);
   --frame-bg: #F5F5F5;
   /* Header: отступ сверху и высота зоны (отступ + 40px высота шапки) */
-  --header-top: 50px;
-  --header-zone: 90px;
+  --header-top: 25px;
+  --header-zone: 65px;
   /* Всплывающие подсказки на Frame3: 5px от низа иконок header */
   --header-tooltip-top: calc(var(--header-top) + 40px + 5px);
 }

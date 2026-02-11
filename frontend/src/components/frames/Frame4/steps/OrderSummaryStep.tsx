@@ -414,22 +414,18 @@ export default function OrderSummaryStep({
         fontFamily: 'TT Firs Neue, sans-serif',
       }}
     >
-      {/* Spacer: прижимает контент к низу */}
-      <div className="flex-1 min-h-0" aria-hidden />
-
-      {/* Основной контейнер — ограничен по высоте, чтобы кнопки всегда были видны без скролла страницы */}
+      {/* Контент с самого верха карточки, кнопки прижаты к низу */}
       <div
         className="flex flex-col flex-1 min-h-0 w-full overflow-hidden"
         style={{
-          marginTop: 'auto',
           paddingBottom: padBottom,
           boxSizing: 'border-box',
         }}
       >
-        {/* Прокручиваемая область: список фич и цена; при 4+ пунктах скролл внутри блока */}
+        {/* Область без скролла: список фич и цена вмещаются за счёт адаптивных отступов */}
         <div
-          className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden"
-          style={{ minHeight: 0, WebkitOverflowScrolling: 'touch' }}
+          className="flex-1 min-h-0 overflow-hidden"
+          style={{ minHeight: 0 }}
         >
           {/* Тариф: по Figma padding 15 17 10 15 */}
           <div style={{ padding: `${padCardTop}px 17px ${padCardBottom}px 15px`, position: 'relative' }}>

@@ -674,10 +674,10 @@ function Frame4Content() {
               maxHeight: currentStep === 'order_summary' ? 'calc(100dvh - (var(--header-top, 50px) + 41px + 15px + 20px) - var(--sab, 0px))' : 'calc(100dvh - 145px)',
             }}
           >
-            {/* Контент шага — компактная flex-компоновка как в Frame1/Frame2 */}
+            {/* Контент шага. Итоговая карточка (order_summary) — без скролла, всё вмещается за счёт адаптивных отступов */}
             <div
               key={currentStep}
-              className="flex flex-col w-full overflow-y-auto"
+              className={`flex flex-col w-full flex-1 min-h-0 ${currentStep === 'order_summary' ? 'overflow-hidden' : 'overflow-y-auto'}`}
               style={{
                 animation: 'frame4StepIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards',
               }}

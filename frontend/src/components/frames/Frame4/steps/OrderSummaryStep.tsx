@@ -318,6 +318,16 @@ export default function OrderSummaryStep({
     }
   };
 
+  // Адаптивные отступы по макету: на малых экранах сжимаются, чтобы карточка влезала без скролла
+  const padCardV = 'clamp(8px, 2vh, 15px)';
+  const padBlockV = 'clamp(8px, 2vh, 16px)';
+  const rowMinH = 'clamp(28px, 7vh, 40px)';
+  const rowGap = 'clamp(4px, 1vh, 10px)';
+  const rowGapSmall = 'clamp(3px, 0.8vh, 5px)';
+  const pricePadTop = 'clamp(12px, 3vh, 20px)';
+  const priceToButtons = 'clamp(12px, 2.5vh, 20px)';
+  const padBottom = 'clamp(12px, 2.5vh, 20px)';
+
   return (
     <div
       className="flex flex-col w-full flex-1 min-h-0"
@@ -325,26 +335,24 @@ export default function OrderSummaryStep({
         fontFamily: 'TT Firs Neue, sans-serif',
       }}
     >
-      {/* Spacer: прижимает контент к низу, как в карточках тарифа Frame3 */}
+      {/* Spacer: прижимает контент к низу */}
       <div className="flex-1 min-h-0" aria-hidden />
 
-      {/* Основной контейнер — внизу, по макету отступ 20px от низа карточки */}
+      {/* Основной контейнер — отступ от низа карточки по макету */}
       <div
         className="flex flex-col flex-shrink-0 w-full overflow-hidden"
         style={{
           marginTop: 'auto',
-          paddingBottom: '20px',
+          paddingBottom: padBottom,
           boxSizing: 'border-box',
         }}
       >
         <div
-          className="flex-1 min-h-0 overflow-y-auto"
-          style={{
-            WebkitOverflowScrolling: 'touch',
-          }}
+          className="flex-1 min-h-0 overflow-hidden"
+          style={{ minHeight: 0 }}
         >
-          {/* Тариф: по макету padding 15 17 15 15, 10px до разделителя; значок информации на 1-й строке (провайдер) */}
-          <div style={{ padding: '15px 17px 10px 15px', position: 'relative' }}>
+          {/* Тариф: по макету padding 15 17 15 15 */}
+          <div style={{ padding: `${padCardV} 17px ${rowGapSmall} 15px`, position: 'relative' }}>
             <div
               style={{
                 display: 'flex',
@@ -378,135 +386,75 @@ export default function OrderSummaryStep({
             </div>
           </div>
 
-          {/* Разделитель: 330px по макету, отступ уже в блоке тарифа (10px) */}
+          {/* Разделитель: 330px по макету */}
           <div style={{ padding: '0 17px 0 15px' }}>
             <div style={{ height: '1px', background: 'rgba(16, 16, 16, 0.1)', maxWidth: '330px' }} />
           </div>
 
-          {/* Блок фич — по макету padding 16px 17px 16px 15px, между пунктами 10px */}
-          <div style={{ padding: '16px 17px 16px 15px' }}>
+          {/* Блок фич — отступы по макету, между пунктами адаптивно */}
+          <div style={{ padding: `${padBlockV} 17px ${padBlockV} 15px` }}>
             {/* Скорость интернета */}
-            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', marginBottom: rowGap, minHeight: rowMinH }}>
               <div style={{ marginRight: '12px', flexShrink: 0 }}>
                 <CheckCircleIcon active={true} />
               </div>
-              <div style={{ flex: 1 }}>
-                <div
-                  style={{
-                    fontSize: '16px',
-                    lineHeight: '155%',
-                    color: '#101010',
-                  }}
-                >
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontSize: '16px', lineHeight: '155%', color: '#101010', wordBreak: 'break-word' }}>
                   {selectedTariff?.speed ?? '500 Мбит/сек'}
                 </div>
-                <div
-                  style={{
-                    fontSize: '14px',
-                    lineHeight: '105%',
-                    color: 'rgba(16, 16, 16, 0.5)',
-                  }}
-                >
+                <div style={{ fontSize: '14px', lineHeight: '105%', color: 'rgba(16, 16, 16, 0.5)', wordBreak: 'break-word' }}>
                   {selectedTariff?.speedDesc ?? 'Безлимитное соединение в квартире'}
                 </div>
               </div>
             </div>
 
             {/* Телевидение - Не предусмотрено */}
-            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', marginBottom: rowGap, minHeight: rowMinH }}>
               <div style={{ marginRight: '12px', flexShrink: 0 }}>
                 <CrossCircleIcon />
               </div>
-              <div style={{ flex: 1 }}>
-                <div
-                  style={{
-                    fontSize: '16px',
-                    lineHeight: '155%',
-                    color: 'rgba(16, 16, 16, 0.25)',
-                  }}
-                >
-                  Не предусмотрено
-                </div>
-                <div
-                  style={{
-                    fontSize: '14px',
-                    lineHeight: '105%',
-                    color: 'rgba(16, 16, 16, 0.5)',
-                  }}
-                >
-                  Телевидение
-                </div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontSize: '16px', lineHeight: '155%', color: 'rgba(16, 16, 16, 0.25)', wordBreak: 'break-word' }}>Не предусмотрено</div>
+                <div style={{ fontSize: '14px', lineHeight: '105%', color: 'rgba(16, 16, 16, 0.5)', wordBreak: 'break-word' }}>Телевидение</div>
               </div>
             </div>
 
             {/* Мобильное соединение */}
             {selectedTariff?.mobile && (
-              <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', marginBottom: rowGap, minHeight: rowMinH }}>
                 <div style={{ marginRight: '12px', flexShrink: 0 }}>
                   <CheckCircleIcon active={true} />
                 </div>
-                <div style={{ flex: 1 }}>
-                  <div
-                    style={{
-                      fontSize: '16px',
-                      lineHeight: '155%',
-                      color: '#101010',
-                    }}
-                  >
-                    {selectedTariff.mobile}
-                  </div>
-                  <div
-                    style={{
-                      fontSize: '14px',
-                      lineHeight: '105%',
-                      color: 'rgba(16, 16, 16, 0.5)',
-                    }}
-                  >
-                    {selectedTariff.mobileDesc ?? 'Мобильное соединение'}
-                  </div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: '16px', lineHeight: '155%', color: '#101010', wordBreak: 'break-word' }}>{selectedTariff.mobile}</div>
+                  <div style={{ fontSize: '14px', lineHeight: '105%', color: 'rgba(16, 16, 16, 0.5)', wordBreak: 'break-word' }}>{selectedTariff.mobileDesc ?? 'Мобильное соединение'}</div>
                 </div>
               </div>
             )}
 
             {/* Кинотеатр KION */}
             {selectedTariff?.favoriteLabel && (
-              <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', marginBottom: rowGap, minHeight: rowMinH }}>
                 <div style={{ marginRight: '12px', flexShrink: 0 }}>
                   <CheckCircleIcon active={true} />
                 </div>
-                <div style={{ flex: 1 }}>
-                  <div
-                    style={{
-                      fontSize: '16px',
-                      lineHeight: '155%',
-                      color: '#101010',
-                    }}
-                  >
-                    {selectedTariff.favoriteLabel}
-                  </div>
-                  <div
-                    style={{
-                      fontSize: '14px',
-                      lineHeight: '105%',
-                      color: 'rgba(16, 16, 16, 0.5)',
-                    }}
-                  >
-                    {selectedTariff.favoriteDesc ?? 'Дополнительное приложение'}
-                  </div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: '16px', lineHeight: '155%', color: '#101010', wordBreak: 'break-word' }}>{selectedTariff.favoriteLabel}</div>
+                  <div style={{ fontSize: '14px', lineHeight: '105%', color: 'rgba(16, 16, 16, 0.5)', wordBreak: 'break-word' }}>{selectedTariff.favoriteDesc ?? 'Дополнительное приложение'}</div>
                 </div>
               </div>
             )}
 
-            {/* Разделитель перед оборудованием — по макету 330×0, 10px до первого ряда */}
-            <div style={{ height: '1px', background: 'rgba(16, 16, 16, 0.1)', marginBottom: '10px', maxWidth: '330px' }} />
+            {/* Разделитель перед оборудованием */}
+            <div style={{ height: '1px', background: 'rgba(16, 16, 16, 0.1)', marginBottom: rowGap, maxWidth: '330px' }} />
 
-            {/* Роутер — по макету Group 7573: 330×40px, иконка по центру, левый блок 170px, правый — цена и подпись */}
+            {/* Роутер — иконка по центру, левый блок 170px, правый — цена и подпись */}
             <div
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                marginBottom: '5px',
-                height: '40px',
+                marginBottom: rowGapSmall,
+                minHeight: rowMinH,
                 maxWidth: '330px',
                 cursor: 'pointer',
               }}
@@ -581,13 +529,13 @@ export default function OrderSummaryStep({
               </div>
             </div>
 
-            {/* TV-приставка — Group 7576: 330×40px, Group 7546 контент 305px, без правой колонки; серый цвет по макету */}
+            {/* TV-приставка — без правой колонки, серый цвет по макету */}
             <div
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                marginBottom: '5px',
-                height: '40px',
+                marginBottom: rowGapSmall,
+                minHeight: rowMinH,
                 maxWidth: '330px',
                 cursor: 'pointer',
               }}
@@ -624,13 +572,13 @@ export default function OrderSummaryStep({
               </div>
             </div>
 
-            {/* SIM-карта — 330×40px: строка 1 — заголовок, строка 2 — «SIM-карта» и «один экз.» в одну линию напротив */}
+            {/* SIM-карта — строка 1 заголовок, строка 2 «SIM-карта» и «один экз.» в одну линию */}
             <div
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                marginBottom: '5px',
-                height: '40px',
+                marginBottom: rowGapSmall,
+                minHeight: rowMinH,
                 maxWidth: '330px',
                 position: 'relative',
                 cursor: 'pointer',
@@ -682,14 +630,14 @@ export default function OrderSummaryStep({
             </div>
           </div>
 
-          {/* Разделитель перед ценой — по макету 330×0, 20px до цены */}
+          {/* Разделитель перед ценой */}
           <div style={{ padding: '0 17px 0 15px' }}>
             <div style={{ height: '1px', background: 'rgba(16, 16, 16, 0.1)', maxWidth: '330px' }} />
           </div>
 
-          {/* Блок цены — по макету: 20px от разделителя, 5px цена→промо, 20px до кнопок (marginBottom у текста подключения) */}
-          <div style={{ padding: '20px 17px 0 15px' }}>
-            <div style={{ marginBottom: '5px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '4px' }}>
+          {/* Блок цены — отступ от разделителя по макету */}
+          <div style={{ padding: `${pricePadTop} 17px 0 15px` }}>
+            <div style={{ marginBottom: rowGapSmall, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '4px' }}>
               <div
                 style={{
                   fontSize: '22px',
@@ -706,13 +654,13 @@ export default function OrderSummaryStep({
               </div>
             </div>
 
-            {/* Промо текст и огонёк на одной линии — как в Frame3, 5px от цены */}
+            {/* Промо текст и огонёк на одной линии */}
             <div
               style={{
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
-                marginBottom: '5px',
+                marginBottom: rowGapSmall,
                 minHeight: '20px',
               }}
             >
@@ -730,9 +678,9 @@ export default function OrderSummaryStep({
             <div
               style={{
                 fontSize: '14px',
-                lineHeight: '105%',
+                lineHeight: '145%',
                 color: 'rgba(16, 16, 16, 0.5)',
-                marginBottom: '20px',
+                marginBottom: priceToButtons,
               }}
             >
               {selectedTariff?.connectionPrice ?? 'Бесплатное подключение от оператора'}
@@ -740,7 +688,7 @@ export default function OrderSummaryStep({
           </div>
         </div>
 
-        {/* Кнопки навигации — отступ 20px сверху задан marginBottom у текста подключения */}
+        {/* Кнопки навигации — отступ сверху задан marginBottom у текста подключения */}
         <div
           style={{
             flexShrink: 0,

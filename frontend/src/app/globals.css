@@ -139,16 +139,16 @@ body {
   color: var(--frame-color-muted);
 }
 
-/* Карусель Frame3: отступ 20px слева; справа 0 — ширина карточки гибкая (см. .carousel-card), всегда видно 5px gap + 10px следующей карточки */
+/* Карусель Frame3: отступ 20px слева; справа 0 — ширина карточки гибкая, всегда видно 5px gap + 14px следующей карточки */
 .carousel-container {
   padding-left: 20px;
   padding-right: 0;
 }
 
-/* Карточка подстраивается под ширину экрана: видно только 10px следующей (без текста). Десктоп: 5px gap + 10px peek = 15px */
+/* Карточка подстраивается под ширину экрана: видно 14px правой карточки. Десктоп: 5px gap + 14px peek = 19px */
 .carousel-container > .carousel-card {
-  width: calc(100% - 15px);
-  min-width: calc(100% - 15px);
+  width: calc(100% - 19px) !important;
+  min-width: calc(100% - 19px) !important;
 }
 
 /* Спейсеры на десктопе не занимают места */
@@ -167,10 +167,10 @@ body {
     scroll-padding-right: 20px;
   }
 
-  /* На мобильных: карточка = container - 35 (20 спейсер + 5 gap + 10 peek) */
+  /* На мобильных: карточка = container - 39 (20 спейсер + 5 gap + 14 peek) */
   .carousel-container > .carousel-card {
-    width: calc(100% - 35px);
-    min-width: calc(100% - 35px);
+    width: calc(100% - 39px) !important;
+    min-width: calc(100% - 39px) !important;
   }
 
   /* На мобильных спейсеры — 20px часть прокручиваемого контента (не для одной карточки, см. ниже) */

@@ -1127,11 +1127,11 @@ function Frame3Content() {
               />
             </svg>
 
-            {/* Чёрный круг со стрелкой справа */}
+            {/* Чёрный круг со стрелкой справа — как в обычном режиме (16.25px) */}
             <div
               style={{
-                width: '20px',
-                height: '20px',
+                width: '16.25px',
+                height: '16.25px',
                 borderRadius: '100px',
                 background: '#101010',
                 display: 'flex',
@@ -1140,7 +1140,9 @@ function Frame3Content() {
                 opacity: canScrollRight && displayedTariffs.length > 1 ? 1 : 0.4,
               }}
             >
-              <ArrowCircleRightIcon color="#FFFFFF" isAnimating={arrowClicked} arrowOnly />
+              <div style={{ width: '20px', height: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <ArrowCircleRightIcon color="#FFFFFF" isAnimating={arrowClicked} arrowOnly />
+              </div>
             </div>
           </div>
         </div>

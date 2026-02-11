@@ -371,18 +371,19 @@ export default function OrderSummaryStep({
       {/* Spacer: прижимает контент к низу */}
       <div className="flex-1 min-h-0" aria-hidden />
 
-      {/* Основной контейнер — отступ от низа карточки по макету */}
+      {/* Основной контейнер — ограничен по высоте, чтобы кнопки всегда были видны без скролла страницы */}
       <div
-        className="flex flex-col flex-shrink-0 w-full overflow-hidden"
+        className="flex flex-col flex-1 min-h-0 w-full overflow-hidden"
         style={{
           marginTop: 'auto',
           paddingBottom: padBottom,
           boxSizing: 'border-box',
         }}
       >
+        {/* Прокручиваемая область: список фич и цена; при 4+ пунктах скролл внутри блока */}
         <div
-          className="flex-1 min-h-0 overflow-hidden"
-          style={{ minHeight: 0 }}
+          className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden"
+          style={{ minHeight: 0, WebkitOverflowScrolling: 'touch' }}
         >
           {/* Тариф: по Figma padding 15 17 10 15 */}
           <div style={{ padding: `${padCardTop}px 17px ${padCardBottom}px 15px`, position: 'relative' }}>

@@ -326,7 +326,8 @@ export default function OrderSummaryStep({
   const rowGapSmall = 'clamp(3px, 0.8vh, 5px)';
   const pricePadTop = 'clamp(12px, 3vh, 20px)';
   const priceToButtons = 'clamp(12px, 2.5vh, 20px)';
-  const padBottom = 'clamp(12px, 2.5vh, 20px)';
+  // Нижний отступ: макет + safe-area (на iPhone XR и др. с «чёлкой» кнопка не уходит под индикатор)
+  const padBottom = 'calc(clamp(12px, 2.5vh, 20px) + env(safe-area-inset-bottom, 0px))';
 
   return (
     <div

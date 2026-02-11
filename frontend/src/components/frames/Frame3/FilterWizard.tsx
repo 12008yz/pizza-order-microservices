@@ -20,7 +20,7 @@ const serviceOptions = [
    { id: 'internet_mobile', name: 'Интернет, и связь', enabled: true },
    { id: 'internet_tv', name: 'Интернет, и телевидение', enabled: true },
    { id: 'internet_tv_mobile', name: 'Интернет, и телевидение, и связь', enabled: true },
-   { id: 'tv', name: 'Телевидение', enabled: false },
+   { id: 'tv', name: 'Телевидение', enabled: true },
 ];
 
 // Провайдеры
@@ -213,8 +213,8 @@ export default function FilterWizard({ isOpen, onClose, onApply }: FilterWizardP
                   Мы подготовили доступные тарифные планы. Пожалуйста, проверьте правильность
                </div>
 
-               {/* Контент шага — без прокрутки, высота по содержимому */}
-               <div className="flex flex-col gap-[7px]" style={{ marginBottom: '20px' }}>
+               {/* Контент шага — без прокрутки, высота по содержимому; интервал между полями 5px */}
+               <div className="flex flex-col gap-[5px]" style={{ marginBottom: '20px' }}>
                   {step === 1 &&
                      serviceOptions.map((service) => (
                         <CheckboxOption

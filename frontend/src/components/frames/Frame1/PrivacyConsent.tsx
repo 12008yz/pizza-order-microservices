@@ -2,7 +2,15 @@
 
 import { memo } from 'react';
 import { useAddress } from '../../../contexts/AddressContext';
-import AnimatedCheck from '../../common/AnimatedCheck';
+
+/** Галочка как в 4 фрейме (шаг выбора роутера) */
+function CheckIcon() {
+  return (
+    <svg width="8" height="6" viewBox="0 0 8 6" fill="none" aria-hidden>
+      <path d="M1 3L3 5L7 1" stroke="#FFFFFF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
 
 function PrivacyConsent() {
   const { addressData, updatePrivacyConsent } = useAddress();
@@ -36,8 +44,7 @@ function PrivacyConsent() {
           }}
         >
           {addressData.privacyConsent && (
-            
-              <AnimatedCheck key={`privacy-${addressData.privacyConsent}`} size={9} color="white" strokeWidth={1.5} />
+            <CheckIcon />
           )}
         </div>
 

@@ -586,8 +586,11 @@ function Frame3Content() {
         if (!filters.providers.includes(tariff.providerId)) {
           return false;
         }
-        // Фильтр по типу услуги
-        if (!filters.services.includes(tariff.serviceType)) {
+        // Фильтр по типу услуги (при выборе «Телевидение» показываем тарифы с ТВ: internet_tv, internet_tv_mobile)
+        const serviceMatch =
+          filters.services.includes(tariff.serviceType) ||
+          (filters.services.includes('tv') && (tariff.serviceType === 'internet_tv' || tariff.serviceType === 'internet_tv_mobile'));
+        if (!serviceMatch) {
           return false;
         }
         return true;

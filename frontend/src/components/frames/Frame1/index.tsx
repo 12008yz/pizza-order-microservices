@@ -10,8 +10,16 @@ import PrivacyConsent from './PrivacyConsent';
 import Header from '../../layout/Header';
 import LoadingScreen from '../../LoadingScreen';
 import PageLoadingSkeleton from '../../PageLoadingSkeleton';
-import AnimatedCheck from '../../common/AnimatedCheck';
 import dynamic from 'next/dynamic';
+
+/** Галочка как в 4 фрейме (шаг выбора роутера) — белая в круге */
+function CheckIcon() {
+  return (
+    <svg width="8" height="6" viewBox="0 0 8 6" fill="none" aria-hidden>
+      <path d="M1 3L3 5L7 1" stroke="#FFFFFF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
 
 const ConsultationFlow = dynamic(() => import('../Frame2/ConsultationFlow'), {
   loading: () => <PageLoadingSkeleton />,
@@ -420,15 +428,15 @@ function AddressFormContent({ isAppLoading = false, appLoadingProgress = 0 }: Ad
             borderRadius: 20,
             display: 'flex',
             flexDirection: 'column',
-            paddingTop: 12,
+            paddingTop: 15,
             paddingRight: 15,
             paddingBottom: 'calc(20px + env(safe-area-inset-bottom, 0px))',
             paddingLeft: 15,
             boxSizing: 'border-box',
-            gap: 8,
+            gap: 5,
           }}
         >
-          {/* Заголовок — 8.75% отступы, 20px, 125%, #101010 */}
+          {/* Заголовок — отступ сверху 15px (задаётся paddingTop карточки), 20px, 125%, #101010 */}
           <h1
             className="mt-0 mb-0 flex-shrink-0"
             style={{
@@ -439,7 +447,7 @@ function AddressFormContent({ isAppLoading = false, appLoadingProgress = 0 }: Ad
               lineHeight: '125%',
               color: '#101010',
               margin: 0,
-              paddingTop: 12,
+              paddingTop: 0,
               paddingBottom: 10,
             }}
           >
@@ -486,19 +494,13 @@ function AddressFormContent({ isAppLoading = false, appLoadingProgress = 0 }: Ad
               style={{
                 width: 18,
                 height: 18,
-                boxSizing: 'content-box',
-                background: addressData.errors.connectionType
-                  ? 'rgb(239, 68, 68)'
-                  : addressData.connectionType
-                    ? '#6B6B6B'
-                    : isFieldActive(0)
-                      ? '#000000'
-                      : '#FFFFFF',
-                border: 'none',
+                boxSizing: 'border-box',
+                border: addressData.connectionType && !addressData.errors.connectionType ? 'none' : addressData.errors.connectionType ? '1px solid rgb(239, 68, 68)' : isFieldActive(0) ? '1px solid rgba(16, 16, 16, 0.5)' : '1px solid rgba(16, 16, 16, 0.25)',
+                background: addressData.connectionType && !addressData.errors.connectionType ? '#101010' : addressData.errors.connectionType ? 'rgb(239, 68, 68)' : isFieldActive(0) ? '#101010' : 'transparent',
               }}
             >
               {addressData.connectionType && !addressData.errors.connectionType ? (
-                <AnimatedCheck key={`connection-${addressData.connectionType}`} size={8} color="#FFFFFF" strokeWidth={1.5} />
+                <CheckIcon />
               ) : (
                 <FieldArrowIcon active={isFieldActive(0) || !!addressData.errors.connectionType} error={!!addressData.errors.connectionType} />
               )}
@@ -550,19 +552,13 @@ function AddressFormContent({ isAppLoading = false, appLoadingProgress = 0 }: Ad
               style={{
                 width: 18,
                 height: 18,
-                boxSizing: 'content-box',
-                background: addressData.errors.city
-                  ? 'rgb(239, 68, 68)'
-                  : addressData.city
-                    ? '#6B6B6B'
-                    : isFieldActive(1)
-                      ? '#000000'
-                      : '#FFFFFF',
-                border: 'none',
+                boxSizing: 'border-box',
+                border: addressData.city && !addressData.errors.city ? 'none' : addressData.errors.city ? '1px solid rgb(239, 68, 68)' : isFieldActive(1) ? '1px solid rgba(16, 16, 16, 0.5)' : '1px solid rgba(16, 16, 16, 0.25)',
+                background: addressData.city && !addressData.errors.city ? '#101010' : addressData.errors.city ? 'rgb(239, 68, 68)' : isFieldActive(1) ? '#101010' : 'transparent',
               }}
             >
               {addressData.city && !addressData.errors.city ? (
-                <AnimatedCheck key={`city-${addressData.city}`} size={8} color="#FFFFFF" strokeWidth={1.5} />
+                <CheckIcon />
               ) : (
                 <FieldArrowIcon active={isFieldActive(1) || !!addressData.errors.city} error={!!addressData.errors.city} />
               )}
@@ -615,19 +611,13 @@ function AddressFormContent({ isAppLoading = false, appLoadingProgress = 0 }: Ad
               style={{
                 width: 18,
                 height: 18,
-                boxSizing: 'content-box',
-                background: addressData.errors.street
-                  ? 'rgb(239, 68, 68)'
-                  : addressData.street
-                    ? '#6B6B6B'
-                    : isFieldActive(2)
-                      ? '#000000'
-                      : '#FFFFFF',
-                border: 'none',
+                boxSizing: 'border-box',
+                border: addressData.street && !addressData.errors.street ? 'none' : addressData.errors.street ? '1px solid rgb(239, 68, 68)' : isFieldActive(2) ? '1px solid rgba(16, 16, 16, 0.5)' : '1px solid rgba(16, 16, 16, 0.25)',
+                background: addressData.street && !addressData.errors.street ? '#101010' : addressData.errors.street ? 'rgb(239, 68, 68)' : isFieldActive(2) ? '#101010' : 'transparent',
               }}
             >
               {addressData.street && !addressData.errors.street ? (
-                <AnimatedCheck key={`street-${addressData.street}`} size={8} color="#FFFFFF" strokeWidth={1.5} />
+                <CheckIcon />
               ) : (
                 <FieldArrowIcon active={isFieldActive(2) || !!addressData.errors.street} error={!!addressData.errors.street} />
               )}
@@ -682,19 +672,13 @@ function AddressFormContent({ isAppLoading = false, appLoadingProgress = 0 }: Ad
               style={{
                 width: 18,
                 height: 18,
-                boxSizing: 'content-box',
-                background: addressData.errors.houseNumber
-                  ? 'rgb(239, 68, 68)'
-                  : addressData.houseNumber
-                    ? '#6B6B6B'
-                    : isFieldActive(3)
-                      ? '#000000'
-                      : '#FFFFFF',
-                border: 'none',
+                boxSizing: 'border-box',
+                border: addressData.houseNumber && !addressData.errors.houseNumber ? 'none' : addressData.errors.houseNumber ? '1px solid rgb(239, 68, 68)' : isFieldActive(3) ? '1px solid rgba(16, 16, 16, 0.5)' : '1px solid rgba(16, 16, 16, 0.25)',
+                background: addressData.houseNumber && !addressData.errors.houseNumber ? '#101010' : addressData.errors.houseNumber ? 'rgb(239, 68, 68)' : isFieldActive(3) ? '#101010' : 'transparent',
               }}
             >
               {addressData.houseNumber && !addressData.errors.houseNumber ? (
-                <AnimatedCheck key={`house-${addressData.houseNumber}-${addressData.corpusNumber ?? ''}`} size={8} color="#FFFFFF" strokeWidth={1.5} />
+                <CheckIcon />
               ) : (
                 <FieldArrowIcon active={isFieldActive(3) || !!addressData.errors.houseNumber} error={!!addressData.errors.houseNumber} />
               )}

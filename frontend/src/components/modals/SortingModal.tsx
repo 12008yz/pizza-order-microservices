@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { ClickOutsideHintContent } from '../common/ClickOutsideHint';
 import RadioOption from '../common/RadioOption';
 
 type SortOption = 'price' | 'speed' | 'popularity';
@@ -62,21 +63,8 @@ export default function SortingModal({
           style={{ minHeight: '105px' }}
           onClick={onClose}
         >
-          <div
-            className="font-normal flex items-center justify-center text-center"
-            style={{
-              width: '240px',
-              margin: '0 auto',
-              paddingTop: 'var(--header-zone, 90px)',
-              height: '30px',
-              fontFamily: 'TT Firs Neue, sans-serif',
-              fontSize: '14px',
-              lineHeight: '105%',
-              color: 'rgba(16, 16, 16, 0.15)',
-              letterSpacing: '0.5px',
-            }}
-          >
-            Нажмите в открытое пустое место, чтобы выйти из этого режима
+          <div className="flex justify-center" style={{ paddingTop: 'var(--header-zone, 90px)' }}>
+            <ClickOutsideHintContent />
           </div>
         </div>
 

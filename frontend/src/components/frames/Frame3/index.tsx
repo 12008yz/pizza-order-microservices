@@ -20,6 +20,7 @@ import {
 import FavoriteToast from './FavoriteToast';
 import FilterWizard from './FilterWizard';
 import HintTooltip from './HintTooltip';
+import { ClickOutsideHintContent } from '../../common/ClickOutsideHint';
 import { AddressProvider, useAddress } from '../../../contexts/AddressContext';
 import AnimatedHeartFilledIcon from '../../common/AnimatedHeartFilledIcon';
 import { tariffsService } from '../../../services/tariffs.service';
@@ -778,18 +779,7 @@ function Frame3Content() {
             onKeyDown={(e) => e.key === 'Enter' && setShowFavoritesMode(false)}
             aria-label="Выйти из режима избранного"
           >
-            <div
-              style={{
-                width: '240px',
-                fontFamily: 'TT Firs Neue, sans-serif',
-                fontSize: '14px',
-                lineHeight: '105%',
-                textAlign: 'center',
-                color: 'rgba(16, 16, 16, 0.15)',
-              }}
-            >
-              Нажмите в открытое пустое место, чтобы выйти из этого режима
-            </div>
+            <ClickOutsideHintContent />
           </div>
         ) : null}
 

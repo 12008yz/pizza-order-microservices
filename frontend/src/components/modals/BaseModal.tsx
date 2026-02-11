@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import ClickOutsideHint from '../common/ClickOutsideHint';
 
 interface BaseModalProps {
   isOpen: boolean;
@@ -41,28 +42,13 @@ export default function BaseModal({
       onClick={handleBackdropClick}
     >
       {!hideHint && (
-        <div
-          style={{
-            position: 'absolute',
-            width: '240px',
-            height: '30px',
+        <ClickOutsideHint
+          wrapperStyle={{
             left: '50%',
             transform: 'translateX(-50%)',
             top: 'var(--header-top, 50px)',
-            fontFamily: 'TT Firs Neue, sans-serif',
-            fontStyle: 'normal',
-            fontWeight: 400,
-            fontSize: '14px',
-            lineHeight: '105%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            textAlign: 'center',
-            color: 'rgba(16, 16, 16, 0.15)',
           }}
-        >
-          Нажмите в открытое пустое место, чтобы выйти из этого режима
-        </div>
+        />
       )}
 
       <div onClick={(e) => e.stopPropagation()} className={className}>

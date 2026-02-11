@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import AnimatedCheck from '../../common/AnimatedCheck';
+import { ClickOutsideHintContent } from '../../common/ClickOutsideHint';
 import { CloseIcon } from '../../common/icons';
 
 type ContactMethod = 'max' | 'telegram' | 'phone';
@@ -241,21 +242,8 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
       {/* Шапка: подсказка скрыта при показе уведомления; уведомления с отступом сверху по --header-top (как в Frame1, 4, 5) */}
       <div className="flex-shrink-0 relative cursor-pointer" style={{ minHeight: '105px' }} onClick={handleBackgroundClick}>
         {notifications.length === 0 && (
-          <div
-            className="font-normal flex items-center justify-center text-center absolute left-0 right-0"
-            style={{
-              top: 50,
-              width: '240px',
-              margin: '0 auto',
-              height: '30px',
-              fontFamily: 'TT Firs Neue, sans-serif',
-              fontSize: '14px',
-              lineHeight: '105%',
-              color: 'rgba(16, 16, 16, 0.15)',
-              letterSpacing: '0.5px',
-            }}
-          >
-            Нажмите в открытое пустое место, чтобы выйти из этого режима
+          <div className="absolute left-0 right-0 flex justify-center" style={{ top: 50 }}>
+            <ClickOutsideHintContent />
           </div>
         )}
         {renderNotifications}
@@ -457,21 +445,8 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
       {/* Шапка: подсказка скрыта при показе уведомления; уведомления с отступом сверху по --header-top (как в Frame1, 4, 5) */}
       <div className="flex-shrink-0 relative cursor-pointer" style={{ minHeight: '105px' }} onClick={handleBackgroundClick}>
         {notifications.length === 0 && (
-          <div
-            className="font-normal flex items-center justify-center text-center absolute left-0 right-0"
-            style={{
-              top: 50,
-              width: '240px',
-              margin: '0 auto',
-              height: '30px',
-              fontFamily: 'TT Firs Neue, sans-serif',
-              fontSize: '14px',
-              lineHeight: '105%',
-              color: 'rgba(16, 16, 16, 0.15)',
-              letterSpacing: '0.5px',
-            }}
-          >
-            Нажмите в открытое пустое место, чтобы выйти из этого режима
+          <div className="absolute left-0 right-0 flex justify-center" style={{ top: 50 }}>
+            <ClickOutsideHintContent />
           </div>
         )}
         {renderNotifications}

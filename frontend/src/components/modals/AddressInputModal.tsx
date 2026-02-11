@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import AnimatedCheck from '../common/AnimatedCheck';
+import { ClickOutsideHintContent } from '../common/ClickOutsideHint';
 import { useAddress } from '../../contexts/AddressContext';
 import { locationsService } from '../../services/locations.service';
 import type { AddressSuggestion } from '../../services/api/types';
@@ -682,23 +683,8 @@ export default function AddressInputModal({
         }}
       >
         {/* Шапка: подсказка */}
-        <div className="flex-shrink-0" style={{ minHeight: '105px' }}>
-          <div
-            className="font-normal flex items-center justify-center text-center"
-            style={{
-              width: '240px',
-              margin: '0 auto',
-              paddingTop: 'var(--header-zone, 90px)',
-              height: '30px',
-              fontFamily: 'TT Firs Neue, sans-serif',
-              fontSize: '14px',
-              lineHeight: '105%',
-              color: 'rgba(16, 16, 16, 0.15)',
-              letterSpacing: '0.5px',
-            }}
-          >
-            Нажмите в открытое пустое место, чтобы выйти из этого режима
-          </div>
+        <div className="flex-shrink-0 flex justify-center" style={{ minHeight: '105px', paddingTop: 'var(--header-zone, 90px)' }}>
+          <ClickOutsideHintContent />
         </div>
 
         {/* Карточка — компактная, прижата вниз, список подсказок прокручивается внутри */}

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import AnimatedCheck from '../common/AnimatedCheck';
+import { ClickOutsideHintContent } from '../common/ClickOutsideHint';
 import { useAddress, ConnectionType } from '../../contexts/AddressContext';
 
 interface ConnectionTypeModalProps {
@@ -121,21 +122,8 @@ export default function ConnectionTypeModal({
           onKeyDown={(e) => e.key === 'Enter' && onClose()}
           aria-label="Закрыть"
         >
-          <div
-            className="font-normal flex items-center justify-center text-center"
-            style={{
-              width: '240px',
-              height: '30px',
-              margin: '0 auto',
-              paddingTop: 'var(--header-zone, 90px)',
-              fontFamily: 'TT Firs Neue, sans-serif',
-              fontSize: '14px',
-              lineHeight: '15px',
-              color: 'rgba(16, 16, 16, 0.25)',
-              letterSpacing: '0.5px',
-            }}
-          >
-            Нажмите в открытое пустое место, чтобы выйти из этого режима
+          <div className="flex justify-center" style={{ paddingTop: 'var(--header-zone, 90px)' }}>
+            <ClickOutsideHintContent />
           </div>
         </div>
 

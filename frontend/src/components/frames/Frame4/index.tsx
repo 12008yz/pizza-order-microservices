@@ -19,6 +19,7 @@ import {
   SimInfoStep,
   OrderSummaryStep,
 } from './steps';
+import { ClickOutsideHintContent } from '../../common/ClickOutsideHint';
 import { CloseIcon, HomeIcon, PlaneIcon } from '../../common/icons';
 
 const ConsultationFlow = dynamic(() => import('../Frame2/ConsultationFlow'), {
@@ -636,24 +637,16 @@ function Frame4Content() {
 
             {/* Подсказка — фиксированно сверху */}
             <div
-              className="font-normal flex items-center justify-center text-center"
+              className="flex justify-center"
               style={{
-                width: '240px',
                 margin: '0 auto',
                 paddingTop: 'var(--header-zone, 90px)',
-                minHeight: '30px',
-                fontFamily: 'TT Firs Neue, sans-serif',
-                fontSize: '14px',
-                lineHeight: '105%',
-                color: 'rgba(16, 16, 16, 0.25)',
                 opacity: showHintText ? 1 : 0,
                 transform: showHintText ? 'translateY(0)' : 'translateY(-6px)',
                 transition: 'opacity 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)',
               }}
             >
-              Нажмите в открытое пустое место,
-              <br />
-              чтобы выйти из этого режима
+              <ClickOutsideHintContent />
             </div>
           </div>
         )}

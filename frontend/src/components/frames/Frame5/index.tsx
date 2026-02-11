@@ -7,6 +7,7 @@ import AddressInputModal from '../../modals/AddressInputModal';
 import { useEquipment } from '../../../contexts/EquipmentContext';
 import { ordersService } from '../../../services';
 import type { CreateOrderData } from '../../../services/orders.service';
+import { ClickOutsideHintContent } from '../../common/ClickOutsideHint';
 import { HomeIcon, PlaneIcon } from '../../common/icons';
 import LoadingScreen from '../../LoadingScreen';
 import {
@@ -375,22 +376,14 @@ function Frame5Content() {
               </div>
             )}
             <div
-              className="font-normal flex items-center justify-center text-center"
+              className="flex justify-center"
               style={{
-                width: '240px',
-                margin: '0 auto',
                 paddingTop: 'var(--header-zone, 90px)',
-                minHeight: '30px',
-                fontFamily: 'TT Firs Neue, sans-serif',
-                fontSize: '14px',
-                lineHeight: '105%',
-                color: 'rgba(16, 16, 16, 0.15)',
                 opacity: !showNotification ? 1 : 0,
+                transition: 'opacity 0.2s ease',
               }}
             >
-              Нажмите в открытое пустое место,
-              <br />
-              чтобы выйти из этого режима
+              <ClickOutsideHintContent />
             </div>
           </div>
         )}

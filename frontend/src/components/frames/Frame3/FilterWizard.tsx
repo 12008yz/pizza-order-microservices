@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import CheckboxOption from '../../common/CheckboxOption';
+import { ClickOutsideHintContent } from '../../common/ClickOutsideHint';
 import RadioOption from '../../common/RadioOption';
 
 interface FilterWizardProps {
@@ -157,21 +158,8 @@ export default function FilterWizard({ isOpen, onClose, onApply }: FilterWizardP
          >
             {/* Шапка: подсказка (клик по пустоте закрывает — обрабатывается корневым onClick), всплывающие окна 75px от верха */}
             <div className="flex-shrink-0 cursor-pointer" style={{ minHeight: 105 }}>
-               <div
-                  className="font-normal flex items-center justify-center text-center"
-                  style={{
-                     width: 240,
-                     margin: '0 auto',
-                     paddingTop: 75,
-                     height: 30,
-                     fontFamily: 'TT Firs Neue, sans-serif',
-                     fontSize: '14px',
-                     lineHeight: '105%',
-                     color: 'rgba(16, 16, 16, 0.15)',
-                     letterSpacing: '0.5px',
-                  }}
-               >
-                  Нажмите в открытое пустое место, чтобы выйти из этого режима
+               <div style={{ margin: '0 auto', paddingTop: 75 }}>
+                  <ClickOutsideHintContent />
                </div>
             </div>
 

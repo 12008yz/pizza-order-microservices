@@ -1,31 +1,52 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import type { SimClientStatus } from '../types';
 
 const ERROR_BORDER = '1px solid rgb(239, 68, 68)';
+const SELECTED_TARIFF_KEY = 'selectedTariff';
 
 interface SimClientStatusStepProps {
   selected: SimClientStatus | null;
   onSelect: (option: SimClientStatus) => void;
   onNext: () => void;
   onBack: () => void;
+  /** Название провайдера выбранного тарифа; если не передано — берётся из sessionStorage (selectedTariff) */
+  providerName?: string;
 }
-
-const options: { value: SimClientStatus; label: string }[] = [
-  { value: 'existing_client', label: 'Я являюсь клиентом «МТС»' },
-  { value: 'new_client', label: 'Я не являюсь клиентом «МТС»' },
-];
 
 export default function SimClientStatusStep({
   selected,
   onSelect,
   onNext,
   onBack,
+  providerName: providerNameProp,
 }: SimClientStatusStepProps) {
   const [isBackPressed, setIsBackPressed] = useState(false);
   const [isNextPressed, setIsNextPressed] = useState(false);
   const [showError, setShowError] = useState(false);
+  const [providerNameFromStorage, setProviderNameFromStorage] = useState<string>('МТС');
+
+  useEffect(() => {
+    if (providerNameProp != null) return;
+    try {
+      const raw = typeof window !== 'undefined' ? sessionStorage.getItem(SELECTED_TARIFF_KEY) : null;
+      const data = raw ? (JSON.parse(raw) as { providerName?: string }) : null;
+      setProviderNameFromStorage(data?.providerName ?? 'МТС');
+    } catch {
+      setProviderNameFromStorage('МТС');
+    }
+  }, [providerNameProp]);
+
+  const providerName = providerNameProp ?? providerNameFromStorage;
+
+  const options: { value: SimClientStatus; label: string }[] = useMemo(
+    () => [
+      { value: 'existing_client', label: `Я являюсь клиентом «${providerName}»` },
+      { value: 'new_client', label: `Я не являюсь клиентом «${providerName}»` },
+    ],
+    [providerName]
+  );
 
   useEffect(() => {
     if (selected !== null) setShowError(false);

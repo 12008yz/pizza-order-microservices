@@ -168,20 +168,20 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
             }}
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Кнопка закрытия — справа напротив строки «Автоматически закроется через», 17px от края */}
+            {/* Кнопка закрытия — 17px справа и сверху */}
             <button
               onClick={() => handleCloseNotification(notification.id)}
               className="absolute flex items-center justify-center bg-transparent border-none p-0 cursor-pointer w-6 h-6"
               style={{
-                right: '17px',
-                top: '13px',
+                right: 17,
+                top: 15,
               }}
               aria-label="Закрыть"
             >
               <CloseIcon width={16} height={16} />
             </button>
 
-            {/* Timer text - top: 15px from card */}
+            {/* Timer text — отступ 15px сверху от карточки */}
             <div
               className="absolute font-normal"
               style={{
@@ -199,14 +199,14 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
               Автоматически закроется через {notification.timer}
             </div>
 
-            {/* Content - top: 45px from card */}
+            {/* Content — 8px от строки таймера (15 + 20 + 8 = 43) */}
             <div
               className="absolute font-normal"
               style={{
                 width: '330px',
                 height: '30px',
                 left: '15px',
-                top: '45px',
+                top: '43px',
                 fontFamily: 'TT Firs Neue, sans-serif',
                 fontSize: '14px',
                 lineHeight: '105%',

@@ -55,7 +55,7 @@ export default function SimCountWarningBanner({
         type="button"
         onClick={handleClose}
         className="absolute flex items-center justify-center bg-transparent border-0 p-0 cursor-pointer w-6 h-6"
-        style={{ right: 17, top: 13 }}
+        style={{ right: 17, top: 15 }}
         aria-label="Закрыть"
       >
         <CloseIcon width={16} height={16} />
@@ -77,13 +77,14 @@ export default function SimCountWarningBanner({
         </div>
       </div>
 
-      {/* Текст предупреждения */}
+      {/* Текст предупреждения — отступ 8px от строки «Автоматически закроется через» */}
       <div
         style={{
           fontFamily: 'TT Firs Neue, sans-serif',
           fontSize: '14px',
           lineHeight: '145%',
           color: '#101010',
+          marginTop: '8px',
         }}
       >
         К сожалению, стоимость подключения, а также стоимость ежемесячного платежа увеличится, пропорционально вашему числу смартфонов. Если же их число, свыше одного устройства.

@@ -32,7 +32,10 @@ export default function TvBoxOperatorStep({
     if (selected !== null) setShowError(false);
   }, [selected]);
 
+  const isNextDisabled = selected === 'rostelecom';
+
   const handleNext = () => {
+    if (isNextDisabled) return;
     if (selected === null) {
       setShowError(true);
       return;
@@ -145,24 +148,27 @@ export default function TvBoxOperatorStep({
         </button>
         <button
           type="button"
+          disabled={isNextDisabled}
           onClick={handleNext}
-          onMouseDown={() => setIsNextPressed(true)}
+          onMouseDown={() => !isNextDisabled && setIsNextPressed(true)}
           onMouseUp={() => setIsNextPressed(false)}
           onMouseLeave={() => setIsNextPressed(false)}
-          onTouchStart={() => setIsNextPressed(true)}
+          onTouchStart={() => !isNextDisabled && setIsNextPressed(true)}
           onTouchEnd={() => setIsNextPressed(false)}
-          className="outline-none rounded-[10px] flex items-center justify-center text-center text-white h-[50px] flex-1"
+          className="outline-none rounded-[10px] flex items-center justify-center text-center text-white min-h-[50px] disabled:cursor-not-allowed flex-1"
           style={{
+            boxSizing: 'border-box',
             background: '#101010',
             border: '1px solid rgba(16, 16, 16, 0.25)',
-            fontFamily: 'TT Firs Neue, sans-serif',
+            borderRadius: '10px',
+            fontFamily: "'TT Firs Neue', sans-serif",
             fontSize: '16px',
             lineHeight: '315%',
-            boxSizing: 'border-box',
-            cursor: 'pointer',
-            opacity: 1,
+            color: '#FFFFFF',
+            cursor: isNextDisabled ? 'not-allowed' : 'pointer',
+            opacity: isNextDisabled ? 0.1 : 1,
             transform: isNextPressed ? 'scale(0.97)' : 'scale(1)',
-            transition: 'transform 0.15s ease-out',
+            transition: 'transform 0.15s ease-out, opacity 0.2s ease',
           }}
         >
           Далее

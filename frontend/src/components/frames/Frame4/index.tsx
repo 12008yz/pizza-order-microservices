@@ -142,7 +142,7 @@ function Frame4Content() {
   }, [currentStep]);
 
   // Уведомления над карточкой, 75px от верха (как во Frame2)
-  type NotificationType = 'router_operator' | 'tvbox_operator' | 'tvbox_tvcount' | 'sim_smartphone';
+  type NotificationType = 'router_operator' | 'tvbox_operator' | 'tvbox_tvcount' | 'tvbox_own' | 'sim_smartphone';
   const [frameNotification, setFrameNotification] = useState<{ type: NotificationType; countdown: number } | null>(null);
   const closedNotificationTypeRef = useRef<NotificationType | null>(null);
 
@@ -164,12 +164,14 @@ function Frame4Content() {
       setFrameNotification((prev) => (prev?.type === 'tvbox_operator' ? prev : { type: 'tvbox_operator', countdown: 7 }));
     } else if (currentStep === 'tvbox_tvcount' && (equipmentState.tvBox?.tvCount ?? 0) > 1) {
       setFrameNotification((prev) => (prev?.type === 'tvbox_tvcount' ? prev : { type: 'tvbox_tvcount', countdown: 7 }));
+    } else if (currentStep === 'tvbox_need' && equipmentState.tvBox?.need === 'have_own') {
+      setFrameNotification((prev) => (prev?.type === 'tvbox_own' ? prev : { type: 'tvbox_own', countdown: 7 }));
     } else if (currentStep === 'sim_smartphone_count' && showSimCountWarning) {
       setFrameNotification((prev) => (prev?.type === 'sim_smartphone' ? prev : { type: 'sim_smartphone', countdown: 7 }));
     } else {
       setFrameNotification(null);
     }
-  }, [currentStep, equipmentState.router.operator, equipmentState.tvBox?.operatorId, equipmentState.tvBox?.tvCount, showSimCountWarning]);
+  }, [currentStep, equipmentState.router.operator, equipmentState.tvBox?.operatorId, equipmentState.tvBox?.tvCount, equipmentState.tvBox?.need, showSimCountWarning]);
 
   useEffect(() => {
     if (frameNotification == null || frameNotification.countdown <= 0) return;
@@ -354,7 +356,7 @@ function Frame4Content() {
     } else if (currentStep === 'tvbox_purchase') {
       setCurrentStep('tvbox_tvcount');
     } else if (currentStep === 'tvbox_tvcount') {
-      setCurrentStep('tvbox_operator');
+      setCurrentStep('sim_connection_type');
     } else if (currentStep === 'tvbox_operator') {
       if (returnToOrderSummaryAfter === 'tvbox') {
         goToOrderSummary();
@@ -435,7 +437,7 @@ function Frame4Content() {
       } else {
         const tvNeed = equipmentState.tvBox?.need;
         if (tvNeed === 'need') {
-          setCurrentStep('tvbox_operator');
+          setCurrentStep('tvbox_tvcount');
         } else if (tvNeed === 'have_from_operator') {
           setCurrentStep('tvbox_operator');
         } else {
@@ -589,7 +591,7 @@ function Frame4Content() {
                   type="button"
                   onClick={closeFrameNotification}
                   className="absolute flex items-center justify-center w-6 h-6 cursor-pointer border-0 p-0 bg-transparent"
-                  style={{ right: 17, top: 13 }}
+                  style={{ right: 17, top: 15 }}
                   aria-label="Закрыть"
                 >
                   <CloseIcon width={16} height={16} />
@@ -619,7 +621,7 @@ function Frame4Content() {
                     fontSize: '14px',
                     lineHeight: '105%',
                     color: '#101010',
-                    marginTop: '10px',
+                    marginTop: '8px',
                     wordBreak: 'break-word',
                   }}
                 >
@@ -627,7 +629,9 @@ function Frame4Content() {
                     ? 'Внимание, оборудование этого провайдера технически прошито только на свои сети. Поэтому, подключить его невозможно. '
                     : frameNotification.type === 'tvbox_tvcount'
                       ? 'К сожалению, стоимость подключения, а также стоимость ежемесячного платежа увеличится, пропорционально вашему числу телевизоров. Если же их число, свыше одного устройства. '
-                      : 'К сожалению, стоимость подключения, а также стоимость ежемесячного платежа увеличится, пропорционально вашему числу смартфонов. Если же их число, свыше одного устройства. '}
+                      : frameNotification.type === 'tvbox_own'
+                        ? 'К сожалению, стороннее устройство невозможно подключить к сети оператора. Поэтому, вы можете его самостоятельно переставить на дополнительное устройство, например, телевизор или же монитор. '
+                        : 'К сожалению, стоимость подключения, а также стоимость ежемесячного платежа увеличится, пропорционально вашему числу смартфонов. Если же их число, свыше одного устройства. '}
                   <a href="/privacy-policy" target="_blank" rel="noopener noreferrer" className="text-[#007AFF] underline" onClick={(e) => e.stopPropagation()}>
                     Подробнее об этом писали в медиа
                   </a>

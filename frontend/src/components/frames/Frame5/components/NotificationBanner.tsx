@@ -58,7 +58,7 @@ export default function NotificationBanner({
         type="button"
         onClick={handleClose}
         className="absolute flex items-center justify-center w-6 h-6 cursor-pointer border-0 p-0 bg-transparent"
-        style={{ right: 17, top: 13 }}
+        style={{ right: 17, top: 15 }}
         aria-label="Закрыть"
       >
         <CloseIcon width={16} height={16} />
@@ -83,7 +83,7 @@ export default function NotificationBanner({
           fontSize: '14px',
           lineHeight: '105%',
           color: '#101010',
-          marginTop: 10,
+          marginTop: 8,
           wordBreak: 'break-word',
         }}
       >

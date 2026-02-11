@@ -413,14 +413,14 @@ function AddressFormContent({ isAppLoading = false, appLoadingProgress = 0 }: Ad
               </a>{' '}
               портал
             </p>
-            {/* Кнопка закрытия — справа напротив «Автоматически закроется через», 17px от края */}
+            {/* Кнопка закрытия — 17px справа и сверху */}
             <button
               type="button"
               onClick={() => setShowCookieBanner(false)}
               className="absolute cursor-pointer flex items-center justify-center bg-transparent border-0 outline-none w-6 h-6"
               style={{
                 right: 17,
-                top: 13,
+                top: 15,
               }}
               aria-label="Закрыть"
             >

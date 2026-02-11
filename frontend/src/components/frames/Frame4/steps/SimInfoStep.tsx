@@ -137,7 +137,7 @@ export default function SimInfoStep({ infoType, showBothWarningsWithDelay = fals
             lineHeight: canProceed ? '100%' : '145%',
             fontWeight: canProceed ? 400 : 400,
             boxSizing: 'border-box',
-            background: canProceed ? '#101010' : 'rgba(16, 16, 16, 0.06)',
+            background: canProceed ? '#101010' : '#FFFFFF',
             color: canProceed ? '#FFFFFF' : '#101010',
             cursor: canProceed ? 'pointer' : 'default',
             transform: isNextPressed ? 'scale(0.97)' : 'scale(1)',

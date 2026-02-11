@@ -57,7 +57,7 @@ export default function NotificationBanner({
           if (onClose) onClose();
         }}
         className="absolute flex items-center justify-center bg-transparent border-0 p-0 cursor-pointer w-6 h-6"
-        style={{ right: 17, top: 13 }}
+        style={{ right: 17, top: 15 }}
         aria-label="Закрыть"
       >
         <CloseIcon width={16} height={16} />
@@ -69,18 +69,18 @@ export default function NotificationBanner({
         style={{
           color: 'rgba(16, 16, 16, 0.5)',
           letterSpacing: '0.5px',
-          marginBottom: '5px',
         }}
       >
         {title} {currentTimer}
       </div>
 
-      {/* Content */}
+      {/* Content — отступ 8px от строки таймера */}
       <div
         className="font-normal text-sm leading-[105%]"
         style={{
           color: '#101010',
           letterSpacing: '0.5px',
+          marginTop: 8,
         }}
       >
         {content}

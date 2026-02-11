@@ -32,7 +32,10 @@ export default function RouterOperatorStep({
     if (selected !== null) setShowError(false);
   }, [selected]);
 
+  const isNextDisabled = selected === 'rostelecom';
+
   const handleNext = () => {
+    if (isNextDisabled) return;
     if (selected === null) {
       setShowError(true);
       return;
@@ -110,19 +113,33 @@ export default function RouterOperatorStep({
         </button>
         <button
           type="button"
+          disabled={isNextDisabled}
           onClick={handleNext}
-          onMouseDown={() => setIsNextPressed(true)}
+          onMouseDown={() => !isNextDisabled && setIsNextPressed(true)}
           onMouseUp={() => setIsNextPressed(false)}
           onMouseLeave={() => setIsNextPressed(false)}
-          onTouchStart={() => setIsNextPressed(true)}
+          onTouchStart={() => !isNextDisabled && setIsNextPressed(true)}
           onTouchEnd={() => setIsNextPressed(false)}
-          className="outline-none rounded-[10px] flex items-center justify-center text-center text-white min-h-[50px] disabled:cursor-not-allowed flex-1"
+          className="outline-none rounded-[10px] flex items-center justify-center text-center min-h-[50px] disabled:cursor-not-allowed flex-1"
           style={{
-            background: '#101010', border: '1px solid rgba(16, 16, 16, 0.25)', fontFamily: 'TT Firs Neue, sans-serif', fontSize: '16px', lineHeight: '315%', boxSizing: 'border-box',
-          cursor: selected === null ? 'pointer' : 'pointer',
-          opacity: 1,
-          transform: isNextPressed ? 'scale(0.97)' : 'scale(1)', transition: 'transform 0.15s ease-out',
-        }}
+            boxSizing: 'border-box',
+            background: '#101010',
+            border: '1px solid rgba(16, 16, 16, 0.25)',
+            borderRadius: '10px',
+            fontFamily: "'TT Firs Neue', sans-serif",
+            fontStyle: 'normal',
+            fontWeight: 400,
+            fontSize: '16px',
+            lineHeight: '315%',
+            display: 'flex',
+            alignItems: 'center',
+            textAlign: 'center',
+            color: '#FFFFFF',
+            cursor: isNextDisabled ? 'not-allowed' : 'pointer',
+            opacity: isNextDisabled ? 0.1 : 1,
+            transform: isNextPressed ? 'scale(0.97)' : 'scale(1)',
+            transition: 'transform 0.15s ease-out, opacity 0.2s ease',
+          }}
         >
           Далее
         </button>

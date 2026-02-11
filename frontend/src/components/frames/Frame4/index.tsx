@@ -640,7 +640,7 @@ function Frame4Content() {
               className="flex justify-center"
               style={{
                 margin: '0 auto',
-                paddingTop: 'var(--header-zone, 90px)',
+                paddingTop: '50px',
                 opacity: showHintText ? 1 : 0,
                 transform: showHintText ? 'translateY(0)' : 'translateY(-6px)',
                 transition: 'opacity 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)',

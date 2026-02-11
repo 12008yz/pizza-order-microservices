@@ -19,7 +19,7 @@ const HINT_STYLE: React.CSSProperties = {
 };
 
 export interface ClickOutsideHintProps {
-  /** Стили для обёртки (position, top, left и т.д.). По умолчанию: position absolute, left 50%, transform translateX(-50%), top 75px */
+  /** Стили для обёртки (position, top, left и т.д.). По умолчанию: position absolute, left 50%, transform translateX(-50%), top 50px */
   wrapperStyle?: React.CSSProperties;
 }
 
@@ -27,7 +27,7 @@ const DEFAULT_WRAPPER_STYLE: React.CSSProperties = {
   position: 'absolute',
   width: '240px',
   left: 'calc(50% - 240px / 2)',
-  top: '75px',
+  top: '50px',
 };
 
 export default function ClickOutsideHint({ wrapperStyle }: ClickOutsideHintProps) {

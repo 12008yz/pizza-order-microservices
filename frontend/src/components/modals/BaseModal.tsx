@@ -46,7 +46,7 @@ export default function BaseModal({
           wrapperStyle={{
             left: '50%',
             transform: 'translateX(-50%)',
-            top: 'var(--header-top, 50px)',
+            top: '50px',
           }}
         />
       )}

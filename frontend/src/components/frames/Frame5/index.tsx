@@ -378,7 +378,7 @@ function Frame5Content() {
             <div
               className="flex justify-center"
               style={{
-                paddingTop: 'var(--header-zone, 90px)',
+                paddingTop: '50px',
                 opacity: !showNotification ? 1 : 0,
                 transition: 'opacity 0.2s ease',
               }}

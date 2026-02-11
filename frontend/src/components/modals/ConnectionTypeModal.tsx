@@ -122,7 +122,7 @@ export default function ConnectionTypeModal({
           onKeyDown={(e) => e.key === 'Enter' && onClose()}
           aria-label="Закрыть"
         >
-          <div className="flex justify-center" style={{ paddingTop: 'var(--header-zone, 90px)' }}>
+          <div className="flex justify-center" style={{ paddingTop: '50px' }}>
             <ClickOutsideHintContent />
           </div>
         </div>

@@ -40,7 +40,7 @@ export default function TechAccessModal({ isOpen, onClose }: TechAccessModalProp
             style={{ minHeight: 105 }}
             onClick={onClose}
           >
-            <div style={{ margin: '0 auto', paddingTop: 75 }}>
+            <div style={{ margin: '0 auto', paddingTop: 50 }}>
               <ClickOutsideHintContent />
             </div>
           </div>

@@ -158,7 +158,7 @@ export default function FilterWizard({ isOpen, onClose, onApply }: FilterWizardP
          >
             {/* Шапка: подсказка (клик по пустоте закрывает — обрабатывается корневым onClick), всплывающие окна 75px от верха */}
             <div className="flex-shrink-0 cursor-pointer" style={{ minHeight: 105 }}>
-               <div style={{ margin: '0 auto', paddingTop: 75 }}>
+               <div style={{ margin: '0 auto', paddingTop: 50 }}>
                   <ClickOutsideHintContent />
                </div>
             </div>

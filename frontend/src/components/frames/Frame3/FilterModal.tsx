@@ -41,7 +41,7 @@ export default function FilterModal({ isOpen, onClose }: FilterModalProps) {
             style={{ minHeight: 105 }}
             onClick={onClose}
           >
-            <div style={{ margin: '0 auto', paddingTop: 75 }}>
+            <div style={{ margin: '0 auto', paddingTop: 50 }}>
               <ClickOutsideHintContent />
             </div>
           </div>

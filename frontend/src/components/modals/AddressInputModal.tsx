@@ -683,7 +683,7 @@ export default function AddressInputModal({
         }}
       >
         {/* Шапка: подсказка */}
-        <div className="flex-shrink-0 flex justify-center" style={{ minHeight: '105px', paddingTop: 'var(--header-zone, 90px)' }}>
+        <div className="flex-shrink-0 flex justify-center" style={{ minHeight: '105px', paddingTop: '50px' }}>
           <ClickOutsideHintContent />
         </div>
 

@@ -175,7 +175,7 @@ export default function ApartmentSelectModal({
           style={{ minHeight: '105px' }}
           onClick={onClose}
         >
-          <div className="flex justify-center" style={{ paddingTop: 'var(--header-zone, 90px)' }}>
+          <div className="flex justify-center" style={{ paddingTop: '50px' }}>
             <ClickOutsideHintContent />
           </div>
         </div>

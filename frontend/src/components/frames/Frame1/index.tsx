@@ -702,7 +702,7 @@ function AddressFormContent({ isAppLoading = false, appLoadingProgress = 0 }: Ad
             <PrivacyConsent />
           </div>
 
-          {/* Кнопка — изначально активна; после нажатия при неполной форме становится неактивной (серая), пока не заполнят */}
+          {/* Кнопка — изначально активна; после нажатия при неполной форме становится неактивной (серая), пока не заполнят; 20px от соглашения (у контейнера gap: 5, поэтому marginTop: 15) */}
           <button
             type="button"
             disabled={isButtonDisabled}
@@ -714,6 +714,7 @@ function AddressFormContent({ isAppLoading = false, appLoadingProgress = 0 }: Ad
             onTouchEnd={() => setIsSubmitPressed(false)}
             className={`w-full flex items-center justify-center text-white outline-none rounded-[10px] box-border ${isButtonDisabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}
             style={{
+              marginTop: 15,
               height: 50,
               minHeight: 50,
               background: isButtonDisabled ? 'rgba(16, 16, 16, 0.25)' : '#101010',

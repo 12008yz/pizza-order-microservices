@@ -101,14 +101,7 @@ const MinusCircleIcon = () => (
   </svg>
 );
 
-// Иконка информации
-const InfoIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-    <circle cx="8" cy="8" r="7" stroke="rgba(16, 16, 16, 0.25)" strokeWidth="1.5" fill="none" />
-    <path d="M8 7V11" stroke="rgba(16, 16, 16, 0.25)" strokeWidth="1.5" strokeLinecap="round" />
-    <circle cx="8" cy="5" r="0.75" fill="rgba(16, 16, 16, 0.25)" />
-  </svg>
-);
+import InfoIcon from '../../../common/icons/InfoIcon';
 
 // Стрелка назад (как в других шагах Frame4)
 const BackArrowIcon = () => (

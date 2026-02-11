@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import AnimatedCheck from '../../common/AnimatedCheck';
 
 interface TariffCardProps {
   id: number;
@@ -27,15 +26,21 @@ interface TariffCardProps {
   onFavoriteClick?: () => void;
 }
 
-// Круглая иконка с галочкой (как в 1 фрейме)
+/** Галочка как на главной (1 фрейм): белый круг + тёмная галочка */
 const CheckCircleIcon = () => (
-  <span className="relative inline-block" style={{ width: 20, height: 20 }}>
-    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" className="absolute inset-0">
-      <circle cx="10" cy="10" r="9" stroke="#101010" strokeWidth="1.5" fill="none" />
+  <span
+    className="inline-flex items-center justify-center flex-shrink-0"
+    style={{
+      width: 16,
+      height: 16,
+      borderRadius: '50%',
+      background: '#FFFFFF',
+      border: '1px solid #101010',
+    }}
+  >
+    <svg width="8" height="6" viewBox="0 0 8 6" fill="none" aria-hidden>
+      <path d="M1 3L3 5L7 1" stroke="#101010" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
-    <span className="absolute" style={{ left: 6, top: 6 }}>
-      <AnimatedCheck size={8} color="#101010" strokeWidth={1.5} />
-    </span>
   </span>
 );
 
@@ -47,14 +52,7 @@ const PlusCircleIcon = () => (
   </svg>
 );
 
-// Иконка info (i) в круге
-const InfoIcon = () => (
-  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="10" cy="10" r="9" stroke="rgba(16, 16, 16, 0.5)" strokeWidth="1.5" fill="none" />
-    <path d="M10 9V14" stroke="rgba(16, 16, 16, 0.5)" strokeWidth="1.5" strokeLinecap="round" />
-    <circle cx="10" cy="6.5" r="1" fill="rgba(16, 16, 16, 0.5)" />
-  </svg>
-);
+import InfoIcon from '../../common/icons/InfoIcon';
 
 export default function TariffCard({
   id,

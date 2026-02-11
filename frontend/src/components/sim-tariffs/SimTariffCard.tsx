@@ -48,13 +48,7 @@ const MinusCircleIcon = () => (
   </svg>
 );
 
-const InfoIcon = () => (
-  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="10" cy="10" r="9" stroke="rgba(16, 16, 16, 0.5)" strokeWidth="1.5" fill="none" />
-    <path d="M10 9V14" stroke="rgba(16, 16, 16, 0.5)" strokeWidth="1.5" strokeLinecap="round" />
-    <circle cx="10" cy="6.5" r="1" fill="rgba(16, 16, 16, 0.5)" />
-  </svg>
-);
+import InfoIcon from '../common/icons/InfoIcon';
 
 export default function SimTariffCard({ tariff, onConnect, onInfoClick, onFavoriteClick }: SimTariffCardProps) {
   const price = typeof tariff.price === 'number' ? tariff.price : parseFloat(String(tariff.price));

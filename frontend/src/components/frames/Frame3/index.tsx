@@ -1470,7 +1470,9 @@ function Frame3Content() {
                     padding: '10px 15px 0 15px',
                     flex: 1,
                     minHeight: 0,
-                    overflowY: 'hidden',
+                    // Делаем контент видимым целиком, включая нижний разделитель,
+                    // иначе линия между фичами и блоком цены может обрезаться
+                    overflowY: 'visible',
                   }}
                 >
                   <div className="features-container" style={{ display: 'flex', flexDirection: 'column' }}>

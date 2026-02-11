@@ -307,7 +307,7 @@ export default function TariffCard({
           {price} р./мес.
         </div>
 
-        {/* Connection Price */}
+        {/* Connection Price — 14px 145% по макету */}
         <div
           style={{
             fontFamily: 'TT Firs Neue, sans-serif',

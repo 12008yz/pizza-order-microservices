@@ -701,7 +701,7 @@ export default function OrderSummaryStep({
               <div
                 style={{
                   fontSize: '14px',
-                  lineHeight: '145%',
+                  lineHeight: '105%',
                   color: 'rgba(16, 16, 16, 0.5)',
                 }}
               >
@@ -712,7 +712,7 @@ export default function OrderSummaryStep({
             <div
               style={{
                 fontSize: '14px',
-                lineHeight: '145%',
+                lineHeight: '105%',
                 color: 'rgba(16, 16, 16, 0.5)',
                 marginBottom: priceToButtons,
               }}

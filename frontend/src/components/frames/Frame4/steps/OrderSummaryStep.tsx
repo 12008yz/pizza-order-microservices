@@ -39,6 +39,10 @@ export interface StoredTariff {
   favoriteDesc?: string;
   connectionPrice?: string;
   promoText?: string;
+  /** Есть ли в тарифе ТВ (из Frame3) — если false, строку ТВ-приставки нельзя нажимать */
+  hasTV?: boolean;
+  /** Есть ли в тарифе мобильная связь (из Frame3) — если false, строку SIM нельзя нажимать */
+  hasMobile?: boolean;
 }
 
 export interface OrderSummaryCallbacks {
@@ -347,6 +351,9 @@ export default function OrderSummaryStep({
   const tvInfo = getTvBoxDisplayInfo(equipmentState);
   const simInfo = getSimLabel(equipmentState);
 
+  const hasTVTariff = selectedTariff?.hasTV !== false;
+  const hasMobileTariff = selectedTariff?.hasMobile !== false;
+
   const { totalMonthly, totalAddOn } = useMemo(() => {
     const base = selectedTariff?.priceValue ?? 0;
     const routerAdd = getRouterAddOnPrice(equipmentState);
@@ -611,7 +618,7 @@ export default function OrderSummaryStep({
               </div>
             </div>
 
-            {/* TV-приставка — по аналогии с роутером: левый блок + правая колонка (рассрочка/аренда/покупка и цена) */}
+            {/* TV-приставка — по аналогии с роутером; если в тарифе нет ТВ — неактивная строка как «Не предусмотрено» */}
             <div
               style={{
                 display: 'flex',
@@ -619,9 +626,9 @@ export default function OrderSummaryStep({
                 marginBottom: '5px',
                 minHeight: `${rowMinH}px`,
                 maxWidth: '330px',
-                cursor: 'pointer',
+                cursor: hasTVTariff ? 'pointer' : 'default',
               }}
-              onClick={handleTvBoxClick}
+              onClick={hasTVTariff ? handleTvBoxClick : undefined}
             >
               <div style={{ width: '16px', height: '16px', flexShrink: 0, marginRight: '9px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 {tvInfo.isActive ? <MinusCircleIcon /> : <CrossCircleIcon />}
@@ -692,7 +699,7 @@ export default function OrderSummaryStep({
               </div>
             </div>
 
-            {/* SIM-карта — строка 1 заголовок, строка 2 «SIM-карта» и «один экз.» в одну линию */}
+            {/* SIM-карта — строка 1 заголовок, строка 2 «SIM-карта» и «один экз.»; если в тарифе нет мобильной связи — неактивная строка как «Не предусмотрено» */}
             <div
               style={{
                 display: 'flex',
@@ -701,12 +708,12 @@ export default function OrderSummaryStep({
                 minHeight: `${rowMinH}px`,
                 maxWidth: '330px',
                 position: 'relative',
-                cursor: 'pointer',
+                cursor: hasMobileTariff ? 'pointer' : 'default',
               }}
-              onClick={handleSimClick}
+              onClick={hasMobileTariff ? handleSimClick : undefined}
             >
               <div style={{ width: '16px', height: '16px', flexShrink: 0, marginRight: '9px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                {simInfo.isActive ? <MinusCircleIcon /> : <PlusCircleRedIcon />}
+                {!hasMobileTariff ? <CrossCircleIcon /> : simInfo.isActive ? <MinusCircleIcon /> : <PlusCircleRedIcon />}
               </div>
               <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
                 <span
@@ -714,7 +721,7 @@ export default function OrderSummaryStep({
                     fontFamily: 'TT Firs Neue, sans-serif',
                     fontSize: '16px',
                     lineHeight: '155%',
-                    color: simInfo.isActive ? '#101010' : 'rgba(255, 16, 0, 0.75)',
+                    color: !hasMobileTariff ? 'rgba(16, 16, 16, 0.25)' : simInfo.isActive ? '#101010' : 'rgba(255, 16, 0, 0.75)',
                     display: 'flex',
                     alignItems: 'center',
                   }}
@@ -727,7 +734,7 @@ export default function OrderSummaryStep({
                       fontFamily: 'TT Firs Neue, sans-serif',
                       fontSize: '14px',
                       lineHeight: '105%',
-                      color: simInfo.isActive ? 'rgba(16, 16, 16, 0.5)' : 'rgba(255, 16, 0, 0.5)',
+                      color: !hasMobileTariff ? 'rgba(16, 16, 16, 0.5)' : simInfo.isActive ? 'rgba(16, 16, 16, 0.5)' : 'rgba(255, 16, 0, 0.5)',
                     }}
                   >
                     {simInfo.sub}

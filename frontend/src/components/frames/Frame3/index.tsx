@@ -666,6 +666,8 @@ function Frame3Content() {
     try {
       const selectedTariff = tariffs.find(t => t.id === tariffId);
       if (selectedTariff) {
+        const hasTV = selectedTariff.serviceType === 'internet_tv' || selectedTariff.serviceType === 'internet_tv_mobile';
+        const hasMobile = selectedTariff.serviceType === 'internet_mobile' || selectedTariff.serviceType === 'internet_tv_mobile';
         sessionStorage.setItem('selectedTariff', JSON.stringify({
           id: selectedTariff.id,
           providerName: selectedTariff.providerName,
@@ -684,6 +686,8 @@ function Frame3Content() {
           favoriteDesc: selectedTariff.favoriteDesc,
           connectionPrice: selectedTariff.connectionPrice,
           promoText: selectedTariff.promoText,
+          hasTV,
+          hasMobile,
         }));
       }
     } catch (error) {

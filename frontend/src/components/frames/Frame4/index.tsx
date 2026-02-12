@@ -790,16 +790,15 @@ function Frame4Content() {
               maxWidth: '360px',
               marginLeft: 'auto',
               marginRight: 'auto',
-              marginTop: currentStep === 'order_summary' ? 15 : 'auto',
-              marginBottom: 'calc(20px + env(safe-area-inset-bottom, 0px))',
+              marginTop: currentStep === 'order_summary' ? 'auto' : undefined,
+              marginBottom: currentStep === 'order_summary'
+                ? 'calc(29px + env(safe-area-inset-bottom, 0px))'
+                : 'calc(20px + env(safe-area-inset-bottom, 0px))',
               backdropFilter: 'blur(7.5px)',
-              // Итоговая карточка: от header+15px растягивается до 20px от низа (прижата к низу)
+              // Итоговая карточка: высота по контенту, прижата к низу (marginTop: auto), отступ от низа экрана 29px
               ...(currentStep === 'order_summary'
-                ? {
-                    height: 'calc(100dvh - (var(--header-top, 10px) + 41px + 15px + 20px) - var(--sab, 0px))',
-                    minHeight: 'calc(100dvh - (var(--header-top, 10px) + 41px + 15px + 20px) - var(--sab, 0px))',
-                  }
-                : { maxHeight: 'calc(100dvh - 145px)' }),
+                ? {}
+                : { marginTop: 'auto', maxHeight: 'calc(100dvh - 145px)' }),
             }}
           >
             {/* Контент шага. Итоговая карточка (order_summary) — без скролла, всё вмещается за счёт адаптивных отступов */}

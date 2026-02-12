@@ -655,7 +655,7 @@ function Frame3Content() {
   };
 
   const handlePlaneClick = () => {
-    setShowConsultation(true);
+    router.push('/?consultation=1');
   };
 
   const handleFilterClick = () => {

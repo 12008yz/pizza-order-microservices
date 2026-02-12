@@ -680,7 +680,7 @@ function Frame4Content() {
               {/* Кнопка консультации */}
               <button
                 type="button"
-                onClick={() => setShowConsultation(true)}
+                onClick={() => router.push('/?consultation=1')}
                 className="outline-none cursor-pointer border-0 w-10 h-10 flex items-center justify-center rounded-full bg-white"
                 style={{
                   position: 'absolute',

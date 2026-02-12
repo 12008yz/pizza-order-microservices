@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { CloseIcon } from '../../common/icons';
 import { AddressProvider, useAddress, ConnectionType } from '../../../contexts/AddressContext';
 import ConnectionTypeModal from '../../modals/ConnectionTypeModal';
@@ -57,6 +57,7 @@ interface AddressFormContentProps {
 
 function AddressFormContent({ isAppLoading = false, appLoadingProgress = 0 }: AddressFormContentProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { addressData, validateForm, clearErrors, clearAddress } = useAddress();
   const [showConnectionModal, setShowConnectionModal] = useState(false);
   const [showAddressModal, setShowAddressModal] = useState(false);
@@ -66,6 +67,13 @@ function AddressFormContent({ isAppLoading = false, appLoadingProgress = 0 }: Ad
   const [cookieTimer, setCookieTimer] = useState(7);
 
   const [flowState, setFlowState] = useState<FlowState>('form');
+
+  // Открыть 2 фрейм (консультацию) при переходе по ссылке с ?consultation=1
+  useEffect(() => {
+    if (searchParams.get('consultation') === '1') {
+      setFlowState('consultation');
+    }
+  }, [searchParams]);
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [showSkeletonAfterAppLoad, setShowSkeletonAfterAppLoad] = useState(false);
   const [showSkeletonBeforeConsultation, setShowSkeletonBeforeConsultation] = useState(false);

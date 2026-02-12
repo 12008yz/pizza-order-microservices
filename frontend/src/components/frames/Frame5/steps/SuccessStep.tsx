@@ -29,15 +29,35 @@ export default function SuccessStep({ orderNumber, onFaq }: SuccessStepProps) {
         backgroundColor: '#F5F5F5',
         logging: false,
       });
-      canvas.toBlob((blob) => {
-        if (!blob) return;
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `Заявка-${orderNumber}.png`;
-        a.click();
-        URL.revokeObjectURL(url);
-      }, 'image/png');
+      const blob = await new Promise<Blob | null>((resolve) => {
+        canvas.toBlob(resolve, 'image/png');
+      });
+      if (!blob) return;
+
+      const fileName = `Заявка-${orderNumber}.png`;
+      const file = new File([blob], fileName, { type: 'image/png' });
+
+      // Пробуем Share API — на мобильных в меню часто есть «Сохранить в Фото»/галерею
+      const canShareFiles = typeof navigator !== 'undefined' && navigator.share && (navigator.canShare ? navigator.canShare({ files: [file] }) : true);
+      if (canShareFiles) {
+        try {
+          await navigator.share({
+            files: [file],
+            title: fileName,
+          });
+          return;
+        } catch {
+          // Пользователь отменил или share с файлами не поддерживается — скачиваем
+        }
+      }
+
+      // Fallback: скачивание файла (десктоп или если share недоступен)
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = fileName;
+      a.click();
+      URL.revokeObjectURL(url);
     } catch {
       // fallback: не блокируем интерфейс при ошибке
     }
@@ -97,7 +117,7 @@ export default function SuccessStep({ orderNumber, onFaq }: SuccessStepProps) {
         </p>
         {/* 10px между текстом и блоком шагов (по скрину 330×10) */}
         <div
-          className="rounded-[10px] overflow-hidden"
+          className="rounded-[10px] overflow-visible"
           style={{
             border: '1px solid rgba(16, 16, 16, 0.25)',
             padding: '12px 15px',
@@ -105,47 +125,72 @@ export default function SuccessStep({ orderNumber, onFaq }: SuccessStepProps) {
             marginBottom: 20,
             display: 'flex',
             flexDirection: 'column',
-            gap: 15,
+            gap: 0,
           }}
         >
           {STATUS_STEPS.map((step, index) => {
             const isPending = step.status === 'pending';
             const isCurrent = step.status === 'current';
             const rowColor = isPending ? 'rgba(16, 16, 16, 0.35)' : '#101010';
+            const isLast = index === STATUS_STEPS.length - 1;
             return (
-              <div
-                key={step.label}
-                className="flex items-center gap-[10px]"
-                style={{
-                  minHeight: 36,
-                  fontFamily: 'TT Firs Neue, sans-serif',
-                  fontSize: '16px',
-                  fontWeight: 400,
-                  color: rowColor,
-                }}
-              >
-                <span
-                  className="flex-shrink-0 rounded-full flex items-center justify-center"
+              <React.Fragment key={step.label}>
+                {/* Строка: только кружок и текст — выравнивание по центру по вертикали */}
+                <div
+                  className="flex items-center gap-[10px]"
                   style={{
-                    width: 20,
-                    height: 20,
-                    background: step.status === 'completed' ? '#FF1000' : isCurrent ? 'transparent' : 'rgba(16, 16, 16, 0.08)',
-                    border: step.status === 'completed' ? 'none' : isCurrent ? '1px solid #101010' : '1px solid rgba(16, 16, 16, 0.18)',
-                    color: step.status === 'completed' ? '#FFFFFF' : isCurrent ? '#101010' : 'rgba(16, 16, 16, 0.35)',
-                    fontSize: 12,
-                    fontWeight: 500,
+                    minHeight: 36,
+                    fontFamily: 'TT Firs Neue, sans-serif',
+                    fontSize: '16px',
+                    fontWeight: 400,
+                    color: rowColor,
                   }}
                 >
-                  {step.status === 'completed' ? (
-                    <svg width="10" height="8" viewBox="0 0 10 8" fill="none" style={{ display: 'block' }}>
-                      <path d="M1 4L4 7L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                  ) : (
-                    index + 1
-                  )}
-                </span>
-                {step.label}
-              </div>
+                  <span
+                    className="flex-shrink-0 rounded-full flex items-center justify-center"
+                    style={{
+                      width: 20,
+                      height: 20,
+                      background: step.status === 'completed' ? '#FF1000' : isCurrent ? 'transparent' : '#FFFFFF',
+                      border: step.status === 'completed' ? 'none' : isCurrent ? '1px solid #101010' : '1px solid rgba(16, 16, 16, 0.18)',
+                      color: step.status === 'completed' ? '#FFFFFF' : isCurrent ? '#101010' : 'rgba(16, 16, 16, 0.35)',
+                      fontFamily: 'TT Firs Neue, sans-serif',
+                      fontSize: 13,
+                      fontWeight: 500,
+                      lineHeight: 1,
+                    }}
+                  >
+                    {step.status === 'completed' ? (
+                      <svg width="10" height="8" viewBox="0 0 10 8" fill="none" style={{ display: 'block' }}>
+                        <path d="M1 4L4 7L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    ) : (
+                      index + 1
+                    )}
+                  </span>
+                  {step.label}
+                </div>
+                {/* Палочка между шагами — отдельная строка, по центру под кружками */}
+                {!isLast && (
+                  <div
+                    className="flex items-center"
+                    style={{ height: 15, gap: 10 }}
+                  >
+                    <div
+                      className="flex-shrink-0 flex items-center justify-center"
+                      style={{ width: 20 }}
+                    >
+                      <div
+                        style={{
+                          width: 1,
+                          height: 5,
+                          background: 'rgba(16, 16, 16, 0.25)',
+                        }}
+                      />
+                    </div>
+                  </div>
+                )}
+              </React.Fragment>
             );
           })}
         </div>

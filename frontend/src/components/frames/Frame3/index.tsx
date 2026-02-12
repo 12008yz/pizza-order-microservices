@@ -803,15 +803,17 @@ function Frame3Content() {
       >
         {showFavoritesMode ? (
           <div
-            className="w-full flex justify-center cursor-pointer"
-            style={{ position: 'absolute', left: 0, right: 0, top: 'var(--header-top, 50px)', zIndex: 10 }}
+            className="flex-shrink-0 cursor-pointer"
+            style={{ minHeight: 105, position: 'absolute', left: 0, right: 0, top: 0, zIndex: 10 }}
             onClick={() => setShowFavoritesMode(false)}
             role="button"
             tabIndex={0}
             onKeyDown={(e) => e.key === 'Enter' && setShowFavoritesMode(false)}
             aria-label="Выйти из режима избранного"
           >
-            <ClickOutsideHintContent />
+            <div style={{ margin: '0 auto', paddingTop: 'var(--header-top, 50px)' }}>
+              <ClickOutsideHintContent />
+            </div>
           </div>
         ) : null}
 

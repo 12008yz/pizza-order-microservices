@@ -9,10 +9,10 @@ interface SuccessStepProps {
   onFaq?: () => void;
 }
 
-const STATUS_STEPS = [
-  { label: 'Подтверждение заявки', active: true },
-  { label: 'Назначение времени', active: false },
-  { label: 'Подключение услуг', active: false },
+const STATUS_STEPS: { label: string; status: 'completed' | 'current' | 'pending' }[] = [
+  { label: 'Подтверждение заявки', status: 'completed' },
+  { label: 'Назначение времени', status: 'current' },
+  { label: 'Подключение услуг', status: 'pending' },
 ];
 
 export default function SuccessStep({ orderNumber, onFaq }: SuccessStepProps) {
@@ -45,26 +45,39 @@ export default function SuccessStep({ orderNumber, onFaq }: SuccessStepProps) {
 
   return (
     <div className="flex flex-col w-full" ref={captureRef}>
-      <div className="flex-shrink-0 px-[15px] pt-[12px] pb-[20px]">
-        <h2
+      <div
+        className="flex-shrink-0 pb-[20px]"
+        style={{
+          width: '100%',
+          paddingLeft: 15,
+          paddingRight: 15,
+          paddingTop: 15,
+          boxSizing: 'border-box',
+        }}
+      >
+        {/* Номер заявки: не жирный, область 330×25 */}
+        <div
           style={{
             fontFamily: 'TT Firs Neue, sans-serif',
-            fontWeight: 700,
+            fontWeight: 400,
             fontSize: '20px',
-            lineHeight: '125%',
+            lineHeight: '25px',
+            height: 25,
             color: '#101010',
-            marginBottom: 10,
           }}
         >
           Заявка №{orderNumber}
-        </h2>
+        </div>
+        {/* 15px между номером заявки и текстом */}
         <p
           style={{
             fontFamily: 'TT Firs Neue, sans-serif',
             fontSize: '14px',
-            lineHeight: '105%',
+            lineHeight: '1.25',
+            fontWeight: 400,
             color: 'rgba(16, 16, 16, 0.5)',
-            marginBottom: 15,
+            marginTop: 15,
+            marginBottom: 20,
           }}
         >
           Мы поздравляем с оформлением заявки. Пожалуйста, подготовьте все вопросы
@@ -74,87 +87,84 @@ export default function SuccessStep({ orderNumber, onFaq }: SuccessStepProps) {
             fontFamily: 'TT Firs Neue, sans-serif',
             fontSize: '16px',
             lineHeight: '155%',
+            fontWeight: 400,
             color: '#101010',
-            marginBottom: 15,
+            marginTop: 0,
+            marginBottom: 0,
           }}
         >
           Заявка направлена в центр координации. Пожалуйста, ожидайте звонок от нас
         </p>
-
+        {/* 10px между текстом и блоком шагов (по скрину 330×10) */}
         <div
-          className="rounded-[10px] overflow-hidden mb-[15px]"
+          className="rounded-[10px] overflow-hidden"
           style={{
             border: '1px solid rgba(16, 16, 16, 0.25)',
             padding: '12px 15px',
+            marginTop: 10,
+            marginBottom: 20,
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 15,
           }}
         >
           {STATUS_STEPS.map((step, index) => {
-            const isThirdRow = index === 2;
-            const rowColor = step.active ? '#101010' : isThirdRow ? 'rgba(16, 16, 16, 0.35)' : 'rgba(16, 16, 16, 0.5)';
-            const circleColor = step.active ? '#FFFFFF' : isThirdRow ? 'rgba(16, 16, 16, 0.5)' : '#101010';
-            const circleBorder = step.active ? 'none' : isThirdRow ? '1px solid rgba(16, 16, 16, 0.18)' : '1px solid rgba(16, 16, 16, 0.25)';
+            const isPending = step.status === 'pending';
+            const isCurrent = step.status === 'current';
+            const rowColor = isPending ? 'rgba(16, 16, 16, 0.35)' : '#101010';
             return (
-            <div
-              key={step.label}
-              className="flex items-center gap-[10px]"
-              style={{
-                height: 36,
-                fontFamily: 'TT Firs Neue, sans-serif',
-                fontSize: '16px',
-                color: rowColor,
-              }}
-            >
-              <span
-                className="flex-shrink-0 rounded-full flex items-center justify-center"
+              <div
+                key={step.label}
+                className="flex items-center gap-[10px]"
                 style={{
-                  width: 20,
-                  height: 20,
-                  background: step.active ? '#FF1000' : '#FFFFFF',
-                  border: circleBorder,
-                  color: circleColor,
-                  fontSize: 12,
-                  fontWeight: 500,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
+                  minHeight: 36,
+                  fontFamily: 'TT Firs Neue, sans-serif',
+                  fontSize: '16px',
+                  fontWeight: 400,
+                  color: rowColor,
                 }}
               >
-                {step.active ? (
-                  <svg width="10" height="8" viewBox="0 0 10 8" fill="none" style={{ display: 'block' }}>
-                    <path d="M1 4L4 7L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                ) : (
-                  <span
-                    style={{
-                      display: 'block',
-                      lineHeight: '20px',
-                      height: 20,
-                      width: 20,
-                      textAlign: 'center',
-                      boxSizing: 'border-box',
-                    }}
-                  >
-                    {index + 1}
-                  </span>
-                )}
-              </span>
-              {step.label}
-            </div>
-          );
+                <span
+                  className="flex-shrink-0 rounded-full flex items-center justify-center"
+                  style={{
+                    width: 20,
+                    height: 20,
+                    background: step.status === 'completed' ? '#FF1000' : isCurrent ? 'transparent' : 'rgba(16, 16, 16, 0.08)',
+                    border: step.status === 'completed' ? 'none' : isCurrent ? '1px solid #101010' : '1px solid rgba(16, 16, 16, 0.18)',
+                    color: step.status === 'completed' ? '#FFFFFF' : isCurrent ? '#101010' : 'rgba(16, 16, 16, 0.35)',
+                    fontSize: 12,
+                    fontWeight: 500,
+                  }}
+                >
+                  {step.status === 'completed' ? (
+                    <svg width="10" height="8" viewBox="0 0 10 8" fill="none" style={{ display: 'block' }}>
+                      <path d="M1 4L4 7L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  ) : (
+                    index + 1
+                  )}
+                </span>
+                {step.label}
+              </div>
+            );
           })}
         </div>
 
+        {/* 20px уже задано marginBottom у блока шагов; 5px между скриншотом и кнопкой */}
         <button
           type="button"
           onClick={handleScreenshot}
-          className="w-full rounded-[10px] flex items-center justify-center outline-none cursor-pointer border mb-[5px]"
+          className="w-full rounded-[10px] flex items-center justify-center outline-none cursor-pointer border"
           style={{
+            width: '100%',
             height: 50,
             border: '1px solid rgba(16, 16, 16, 0.25)',
             background: 'transparent',
-            color: '#101010',
+            color: 'rgba(16, 16, 16, 0.5)',
             fontFamily: 'TT Firs Neue, sans-serif',
             fontSize: '16px',
+            fontWeight: 400,
+            marginBottom: 5,
           }}
         >
           Вы можете сделать скриншот
@@ -164,11 +174,13 @@ export default function SuccessStep({ orderNumber, onFaq }: SuccessStepProps) {
           onClick={() => (onFaq ? onFaq() : router.push('/faq'))}
           className="w-full rounded-[10px] flex items-center justify-center text-white outline-none cursor-pointer"
           style={{
+            width: '100%',
             height: 50,
             background: '#101010',
-            border: '1px solid rgba(16, 16, 16, 0.25)',
+            border: 'none',
             fontFamily: 'TT Firs Neue, sans-serif',
             fontSize: '16px',
+            fontWeight: 400,
           }}
         >
           Популярные вопросы

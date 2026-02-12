@@ -12,11 +12,15 @@ import LoadingScreen from '../../LoadingScreen';
 import PageLoadingSkeleton from '../../PageLoadingSkeleton';
 import dynamic from 'next/dynamic';
 
-/** Галочка как в 4 фрейме (шаг выбора роутера) — белая в круге */
-function CheckIcon() {
+/** Фон кружка с галочкой, когда в поле что-то введено (из макета Vector) */
+const FILLED_CIRCLE_BG = 'rgba(16, 16, 16, 0.5)';
+
+/** Галочка: белая на сером фоне (когда поле заполнено) и на чёрном (активное пустое) */
+function CheckIcon({ filled }: { filled?: boolean }) {
+  const stroke = '#FFFFFF';
   return (
     <svg width="8" height="6" viewBox="0 0 8 6" fill="none" aria-hidden>
-      <path d="M1 3L3 5L7 1" stroke="#FFFFFF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M1 3L3 5L7 1" stroke={stroke} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
@@ -509,11 +513,11 @@ function AddressFormContent({ isAppLoading = false, appLoadingProgress = 0 }: Ad
                 height: 18,
                 boxSizing: 'border-box',
                 border: addressData.connectionType && !addressData.errors.connectionType ? 'none' : addressData.errors.connectionType ? '1px solid rgb(239, 68, 68)' : isFieldActive(0) ? '1px solid rgba(16, 16, 16, 0.5)' : '1px solid rgba(16, 16, 16, 0.25)',
-                background: addressData.connectionType && !addressData.errors.connectionType ? '#101010' : addressData.errors.connectionType ? 'rgb(239, 68, 68)' : isFieldActive(0) ? '#101010' : 'transparent',
+                background: addressData.errors.connectionType ? 'rgb(239, 68, 68)' : addressData.connectionType && !addressData.errors.connectionType ? FILLED_CIRCLE_BG : isFieldActive(0) ? '#101010' : 'transparent',
               }}
             >
               {addressData.connectionType && !addressData.errors.connectionType ? (
-                <CheckIcon />
+                <CheckIcon filled />
               ) : (
                 <FieldArrowIcon active={isFieldActive(0) || !!addressData.errors.connectionType} error={!!addressData.errors.connectionType} />
               )}
@@ -567,11 +571,11 @@ function AddressFormContent({ isAppLoading = false, appLoadingProgress = 0 }: Ad
                 height: 18,
                 boxSizing: 'border-box',
                 border: addressData.city && !addressData.errors.city ? 'none' : addressData.errors.city ? '1px solid rgb(239, 68, 68)' : isFieldActive(1) ? '1px solid rgba(16, 16, 16, 0.5)' : '1px solid rgba(16, 16, 16, 0.25)',
-                background: addressData.city && !addressData.errors.city ? '#101010' : addressData.errors.city ? 'rgb(239, 68, 68)' : isFieldActive(1) ? '#101010' : 'transparent',
+                background: addressData.errors.city ? 'rgb(239, 68, 68)' : addressData.city && !addressData.errors.city ? FILLED_CIRCLE_BG : isFieldActive(1) ? '#101010' : 'transparent',
               }}
             >
               {addressData.city && !addressData.errors.city ? (
-                <CheckIcon />
+                <CheckIcon filled />
               ) : (
                 <FieldArrowIcon active={isFieldActive(1) || !!addressData.errors.city} error={!!addressData.errors.city} />
               )}
@@ -626,11 +630,11 @@ function AddressFormContent({ isAppLoading = false, appLoadingProgress = 0 }: Ad
                 height: 18,
                 boxSizing: 'border-box',
                 border: addressData.street && !addressData.errors.street ? 'none' : addressData.errors.street ? '1px solid rgb(239, 68, 68)' : isFieldActive(2) ? '1px solid rgba(16, 16, 16, 0.5)' : '1px solid rgba(16, 16, 16, 0.25)',
-                background: addressData.street && !addressData.errors.street ? '#101010' : addressData.errors.street ? 'rgb(239, 68, 68)' : isFieldActive(2) ? '#101010' : 'transparent',
+                background: addressData.errors.street ? 'rgb(239, 68, 68)' : addressData.street && !addressData.errors.street ? FILLED_CIRCLE_BG : isFieldActive(2) ? '#101010' : 'transparent',
               }}
             >
               {addressData.street && !addressData.errors.street ? (
-                <CheckIcon />
+                <CheckIcon filled />
               ) : (
                 <FieldArrowIcon active={isFieldActive(2) || !!addressData.errors.street} error={!!addressData.errors.street} />
               )}
@@ -687,11 +691,11 @@ function AddressFormContent({ isAppLoading = false, appLoadingProgress = 0 }: Ad
                 height: 18,
                 boxSizing: 'border-box',
                 border: addressData.houseNumber && !addressData.errors.houseNumber ? 'none' : addressData.errors.houseNumber ? '1px solid rgb(239, 68, 68)' : isFieldActive(3) ? '1px solid rgba(16, 16, 16, 0.5)' : '1px solid rgba(16, 16, 16, 0.25)',
-                background: addressData.houseNumber && !addressData.errors.houseNumber ? '#101010' : addressData.errors.houseNumber ? 'rgb(239, 68, 68)' : isFieldActive(3) ? '#101010' : 'transparent',
+                background: addressData.errors.houseNumber ? 'rgb(239, 68, 68)' : addressData.houseNumber && !addressData.errors.houseNumber ? FILLED_CIRCLE_BG : isFieldActive(3) ? '#101010' : 'transparent',
               }}
             >
               {addressData.houseNumber && !addressData.errors.houseNumber ? (
-                <CheckIcon />
+                <CheckIcon filled />
               ) : (
                 <FieldArrowIcon active={isFieldActive(3) || !!addressData.errors.houseNumber} error={!!addressData.errors.houseNumber} />
               )}

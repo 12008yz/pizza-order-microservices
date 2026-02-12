@@ -1534,7 +1534,7 @@ function Frame3Content() {
                     {/* Line 9 — разделитель 5px от последнего пункта, 330px по макету */}
                     <div
                       style={{
-                        marginTop: '5px',
+                        marginTop: '10px',
                         height: '0',
                         borderTop: '1px solid rgba(16, 16, 16, 0.1)',
                         width: '100%',
@@ -1544,8 +1544,8 @@ function Frame3Content() {
                   </div>
                 </div>
 
-                {/* Футер: отступ 15px от краёв карточки */}
-                <div style={{ padding: '15px 15px 15px 15px', flexShrink: 0, position: 'relative' }}>
+                {/* Футер: 20px от второй серой линии сверху, 15px от краёв карточки */}
+                <div style={{ padding: '20px 15px 15px 15px', flexShrink: 0, position: 'relative' }}>
                   {/* Цена: 22px, line-height 115%, 5px до промо по макету */}
                   <div
                     style={{

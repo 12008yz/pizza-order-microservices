@@ -804,16 +804,20 @@ function Frame3Content() {
         {showFavoritesMode ? (
           <div
             className="flex-shrink-0 cursor-pointer"
-            style={{ minHeight: 105, position: 'absolute', left: 0, right: 0, top: 0, zIndex: 10 }}
+            style={{
+              position: 'absolute',
+              top: '50px',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              zIndex: 10,
+            }}
             onClick={() => setShowFavoritesMode(false)}
             role="button"
             tabIndex={0}
             onKeyDown={(e) => e.key === 'Enter' && setShowFavoritesMode(false)}
             aria-label="Выйти из режима избранного"
           >
-            <div style={{ margin: '0 auto', paddingTop: 'var(--header-top, 50px)' }}>
-              <ClickOutsideHintContent />
-            </div>
+            <ClickOutsideHintContent />
           </div>
         ) : null}
 
@@ -1360,7 +1364,7 @@ top: iconTopPx !== null ? `${iconTopPx}px` : `calc(var(--header-top, 50px) + 40p
             </div>
           ) : !tariffsLoading && displayedTariffs.length === 0 ? (
             showFavoritesMode ? (
-              /* В режиме избранного — лаконичное сообщение в небольшом белом блоке по центру */
+              /* В режиме избранного — подсказка «Нажмите в открытое пустое место…» */
               <div
                 style={{
                   position: 'absolute',
@@ -1369,21 +1373,7 @@ top: iconTopPx !== null ? `${iconTopPx}px` : `calc(var(--header-top, 50px) + 40p
                   transform: 'translate(-50%, -50%)',
                 }}
               >
-                <div
-                  style={{
-                    background: '#FFFFFF',
-                    borderRadius: '16px',
-                    padding: '20px 32px',
-                    fontFamily: 'TT Firs Neue, sans-serif',
-                    fontSize: '16px',
-                    fontWeight: 400,
-                    color: 'rgba(16, 16, 16, 0.5)',
-                    textAlign: 'center',
-                    whiteSpace: 'nowrap',
-                  }}
-                >
-                  Теперь тут ничего нет ;(
-                </div>
+                <ClickOutsideHintContent />
               </div>
             ) : (
               /* Обычный режим — белый блок с сообщением о фильтрах */

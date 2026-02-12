@@ -12,6 +12,7 @@ const HINT_STYLE: React.CSSProperties = {
   fontSize: '14px',
   lineHeight: '105%',
   display: 'flex',
+  flexDirection: 'column',
   alignItems: 'center',
   justifyContent: 'center',
   textAlign: 'center',
@@ -34,9 +35,8 @@ export default function ClickOutsideHint({ wrapperStyle }: ClickOutsideHintProps
   return (
     <div style={{ ...DEFAULT_WRAPPER_STYLE, ...wrapperStyle }}>
       <div style={HINT_STYLE}>
-        Нажмите в открытое пустое место,
-        <br />
-        чтобы выйти из этого режима
+        <span>Нажмите в открытое пустое место,</span>
+        <span>чтобы выйти из этого режима</span>
       </div>
     </div>
   );
@@ -46,9 +46,8 @@ export default function ClickOutsideHint({ wrapperStyle }: ClickOutsideHintProps
 export function ClickOutsideHintContent() {
   return (
     <div style={HINT_STYLE}>
-      Нажмите в открытое пустое место,
-      <br />
-      чтобы выйти из этого режима
+      <span>Нажмите в открытое пустое место,</span>
+      <span>чтобы выйти из этого режима</span>
     </div>
   );
 }

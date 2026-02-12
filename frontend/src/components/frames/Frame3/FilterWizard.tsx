@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import CheckboxOption from '../../common/CheckboxOption';
-import { ClickOutsideHintContent } from '../../common/ClickOutsideHint';
+import ClickOutsideHint from '../../common/ClickOutsideHint';
 import RadioOption from '../../common/RadioOption';
 
 interface FilterWizardProps {
@@ -156,11 +156,9 @@ export default function FilterWizard({ isOpen, onClose, onApply }: FilterWizardP
                boxSizing: 'border-box',
             }}
          >
-            {/* Шапка: подсказка (клик по пустоте закрывает — обрабатывается корневым onClick), всплывающие окна 75px от верха */}
-            <div className="flex-shrink-0 cursor-pointer" style={{ minHeight: 105 }}>
-               <div style={{ margin: '0 auto', paddingTop: 50 }}>
-                  <ClickOutsideHintContent />
-               </div>
+            {/* Шапка: подсказка (клик по пустоте закрывает — обрабатывается корневым onClick) */}
+            <div className="flex-shrink-0 relative cursor-pointer" style={{ minHeight: 105 }}>
+               <ClickOutsideHint />
             </div>
 
             {/* Карточка — прижата вниз, 20px от низа за счёт paddingBottom оверлея (как в Frame2) */}

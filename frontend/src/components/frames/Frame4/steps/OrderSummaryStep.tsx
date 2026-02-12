@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
-import AnimatedCheck from '../../../common/AnimatedCheck';
 import type {
   EquipmentState,
   RouterNeedOption,
@@ -64,20 +63,27 @@ interface OrderSummaryStepProps {
   callbacks: OrderSummaryCallbacks;
 }
 
-// Иконка галочки в круге (как в 1 фрейме)
-const CheckCircleIcon = ({ active = true }: { active?: boolean }) => {
-  const color = active ? '#101010' : 'rgba(16, 16, 16, 0.25)';
-  return (
-    <span className="relative inline-block" style={{ width: 16, height: 16 }}>
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="absolute inset-0">
-        <circle cx="8" cy="8" r="7" stroke={color} strokeWidth="1.5" fill="none" />
-      </svg>
-      <span className="absolute" style={{ left: 4, top: 4 }}>
-        <AnimatedCheck size={8} color={color} strokeWidth={1.5} />
-      </span>
-    </span>
-  );
-};
+// Галочка как в 1 фрейме — белая в залитом чёрном круге 18×18
+const CheckIconFrame1 = () => (
+  <svg width="8" height="6" viewBox="0 0 8 6" fill="none" aria-hidden>
+    <path d="M1 3L3 5L7 1" stroke="#FFFFFF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
+const CheckCircleIcon = ({ active = true }: { active?: boolean }) => (
+  <div
+    className="rounded-full flex items-center justify-center flex-shrink-0"
+    style={{
+      width: 18,
+      height: 18,
+      boxSizing: 'border-box',
+      border: active ? 'none' : '1px solid rgba(16, 16, 16, 0.25)',
+      background: active ? '#101010' : 'transparent',
+    }}
+  >
+    {active && <CheckIconFrame1 />}
+  </div>
+);
 
 // Иконка крестика в круге (для "Не предусмотрено")
 const CrossCircleIcon = () => (
@@ -462,13 +468,13 @@ export default function OrderSummaryStep({
             </div>
           </div>
 
-          {/* Разделитель: 330px по макету */}
+          {/* Разделитель: 330px по макету, 10px от блока тарифа (padCardBottom) */}
           <div style={{ padding: '0 17px 0 15px' }}>
             <div style={{ height: '1px', background: 'rgba(16, 16, 16, 0.1)', maxWidth: '330px' }} />
           </div>
 
-          {/* Блок фич — по Figma padding 16px 17px 16px 15px, между рядами 5px */}
-          <div style={{ padding: `${padBlockV}px 17px ${padBlockV}px 15px` }}>
+          {/* Блок фич — по Figma padding 16px 17px 16px 15px; снизу 0, чтобы до серой линии было 10px (marginTop разделителя + схлопывание с marginBottom строки SIM) */}
+          <div style={{ padding: `${padBlockV}px 17px 0 15px` }}>
             {/* Скорость интернета */}
             <div style={{ display: 'flex', alignItems: 'center', marginBottom: '5px', minHeight: `${rowMinH}px` }}>
               <div style={{ marginRight: '12px', flexShrink: 0 }}>
@@ -521,8 +527,8 @@ export default function OrderSummaryStep({
               </div>
             )}
 
-            {/* Разделитель перед оборудованием */}
-            <div style={{ height: '1px', background: 'rgba(16, 16, 16, 0.1)', marginBottom: '5px', maxWidth: '330px' }} />
+            {/* Разделитель перед оборудованием — 10px от верхней строки */}
+            <div style={{ height: '1px', background: 'rgba(16, 16, 16, 0.1)', marginTop: '10px', marginBottom: '5px', maxWidth: '330px' }} />
 
             {/* Роутер — иконка по центру, левый блок 170px, правый — цена и подпись */}
             <div
@@ -744,8 +750,8 @@ export default function OrderSummaryStep({
             </div>
           </div>
 
-          {/* Разделитель перед ценой */}
-          <div style={{ padding: '0 17px 0 15px' }}>
+          {/* Разделитель перед ценой — 10px от верхней строки */}
+          <div style={{ padding: '0 17px 0 15px', marginTop: '10px' }}>
             <div style={{ height: '1px', background: 'rgba(16, 16, 16, 0.1)', maxWidth: '330px' }} />
           </div>
 
@@ -805,7 +811,7 @@ export default function OrderSummaryStep({
           style={{
             flexShrink: 0,
             display: 'flex',
-            gap: '10px',
+            gap: '5px',
             padding: '0 17px 0 15px',
           }}
         >

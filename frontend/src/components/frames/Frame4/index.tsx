@@ -722,8 +722,8 @@ function Frame4Content() {
               // Итоговая карточка: от header+15px растягивается до 20px от низа (прижата к низу)
               ...(currentStep === 'order_summary'
                 ? {
-                    height: 'calc(100dvh - (var(--header-top, 25px) + 41px + 15px + 20px) - var(--sab, 0px))',
-                    minHeight: 'calc(100dvh - (var(--header-top, 25px) + 41px + 15px + 20px) - var(--sab, 0px))',
+                    height: 'calc(100dvh - (var(--header-top, 10px) + 41px + 15px + 20px) - var(--sab, 0px))',
+                    minHeight: 'calc(100dvh - (var(--header-top, 10px) + 41px + 15px + 20px) - var(--sab, 0px))',
                   }
                 : { maxHeight: 'calc(100dvh - 145px)' }),
             }}

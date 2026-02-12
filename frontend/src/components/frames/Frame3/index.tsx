@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useMemo, useEffect, useCallback } from 'react';
+import { useState, useRef, useMemo, useEffect, useLayoutEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import {
@@ -296,11 +296,17 @@ type HintStep = 'none' | 'consultation' | 'filter';
 // Константа для ключа localStorage
 const FAVORITES_STORAGE_KEY = 'favorites_tariffs';
 
+// Зазор: иконки — 10px от карточек, карточки — 20px от низа экрана
+const ICON_TO_CARD_GAP_PX = 10;
+const CARD_TO_BOTTOM_GAP_PX = 20;
+
 function Frame3Content() {
   const router = useRouter();
   const { addressData } = useAddress();
   const scrollRef = useRef<HTMLDivElement>(null);
+  const frameInnerRef = useRef<HTMLDivElement>(null);
   const clickGuardRef = useRef(false);
+  const [iconTopPx, setIconTopPx] = useState<number | null>(null);
 
   // Состояние для тарифов из API
   const [tariffs, setTariffs] = useState<Tariff[]>([]);
@@ -728,6 +734,26 @@ function Frame3Content() {
     updateCanScrollRight();
   }, [displayedTariffs, updateCanScrollRight]);
 
+  // Позиция иконок: 10px над верхним краем первой карточки (карточки прижаты к низу, отступ 20px)
+  const updateIconTop = useCallback(() => {
+    const scrollEl = scrollRef.current;
+    const containerEl = frameInnerRef.current;
+    if (!scrollEl || !containerEl) return;
+    const firstCard = scrollEl.querySelector('.carousel-card') as HTMLElement | null;
+    if (!firstCard) return;
+    const cardRect = firstCard.getBoundingClientRect();
+    const containerRect = containerEl.getBoundingClientRect();
+    const top = cardRect.top - containerRect.top - 40 - ICON_TO_CARD_GAP_PX;
+    setIconTopPx(top);
+  }, []);
+
+  useLayoutEffect(() => {
+    updateIconTop();
+    const ro = new ResizeObserver(updateIconTop);
+    if (frameInnerRef.current) ro.observe(frameInnerRef.current);
+    return () => ro.disconnect();
+  }, [displayedTariffs.length, updateIconTop]);
+
   // Скролл ровно на одну карточку (ширина карточки + зазор 5px)
   const CARD_GAP = 5;
   const handleScrollRight = () => {
@@ -763,6 +789,7 @@ function Frame3Content() {
     >
       {/* Адаптивная ширина: 100% на малых экранах, макс 425px — ровно при 400px и 425px, без обрезанной полоски справа */}
       <div
+        ref={frameInnerRef}
         className="relative flex flex-col overflow-hidden"
         style={{
           width: '100%',
@@ -1090,8 +1117,8 @@ function Frame3Content() {
             width: '70px',
             height: '40px',
             right: '19px',
-            top: 'calc(var(--header-top, 50px) + 40px + 165px - 40px - 10px)',
-            zIndex: 5,
+top: iconTopPx !== null ? `${iconTopPx}px` : `calc(var(--header-top, 50px) + 40px + 165px - 40px - ${ICON_TO_CARD_GAP_PX}px)`,
+          zIndex: 5,
           }}
           onClick={(e) => {
             e.stopPropagation();
@@ -1150,7 +1177,7 @@ function Frame3Content() {
             width: '40px',
             height: '40px',
             right: '19px',
-            top: 'calc(var(--header-top, 50px) + 40px + 165px - 40px - 10px)',
+            top: iconTopPx !== null ? `${iconTopPx}px` : `calc(var(--header-top, 50px) + 40px + 165px - 40px - ${ICON_TO_CARD_GAP_PX}px)`,
             zIndex: 5,
             opacity: canScrollRight && displayedTariffs.length > 1 ? 1 : 0.4,
             pointerEvents: canScrollRight && displayedTariffs.length > 1 ? 'auto' : 'none',
@@ -1228,7 +1255,7 @@ function Frame3Content() {
             width: '40px',
             height: '40px',
             left: '20px',
-            top: 'calc(var(--header-top, 50px) + 40px + 165px - 40px - 10px)',
+            top: iconTopPx !== null ? `${iconTopPx}px` : `calc(var(--header-top, 50px) + 40px + 165px - 40px - ${ICON_TO_CARD_GAP_PX}px)`,
             zIndex: 5,
           }}
           onClick={withClickGuard(handleClearFilters)}
@@ -1252,7 +1279,7 @@ function Frame3Content() {
         </div>
       )}
 
-      {/* Контейнер карусели: 165px от низа header (по макету), снизу отступ 20px */}
+      {/* Контейнер карусели: 165px от низа header; карточки прижаты к низу, отступ от низа 20px */}
       <div
         className="carousel-wrapper"
         style={{
@@ -1260,7 +1287,7 @@ function Frame3Content() {
           left: 0,
           right: 0,
           top: 'calc(var(--header-top, 50px) + 40px + 165px)',
-          bottom: 'calc(20px + var(--sab, 0px))',
+          bottom: `calc(${CARD_TO_BOTTOM_GAP_PX}px + var(--sab, 0px))`,
           zIndex: 1,
           background: '#F5F5F5',
         }}
@@ -1279,7 +1306,7 @@ function Frame3Content() {
           className={`flex scrollbar-hide flex-nowrap carousel-container h-full ${displayedTariffs.length > 1 ? 'overflow-x-auto' : 'overflow-x-hidden'} ${displayedTariffs.length === 1 ? 'carousel-container--single-card' : ''}`}
           style={{
             gap: '5px',
-            alignItems: 'stretch',
+            alignItems: 'flex-end',
             scrollSnapType: displayedTariffs.length > 1 ? 'x mandatory' : 'none',
             WebkitOverflowScrolling: 'touch',
             scrollbarWidth: 'none',
@@ -1296,8 +1323,7 @@ function Frame3Content() {
             <div
               className="flex-shrink-0 carousel-card"
               style={{
-                height: '100%',
-                minHeight: 0,
+                height: 'auto',
                 background: '#FFFFFF',
                 borderRadius: '20px',
                 display: 'flex',
@@ -1315,8 +1341,7 @@ function Frame3Content() {
             <div
               className="flex-shrink-0 carousel-card"
               style={{
-                height: '100%',
-                minHeight: 0,
+                height: 'auto',
                 background: '#FFFFFF',
                 borderRadius: '20px',
                 display: 'flex',
@@ -1360,12 +1385,11 @@ function Frame3Content() {
             ) : (
               /* Обычный режим — белый блок с сообщением о фильтрах */
               <>
-                <div className="carousel-spacer-left" aria-hidden="true" />
+                <div className="carousel-spacer-left" aria-hidden="true" style={{ alignSelf: 'stretch' }} />
                 <div
                   className="flex-shrink-0 carousel-card"
                   style={{
-                    height: '100%',
-                    minHeight: 0,
+                    height: 'auto',
                     background: '#FFFFFF',
                     borderRadius: '20px',
                     display: 'flex',
@@ -1385,20 +1409,19 @@ function Frame3Content() {
                     Нет тарифов по выбранным фильтрам. Попробуйте изменить параметры фильтрации.
                   </div>
                 </div>
-                <div className="carousel-spacer-right" aria-hidden="true" />
+                <div className="carousel-spacer-right" aria-hidden="true" style={{ alignSelf: 'stretch' }} />
               </>
             )
           ) : (
             <>
-            <div className="carousel-spacer-left" aria-hidden="true" />
+            <div className="carousel-spacer-left" aria-hidden="true" style={{ alignSelf: 'stretch' }} />
             {displayedTariffs.map((tariff, index) => (
               <div
                 key={`tariff-${tariff.id}-${tariff.providerId}-${index}`}
                 className="flex-shrink-0 carousel-card carousel-card--shadow-top"
                 style={{
                   position: 'relative',
-                  height: '100%',
-                  minHeight: 0,
+                  height: 'auto',
                   background: '#FFFFFF',
                   borderRadius: '20px',
                   scrollSnapAlign: 'start',
@@ -1449,19 +1472,17 @@ function Frame3Content() {
                   />
                 </div>
 
-                {/* Контент: отступ 15px от краёв карточки */}
+                {/* Контент: отступ 15px от краёв карточки; без flex:1 — только по высоте контента, без лишнего белого пространства */}
                 <div
                   className="features-section"
                   style={{
                     padding: '10px 15px 0 15px',
-                    flex: 1,
-                    minHeight: 0,
-                    // Делаем контент видимым целиком, включая нижний разделитель,
-                    // иначе линия между фичами и блоком цены может обрезаться
+                    flexShrink: 0,
                     overflowY: 'visible',
                   }}
                 >
-                  <div className="features-container" style={{ display: 'flex', flexDirection: 'column' }}>
+                  {/* Ряды фич с gap 5px только между ними; разделитель — отдельно, 10px от последнего ряда */}
+                  <div className="features-container" style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
                     {/* Скорость — 16px 155%, подпись 14px 105%, высота строки 40px по макету */}
                     <div className="feature-row" style={{ display: 'flex', alignItems: 'center', minHeight: '40px' }}>
                       <div className="feature-icon" style={{ flexShrink: 0 }}>
@@ -1530,18 +1551,17 @@ function Frame3Content() {
                         </div>
                       </div>
                     </div>
-
-                    {/* Line 9 — разделитель 5px от последнего пункта, 330px по макету */}
-                    <div
-                      style={{
-                        marginTop: '10px',
-                        height: '0',
-                        borderTop: '1px solid rgba(16, 16, 16, 0.1)',
-                        width: '100%',
-                        maxWidth: '330px',
-                      }}
-                    />
                   </div>
+                  {/* Вторая серая линия: 10px от последнего пункта фич (вне контейнера с gap) */}
+                  <div
+                    style={{
+                      marginTop: '10px',
+                      height: '0',
+                      borderTop: '1px solid rgba(16, 16, 16, 0.1)',
+                      width: '100%',
+                      maxWidth: '330px',
+                    }}
+                  />
                 </div>
 
                 {/* Футер: 20px от второй серой линии сверху, 15px от краёв карточки */}
@@ -1560,17 +1580,17 @@ function Frame3Content() {
                     {tariff.price}
                   </div>
 
-                  {/* Промо-акция: текст слева, красный огонёк выровнен по иконке "i" (правый край контента, 15px от карточки) */}
-                  <div
-                    style={{
-                      position: 'relative',
-                      marginBottom: '2px',
-                      minHeight: '20px',
-                      display: 'flex',
-                      alignItems: 'center',
-                    }}
-                  >
-                    {tariff.promoText ? (
+                  {/* Промо-акция: только если есть текст — без лишнего пустого места */}
+                  {tariff.promoText ? (
+                    <div
+                      style={{
+                        position: 'relative',
+                        marginBottom: '2px',
+                        minHeight: '20px',
+                        display: 'flex',
+                        alignItems: 'center',
+                      }}
+                    >
                       <div
                         style={{
                           fontFamily: 'TT Firs Neue, sans-serif',
@@ -1582,8 +1602,6 @@ function Frame3Content() {
                       >
                         {tariff.promoText}
                       </div>
-                    ) : null}
-                    {tariff.promoText ? (
                       <div
                         style={{
                           position: 'absolute',
@@ -1603,8 +1621,8 @@ function Frame3Content() {
                           <path d="M3.75927 0.0684591C3.72341 0.0380912 3.68091 0.0169502 3.63534 0.00681841C3.58978 -0.00331335 3.54249 -0.00213889 3.49746 0.0102428C3.45244 0.0226244 3.411 0.0458503 3.37663 0.0779624C3.34227 0.110074 3.31598 0.150131 3.3 0.194756L2.5 2.43218L1.62145 1.56514C1.59195 1.53599 1.55672 1.51354 1.51808 1.49927C1.47943 1.485 1.43826 1.47924 1.39727 1.48235C1.35629 1.48546 1.31641 1.49739 1.28028 1.51734C1.24414 1.53729 1.21257 1.56482 1.18764 1.5981C0.4 2.64922 0 3.70663 0 4.74072C0 5.60513 0.337142 6.43414 0.937258 7.04538C1.53737 7.65661 2.35131 8 3.2 8C4.04869 8 4.86263 7.65661 5.46274 7.04538C6.06286 6.43414 6.4 5.60513 6.4 4.74072C6.4 2.53885 4.55309 0.740686 3.75927 0.0684591Z" fill="white"/>
                         </svg>
                       </div>
-                    ) : null}
-                  </div>
+                    </div>
+                  ) : null}
 
                   {/* Подключение от оператора: 14px 145%, 20px до кнопок по макету */}
                   <div
@@ -1697,7 +1715,7 @@ function Frame3Content() {
                 </div>
               </div>
             ))}
-            <div className="carousel-spacer-right" aria-hidden="true" />
+            <div className="carousel-spacer-right" aria-hidden="true" style={{ alignSelf: 'stretch' }} />
             </>
           )}
         </div>

@@ -38,8 +38,7 @@ export default function SuccessStep({ orderNumber, onFaq }: SuccessStepProps) {
       const file = new File([blob], fileName, { type: 'image/png' });
 
       // Пробуем Share API — на мобильных в меню часто есть «Сохранить в Фото»/галерею
-      const canShareFiles = typeof navigator !== 'undefined' && navigator.share && (navigator.canShare?.({ files: [file] }) ?? true);
-      if (canShareFiles) {
+      if (typeof navigator !== 'undefined' && navigator.share) {
         try {
           await navigator.share({
             files: [file],

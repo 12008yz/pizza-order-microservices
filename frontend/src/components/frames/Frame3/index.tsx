@@ -24,10 +24,11 @@ import { ClickOutsideHintContent } from '../../common/ClickOutsideHint';
 import { AddressProvider, useAddress } from '../../../contexts/AddressContext';
 import AnimatedHeartFilledIcon from '../../common/AnimatedHeartFilledIcon';
 import { tariffsService } from '../../../services/tariffs.service';
+import LoadingScreen from '../../LoadingScreen';
 
 // Динамический импорт ConsultationFlow для code splitting
 const ConsultationFlow = dynamic(() => import('../Frame2/ConsultationFlow'), {
-  loading: () => <div>Загрузка...</div>,
+  loading: () => <LoadingScreen />,
   ssr: false,
 });
 

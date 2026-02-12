@@ -358,7 +358,7 @@ function Frame5Content() {
               </div>
               <button
                 type="button"
-                onClick={() => router.push('/?consultation=1')}
+                onClick={() => router.push('/?consultation=1&from=order')}
                 className="outline-none cursor-pointer border-0 w-10 h-10 flex items-center justify-center rounded-full bg-white absolute right-0 top-0"
                 aria-label="Консультация"
               >

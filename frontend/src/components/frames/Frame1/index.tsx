@@ -193,6 +193,10 @@ function AddressFormContent({ isAppLoading = false, appLoadingProgress = 0 }: Ad
   };
 
   const handleConsultationClose = () => {
+    if (searchParams.get('from') === 'order') {
+      router.push('/order');
+      return;
+    }
     clearErrors();
     if (!validateForm()) {
       setFlowState('form');
@@ -306,10 +310,18 @@ function AddressFormContent({ isAppLoading = false, appLoadingProgress = 0 }: Ad
   };
 
   const handleConsultationSubmit = async (data: { phone?: string; method?: ContactMethod }) => {
+    if (searchParams.get('from') === 'order') {
+      router.push('/order');
+      return;
+    }
     await saveUserDataAndNavigate(data.phone, data.method);
   };
 
   const handleConsultationSkip = async () => {
+    if (searchParams.get('from') === 'order') {
+      router.push('/order');
+      return;
+    }
     await saveUserDataAndNavigate();
   };
 

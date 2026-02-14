@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import AnimatedCheck from '../../common/AnimatedCheck';
-import { ClickOutsideHintContent } from '../../common/ClickOutsideHint';
+import { ClickOutsideHintContent, HINT_TOP } from '../../common/ClickOutsideHint';
 import { CloseIcon } from '../../common/icons';
 
 type ContactMethod = 'max' | 'telegram' | 'phone';
@@ -251,7 +251,7 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip, initialSte
       {/* Шапка: подсказка скрыта при показе уведомления; уведомления с отступом сверху по --header-top (как в Frame1, 4, 5) */}
       <div className="flex-shrink-0 relative cursor-pointer" style={{ minHeight: '105px' }} onClick={handleBackgroundClick}>
         {notifications.length === 0 && (
-          <div className="absolute left-0 right-0 flex justify-center" style={{ top: 50 }}>
+          <div className="absolute left-0 right-0 flex justify-center" style={{ top: HINT_TOP, left: 20, right: 20 }}>
             <ClickOutsideHintContent />
           </div>
         )}
@@ -454,7 +454,7 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip, initialSte
       {/* Шапка: подсказка скрыта при показе уведомления; уведомления с отступом сверху по --header-top (как в Frame1, 4, 5) */}
       <div className="flex-shrink-0 relative cursor-pointer" style={{ minHeight: '105px' }} onClick={handleBackgroundClick}>
         {notifications.length === 0 && (
-          <div className="absolute left-0 right-0 flex justify-center" style={{ top: 50 }}>
+          <div className="absolute left-0 right-0 flex justify-center" style={{ top: HINT_TOP, left: 20, right: 20 }}>
             <ClickOutsideHintContent />
           </div>
         )}
@@ -579,7 +579,7 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip, initialSte
     <div className="relative w-full max-w-[400px] flex flex-col h-full overflow-hidden bg-[#F5F5F5]">
       <div className="flex-shrink-0 relative cursor-pointer" style={{ minHeight: '105px' }} onClick={handleBackgroundClick}>
         {notifications.length === 0 && (
-          <div className="absolute left-0 right-0 flex justify-center" style={{ top: 50 }}>
+          <div className="absolute left-0 right-0 flex justify-center" style={{ top: HINT_TOP, left: 20, right: 20 }}>
             <ClickOutsideHintContent />
           </div>
         )}

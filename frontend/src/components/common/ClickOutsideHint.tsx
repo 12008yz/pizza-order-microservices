@@ -2,10 +2,13 @@
 
 import React from 'react';
 
+/** Высота зоны подсказки = как у header (одна линия по вертикали). Использовать в обёртках для top. */
+export const HINT_TOP = 'var(--header-top, 50px)';
+
 /** Стили по макету: 240×30, 14px, line-height 105%, цвет 0.25, всегда 2 строки */
 const HINT_STYLE: React.CSSProperties = {
   width: '240px',
-  minHeight: '30px',
+  minHeight: '40px',
   fontFamily: 'TT Firs Neue, sans-serif',
   fontStyle: 'normal',
   fontWeight: 400,
@@ -28,7 +31,7 @@ const DEFAULT_WRAPPER_STYLE: React.CSSProperties = {
   position: 'absolute',
   width: '240px',
   left: 'calc(50% - 240px / 2)',
-  top: '50px',
+  top: HINT_TOP,
 };
 
 export default function ClickOutsideHint({ wrapperStyle }: ClickOutsideHintProps) {
@@ -42,7 +45,7 @@ export default function ClickOutsideHint({ wrapperStyle }: ClickOutsideHintProps
   );
 }
 
-/** Только контент подсказки (без обёртки) — когда позиция задаётся родителем */
+/** Только контент подсказки (без обёртки) — когда позиция задаётся родителем. Для выравнивания по header используйте top: HINT_TOP, left: 20, right: 20. */
 export function ClickOutsideHintContent() {
   return (
     <div style={HINT_STYLE}>

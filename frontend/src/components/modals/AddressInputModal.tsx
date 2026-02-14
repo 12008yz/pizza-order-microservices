@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import AnimatedCheck from '../common/AnimatedCheck';
-import { ClickOutsideHintContent } from '../common/ClickOutsideHint';
+import { ClickOutsideHintContent, HINT_TOP } from '../common/ClickOutsideHint';
 import { useAddress } from '../../contexts/AddressContext';
 import { locationsService } from '../../services/locations.service';
 import type { AddressSuggestion } from '../../services/api/types';
@@ -682,7 +682,7 @@ export default function AddressInputModal({
         }}
       >
         {/* Шапка: подсказка */}
-        <div className="flex-shrink-0 flex justify-center" style={{ minHeight: '105px', paddingTop: '50px' }}>
+        <div className="flex-shrink-0 flex justify-center" style={{ minHeight: '105px', paddingTop: HINT_TOP }}>
           <ClickOutsideHintContent />
         </div>
 

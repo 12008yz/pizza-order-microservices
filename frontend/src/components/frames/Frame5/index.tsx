@@ -7,7 +7,7 @@ import AddressInputModal from '../../modals/AddressInputModal';
 import { useEquipment } from '../../../contexts/EquipmentContext';
 import { ordersService } from '../../../services';
 import type { CreateOrderData } from '../../../services/orders.service';
-import { ClickOutsideHintContent } from '../../common/ClickOutsideHint';
+import { ClickOutsideHintContent, HINT_TOP } from '../../common/ClickOutsideHint';
 import { HomeIcon, PlaneIcon } from '../../common/icons';
 import LoadingScreen from '../../LoadingScreen';
 import {
@@ -378,7 +378,7 @@ function Frame5Content() {
             <div
               className="flex justify-center"
               style={{
-                paddingTop: '50px',
+                paddingTop: HINT_TOP,
                 opacity: !showNotification ? 1 : 0,
                 transition: 'opacity 0.2s ease',
               }}

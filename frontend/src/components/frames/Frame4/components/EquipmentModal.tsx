@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { ClickOutsideHintContent } from '../../../common/ClickOutsideHint';
+import { ClickOutsideHintContent, HINT_TOP } from '../../../common/ClickOutsideHint';
 
 interface EquipmentModalProps {
   isOpen: boolean;
@@ -53,7 +53,7 @@ export default function EquipmentModal({
           tabIndex={0}
           aria-label="Закрыть"
         >
-          <div className="flex justify-center" style={{ paddingTop: '50px' }}>
+          <div className="flex justify-center" style={{ paddingTop: HINT_TOP }}>
             <ClickOutsideHintContent />
           </div>
         </div>

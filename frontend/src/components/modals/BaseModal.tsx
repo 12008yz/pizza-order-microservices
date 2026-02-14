@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import ClickOutsideHint from '../common/ClickOutsideHint';
+import ClickOutsideHint, { HINT_TOP } from '../common/ClickOutsideHint';
 
 interface BaseModalProps {
   isOpen: boolean;
@@ -44,9 +44,11 @@ export default function BaseModal({
       {!hideHint && (
         <ClickOutsideHint
           wrapperStyle={{
-            left: '50%',
-            transform: 'translateX(-50%)',
-            top: '50px',
+            left: '20px',
+            right: '20px',
+            display: 'flex',
+            justifyContent: 'center',
+            top: HINT_TOP,
           }}
         />
       )}

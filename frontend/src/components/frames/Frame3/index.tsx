@@ -20,7 +20,7 @@ import {
 import FavoriteToast from './FavoriteToast';
 import FilterWizard from './FilterWizard';
 import HintTooltip from './HintTooltip';
-import { ClickOutsideHintContent } from '../../common/ClickOutsideHint';
+import { ClickOutsideHintContent, HINT_TOP } from '../../common/ClickOutsideHint';
 import { AddressProvider, useAddress } from '../../../contexts/AddressContext';
 import AnimatedHeartFilledIcon from '../../common/AnimatedHeartFilledIcon';
 import { tariffsService } from '../../../services/tariffs.service';
@@ -827,9 +827,11 @@ function Frame3Content() {
             className="flex-shrink-0 cursor-pointer"
             style={{
               position: 'absolute',
-              top: '50px',
-              left: '50%',
-              transform: 'translateX(-50%)',
+              top: HINT_TOP,
+              left: '20px',
+              right: '20px',
+              display: 'flex',
+              justifyContent: 'center',
               zIndex: 10,
             }}
             onClick={() => setShowFavoritesMode(false)}
@@ -1401,13 +1403,15 @@ function Frame3Content() {
             </div>
           ) : !tariffsLoading && displayedTariffs.length === 0 ? (
             showFavoritesMode ? (
-              /* В режиме избранного — подсказка «Нажмите в открытое пустое место…» */
+              /* В режиме избранного — подсказка «Нажмите в открытое пустое место…» (та же высота, что header) */
               <div
                 style={{
                   position: 'absolute',
-                  top: '50%',
-                  left: '50%',
-                  transform: 'translate(-50%, -50%)',
+                  top: HINT_TOP,
+                  left: '20px',
+                  right: '20px',
+                  display: 'flex',
+                  justifyContent: 'center',
                 }}
               >
                 <ClickOutsideHintContent />

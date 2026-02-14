@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import CheckboxOption from '../common/CheckboxOption';
-import { ClickOutsideHintContent } from '../common/ClickOutsideHint';
+import { ClickOutsideHintContent, HINT_TOP } from '../common/ClickOutsideHint';
 
 interface FilterServicesModalProps {
   isOpen: boolean;
@@ -67,7 +67,7 @@ export default function FilterServicesModal({
           style={{ minHeight: '105px' }}
           onClick={onClose}
         >
-          <div className="flex justify-center" style={{ paddingTop: '50px' }}>
+          <div className="flex justify-center" style={{ paddingTop: HINT_TOP }}>
             <ClickOutsideHintContent />
           </div>
         </div>

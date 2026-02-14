@@ -67,10 +67,10 @@ interface OrderSummaryStepProps {
   callbacks: OrderSummaryCallbacks;
 }
 
-// Галочка как в 1 фрейме — белая в залитом чёрном круге 18×18
-const CheckIconFrame1 = () => (
+// Галочка: белый фон, чёрный border, чёрная галочка (18×18)
+const CheckIconSvg = () => (
   <svg width="8" height="6" viewBox="0 0 8 6" fill="none" aria-hidden>
-    <path d="M1 3L3 5L7 1" stroke="#FFFFFF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M1 3L3 5L7 1" stroke="#101010" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
   </svg>
 );
 
@@ -81,11 +81,11 @@ const CheckCircleIcon = ({ active = true }: { active?: boolean }) => (
       width: 18,
       height: 18,
       boxSizing: 'border-box',
-      border: active ? 'none' : '1px solid rgba(16, 16, 16, 0.25)',
-      background: active ? '#101010' : 'transparent',
+      border: active ? '1px solid #101010' : '1px solid rgba(16, 16, 16, 0.25)',
+      background: active ? '#FFFFFF' : 'transparent',
     }}
   >
-    {active && <CheckIconFrame1 />}
+    {active && <CheckIconSvg />}
   </div>
 );
 
@@ -420,7 +420,7 @@ export default function OrderSummaryStep({
   const rowGap = 5;        // 5px между рядами фич/оборудования
   const pricePadTop = 20;  // 20px от разделителя до цены
   const priceToButtons = 20; // 20px от «Подключение от оператора» до кнопок
-  const padBottom = 29;    // 29px от низа кнопок до низа карточки
+  const padBottom = 20;   // 20px от низа кнопок до низа карточки
   const dividerToBlock = 10; // 10px от последней фичи до разделителя оборудования
 
   return (
@@ -430,7 +430,7 @@ export default function OrderSummaryStep({
         fontFamily: 'TT Firs Neue, sans-serif',
       }}
     >
-      {/* Контент сверху, 20px от «Подключение от оператора» до кнопок, кнопки и 29px снизу — без растягивания по высоте */}
+      {/* Контент сверху, 20px от «Подключение от оператора» до кнопок, кнопки и 20px снизу — без растягивания по высоте */}
       <div
         className="flex flex-col w-full overflow-hidden"
         style={{
@@ -547,7 +547,7 @@ export default function OrderSummaryStep({
             {/* Разделитель перед оборудованием — 10px от последней фичи (330×10 по макету) */}
             <div style={{ height: '1px', background: 'rgba(16, 16, 16, 0.1)', marginTop: `${dividerToBlock}px`, marginBottom: `${rowGap}px`, maxWidth: '330px' }} />
 
-            {/* Роутер — иконка по центру, левый блок 170px, правый — цена и подпись */}
+            {/* Роутер — три колонки: иконка | main+sub | правый блок по правому краю (marginLeft: auto) */}
             <div
               style={{
                 display: 'flex',
@@ -592,11 +592,13 @@ export default function OrderSummaryStep({
                 style={{
                   width: '120px',
                   flexShrink: 0,
+                  marginLeft: 'auto',
                   display: 'flex',
                   flexDirection: 'column',
                   alignItems: 'flex-end',
                   justifyContent: 'center',
                   gap: 0,
+                  textAlign: 'right',
                 }}
               >
                 {(routerInfo.priceText || routerInfo.choiceLabel) && (
@@ -606,7 +608,6 @@ export default function OrderSummaryStep({
                       fontSize: '14px',
                       lineHeight: '175%',
                       color: 'rgba(16, 16, 16, 0.5)',
-                      textAlign: 'right',
                     }}
                   >
                     {routerInfo.priceText || routerInfo.choiceLabel}
@@ -619,7 +620,6 @@ export default function OrderSummaryStep({
                       fontSize: '14px',
                       lineHeight: '105%',
                       color: 'rgba(16, 16, 16, 0.5)',
-                      textAlign: 'right',
                     }}
                   >
                     {routerInfo.noteText}
@@ -628,7 +628,7 @@ export default function OrderSummaryStep({
               </div>
             </div>
 
-            {/* TV-приставка: тариф без ТВ — серый; снял выбор (можно добавить) — красный как роутер; выбрана — чёрный */}
+            {/* TV-приставка — три колонки: иконка | main+sub | правый блок по правому краю (marginLeft: auto) */}
             <div
               style={{
                 display: 'flex',
@@ -673,11 +673,13 @@ export default function OrderSummaryStep({
                 style={{
                   width: '120px',
                   flexShrink: 0,
+                  marginLeft: 'auto',
                   display: 'flex',
                   flexDirection: 'column',
                   alignItems: 'flex-end',
                   justifyContent: 'center',
                   gap: 0,
+                  textAlign: 'right',
                 }}
               >
                 {(tvInfo.priceText || tvInfo.choiceLabel) && (
@@ -687,7 +689,6 @@ export default function OrderSummaryStep({
                       fontSize: '14px',
                       lineHeight: '175%',
                       color: 'rgba(16, 16, 16, 0.5)',
-                      textAlign: 'right',
                     }}
                   >
                     {tvInfo.priceText || tvInfo.choiceLabel}
@@ -700,7 +701,6 @@ export default function OrderSummaryStep({
                       fontSize: '14px',
                       lineHeight: '105%',
                       color: 'rgba(16, 16, 16, 0.5)',
-                      textAlign: 'right',
                     }}
                   >
                     {tvInfo.noteText}

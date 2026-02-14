@@ -1,4 +1,4 @@
-/** Галочка как на главной (1 фрейм): чёрный круг + белая галочка */
+/** Галочка в карточке тарифа (Frame3 и др.): белый фон, чёрный border, чёрная галочка */
 export default function CheckCircleIcon() {
   return (
     <span className="relative inline-flex items-center justify-center" style={{ width: 16, height: 16 }}>
@@ -9,6 +9,7 @@ export default function CheckCircleIcon() {
           borderRadius: '50%',
           background: '#FFFFFF',
           border: '1px solid #101010',
+          boxSizing: 'border-box',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',

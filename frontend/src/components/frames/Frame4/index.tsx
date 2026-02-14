@@ -792,10 +792,10 @@ function Frame4Content() {
               marginRight: 'auto',
               marginTop: currentStep === 'order_summary' ? 'auto' : undefined,
               marginBottom: currentStep === 'order_summary'
-                ? 'calc(29px + env(safe-area-inset-bottom, 0px))'
+                ? 'calc(20px + env(safe-area-inset-bottom, 0px))'
                 : 'calc(20px + env(safe-area-inset-bottom, 0px))',
               backdropFilter: 'blur(7.5px)',
-              // Итоговая карточка: высота по контенту, прижата к низу (marginTop: auto), отступ от низа экрана 29px
+              // Итоговая карточка: высота по контенту, прижата к низу (marginTop: auto), отступ от низа экрана 20px
               ...(currentStep === 'order_summary'
                 ? {}
                 : { marginTop: 'auto', maxHeight: 'calc(100dvh - 145px)' }),

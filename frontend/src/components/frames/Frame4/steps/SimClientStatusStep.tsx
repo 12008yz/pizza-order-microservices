@@ -115,6 +115,11 @@ export default function SimClientStatusStep({
                     fontSize: '16px',
                     lineHeight: '125%',
                     color: isSelected ? '#101010' : 'rgba(16, 16, 16, 0.5)',
+                    flex: 1,
+                    minWidth: 0,
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
                   }}
                 >
                   {option.label}

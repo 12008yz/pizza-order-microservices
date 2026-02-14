@@ -96,7 +96,7 @@ export default function SimCountWarningBanner({
           color: '#FF1000',
           textDecoration: 'underline',
           textDecorationSkipInk: 'none',
-          textUnderlineOffset: '2px',
+          textUnderlineOffset: '3px',
           marginTop: '5px',
           cursor: 'pointer',
         }}

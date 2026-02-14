@@ -369,16 +369,18 @@ function Frame5Content() {
         )}
 
         {!showHeader && (
-          <div className="flex-shrink-0 relative" style={{ minHeight: '105px' }}>
+          <div className="flex-shrink-0 relative cursor-pointer" style={{ minHeight: '105px' }} onClick={goToFrame3}>
             {showNotification && (
               <div onClick={(e) => e.stopPropagation()}>
                 <NotificationBanner initialCountdown={7} onClose={() => setNotificationVisible(false)} />
               </div>
             )}
             <div
-              className="flex justify-center"
+              className="absolute left-0 right-0 flex justify-center"
               style={{
-                paddingTop: HINT_TOP,
+                top: HINT_TOP,
+                left: 20,
+                right: 20,
                 opacity: !showNotification ? 1 : 0,
                 transition: 'opacity 0.2s ease',
               }}

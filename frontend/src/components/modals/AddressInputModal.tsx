@@ -681,9 +681,11 @@ export default function AddressInputModal({
           boxSizing: 'border-box',
         }}
       >
-        {/* Шапка: подсказка */}
-        <div className="flex-shrink-0 flex justify-center" style={{ minHeight: '105px', paddingTop: HINT_TOP }}>
-          <ClickOutsideHintContent />
+        {/* Шапка: подсказка (отступ от верха как во 2 фрейме) */}
+        <div className="flex-shrink-0 relative" style={{ minHeight: '105px' }}>
+          <div className="absolute left-0 right-0 flex justify-center" style={{ top: HINT_TOP, left: 20, right: 20 }}>
+            <ClickOutsideHintContent />
+          </div>
         </div>
 
         {/* Карточка — компактная, прижата вниз, список подсказок прокручивается внутри */}

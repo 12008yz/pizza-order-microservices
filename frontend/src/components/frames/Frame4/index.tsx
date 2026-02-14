@@ -748,20 +748,19 @@ function Frame4Content() {
                     color: '#101010',
                     marginTop: '8px',
                     wordBreak: 'break-word',
+                    whiteSpace: 'pre-line',
                   }}
                 >
                   {frameNotification.type === 'router_operator' || frameNotification.type === 'tvbox_operator'
                     ? 'Внимание, оборудование этого провайдера технически прошито только на свои сети. Поэтому, подключить его невозможно. '
-                    : frameNotification.type === 'tvbox_tvcount'
-                      ? 'К сожалению, стоимость подключения, а также стоимость ежемесячного платежа увеличится, пропорционально вашему числу телевизоров. Если же их число, свыше одного устройства. '
-                      : frameNotification.type === 'tvbox_own'
-                        ? 'К сожалению, стороннее устройство невозможно подключить к сети оператора. Поэтому, вы можете его самостоятельно переставить на дополнительное устройство, например, телевизор или же монитор. '
-                        : 'К сожалению, стоимость подключения, а также стоимость ежемесячного платежа увеличится, пропорционально вашему числу смартфонов. Если же их число, свыше одного устройства. '}
+                    : frameNotification.type === 'tvbox_tvcount' || frameNotification.type === 'tvbox_own'
+                      ? 'К сожалению, стоимость подключения, а также,\nстоимость ежемесячного платежа увеличится,\nпропорционально вашему числу телевизоров.\nЕсли же их число, свыше одного устройства. '
+                      : 'К сожалению, стоимость подключения, а также стоимость ежемесячного платежа увеличится, пропорционально вашему числу смартфонов. Если же их число, свыше одного устройства. '}
                   <a
                     href="/privacy-policy"
                     target="_blank"
                     rel="noopener noreferrer"
-                    style={{ color: '#007AFF', textDecoration: 'underline', textDecorationSkipInk: 'none', textUnderlineOffset: '2px' }}
+                    style={{ color: '#007AFF', textDecoration: 'underline', textDecorationSkipInk: 'none', textUnderlineOffset: '3px' }}
                     onClick={(e) => e.stopPropagation()}
                   >
                     Подробнее об этом писали в медиа

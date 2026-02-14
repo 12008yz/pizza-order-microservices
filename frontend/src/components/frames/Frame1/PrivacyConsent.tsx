@@ -64,7 +64,7 @@ function PrivacyConsent() {
             target="_blank"
             rel="noopener noreferrer"
             onClick={(e) => e.stopPropagation()}
-            style={{ color: '#2563eb', textDecoration: 'underline', textDecorationSkipInk: 'none', textUnderlineOffset: '2px' }}
+            style={{ color: '#2563eb', textDecoration: 'underline', textDecorationSkipInk: 'none', textUnderlineOffset: '3px' }}
           >
             политики конфиденциальности
           </a>{' '}

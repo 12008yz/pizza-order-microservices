@@ -231,7 +231,7 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip, initialSte
                     href="/privacy-policy"
                     target="_blank"
                     rel="noopener noreferrer"
-                    style={{ color: '#007AFF', textDecoration: 'underline', textDecorationSkipInk: 'none', textUnderlineOffset: '2px' }}
+                    style={{ color: '#007AFF', textDecoration: 'underline', textDecorationSkipInk: 'none', textUnderlineOffset: '3px' }}
                     onClick={(e) => e.stopPropagation()}
                   >
                     Подробнее об этом писали в медиа

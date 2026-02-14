@@ -456,7 +456,7 @@ function AddressFormContent({ isAppLoading = false, appLoadingProgress = 0 }: Ad
                   color: '#0075FF',
                   textDecoration: 'underline',
                   textDecorationSkipInk: 'none',
-                  textUnderlineOffset: '2px',
+                  textUnderlineOffset: '3px',
                 }}
               >
                 политики конфиденциальности

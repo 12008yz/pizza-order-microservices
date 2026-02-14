@@ -67,7 +67,7 @@ interface OrderSummaryStepProps {
   callbacks: OrderSummaryCallbacks;
 }
 
-// Галочка: белый фон, чёрный border, чёрная галочка (18×18)
+// Галочка: белый фон, чёрный border, чёрная галочка (16×16)
 const CheckIconSvg = () => (
   <svg width="8" height="6" viewBox="0 0 8 6" fill="none" aria-hidden>
     <path d="M1 3L3 5L7 1" stroke="#101010" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -78,8 +78,8 @@ const CheckCircleIcon = ({ active = true }: { active?: boolean }) => (
   <div
     className="rounded-full flex items-center justify-center flex-shrink-0"
     style={{
-      width: 18,
-      height: 18,
+      width: 16,
+      height: 16,
       boxSizing: 'border-box',
       border: active ? '1px solid #101010' : '1px solid rgba(16, 16, 16, 0.25)',
       background: active ? '#FFFFFF' : 'transparent',

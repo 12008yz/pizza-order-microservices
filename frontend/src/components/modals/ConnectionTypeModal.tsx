@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import AnimatedCheck from '../common/AnimatedCheck';
-import { ClickOutsideHintContent } from '../common/ClickOutsideHint';
+import { ClickOutsideHintContent, HINT_TOP } from '../common/ClickOutsideHint';
 import { useAddress, ConnectionType } from '../../contexts/AddressContext';
 
 interface ConnectionTypeModalProps {
@@ -112,9 +112,9 @@ export default function ConnectionTypeModal({
         }}
         onClick={handleContainerClick}
       >
-        {/* Шапка: подсказка — клик по пустому месту закрывает модалку */}
+        {/* Шапка: подсказка — клик по пустому месту закрывает модалку (отступ от верха как во 2 фрейме) */}
         <div
-          className="flex-shrink-0 cursor-pointer"
+          className="flex-shrink-0 relative cursor-pointer"
           style={{ minHeight: '105px' }}
           onClick={() => onClose()}
           role="button"
@@ -122,7 +122,7 @@ export default function ConnectionTypeModal({
           onKeyDown={(e) => e.key === 'Enter' && onClose()}
           aria-label="Закрыть"
         >
-          <div className="flex justify-center" style={{ paddingTop: '50px' }}>
+          <div className="absolute left-0 right-0 flex justify-center" style={{ top: HINT_TOP, left: 20, right: 20 }}>
             <ClickOutsideHintContent />
           </div>
         </div>

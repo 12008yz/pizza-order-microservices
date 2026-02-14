@@ -1455,7 +1455,8 @@ function Frame3Content() {
                 className="flex-shrink-0 carousel-card carousel-card--shadow-top"
                 style={{
                   position: 'relative',
-                  height: 'auto',
+                  height: '452px',
+                  minHeight: '452px',
                   background: '#FFFFFF',
                   borderRadius: '20px',
                   scrollSnapAlign: 'start',
@@ -1506,12 +1507,13 @@ function Frame3Content() {
                   />
                 </div>
 
-                {/* Контент: отступ 15px от краёв карточки; без flex:1 — только по высоте контента, без лишнего белого пространства */}
+                {/* Контент: отступ 15px от краёв карточки; flex:1 — одинаковая высота всех карточек */}
                 <div
                   className="features-section"
                   style={{
                     padding: '10px 15px 0 15px',
-                    flexShrink: 0,
+                    flex: 1,
+                    minHeight: 0,
                     overflowY: 'visible',
                   }}
                 >

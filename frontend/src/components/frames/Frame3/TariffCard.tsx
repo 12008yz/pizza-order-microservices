@@ -82,6 +82,7 @@ export default function TariffCard({
       className="relative bg-white rounded-[20px] flex flex-col"
       style={{
         width: '360px',
+        height: '452px',
         minHeight: '452px',
         boxSizing: 'border-box',
         paddingBottom: '15px',

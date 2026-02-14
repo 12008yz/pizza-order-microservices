@@ -173,9 +173,13 @@ export default function Home() {
     };
   }, []);
 
+  // При переходе в консультацию (?consultation=1) не показываем экран с «Гигапоиск» — только скелетон загрузки чанка ConsultationFlow
+  const isConsultationEntry = searchParams.get('consultation') === '1';
+  const showAppLoading = !isConsultationEntry && isLoading;
+
   return (
     <div ref={frameContainerRef}>
-      <AddressFormPage isAppLoading={isLoading} appLoadingProgress={loadingProgress} />
+      <AddressFormPage isAppLoading={showAppLoading} appLoadingProgress={loadingProgress} />
     </div>
   );
 }

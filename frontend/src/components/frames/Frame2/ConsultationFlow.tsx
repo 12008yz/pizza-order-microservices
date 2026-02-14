@@ -28,6 +28,7 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip, initialSte
   const [phoneNumber, setPhoneNumber] = useState('+7 ');
   const [selectedMethod, setSelectedMethod] = useState<ContactMethod | null>(null);
   const [phoneError, setPhoneError] = useState(false);
+  const [phoneFocused, setPhoneFocused] = useState(false);
   const [showSkipAfterError, setShowSkipAfterError] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
   const [shouldRender, setShouldRender] = useState(true);
@@ -513,14 +514,17 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip, initialSte
             type="tel"
             value={phoneNumber}
             onChange={handlePhoneChange}
+            onFocus={() => setPhoneFocused(true)}
+            onBlur={() => setPhoneFocused(false)}
             placeholder="Номер сотового телефона"
             className="w-full h-full px-[15px] bg-transparent outline-none rounded-[10px]"
             style={{
               fontFamily: 'TT Firs Neue, sans-serif',
               fontSize: '16px',
               lineHeight: '125%',
-              color: phoneNumber ? '#101010' : 'rgba(16, 16, 16, 0.25)',
+              color: phoneFocused ? '#101010' : 'rgba(16, 16, 16, 0.5)',
               letterSpacing: '0.5px',
+              transition: 'color 0.2s ease',
             }}
           />
         </div>
@@ -635,14 +639,17 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip, initialSte
             type="tel"
             value={phoneNumber}
             onChange={handlePhoneChange}
+            onFocus={() => setPhoneFocused(true)}
+            onBlur={() => setPhoneFocused(false)}
             placeholder="Номер сотового телефона"
             className="w-full h-full px-[15px] bg-transparent outline-none rounded-[10px]"
             style={{
               fontFamily: 'TT Firs Neue, sans-serif',
               fontSize: '16px',
               lineHeight: '125%',
-              color: phoneNumber ? '#101010' : 'rgba(16, 16, 16, 0.25)',
+              color: phoneFocused ? '#101010' : 'rgba(16, 16, 16, 0.5)',
               letterSpacing: '0.5px',
+              transition: 'color 0.2s ease',
             }}
           />
         </div>

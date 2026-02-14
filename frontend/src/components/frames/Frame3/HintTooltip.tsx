@@ -1,7 +1,5 @@
 'use client';
 
-import { useEffect } from 'react';
-
 interface HintTooltipProps {
    text: string;
    onAccept: () => void;
@@ -10,13 +8,7 @@ interface HintTooltipProps {
 }
 
 export default function HintTooltip({ text, onAccept, onDecline, position }: HintTooltipProps) {
-   // Автоматическое закрытие через 3 секунды
-   useEffect(() => {
-      const timer = setTimeout(() => {
-         onAccept();
-      }, 3000);
-      return () => clearTimeout(timer);
-   }, [onAccept]);
+   // Подсказка висит до нажатия кнопки («Класс!» или «Я сам решу»), не закрывается сама
    // 5px от иконок header; правый край подсказки = правый край соответствующей иконки
    const tooltipTop = 'var(--header-tooltip-top)';
    const getPositionStyles = () => {

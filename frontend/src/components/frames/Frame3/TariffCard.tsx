@@ -145,7 +145,7 @@ export default function TariffCard({
         {/* Speed Feature */}
         {speed && (
           <div style={{ display: 'flex', alignItems: 'center', marginBottom: '14px' }}>
-            <div style={{ marginRight: '12px', flexShrink: 0 }}>
+            <div style={{ marginRight: '9px', flexShrink: 0, display: 'flex', alignItems: 'center', alignSelf: 'center' }}>
               <CheckCircleIcon />
             </div>
             <div>
@@ -178,7 +178,7 @@ export default function TariffCard({
         {/* TV Feature */}
         {tvChannels && (
           <div style={{ display: 'flex', alignItems: 'center', marginBottom: '14px' }}>
-            <div style={{ marginRight: '12px', flexShrink: 0 }}>
+            <div style={{ marginRight: '9px', flexShrink: 0, display: 'flex', alignItems: 'center', alignSelf: 'center' }}>
               <CheckCircleIcon />
             </div>
             <div>
@@ -211,7 +211,7 @@ export default function TariffCard({
         {/* Mobile Feature */}
         {(mobileMinutes || mobileGb || mobileSms) && (
           <div style={{ display: 'flex', alignItems: 'center', marginBottom: '14px' }}>
-            <div style={{ marginRight: '12px', flexShrink: 0 }}>
+            <div style={{ marginRight: '9px', flexShrink: 0, display: 'flex', alignItems: 'center', alignSelf: 'center' }}>
               <CheckCircleIcon />
             </div>
             <div>

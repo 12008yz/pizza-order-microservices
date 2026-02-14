@@ -341,11 +341,13 @@ function AddressFormContent({ isAppLoading = false, appLoadingProgress = 0 }: Ad
   }
 
   if (flowState === 'consultation') {
+    const isNotInListAddress = addressData.houseNumber === 'Нет в списке моего адреса';
     return (
       <ConsultationFlow
         onClose={handleConsultationClose}
         onSubmit={handleConsultationSubmit}
         onSkip={handleConsultationSkip}
+        initialStep={isNotInListAddress ? 'contact-method' : 'phone-first'}
       />
     );
   }
@@ -701,7 +703,11 @@ function AddressFormContent({ isAppLoading = false, appLoadingProgress = 0 }: Ad
               }}
             >
               {addressData.houseNumber
-                ? (addressData.corpusNumber ? `д. ${addressData.houseNumber} к ${addressData.corpusNumber}` : addressData.houseNumber)
+                ? (addressData.houseNumber === 'Нет в списке моего адреса'
+                    ? addressData.houseNumber
+                    : addressData.corpusNumber
+                      ? `д. ${addressData.houseNumber} к ${addressData.corpusNumber}`
+                      : addressData.houseNumber)
                 : 'Номер дома'}
             </span>
             <div

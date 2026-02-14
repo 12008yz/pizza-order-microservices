@@ -299,6 +299,8 @@ const FAVORITES_STORAGE_KEY = 'favorites_tariffs';
 
 // Зазор: иконки — 10px от карточек, карточки — 20px от низа экрана
 const ICON_TO_CARD_GAP_PX = 10;
+// В режиме избранного отступ стрелки от карточки (как и в обычном — 10px)
+const FAVORITES_ICON_TO_CARD_GAP_PX = 10;
 const CARD_TO_BOTTOM_GAP_PX = 20;
 
 function Frame3Content() {
@@ -719,21 +721,36 @@ function Frame3Content() {
     setHintStep('none');
   };
 
-  // Проверка: можно ли ещё листать вправо (не на последней карточке)
+  // Порог «конца» карусели (одно значение для поворота стрелки и для действия «в начало»)
+  const SCROLL_END_THRESHOLD = 5;
+  // Проверка: можно ли ещё листать вправо. На конце карусели — стрелка 180° и по клику скролл в начало.
   const updateCanScrollRight = useCallback(() => {
     const el = scrollRef.current;
     if (!el || displayedTariffs.length <= 1) {
       setCanScrollRight(false);
       return;
     }
-    const threshold = 2;
-    const atEnd = el.scrollLeft + el.clientWidth >= el.scrollWidth - threshold;
+    const atEnd = el.scrollLeft + el.clientWidth >= el.scrollWidth - SCROLL_END_THRESHOLD;
     setCanScrollRight(!atEnd);
   }, [displayedTariffs.length]);
 
   useEffect(() => {
     updateCanScrollRight();
   }, [displayedTariffs, updateCanScrollRight]);
+
+  // По окончании скролла (в т.ч. плавного) обновить состояние — стрелка вернётся в 0° у первой карточки
+  const scrollEndRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const onScrollWithEnd = useCallback(() => {
+    updateCanScrollRight();
+    if (scrollEndRef.current) clearTimeout(scrollEndRef.current);
+    scrollEndRef.current = setTimeout(() => {
+      scrollEndRef.current = null;
+      updateCanScrollRight();
+    }, 150);
+  }, [updateCanScrollRight]);
+  useEffect(() => () => {
+    if (scrollEndRef.current) clearTimeout(scrollEndRef.current);
+  }, []);
 
   // Позиция иконок: 10px над верхним краем первой карточки (карточки прижаты к низу, отступ 20px)
   const updateIconTop = useCallback(() => {
@@ -759,20 +776,24 @@ function Frame3Content() {
   const CARD_GAP = 5;
   const handleScrollRight = () => {
     const el = scrollRef.current;
-    if (!el || !canScrollRight) return;
-    const threshold = 2;
-    if (el.scrollLeft + el.clientWidth >= el.scrollWidth - threshold) return;
+    if (!el || displayedTariffs.length <= 1) return;
+    const atEnd = el.scrollLeft + el.clientWidth >= el.scrollWidth - SCROLL_END_THRESHOLD;
     setArrowClicked(true);
     setTimeout(() => setArrowClicked(false), 400);
-    const firstCard = el.querySelector('.carousel-card');
-    const step = firstCard
-      ? (firstCard as HTMLElement).offsetWidth + CARD_GAP
-      : 390; // fallback: minWidth 385 + gap 5
-    el.scrollBy({
-      left: step,
-      behavior: 'smooth',
-    });
+    if (atEnd) {
+      // Конец карусели — плавно в начало
+      el.scrollTo({ left: 0, behavior: 'smooth' });
+    } else {
+      const firstCard = el.querySelector('.carousel-card');
+      const step = firstCard
+        ? (firstCard as HTMLElement).offsetWidth + CARD_GAP
+        : 390;
+      el.scrollBy({ left: step, behavior: 'smooth' });
+    }
   };
+
+  // На конце карусели стрелка повёрнута на 180° и по клику плавно в начало (обычный режим и избранное)
+  const isArrowAtEnd = displayedTariffs.length > 1 && !canScrollRight;
 
   return (
     <div
@@ -1116,20 +1137,24 @@ function Frame3Content() {
       {/* Стрелка переключения тарифа — 10px от верхнего края карточки, по правому краю карточки (19px от края контейнера на desktop) */}
       {/* В режиме избранного показываем блок с сердечком + стрелкой только если есть избранные; иначе — только стрелку (вне режима избранного) */}
       {showFavoritesMode && displayedTariffs.length > 0 ? (
-        /* Блок с сердечком и стрелкой в режиме избранного — 70x40 */
+        /* Блок с сердечком и стрелкой в режиме избранного. Отступ от карточки меньше (5px). Когда карточка одна — ещё на 2px ниже */
         <div
-          className={canScrollRight && displayedTariffs.length > 1 ? 'cursor-pointer' : ''}
+          className={displayedTariffs.length > 1 ? 'cursor-pointer' : ''}
           style={{
             position: 'absolute',
             width: '70px',
             height: '40px',
-            right: '19px',
-top: iconTopPx !== null ? `${iconTopPx}px` : `calc(var(--header-top, 50px) + 40px + 165px - 40px - ${ICON_TO_CARD_GAP_PX}px)`,
-          zIndex: 5,
+            right: '21px',
+            top: iconTopPx !== null
+              ? `${iconTopPx + (ICON_TO_CARD_GAP_PX - FAVORITES_ICON_TO_CARD_GAP_PX) + (displayedTariffs.length <= 1 ? 2 : 0)}px`
+              : displayedTariffs.length <= 1
+                ? `calc(var(--header-top, 50px) + 40px + 165px - 40px - ${FAVORITES_ICON_TO_CARD_GAP_PX}px + 2px)`
+                : `calc(var(--header-top, 50px) + 40px + 165px - 40px - ${FAVORITES_ICON_TO_CARD_GAP_PX}px)`,
+            zIndex: 5,
           }}
           onClick={(e) => {
             e.stopPropagation();
-            if (canScrollRight && displayedTariffs.length > 1) {
+            if (displayedTariffs.length > 1) {
               withClickGuard(() => handleScrollRight())();
             }
           }}
@@ -1156,7 +1181,7 @@ top: iconTopPx !== null ? `${iconTopPx}px` : `calc(var(--header-top, 50px) + 40p
               />
             </svg>
 
-            {/* Чёрный круг со стрелкой справа — как в обычном режиме (16.25px) */}
+            {/* Чёрный круг со стрелкой. На конце карусели повёрнута на 180°, по клику — плавно в начало */}
             <div
               style={{
                 width: '16.25px',
@@ -1166,19 +1191,29 @@ top: iconTopPx !== null ? `${iconTopPx}px` : `calc(var(--header-top, 50px) + 40p
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                opacity: canScrollRight && displayedTariffs.length > 1 ? 1 : 0.4,
+                opacity: displayedTariffs.length > 1 ? 1 : 0.4,
               }}
             >
-              <div style={{ width: '20px', height: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <ArrowCircleRightIcon color="#FFFFFF" isAnimating={arrowClicked} arrowOnly />
+              <div
+                style={{
+                  width: '20px',
+                  height: '20px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  transform: isArrowAtEnd ? 'rotate(180deg)' : 'rotate(0deg)',
+                  transition: 'transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                }}
+              >
+                <ArrowCircleRightIcon color="#FFFFFF" arrowOnly />
               </div>
             </div>
           </div>
         </div>
       ) : !showFavoritesMode ? (
-        /* Обычная стрелка вне режима избранного */
+        /* Обычная стрелка вне режима избранного. На конце карусели повёрнута на 180° и ведёт в начало */
         <div
-          className={canScrollRight && displayedTariffs.length > 1 ? 'cursor-pointer' : ''}
+          className={displayedTariffs.length > 1 ? 'cursor-pointer' : ''}
           style={{
             position: 'absolute',
             width: '40px',
@@ -1186,12 +1221,12 @@ top: iconTopPx !== null ? `${iconTopPx}px` : `calc(var(--header-top, 50px) + 40p
             right: '19px',
             top: iconTopPx !== null ? `${iconTopPx}px` : `calc(var(--header-top, 50px) + 40px + 165px - 40px - ${ICON_TO_CARD_GAP_PX}px)`,
             zIndex: 5,
-            opacity: canScrollRight && displayedTariffs.length > 1 ? 1 : 0.4,
-            pointerEvents: canScrollRight && displayedTariffs.length > 1 ? 'auto' : 'none',
+            opacity: displayedTariffs.length > 1 ? 1 : 0.4,
+            pointerEvents: displayedTariffs.length > 1 ? 'auto' : 'none',
           }}
           onClick={withClickGuard((e) => {
             e.stopPropagation();
-            if (canScrollRight && displayedTariffs.length > 1) handleScrollRight();
+            if (displayedTariffs.length > 1) handleScrollRight();
           })}
           onMouseDown={() => setIsArrowPressed(true)}
           onMouseUp={() => setIsArrowPressed(false)}
@@ -1223,7 +1258,7 @@ top: iconTopPx !== null ? `${iconTopPx}px` : `calc(var(--header-top, 50px) + 40p
                 }}
               />
             )}
-            {/* Чёрный круг по центру */}
+            {/* Чёрный круг по центру. На конце карусели стрелка плавно повёрнута на 180° */}
             <div
               style={{
                 width: '16.25px',
@@ -1244,9 +1279,11 @@ top: iconTopPx !== null ? `${iconTopPx}px` : `calc(var(--header-top, 50px) + 40p
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
+                  transform: isArrowAtEnd ? 'rotate(180deg)' : 'rotate(0deg)',
+                  transition: 'transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)',
                 }}
               >
-                <ArrowCircleRightIcon color="#FFFFFF" isAnimating={arrowClicked} arrowOnly />
+                <ArrowCircleRightIcon color="#FFFFFF" arrowOnly />
               </div>
             </div>
           </div>
@@ -1309,7 +1346,7 @@ top: iconTopPx !== null ? `${iconTopPx}px` : `calc(var(--header-top, 50px) + 40p
         {/* Горизонтальный скролл с карточками. Одна карточка — по центру без скролла; пустой список — блок не двигается. */}
         <div
           ref={scrollRef}
-          onScroll={updateCanScrollRight}
+          onScroll={onScrollWithEnd}
           className={`flex scrollbar-hide flex-nowrap carousel-container h-full ${displayedTariffs.length > 1 ? 'overflow-x-auto' : 'overflow-x-hidden'} ${displayedTariffs.length === 1 ? 'carousel-container--single-card' : ''}`}
           style={{
             gap: '5px',
@@ -1478,7 +1515,7 @@ top: iconTopPx !== null ? `${iconTopPx}px` : `calc(var(--header-top, 50px) + 40p
                   <div className="features-container" style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
                     {/* Скорость — 16px 155%, подпись 14px 105%, высота строки 40px по макету */}
                     <div className="feature-row" style={{ display: 'flex', alignItems: 'center', minHeight: '40px' }}>
-                      <div className="feature-icon" style={{ flexShrink: 0 }}>
+                      <div className="feature-icon" style={{ flexShrink: 0, display: 'flex', alignItems: 'center', alignSelf: 'center' }}>
                         <CheckCircleIcon />
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
@@ -1493,7 +1530,7 @@ top: iconTopPx !== null ? `${iconTopPx}px` : `calc(var(--header-top, 50px) + 40p
 
                     {/* Каналы — 16px 155%, 14px 105% */}
                     <div className="feature-row" style={{ display: 'flex', alignItems: 'center', minHeight: '40px' }}>
-                      <div className="feature-icon" style={{ flexShrink: 0 }}>
+                      <div className="feature-icon" style={{ flexShrink: 0, display: 'flex', alignItems: 'center', alignSelf: 'center' }}>
                         <CheckCircleIcon />
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
@@ -1511,7 +1548,7 @@ top: iconTopPx !== null ? `${iconTopPx}px` : `calc(var(--header-top, 50px) + 40p
 
                     {/* Мобильная связь — 16px 155%, 14px 105% */}
                     <div className="feature-row" style={{ display: 'flex', alignItems: 'center', minHeight: '40px' }}>
-                      <div className="feature-icon" style={{ flexShrink: 0 }}>
+                      <div className="feature-icon" style={{ flexShrink: 0, display: 'flex', alignItems: 'center', alignSelf: 'center' }}>
                         <CheckCircleIcon />
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
@@ -1529,7 +1566,7 @@ top: iconTopPx !== null ? `${iconTopPx}px` : `calc(var(--header-top, 50px) + 40p
 
                     {/* Кинотеатр / доп. приложение — 16px 155%, 14px 105% */}
                     <div className="feature-row" style={{ display: 'flex', alignItems: 'center', minHeight: '40px' }}>
-                      <div className="feature-icon" style={{ flexShrink: 0 }}>
+                      <div className="feature-icon" style={{ flexShrink: 0, display: 'flex', alignItems: 'center', alignSelf: 'center' }}>
                         <CheckCircleIcon />
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
@@ -1788,6 +1825,9 @@ top: iconTopPx !== null ? `${iconTopPx}px` : `calc(var(--header-top, 50px) + 40p
         .feature-icon {
           width: 16px;
           height: 16px;
+          display: flex;
+          align-items: center;
+          align-self: center;
         }
 
         /* Адаптация для экранов с высотой < 750px */

@@ -6,7 +6,7 @@ import { ClickOutsideHintContent } from '../../common/ClickOutsideHint';
 import { CloseIcon } from '../../common/icons';
 
 type ContactMethod = 'max' | 'telegram' | 'phone';
-type ConsultationStep = 'contact-method' | 'phone-after-method';
+type ConsultationStep = 'contact-method' | 'phone-after-method' | 'phone-first';
 
 interface NotificationItem {
   id: string;
@@ -19,10 +19,12 @@ interface ConsultationFlowProps {
   onClose: () => void;
   onSubmit: (data: { phone?: string; method?: ContactMethod }) => void | Promise<void>;
   onSkip?: () => void | Promise<void>;
+  /** При обычном адресе — показывать сначала экран «Консультация» (телефон + Пропустить). При «Нет в списке моего адреса» — сначала выбор способа связи. */
+  initialStep?: ConsultationStep;
 }
 
-export default function ConsultationFlow({ onClose, onSubmit, onSkip }: ConsultationFlowProps) {
-  const [step, setStep] = useState<ConsultationStep>('contact-method');
+export default function ConsultationFlow({ onClose, onSubmit, onSkip, initialStep = 'contact-method' }: ConsultationFlowProps) {
+  const [step, setStep] = useState<ConsultationStep>(initialStep);
   const [phoneNumber, setPhoneNumber] = useState('+7 ');
   const [selectedMethod, setSelectedMethod] = useState<ContactMethod | null>(null);
   const [phoneError, setPhoneError] = useState(false);
@@ -133,10 +135,17 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
   const handleBack = useCallback(() => {
     if (step === 'phone-after-method') {
       setStep('contact-method');
+    } else if (step === 'phone-first') {
+      onClose();
     } else {
       onClose();
     }
   }, [step, onClose]);
+
+  const handleSkipFromPhoneFirst = useCallback(() => {
+    if (onSkip) onSkip();
+    else onClose();
+  }, [onSkip, onClose]);
 
   const isPhoneValid = useMemo(() => {
     const phoneDigits = phoneNumber.replace(/\D/g, '');
@@ -565,6 +574,96 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
     </div>
   );
 
+  // Экран «Консультация» как на скрине: баннер конфиденциальности + карточка с телефоном и одной кнопкой «Пропустить»
+  const renderPhoneFirst = () => (
+    <div className="relative w-full max-w-[400px] flex flex-col h-full overflow-hidden bg-[#F5F5F5]">
+      <div className="flex-shrink-0 relative cursor-pointer" style={{ minHeight: '105px' }} onClick={handleBackgroundClick}>
+        {notifications.length === 0 && (
+          <div className="absolute left-0 right-0 flex justify-center" style={{ top: 50 }}>
+            <ClickOutsideHintContent />
+          </div>
+        )}
+        {renderNotifications}
+      </div>
+      <div
+        className="flex flex-col rounded-[20px] bg-white mx-[5%]"
+        style={{
+          width: '360px',
+          maxWidth: '360px',
+          marginLeft: 'auto',
+          marginRight: 'auto',
+          marginTop: 'auto',
+          marginBottom: 0,
+          padding: '15px',
+        }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div
+          className="font-normal"
+          style={{
+            fontFamily: 'TT Firs Neue, sans-serif',
+            fontSize: '20px',
+            lineHeight: '125%',
+            color: '#101010',
+            marginBottom: '15px',
+          }}
+        >
+          Консультация
+        </div>
+        <div
+          className="font-normal"
+          style={{
+            fontFamily: 'TT Firs Neue, sans-serif',
+            fontSize: '14px',
+            lineHeight: '105%',
+            color: 'rgba(16, 16, 16, 0.25)',
+            marginBottom: '20px',
+          }}
+        >
+          Напишите номер вашего сотового телефона. Пожалуйста, проверьте правильность
+        </div>
+        <div
+          className="rounded-[10px] w-full mb-[20px]"
+          style={{
+            height: '50px',
+            minHeight: '50px',
+            border: isPhoneValid ? '1px solid #101010' : '1px solid rgba(16, 16, 16, 0.25)',
+            boxSizing: 'border-box',
+          }}
+        >
+          <input
+            type="tel"
+            value={phoneNumber}
+            onChange={handlePhoneChange}
+            placeholder="Номер сотового телефона"
+            className="w-full h-full px-[15px] bg-transparent outline-none rounded-[10px]"
+            style={{
+              fontFamily: 'TT Firs Neue, sans-serif',
+              fontSize: '16px',
+              lineHeight: '125%',
+              color: phoneNumber ? '#101010' : 'rgba(16, 16, 16, 0.25)',
+              letterSpacing: '0.5px',
+            }}
+          />
+        </div>
+        <button
+          type="button"
+          onClick={handleSkipFromPhoneFirst}
+          className="w-full rounded-[10px] flex items-center justify-center text-white cursor-pointer outline-none"
+          style={{
+            height: '50px',
+            fontFamily: 'TT Firs Neue, sans-serif',
+            fontSize: '16px',
+            background: '#101010',
+            border: '1px solid rgba(16, 16, 16, 0.25)',
+          }}
+        >
+          Пропустить
+        </button>
+      </div>
+    </div>
+  );
+
   const handleBackgroundClick = useCallback(() => {
     // Анимация исчезновения
     setIsAnimating(false);
@@ -606,6 +705,7 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip }: Consulta
 
         {step === 'contact-method' && renderContactMethod()}
         {step === 'phone-after-method' && renderPhoneAfterMethod()}
+        {step === 'phone-first' && renderPhoneFirst()}
       </div>
     </div>
   );

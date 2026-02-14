@@ -493,8 +493,7 @@ export default function AddressInputModal({
 
     const selected = selectedIndex !== null ? suggestions[selectedIndex] : null;
     const isNotInList = !!selected?.isNotInList;
-    // Если выбрана опция "Нет в списке моего адреса", используем ровно то, что ввёл пользователь
-    const value = isNotInList ? query.trim() : (selected?.formatted || selected?.text || query.trim());
+    const value = selected?.formatted || selected?.text || query.trim();
 
     if (currentStep === 'city') {
       // Для "нет в списке" пишем только строку, без cityId/regionId
@@ -535,9 +534,9 @@ export default function AddressInputModal({
       };
 
       if (isNotInList) {
-        const { houseNum, corpusNum } = parseHouseAndCorpus(query.trim());
-        updateHouseNumber(undefined, houseNum, undefined);
-        updateCorpusNumber(corpusNum);
+        // В поле номера дома пишем целиком "Нет в списке моего адреса", без разбора на дом/корпус
+        updateHouseNumber(undefined, value, undefined);
+        updateCorpusNumber(undefined);
         onComplete();
         return;
       }

@@ -448,7 +448,17 @@ function AddressFormContent({ isAppLoading = false, appLoadingProgress = 0 }: Ad
               <br />
               файлов куки в соответствии с условиями
               <br />
-              <a href="/privacy-policy" target="_blank" rel="noopener noreferrer" className="text-[#0075FF] underline">
+              <a
+                href="/privacy-policy"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  color: '#0075FF',
+                  textDecoration: 'underline',
+                  textDecorationSkipInk: 'none',
+                  textUnderlineOffset: '2px',
+                }}
+              >
                 политики конфиденциальности
               </a>{' '}
               портал

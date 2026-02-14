@@ -1,14 +1,25 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import { useSearchParams } from 'next/navigation';
 import AddressFormPage from '../components/frames/Frame1';
 
 export default function Home() {
+  const searchParams = useSearchParams();
   const [isLoading, setIsLoading] = useState(true);
   const [loadingProgress, setLoadingProgress] = useState(0);
   const isCompleteRef = useRef(false);
   const frameContainerRef = useRef<HTMLDivElement>(null);
   const checkIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Переход в консультацию по ссылке (с Frame3/4/5): не показывать общий загрузочный экран — только загрузка чанка ConsultationFlow
+  useEffect(() => {
+    if (searchParams.get('consultation') === '1') {
+      isCompleteRef.current = true;
+      setLoadingProgress(100);
+      setIsLoading(false);
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     let completedSteps = 0;

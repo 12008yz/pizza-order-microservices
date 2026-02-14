@@ -231,7 +231,7 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip, initialSte
                     href="/privacy-policy"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-[#007AFF] underline"
+                    style={{ color: '#007AFF', textDecoration: 'underline', textDecorationSkipInk: 'none', textUnderlineOffset: '2px' }}
                     onClick={(e) => e.stopPropagation()}
                   >
                     Подробнее об этом писали в медиа
@@ -648,7 +648,7 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip, initialSte
         </div>
         <button
           type="button"
-          onClick={handleSkipFromPhoneFirst}
+          onClick={isPhoneValid ? () => { setSelectedMethod('phone'); setStep('contact-method'); } : handleSkipFromPhoneFirst}
           className="w-full rounded-[10px] flex items-center justify-center text-white cursor-pointer outline-none"
           style={{
             height: '50px',
@@ -658,7 +658,7 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip, initialSte
             border: '1px solid rgba(16, 16, 16, 0.25)',
           }}
         >
-          Пропустить
+          {isPhoneValid ? 'Далее' : 'Пропустить'}
         </button>
       </div>
     </div>

@@ -757,7 +757,13 @@ function Frame4Content() {
                       : frameNotification.type === 'tvbox_own'
                         ? 'К сожалению, стороннее устройство невозможно подключить к сети оператора. Поэтому, вы можете его самостоятельно переставить на дополнительное устройство, например, телевизор или же монитор. '
                         : 'К сожалению, стоимость подключения, а также стоимость ежемесячного платежа увеличится, пропорционально вашему числу смартфонов. Если же их число, свыше одного устройства. '}
-                  <a href="/privacy-policy" target="_blank" rel="noopener noreferrer" className="text-[#007AFF] underline" onClick={(e) => e.stopPropagation()}>
+                  <a
+                    href="/privacy-policy"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ color: '#007AFF', textDecoration: 'underline', textDecorationSkipInk: 'none', textUnderlineOffset: '2px' }}
+                    onClick={(e) => e.stopPropagation()}
+                  >
                     Подробнее об этом писали в медиа
                   </a>
                 </div>

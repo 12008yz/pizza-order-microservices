@@ -92,8 +92,7 @@ export default function NotificationBanner({
           href="/privacy-policy"
           target="_blank"
           rel="noopener noreferrer"
-          className="underline"
-          style={{ color: '#0075FF' }}
+          style={{ color: '#0075FF', textDecoration: 'underline', textDecorationSkipInk: 'none', textUnderlineOffset: '2px' }}
           onClick={(e) => e.stopPropagation()}
         >
           Подробнее об этом писали в медиа

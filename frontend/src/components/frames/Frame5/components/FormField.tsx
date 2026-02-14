@@ -1,9 +1,21 @@
 'use client';
 
-import React from 'react';
-import AnimatedCheck from '../../../common/AnimatedCheck';
+import React, { useState } from 'react';
 
 export type FieldStatus = 'empty' | 'valid' | 'error';
+
+/** Фон кружка с галочкой, когда в поле что-то введено (из 1 фрейма) */
+const FILLED_CIRCLE_BG = 'rgba(16, 16, 16, 0.5)';
+
+/** Галочка: белая на сером фоне (когда поле заполнено) — из 1 фрейма */
+function CheckIcon({ filled }: { filled?: boolean }) {
+  const stroke = '#FFFFFF';
+  return (
+    <svg width="8" height="6" viewBox="0 0 8 6" fill="none" aria-hidden>
+      <path d="M1 3L3 5L7 1" stroke={stroke} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
 
 interface FormFieldProps {
   value: string;
@@ -16,6 +28,8 @@ interface FormFieldProps {
   disabled?: boolean;
   onClick?: () => void;
   status?: FieldStatus;
+  /** Для поля телефона: пока только префикс (+7) — рисовать серую обводку как у пустых полей */
+  treatAsEmpty?: boolean;
 }
 
 function FieldIcon({ status }: { status: FieldStatus }) {
@@ -25,14 +39,17 @@ function FieldIcon({ status }: { status: FieldStatus }) {
   }
   if (status === 'valid') {
     return (
-      <span className="relative inline-flex items-center justify-center flex-shrink-0" style={{ width: size, height: size }}>
-        <svg width={size} height={size} viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="9" cy="9" r="8.5" fill="#6B6B6B" />
-        </svg>
-        <span className="absolute" style={{ left: 5, top: 5 }}>
-          <AnimatedCheck size={8} color="#FFFFFF" strokeWidth={1.5} />
-        </span>
-      </span>
+      <div
+        className="rounded-full flex items-center justify-center flex-shrink-0"
+        style={{
+          width: size,
+          height: size,
+          boxSizing: 'border-box',
+          background: FILLED_CIRCLE_BG,
+        }}
+      >
+        <CheckIcon filled />
+      </div>
     );
   }
   if (status === 'error') {
@@ -52,22 +69,27 @@ export default function FormField({
   disabled = false,
   onClick,
   status: statusProp,
+  treatAsEmpty = false,
 }: FormFieldProps) {
+  const [focused, setFocused] = useState(false);
   const hasError = Boolean(error);
-  const status: FieldStatus = statusProp ?? (hasError ? 'error' : value.trim() ? (isValid ? 'valid' : 'empty') : 'empty');
+  const looksFilled = !treatAsEmpty && value.trim();
+  const status: FieldStatus = statusProp ?? (hasError ? 'error' : looksFilled ? (isValid ? 'valid' : 'empty') : 'empty');
   const handleChange = onChange ?? (() => {});
 
   const borderColor = hasError
     ? '1px solid rgb(239, 68, 68)'
-    : value.trim()
+    : looksFilled
       ? '1px solid rgba(16, 16, 16, 0.5)'
       : '1px solid rgba(16, 16, 16, 0.25)';
 
+  const textColor =
+    treatAsEmpty && !focused ? 'rgba(16, 16, 16, 0.5)' : value ? '#101010' : 'rgba(16, 16, 16, 0.5)';
   const textStyle: React.CSSProperties = {
     fontFamily: 'TT Firs Neue, sans-serif',
     fontSize: '16px',
     lineHeight: '125%',
-    color: value ? '#101010' : 'rgba(16, 16, 16, 0.5)',
+    color: textColor,
   };
 
   const content = onClick ? (
@@ -84,6 +106,8 @@ export default function FormField({
         inputMode={inputMode}
         value={value}
         onChange={(e) => handleChange(e.target.value)}
+        onFocus={() => setFocused(true)}
+        onBlur={() => setFocused(false)}
         placeholder={placeholder}
         disabled={disabled}
         className="flex-1 min-w-0 bg-transparent outline-none border-0"

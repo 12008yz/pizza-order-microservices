@@ -91,7 +91,7 @@ export default function PersonalDataStep({
           <FormField
             value={data.birthDate}
             onChange={handleChange('birthDate')}
-            placeholder="Дата рождения"
+            placeholder="05.05.2005"
             error={errors.birthDate}
             isValid={dateValid}
             type="tel"
@@ -105,6 +105,7 @@ export default function PersonalDataStep({
             inputMode="tel"
             error={errors.phone}
             isValid={phoneValid}
+            treatAsEmpty={data.phone.replace(/\D/g, '').length <= 1}
           />
         </div>
 

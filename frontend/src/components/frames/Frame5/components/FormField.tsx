@@ -121,7 +121,7 @@ export default function FormField({
     height: '50px',
     minHeight: '50px',
     paddingLeft: '15px',
-    paddingRight: '16px',
+    paddingRight: '15px',
     border: borderColor,
     borderRadius: '10px',
     display: 'flex',

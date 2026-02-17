@@ -326,11 +326,11 @@ function Frame5Content() {
               style={{
                 position: 'relative',
                 top: 'var(--header-top, 50px)',
-                marginLeft: '20px',
-                marginRight: '20px',
+                marginLeft: '15px',
+                marginRight: '15px',
                 height: '41px',
                 width: '360px',
-                maxWidth: 'calc(100vw - 40px)',
+                maxWidth: 'calc(100vw - 30px)',
               }}
             >
               <button
@@ -379,8 +379,8 @@ function Frame5Content() {
               className="absolute left-0 right-0 flex justify-center"
               style={{
                 top: HINT_TOP,
-                left: 20,
-                right: 20,
+                left: 15,
+                right: 15,
                 opacity: !showNotification ? 1 : 0,
                 transition: 'opacity 0.2s ease',
               }}
@@ -394,12 +394,12 @@ function Frame5Content() {
           <div
             className="flex flex-col rounded-[20px] bg-white overflow-hidden cursor-default"
             style={{
-              width: '360px',
-              maxWidth: '360px',
+              width: '370px',
+              maxWidth: '370px',
               marginLeft: 'auto',
               marginRight: 'auto',
               marginTop: (step === 'confirmation' || step === 'success') ? 'auto' : (showHeader ? 0 : 'auto'),
-              marginBottom: (step === 'confirmation' || step === 'success') ? 'calc(20px + var(--sab, 0px))' : '20px',
+              marginBottom: (step === 'confirmation' || step === 'success') ? 'calc(15px + var(--sab, 0px))' : '15px',
               maxHeight: showHeader ? 'calc(100dvh - var(--header-zone, 90px))' : 'calc(100dvh - 145px)',
             }}
             onClick={(e) => e.stopPropagation()}

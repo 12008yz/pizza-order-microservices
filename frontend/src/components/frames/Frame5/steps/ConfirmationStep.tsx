@@ -33,7 +33,7 @@ export default function ConfirmationStep({
   const canProceed = countdown === 0;
 
   return (
-    <div className="flex flex-col w-full px-[15px] pt-[12px] pb-[20px]">
+    <div className="flex flex-col w-full px-[15px] pt-[12px] pb-[15px]">
       <h2
         style={{
           fontFamily: 'TT Firs Neue, sans-serif',

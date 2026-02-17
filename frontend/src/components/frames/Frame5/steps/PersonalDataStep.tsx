@@ -46,7 +46,7 @@ export default function PersonalDataStep({
 
   return (
     <div className="flex flex-col w-full">
-      <div className="flex-shrink-0 px-[15px] pt-[12px] pb-[20px]">
+      <div className="flex-shrink-0 px-[15px] pt-[12px] pb-[15px]">
         <h2
           style={{
             fontFamily: 'TT Firs Neue, sans-serif',

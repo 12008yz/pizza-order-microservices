@@ -13,6 +13,7 @@ export default function ArrowCircleRightIcon({ color = '#101010', isAnimating = 
          viewBox="0 0 20 20"
          fill="none"
          xmlns="http://www.w3.org/2000/svg"
+         shapeRendering="geometricPrecision"
          style={{
             transform: isAnimating ? 'translateX(3px)' : 'translateX(0)',
             transition: 'transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
@@ -31,6 +32,11 @@ export default function ArrowCircleRightIcon({ color = '#101010', isAnimating = 
             clipRule="evenodd"
             d="M10.2197 6.46967C10.5126 6.17678 10.9874 6.17678 11.2803 6.46967L14.2803 9.46967C14.5732 9.76256 14.5732 10.2374 14.2803 10.5303L11.2803 13.5303C10.9874 13.8232 10.5126 13.8232 10.2197 13.5303C9.92678 13.2374 9.92678 12.7626 10.2197 12.4697L12.1893 10.5H6.25C5.83579 10.5 5.5 10.1642 5.5 9.75C5.5 9.33579 5.83579 9 6.25 9H12.1893L10.2197 7.03033C9.92678 6.73744 9.92678 6.26256 10.2197 5.96967Z"
             fill={color}
+            stroke={color}
+            strokeWidth="0.75"
+            strokeLinejoin="round"
+            strokeLinecap="round"
+            style={{ paintOrder: 'stroke fill' }}
          />
       </svg>
    );

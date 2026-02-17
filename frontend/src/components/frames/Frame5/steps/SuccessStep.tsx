@@ -65,7 +65,7 @@ export default function SuccessStep({ orderNumber, onFaq }: SuccessStepProps) {
   return (
     <div className="flex flex-col w-full" ref={captureRef}>
       <div
-        className="flex-shrink-0 pb-[20px]"
+        className="flex-shrink-0 pb-[15px]"
         style={{
           width: '100%',
           paddingLeft: 15,
@@ -96,7 +96,7 @@ export default function SuccessStep({ orderNumber, onFaq }: SuccessStepProps) {
             fontWeight: 400,
             color: 'rgba(16, 16, 16, 0.5)',
             marginTop: 15,
-            marginBottom: 20,
+            marginBottom: 15,
           }}
         >
           Мы поздравляем с оформлением заявки. Пожалуйста, подготовьте все вопросы
@@ -121,7 +121,7 @@ export default function SuccessStep({ orderNumber, onFaq }: SuccessStepProps) {
             border: '1px solid rgba(16, 16, 16, 0.25)',
             padding: '12px 15px',
             marginTop: 10,
-            marginBottom: 20,
+            marginBottom: 15,
             display: 'flex',
             flexDirection: 'column',
             gap: 0,

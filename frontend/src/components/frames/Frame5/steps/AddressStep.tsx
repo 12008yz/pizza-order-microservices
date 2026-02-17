@@ -58,7 +58,7 @@ export default function AddressStep({
 
   return (
     <div className="flex flex-col w-full">
-      <div className="flex-shrink-0 px-[15px] pt-[12px] pb-[20px]">
+      <div className="flex-shrink-0 px-[15px] pt-[12px] pb-[15px]">
         <h2
           style={{
             fontFamily: 'TT Firs Neue, sans-serif',
@@ -124,7 +124,7 @@ export default function AddressStep({
               height: 50,
               minHeight: 50,
               paddingLeft: 15,
-              paddingRight: 16,
+              paddingRight: 15,
               opacity: !buildingValid ? 0.5 : 1,
               border: errors.apartment
                 ? '1px solid rgb(239, 68, 68)'

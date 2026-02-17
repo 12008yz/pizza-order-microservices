@@ -466,7 +466,7 @@ function AddressFormContent({ isAppLoading = false, appLoadingProgress = 0 }: Ad
           </div>
         )}
 
-        {/* Белая карточка — покрывает весь контент, 15px отступ по бокам от краёв фрейма, паддинг 15px по бокам внутри */}
+        {/* Белая карточка — покрывает весь контент, 15px отступ по бокам от краёв фрейма, паддинг 15px везде */}
         <div
           className="absolute box-border bg-white"
           style={{
@@ -479,7 +479,7 @@ function AddressFormContent({ isAppLoading = false, appLoadingProgress = 0 }: Ad
             flexDirection: 'column',
             paddingTop: 15,
             paddingRight: 15,
-            paddingBottom: 'calc(20px + env(safe-area-inset-bottom, 0px))',
+            paddingBottom: 'calc(15px + env(safe-area-inset-bottom, 0px))',
             paddingLeft: 15,
             boxSizing: 'border-box',
             gap: 5,

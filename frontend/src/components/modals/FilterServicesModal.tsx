@@ -49,7 +49,7 @@ export default function FilterServicesModal({
         background: '#F5F5F5',
         backdropFilter: 'blur(12.5px)',
         paddingTop: 'var(--sat, 0px)',
-        paddingBottom: 'calc(20px + env(safe-area-inset-bottom, 0px))',
+        paddingBottom: 'calc(15px + env(safe-area-inset-bottom, 0px))',
         height: '100dvh',
         boxSizing: 'border-box',
       }}
@@ -72,7 +72,7 @@ export default function FilterServicesModal({
           </div>
         </div>
 
-        {/* Карточка — компактная, прижата вниз с отступом 20px */}
+        {/* Карточка — компактная, прижата вниз с отступом 15px (как на главной Frame1) */}
         <div
           className="flex flex-col frame-card"
           style={{
@@ -81,7 +81,7 @@ export default function FilterServicesModal({
             marginLeft: 'auto',
             marginRight: 'auto',
             marginTop: 'auto',
-            marginBottom: '20px',
+            marginBottom: '15px',
             maxHeight: 'calc(100dvh - 145px)',
             overflow: 'hidden',
           }}
@@ -108,6 +108,7 @@ export default function FilterServicesModal({
                   label={service.name}
                   checked={selectedServices.includes(service.id)}
                   onChange={() => handleToggleService(service.id)}
+                  useFrame4CheckIcon
                 />
               ))}
             </div>

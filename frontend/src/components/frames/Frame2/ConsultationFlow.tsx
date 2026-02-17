@@ -209,7 +209,7 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip, initialSte
               </button>
             </div>
 
-            {/* Content — 8px от строки таймера (15 + 20 + 8 = 43) */}
+            {/* Content — 8px от строки таймера (15 + 20 + 8 = 43). Интервал между буквами по макету (без letter-spacing). */}
             <div
               className="absolute font-normal"
               style={{
@@ -218,10 +218,11 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip, initialSte
                 left: '15px',
                 top: '43px',
                 fontFamily: 'TT Firs Neue, sans-serif',
+                fontStyle: 'normal',
+                fontWeight: 400,
                 fontSize: '14px',
                 lineHeight: '105%',
                 color: '#101010',
-                letterSpacing: '0.5px',
               }}
             >
               {notification.content}

@@ -3,12 +3,21 @@
 import React from 'react';
 import AnimatedCheck from './AnimatedCheck';
 
+// Галочка из Frame4: чёрный круг, белая галочка (16×16)
+const Frame4CheckIcon = () => (
+  <svg width="8" height="6" viewBox="0 0 8 6" fill="none" aria-hidden>
+    <path d="M1 3L3 5L7 1" stroke="#FFFFFF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
 interface CheckboxOptionProps {
   label: string;
   checked: boolean;
   onChange: () => void;
   className?: string;
   style?: React.CSSProperties;
+  /** Использовать галочку из Frame4 (белый круг + чёрная галочка) */
+  useFrame4CheckIcon?: boolean;
 }
 
 export default function CheckboxOption({
@@ -17,6 +26,7 @@ export default function CheckboxOption({
   onChange,
   className = '',
   style,
+  useFrame4CheckIcon = false,
 }: CheckboxOptionProps) {
   return (
     <div
@@ -45,15 +55,24 @@ export default function CheckboxOption({
         {label}
       </div>
       <div
-        className="absolute w-4 h-4 rounded-full flex items-center justify-center"
+        className="absolute w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0"
         style={{
           right: '15px',
           top: '17px',
-          background: checked ? '#101010' : 'transparent',
-          border: checked ? 'none' : '1px solid rgba(16, 16, 16, 0.5)',
+          boxSizing: 'border-box',
+          ...(useFrame4CheckIcon
+            ? {
+                background: checked ? '#101010' : 'transparent',
+                border: checked ? '1px solid #101010' : '1px solid rgba(16, 16, 16, 0.5)',
+              }
+            : {
+                background: checked ? '#101010' : 'transparent',
+                border: checked ? 'none' : '1px solid rgba(16, 16, 16, 0.5)',
+              }),
         }}
       >
-        {checked && (
+        {checked && useFrame4CheckIcon && <Frame4CheckIcon />}
+        {checked && !useFrame4CheckIcon && (
           <AnimatedCheck size={8} color="#FFFFFF" strokeWidth={1.5} />
         )}
       </div>

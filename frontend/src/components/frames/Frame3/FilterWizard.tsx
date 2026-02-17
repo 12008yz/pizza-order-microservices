@@ -139,7 +139,7 @@ export default function FilterWizard({ isOpen, onClose, onApply }: FilterWizardP
             background: '#F5F5F5',
             backdropFilter: 'blur(12.5px)',
             paddingTop: 'var(--sat, 0px)',
-            paddingBottom: 'calc(20px + var(--sab, 0px))',
+            paddingBottom: 'calc(15px + var(--sab, 0px))',
             height: '100dvh',
             boxSizing: 'border-box',
             opacity: isAnimating ? 1 : 0,
@@ -161,7 +161,7 @@ export default function FilterWizard({ isOpen, onClose, onApply }: FilterWizardP
                <ClickOutsideHint />
             </div>
 
-            {/* Карточка — прижата вниз, 20px от низа за счёт paddingBottom оверлея (как в Frame2) */}
+            {/* Карточка — прижата вниз, 15px отступ везде (как на главной Frame1) */}
             <div
                onClick={(e) => e.stopPropagation()}
                className="flex flex-col rounded-[20px] bg-white mx-[5%]"
@@ -172,7 +172,7 @@ export default function FilterWizard({ isOpen, onClose, onApply }: FilterWizardP
                   marginRight: 'auto',
                   marginTop: 'auto',
                   marginBottom: 0,
-                  padding: '15px 15px 20px 15px',
+                  padding: 15,
                }}
             >
                {/* Заголовок */}
@@ -208,6 +208,7 @@ export default function FilterWizard({ isOpen, onClose, onApply }: FilterWizardP
                            label={service.name}
                            checked={selectedServices.includes(service.id) && service.enabled}
                            onChange={() => handleServiceToggle(service.id)}
+                           useFrame4CheckIcon
                            className={!service.enabled ? 'pointer-events-none' : ''}
                            style={!service.enabled ? { opacity: 0.25 } : undefined}
                         />
@@ -220,6 +221,7 @@ export default function FilterWizard({ isOpen, onClose, onApply }: FilterWizardP
                            label={provider.name}
                            checked={selectedProviders.includes(provider.id)}
                            onChange={() => handleProviderToggle(provider.id)}
+                           useFrame4CheckIcon
                         />
                      ))}
 

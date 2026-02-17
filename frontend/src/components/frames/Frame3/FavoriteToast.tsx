@@ -51,7 +51,6 @@ export default function FavoriteToast({ isVisible, onClose }: FavoriteToastProps
             top: 'var(--header-tooltip-top)',
             background: '#FFFFFF',
             borderRadius: '20px 10px 20px 20px',
-            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',
             zIndex: 100,
             opacity: isAnimating ? 1 : 0,
             transform: isAnimating ? 'translateY(0) scale(1)' : 'translateY(-20px) scale(0.9)',

@@ -24,7 +24,7 @@ export default function FilterModal({ isOpen, onClose }: FilterModalProps) {
           background: '#F5F5F5',
           backdropFilter: 'blur(12.5px)',
           paddingTop: 'var(--sat, 0px)',
-          paddingBottom: 'calc(20px + var(--sab, 0px))',
+          paddingBottom: 'calc(15px + var(--sab, 0px))',
           height: '100dvh',
           boxSizing: 'border-box',
         }}
@@ -46,7 +46,7 @@ export default function FilterModal({ isOpen, onClose }: FilterModalProps) {
             </div>
           </div>
 
-          {/* Карточка — прижата вниз, 20px от низа за счёт paddingBottom оверлея (как в Frame2) */}
+          {/* Карточка — прижата вниз, 15px отступ везде (как на главной Frame1) */}
           <div
             className="flex flex-col rounded-[20px] bg-white mx-[5%]"
             style={{
@@ -56,7 +56,7 @@ export default function FilterModal({ isOpen, onClose }: FilterModalProps) {
               marginRight: 'auto',
               marginTop: 'auto',
               marginBottom: 0,
-              padding: '15px 15px 20px 15px',
+              padding: 15,
             }}
             onClick={(e) => e.stopPropagation()}
           >
@@ -72,7 +72,7 @@ export default function FilterModal({ isOpen, onClose }: FilterModalProps) {
               Фильтрация
             </div>
 
-            <div className="flex flex-col gap-[5px]" style={{ marginBottom: '20px' }}>
+            <div className="flex flex-col gap-[5px]" style={{ marginBottom: '15px' }}>
               <button
                 type="button"
                 onClick={() => setShowProvidersModal(true)}

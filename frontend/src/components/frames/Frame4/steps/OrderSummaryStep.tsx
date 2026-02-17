@@ -304,8 +304,12 @@ function getTvBoxDisplayInfo(state: EquipmentState): TvBoxDisplayInfo {
     return { main: 'Дополнить', sub: 'TV-приставка', isActive: false, priceText: '', noteText: '', choiceLabel: '' };
   }
 
-  // «Имеется, но, от оператора» / «Имеется, но, не от оператора» — как блок «Не предусмотрено / Телевидение»: серая иконка, серый текст, нельзя нажать
-  if (need === 'have_from_operator' || need === 'have_own') {
+  // «Имеется, но, от оператора» — как у роутера: чёрный текст, минус, справа «имеется от оператора»
+  if (need === 'have_from_operator') {
+    return { main: 'Не требуется', sub: 'TV-приставка', isActive: true, priceText: '', noteText: '', choiceLabel: '' };
+  }
+  // «Имеется, но, не от оператора» — серый блок, нельзя нажать
+  if (need === 'have_own') {
     return { main: 'Не предусмотрено', sub: 'TV-приставка', isActive: false, priceText: '', noteText: '', choiceLabel: '', isReadOnly: true };
   }
 

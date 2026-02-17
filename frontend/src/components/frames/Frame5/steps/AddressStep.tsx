@@ -24,12 +24,18 @@ export default function AddressStep({
   onBack,
   onOpenAddressModal,
 }: AddressStepProps) {
-  const apartmentDisplay = data.apartment ? `кв. ${data.apartment}` : '';
-
   const cityValid = data.city.trim().length > 0;
   const streetValid = data.street.trim().length > 0;
   const buildingValid = data.building.trim().length > 0;
-  const apartmentValid = Boolean(data.apartment);
+  const apartmentValid = Boolean(data.apartment?.toString().trim());
+
+  const handleCityChange = (value: string) => onChange({ ...data, city: value });
+  const handleStreetChange = (value: string) => onChange({ ...data, street: value });
+  const handleBuildingChange = (value: string) => onChange({ ...data, building: value });
+  const handleApartmentChange = (value: string) => {
+    const raw = value.replace(/^кв\.?\s*/i, '').trim();
+    onChange({ ...data, apartment: raw || null });
+  };
 
   return (
     <div className="flex flex-col w-full">
@@ -63,32 +69,29 @@ export default function AddressStep({
         <div className="flex flex-col gap-[5px]">
           <FormField
             value={data.city}
+            onChange={handleCityChange}
             placeholder="Название населённого пункта"
-            onClick={() => onOpenAddressModal('city')}
             error={errors.city}
             isValid={cityValid}
           />
           <FormField
             value={data.street}
+            onChange={handleStreetChange}
             placeholder="Улица"
-            onClick={() => onOpenAddressModal('street')}
-            disabled={!data.city.trim()}
             error={errors.street}
             isValid={streetValid}
           />
           <FormField
             value={data.building}
+            onChange={handleBuildingChange}
             placeholder="Номер дома"
-            onClick={() => onOpenAddressModal('house')}
-            disabled={!data.street.trim()}
             error={errors.building}
             isValid={buildingValid}
           />
           <FormField
-            value={apartmentDisplay}
+            value={data.apartment ?? ''}
+            onChange={handleApartmentChange}
             placeholder="Квартира"
-            onClick={() => onOpenAddressModal('apartment')}
-            disabled={!data.building.trim()}
             error={errors.apartment}
             isValid={apartmentValid}
           />

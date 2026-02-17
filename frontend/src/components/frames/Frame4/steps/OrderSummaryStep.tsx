@@ -155,9 +155,9 @@ interface RouterDisplayInfo {
 function getRouterLabel(state: EquipmentState): RouterDisplayInfo {
   const need = state.router?.need;
 
-  // Роутер не нужен — в итоге показываем «Роутер не требуется», по клику можно «Дополнить»
+  // Роутер не выбран / снят минусом — показываем «Дополнить» красным, как у TV и SIM
   if (need === 'no_thanks' || !need) {
-    return { main: 'Роутер не требуется', sub: 'Роутер', isActive: true, needsAdd: true, priceText: '', noteText: '', choiceLabel: '' };
+    return { main: 'Дополнить', sub: 'Роутер', isActive: false, needsAdd: true, priceText: '', noteText: '', choiceLabel: '' };
   }
 
   // Роутер есть от оператора — не требуется, без доп. платы
@@ -242,6 +242,8 @@ interface TvBoxDisplayInfo {
   noteText: string;
   /** Рассрочка / Аренда / Покупка — показывается напротив ТВ-приставки, как у роутера */
   choiceLabel: string;
+  /** Как блок «Не предусмотрено / Телевидение»: серая иконка, серый текст, нельзя нажать и изменить */
+  isReadOnly?: boolean;
 }
 
 function getTvBoxDisplayInfo(state: EquipmentState): TvBoxDisplayInfo {
@@ -292,6 +294,21 @@ function getTvBoxDisplayInfo(state: EquipmentState): TvBoxDisplayInfo {
     };
   }
 
+  // «Имеется в телевизоре интернет» — чёрный текст и минус
+  if (need === 'smart_tv') {
+    return { main: 'Имеется в телевизоре интернет', sub: 'TV-приставка', isActive: true, priceText: '', noteText: '', choiceLabel: '' };
+  }
+
+  // После нажатия минус — красный «Дополнить», как у роутера
+  if (need === 'no_thanks') {
+    return { main: 'Дополнить', sub: 'TV-приставка', isActive: false, priceText: '', noteText: '', choiceLabel: '' };
+  }
+
+  // «Имеется, но, от оператора» / «Имеется, но, не от оператора» — как блок «Не предусмотрено / Телевидение»: серая иконка, серый текст, нельзя нажать
+  if (need === 'have_from_operator' || need === 'have_own') {
+    return { main: 'Не предусмотрено', sub: 'TV-приставка', isActive: false, priceText: '', noteText: '', choiceLabel: '', isReadOnly: true };
+  }
+
   return { main: 'Не предусмотрено', sub: 'TV-приставка', isActive: false, priceText: '', noteText: '', choiceLabel: '' };
 }
 
@@ -308,7 +325,7 @@ function getTvBoxAddOnPrice(state: EquipmentState): number {
 function getSimLabel(state: EquipmentState): { main: string; sub: string; extra: string; isActive: boolean } {
   const type = state.simCard?.connectionType;
   if (type === 'no_thanks' || !type) {
-    return { main: 'Не предусмотрено', sub: 'SIM-карта', extra: '', isActive: false };
+    return { main: 'Дополнить', sub: 'SIM-карта', extra: '', isActive: false };
   }
   const n = state.simCard?.smartphoneCount ?? 1;
   const ex = n === 1 ? 'один экз.' : `${n} экз.`;
@@ -377,14 +394,16 @@ export default function OrderSummaryStep({
     }
   };
 
-  // Handler для ТВ-приставки: если не выбрана — в модалку; если выбрана — минус по 1 (4→3→2→1, с 1 — убрать)
+  // Handler для ТВ-приставки: если выбрана — минус (уменьшить кол-во или снять в «Дополнить»); если «Дополнить» — в модалку выбора
   const handleTvBoxClick = () => {
     if (tvInfo.isActive) {
       const current = equipmentState.tvBox?.tvCount ?? 1;
+      const need = equipmentState.tvBox?.need;
       if (current > 1) {
         callbacks.onTvBoxCountChange((current - 1) as TvCountOption);
       } else {
-        callbacks.onTvBoxNeedChange('smart_tv');
+        // Снятие выбора (аренда/рассрочка/покупка или «интернет в телеке») → везде «Дополнить» красным
+        callbacks.onTvBoxNeedChange('no_thanks');
       }
     } else {
       if (onGoToTvBoxStep) {
@@ -410,17 +429,17 @@ export default function OrderSummaryStep({
     }
   };
 
-  // Отступы по макету (пиксель в пиксель): 17px слева, 15px справа; 330px ширина контента
+  // Отступы по макету: по 15px по бокам и снизу
   const padCardTop = 15;
   const padCardBottom = 10;
-  const padCardLeft = 17;
+  const padCardLeft = 15;
   const padCardRight = 15;
   const padBlockV = 10; // отступ сверху от разделителя до первой строки (скорость)
   const rowMinH = 40;
   const rowGap = 5;        // 5px между рядами фич/оборудования
   const pricePadTop = 20;  // 20px от разделителя до цены
   const priceToButtons = 20; // 20px от «Подключение от оператора» до кнопок
-  const padBottom = 20;   // 20px от низа кнопок до низа карточки
+  const padBottom = 15;   // 15px от низа кнопок до низа карточки
   const dividerToBlock = 10; // 10px от последней фичи до разделителя оборудования
 
   return (
@@ -628,7 +647,7 @@ export default function OrderSummaryStep({
               </div>
             </div>
 
-            {/* TV-приставка — три колонки: иконка | main+sub | правый блок по правому краю (marginLeft: auto) */}
+            {/* TV-приставка — если в тарифе нет ТВ или isReadOnly: как блок «Не предусмотрено / Телевидение» — серая иконка, серый текст, не кликается */}
             <div
               style={{
                 display: 'flex',
@@ -636,32 +655,32 @@ export default function OrderSummaryStep({
                 marginBottom: `${rowGap}px`,
                 minHeight: `${rowMinH}px`,
                 maxWidth: '330px',
-                cursor: hasTVTariff ? 'pointer' : 'default',
+                cursor: tvInfo.isReadOnly || !hasTVTariff ? 'default' : 'pointer',
               }}
-              onClick={hasTVTariff ? handleTvBoxClick : undefined}
+              onClick={tvInfo.isReadOnly || !hasTVTariff ? undefined : handleTvBoxClick}
             >
               <div style={{ width: '16px', height: '16px', flexShrink: 0, marginRight: '9px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                {hasTVTariff && !tvInfo.isActive ? <PlusCircleRedIcon /> : tvInfo.isActive ? <MinusCircleIcon /> : <CrossCircleIcon />}
+                {tvInfo.isReadOnly || !hasTVTariff ? <CrossCircleIcon /> : !tvInfo.isActive ? <PlusCircleRedIcon /> : <MinusCircleIcon />}
               </div>
-              <div style={{ flex: 1, minWidth: 0, maxWidth: '170px', display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 0 }}>
+              <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 0 }}>
                 <span
                   style={{
                     fontFamily: 'TT Firs Neue, sans-serif',
                     fontSize: '16px',
                     lineHeight: '155%',
-                    color: !hasTVTariff ? 'rgba(16, 16, 16, 0.25)' : tvInfo.isActive ? '#101010' : 'rgba(255, 16, 0, 0.75)',
+                    color: tvInfo.isReadOnly || !hasTVTariff ? 'rgba(16, 16, 16, 0.25)' : tvInfo.isActive ? '#101010' : 'rgba(255, 16, 0, 0.75)',
                     display: 'flex',
                     alignItems: 'center',
                   }}
                 >
-                  {tvInfo.main}
+                  {!hasTVTariff ? 'Не предусмотрено' : tvInfo.main}
                 </span>
                 <span
                   style={{
                     fontFamily: 'TT Firs Neue, sans-serif',
                     fontSize: '14px',
                     lineHeight: '105%',
-                    color: !hasTVTariff ? 'rgba(16, 16, 16, 0.5)' : tvInfo.isActive ? 'rgba(16, 16, 16, 0.5)' : 'rgba(255, 16, 0, 0.5)',
+                    color: tvInfo.isReadOnly || !hasTVTariff ? 'rgba(16, 16, 16, 0.5)' : tvInfo.isActive ? 'rgba(16, 16, 16, 0.5)' : 'rgba(255, 16, 0, 0.5)',
                     display: 'flex',
                     alignItems: 'center',
                   }}
@@ -671,7 +690,7 @@ export default function OrderSummaryStep({
               </div>
               <div
                 style={{
-                  width: '120px',
+                  width: !hasTVTariff ? 0 : (tvInfo.priceText || tvInfo.choiceLabel || tvInfo.noteText) ? '120px' : 0,
                   flexShrink: 0,
                   marginLeft: 'auto',
                   display: 'flex',
@@ -680,6 +699,7 @@ export default function OrderSummaryStep({
                   justifyContent: 'center',
                   gap: 0,
                   textAlign: 'right',
+                  overflow: 'hidden',
                 }}
               >
                 {(tvInfo.priceText || tvInfo.choiceLabel) && (

@@ -22,7 +22,7 @@ export interface RouterWizardState {
 }
 
 // ============ TV BOX TYPES ============
-export type TvBoxNeedOption = 'need' | 'have_from_operator' | 'have_own' | 'smart_tv';
+export type TvBoxNeedOption = 'need' | 'have_from_operator' | 'have_own' | 'smart_tv' | 'no_thanks';
 export type TvBoxPurchaseOption = 'buy' | 'installment' | 'rent';
 export type TvCountOption = 1 | 2 | 3 | 4;
 export type TvBoxOperatorOption = 'beeline' | 'domru' | 'megafon' | 'mts' | 'rostelecom';

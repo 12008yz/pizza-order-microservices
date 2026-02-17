@@ -64,8 +64,8 @@ export function validateAddressData(data: AddressData): ValidationErrors {
   if (!data.building.trim()) {
     errors.building = 'Укажите дом';
   }
-  if (!data.apartment) {
-    errors.apartment = 'Выберите квартиру';
+  if (!data.apartment || !String(data.apartment).trim()) {
+    errors.apartment = 'Укажите квартиру';
   }
 
   return errors;

@@ -1175,7 +1175,7 @@ function Frame3Content() {
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  transform: isArrowAtEnd ? 'rotate(180deg)' : 'rotate(0deg)',
+                  transform: `scale(${15 / 20}) ${isArrowAtEnd ? 'rotate(180deg)' : 'rotate(0deg)'}`,
                   transition: 'transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)',
                 }}
               >
@@ -1253,7 +1253,7 @@ function Frame3Content() {
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  transform: isArrowAtEnd ? 'rotate(180deg)' : 'rotate(0deg)',
+                  transform: `scale(${15 / 20}) ${isArrowAtEnd ? 'rotate(180deg)' : 'rotate(0deg)'}`,
                   transition: 'transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)',
                 }}
               >

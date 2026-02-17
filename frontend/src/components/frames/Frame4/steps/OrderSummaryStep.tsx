@@ -306,7 +306,7 @@ function getTvBoxDisplayInfo(state: EquipmentState): TvBoxDisplayInfo {
 
   // «Имеется, но, от оператора» — как у роутера: чёрный текст, минус, справа «имеется от оператора»
   if (need === 'have_from_operator') {
-    return { main: 'Не требуется', sub: 'TV-приставка', isActive: true, priceText: '', noteText: '', choiceLabel: '' };
+    return { main: 'Не требуется', sub: 'TV-приставка', isActive: true, priceText: '', noteText: 'имеется от оператора', choiceLabel: '' };
   }
   // «Имеется, но, не от оператора» — серый блок, нельзя нажать
   if (need === 'have_own') {

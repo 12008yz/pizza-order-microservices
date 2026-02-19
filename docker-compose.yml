@@ -405,8 +405,9 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     container_name: tariff-frontend
+    command: sh -c "npm install --legacy-peer-deps --include=dev && npm run build && npx next start -p $${PORT:-3000}"
     environment:
-      NODE_ENV: development
+      NODE_ENV: production
       NEXT_PUBLIC_API_URL: http://localhost:3000
       AUTH_SERVICE_URL: http://auth-service:3001
       USER_SERVICE_URL: http://user-service:3002

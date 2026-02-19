@@ -19,12 +19,30 @@ export default function LoginPage() {
     return null;
   }
 
+  // Кириллические буквы-двойники в латиницу, чтобы «А12» и «A12» давали один логин
+  const wordToLogin = (word: string) => {
+    const s = word.trim();
+    const cyrillicToLatin = (str: string) =>
+      str.replace(/[А-Яа-я]/g, (ch) => {
+        const map: Record<string, string> = {
+          А: "A", а: "a", В: "B", в: "b", Е: "E", е: "e", К: "K", к: "k", М: "M", м: "m",
+          Н: "H", н: "h", О: "O", о: "o", Р: "P", р: "p", С: "C", с: "c", Т: "T", т: "t",
+          У: "y", у: "y", Х: "X", х: "x",
+        };
+        return map[ch] ?? ch;
+      });
+    return cyrillicToLatin(s).toLowerCase();
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setLoading(true);
     try {
-      await loginAdmin({ email, password });
+      const loginEmail = email.includes("@")
+        ? email.trim()
+        : `${wordToLogin(email)}@admin.local`;
+      await loginAdmin({ email: loginEmail, password });
       router.push("/orders");
       router.refresh();
     } catch (err: unknown) {
@@ -45,8 +63,8 @@ export default function LoginPage() {
       >
         <h1 className="text-lg font-semibold text-center">Вход в админ-панель</h1>
         <Input
-          type="email"
-          placeholder="Мое слово"
+          type="text"
+          placeholder="Первое слово (напр. А12)"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
@@ -55,7 +73,7 @@ export default function LoginPage() {
         />
         <Input
           type="password"
-          placeholder="Чистое слово"
+          placeholder="Второе слово (напр. А13)"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required

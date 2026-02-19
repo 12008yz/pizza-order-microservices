@@ -181,7 +181,7 @@ services:
     volumes:
       - ./services/auth-service:/app
       - /app/node_modules
-    command: sh -c "npx sequelize-cli db:migrate && npm run dev"
+    command: sh -c "npx sequelize-cli db:migrate && npx sequelize-cli db:seed:all && npm run dev"
 
   # User Service
   user-service:

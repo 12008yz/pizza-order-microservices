@@ -58,12 +58,20 @@ export const authApi = axios.create({
 });
 
 export async function loginAdmin(body: LoginRequest): Promise<LoginResponse> {
-  const { data } = await authApi.post<LoginResponse>("/api/auth/admin/login", body);
+  const { data: res } = await authApi.post<{ success: boolean; data: LoginResponse }>(
+    "/api/auth/admin/login",
+    body
+  );
+  const payload = res.data ?? res;
   if (typeof window !== "undefined") {
-    setTokens(data.accessToken, data.refreshToken);
-    setUser(data.user);
+    const access = payload.accessToken;
+    const refresh = payload.refreshToken;
+    if (access && refresh) {
+      setTokens(access, refresh);
+      setUser(payload.user);
+    }
   }
-  return data;
+  return payload;
 }
 
 export const orderApi = createClient(ORDER_SERVICE_URL);

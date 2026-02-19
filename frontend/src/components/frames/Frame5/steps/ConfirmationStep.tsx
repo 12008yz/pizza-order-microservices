@@ -8,12 +8,16 @@ interface ConfirmationStepProps {
   onConfirm: () => void;
   onEdit: () => void;
   isSubmitting?: boolean;
+  submitError?: string | null;
+  onRetry?: () => void;
 }
 
 export default function ConfirmationStep({
   onConfirm,
   onEdit,
   isSubmitting = false,
+  submitError = null,
+  onRetry,
 }: ConfirmationStepProps) {
   const [confirmPressed, setConfirmPressed] = useState(false);
   const [editPressed, setEditPressed] = useState(false);
@@ -71,6 +75,42 @@ export default function ConfirmationStep({
       >
         Я подтверждаю, что настоящая заявка действительна и актуальна для меня
       </p>
+
+      {submitError && (
+        <div
+          style={{
+            fontFamily: 'TT Firs Neue, sans-serif',
+            fontSize: '14px',
+            color: '#b91c1c',
+            marginBottom: 12,
+            padding: '8px 12px',
+            background: 'rgba(185, 28, 28, 0.08)',
+            borderRadius: 8,
+          }}
+        >
+          {submitError}
+          {onRetry && (
+            <button
+              type="button"
+              onClick={onRetry}
+              style={{
+                marginTop: 8,
+                display: 'block',
+                fontFamily: 'inherit',
+                fontSize: '14px',
+                color: '#101010',
+                textDecoration: 'underline',
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                padding: 0,
+              }}
+            >
+              Повторить отправку
+            </button>
+          )}
+        </div>
+      )}
 
       <div className="flex flex-col gap-[8px]">
         <button

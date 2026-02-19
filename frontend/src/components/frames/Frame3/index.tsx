@@ -36,7 +36,10 @@ const ConsultationFlow = dynamic(() => import('../Frame2/ConsultationFlow'), {
 interface Tariff {
   id: number;
   providerName: string;
+  /** Slug для фильтров (mts, rostelecom и т.д.) */
   providerId: string;
+  /** Числовой ID провайдера для API заявки */
+  numericProviderId: number;
   tariffName: string;
   speed: string;
   speedValue: number;
@@ -266,6 +269,7 @@ function transformApiTariffToComponent(apiTariff: ApiTariff): Tariff {
     id: apiTariff.id,
     providerName: apiTariff.provider?.name || 'Неизвестный провайдер',
     providerId: providerSlug,
+    numericProviderId: apiTariff.providerId,
     tariffName: apiTariff.name,
     speed: `${apiTariff.speed} Мбит/сек`,
     speedValue: apiTariff.speed,
@@ -681,7 +685,8 @@ function Frame3Content() {
         sessionStorage.setItem('selectedTariff', JSON.stringify({
           id: selectedTariff.id,
           providerName: selectedTariff.providerName,
-          providerId: selectedTariff.providerId,
+          providerId: selectedTariff.numericProviderId,
+          numericProviderId: selectedTariff.numericProviderId,
           tariffName: selectedTariff.tariffName,
           price: selectedTariff.price,
           priceValue: selectedTariff.priceValue,

@@ -44,15 +44,46 @@ export const createOrderSchema = Joi.object({
   simCardOption: Joi.string().valid('none', 'purchase', 'rent').allow(null, '').optional(),
 });
 
+function toNumber(v: unknown): number | undefined {
+  if (typeof v === "number" && !Number.isNaN(v)) return v;
+  if (typeof v === "string") {
+    const n = parseInt(v, 10);
+    if (!Number.isNaN(n)) return n;
+  }
+  return undefined;
+}
+
 /**
  * Middleware для валидации создания заказа
+ * Приводит providerId и tariffId к числу, если пришли строкой (например из JSON/формы).
  */
 export const validateCreateOrder = (
   req: Request,
   res: Response,
   next: NextFunction
 ): void => {
-  const { error, value } = createOrderSchema.validate(req.body, {
+  const body = { ...req.body };
+  const rawProviderId = body.providerId;
+  const rawTariffId = body.tariffId;
+  body.providerId = toNumber(body.providerId) ?? body.providerId;
+  body.tariffId = toNumber(body.tariffId) ?? body.tariffId;
+
+  if (typeof body.providerId !== "number" && rawProviderId != null) {
+    const appError = new Error(
+      "providerId должен быть числом. Перезагрузите страницу и выберите тариф заново на странице провайдеров."
+    ) as AppError;
+    appError.statusCode = 400;
+    return next(appError);
+  }
+  if (typeof body.tariffId !== "number" && rawTariffId != null) {
+    const appError = new Error(
+      "tariffId должен быть числом. Перезагрузите страницу и выберите тариф заново."
+    ) as AppError;
+    appError.statusCode = 400;
+    return next(appError);
+  }
+
+  const { error, value } = createOrderSchema.validate(body, {
     abortEarly: false,
     stripUnknown: true,
   });

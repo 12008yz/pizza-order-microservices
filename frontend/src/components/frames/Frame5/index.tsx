@@ -70,6 +70,7 @@ function Frame5Content() {
   const [addressData, setAddressData] = useState<AddressData>(DEFAULT_ADDRESS);
   const [errors, setErrors] = useState<ValidationErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const [orderNumber, setOrderNumber] = useState<string | null>(null);
   const [notificationVisible, setNotificationVisible] = useState(true);
   const [showAddressModal, setShowAddressModal] = useState(false);
@@ -207,56 +208,65 @@ function Frame5Content() {
   const handleConfirm = useCallback(async () => {
     setIsSubmitting(true);
     setErrors({});
+    setSubmitError(null);
 
     try {
-      if (selectedTariff) {
-        const payload: CreateOrderData = {
-          providerId: selectedTariff.providerId,
-          tariffId: selectedTariff.id,
-          fullName: `${personalData.firstName.trim()} ${personalData.lastName.trim()}`,
-          phone: personalData.phone.replace(/\D/g, ''),
-          ...(personalData.birthDate?.trim() && { birthDate: personalData.birthDate.trim() }),
-          addressString: [
-            addressData.city,
-            addressData.street,
-            addressData.building,
-            addressData.apartment ? `кв. ${addressData.apartment}` : '',
-          ]
-            .filter(Boolean)
-            .join(', '),
-          city: addressData.city || undefined,
-          street: addressData.street || undefined,
-          building: addressData.building || undefined,
-          apartment: addressData.apartment || undefined,
-        };
-
-        if (equipmentState?.router) {
-          payload.routerNeed = equipmentState.router.need ?? undefined;
-          payload.routerPurchase = equipmentState.router.purchase ?? undefined;
-          payload.routerOperator = equipmentState.router.operator ?? undefined;
-          payload.routerConfig = equipmentState.router.config ?? undefined;
-        }
-
-        const res = await ordersService.createOrder(payload);
-
-        if (res.success && res.data) {
-          const num = formatOrderNumber(res.data.id, res.data.createdAt);
-          setOrderNumber(num);
-          sessionStorage.removeItem(SELECTED_TARIFF_KEY);
-          setStep('success');
-          return;
-        }
+      if (!selectedTariff) {
+        setSubmitError('Не выбран тариф. Вернитесь к выбору тарифа.');
+        return;
       }
 
-      // Fallback: переход на success даже без ответа сервера (для тестирования)
-      const testOrderNumber = formatOrderNumber(Math.floor(Math.random() * 1000000), new Date().toISOString());
-      setOrderNumber(testOrderNumber);
-      setStep('success');
-    } catch {
-      // При ошибке всё равно переходим на success для тестирования
-      const testOrderNumber = formatOrderNumber(Math.floor(Math.random() * 1000000), new Date().toISOString());
-      setOrderNumber(testOrderNumber);
-      setStep('success');
+      const rawProviderId = (selectedTariff as { numericProviderId?: number }).numericProviderId ?? selectedTariff.providerId;
+      const providerIdNum = typeof rawProviderId === 'number' ? rawProviderId : parseInt(String(rawProviderId), 10);
+      const tariffIdNum = Number(selectedTariff.id);
+      if (!Number.isFinite(providerIdNum) || !Number.isFinite(tariffIdNum)) {
+        setSubmitError('Данные тарифа устарели. Перейдите на страницу провайдеров и выберите тариф заново.');
+        return;
+      }
+
+      const payload: CreateOrderData = {
+        providerId: providerIdNum,
+        tariffId: tariffIdNum,
+        fullName: `${personalData.firstName.trim()} ${personalData.lastName.trim()}`,
+        phone: personalData.phone.replace(/\D/g, ''),
+        ...(personalData.birthDate?.trim() && { birthDate: personalData.birthDate.trim() }),
+        addressString: [
+          addressData.city,
+          addressData.street,
+          addressData.building,
+          addressData.apartment ? `кв. ${addressData.apartment}` : '',
+        ]
+          .filter(Boolean)
+          .join(', '),
+        city: addressData.city || undefined,
+        street: addressData.street || undefined,
+        building: addressData.building || undefined,
+        apartment: addressData.apartment || undefined,
+      };
+
+      if (equipmentState?.router) {
+        payload.routerNeed = equipmentState.router.need ?? undefined;
+        payload.routerPurchase = equipmentState.router.purchase ?? undefined;
+        payload.routerOperator = equipmentState.router.operator ?? undefined;
+        payload.routerConfig = equipmentState.router.config ?? undefined;
+      }
+
+      const res = await ordersService.createOrder(payload);
+
+      if (res.success && res.data) {
+        const num = formatOrderNumber(res.data.id, res.data.createdAt);
+        setOrderNumber(num);
+        sessionStorage.removeItem(SELECTED_TARIFF_KEY);
+        setStep('success');
+        return;
+      }
+
+      setSubmitError(res.error || 'Не удалось создать заявку. Попробуйте ещё раз.');
+    } catch (err: unknown) {
+      const message = err && typeof err === 'object' && 'error' in err
+        ? String((err as { error?: string }).error)
+        : 'Ошибка отправки. Проверьте интернет и попробуйте снова.';
+      setSubmitError(message);
     } finally {
       setIsSubmitting(false);
     }
@@ -437,6 +447,8 @@ function Frame5Content() {
                   onConfirm={handleConfirm}
                   onEdit={() => setStep('personal_data')}
                   isSubmitting={isSubmitting}
+                  submitError={submitError}
+                  onRetry={() => setSubmitError(null)}
                 />
               )}
 

@@ -54,6 +54,8 @@ function OrdersPageContent() {
   }, [orders, searchParam]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const displayPages = 7;
+  const totalPagesForPagination = Math.max(totalPages, displayPages);
   const currentPage = Math.min(page, totalPages);
   const slice = useMemo(
     () => filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE),
@@ -67,19 +69,33 @@ function OrdersPageContent() {
     window.history.pushState({}, "", url.toString());
   };
 
+  const paginationBlock = (
+    <Pagination
+      page={page}
+      totalPages={totalPagesForPagination}
+      onPageChange={handlePageChange}
+    />
+  );
+
   if (error) {
     return (
-      <div className="rounded-card border border-error bg-error/5 p-4 text-error">
-        {error}
-      </div>
+      <>
+        <div className="rounded-card border border-error bg-error/5 p-4 text-error">
+          {error}
+        </div>
+        {paginationBlock}
+      </>
     );
   }
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-12">
-        <p className="text-muted-foreground">Загрузка заявок...</p>
-      </div>
+      <>
+        <div className="flex items-center justify-center py-12">
+          <p className="text-muted-foreground">Загрузка заявок...</p>
+        </div>
+        {paginationBlock}
+      </>
     );
   }
 
@@ -95,13 +111,7 @@ function OrdersPageContent() {
           Заявок не найдено
         </p>
       )}
-      {totalPages > 1 && (
-        <Pagination
-          page={currentPage}
-          totalPages={totalPages}
-          onPageChange={handlePageChange}
-        />
-      )}
+      {paginationBlock}
     </>
   );
 }

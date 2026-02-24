@@ -40,7 +40,7 @@ export default function BaseModal({
           left: '50%',
           transform: 'translateX(-50%)',
           top: '75px',
-          fontFamily: 'TT Firs Neue, sans-serif',
+          fontFamily: "'TT Firs Neue', sans-serif",
           fontSize: '14px',
           lineHeight: '105%',
           display: 'flex',

@@ -197,7 +197,7 @@ export default function ApartmentSelectModal({
           <div
             className="font-normal"
             style={{
-              fontFamily: 'TT Firs Neue, sans-serif',
+              fontFamily: "'TT Firs Neue', sans-serif",
               fontSize: '20px',
               lineHeight: '125%',
               color: '#101010',
@@ -209,7 +209,7 @@ export default function ApartmentSelectModal({
 
           <p
             style={{
-              fontFamily: 'TT Firs Neue, sans-serif',
+              fontFamily: "'TT Firs Neue', sans-serif",
               fontSize: '14px',
               lineHeight: '105%',
               color: 'rgba(16, 16, 16, 0.25)',
@@ -250,7 +250,7 @@ export default function ApartmentSelectModal({
                   <span
                     className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap select-none flex items-center"
                     style={{
-                      fontFamily: 'TT Firs Neue, sans-serif',
+                      fontFamily: "'TT Firs Neue', sans-serif",
                       fontStyle: 'normal',
                       fontWeight: 400,
                       fontSize: '16px',
@@ -331,7 +331,7 @@ export default function ApartmentSelectModal({
                 maxHeight: 50,
                 background: '#101010',
                 border: '1px solid rgba(16, 16, 16, 0.25)',
-                fontFamily: 'TT Firs Neue, sans-serif',
+                fontFamily: "'TT Firs Neue', sans-serif",
                 fontWeight: 400,
                 fontSize: '16px',
                 lineHeight: 1,
@@ -351,7 +351,7 @@ export default function ApartmentSelectModal({
             onClick={onClose}
             className="w-full mt-[10px] px-4 py-3 border border-[rgba(16,16,16,0.15)] rounded-[10px] hover:bg-gray-50 transition-colors"
             style={{
-              fontFamily: 'TT Firs Neue, sans-serif',
+              fontFamily: "'TT Firs Neue', sans-serif",
               fontSize: '16px',
               minHeight: '50px',
             }}

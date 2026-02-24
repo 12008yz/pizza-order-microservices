@@ -77,7 +77,7 @@ export default function SuccessStep({ orderNumber, onFaq }: SuccessStepProps) {
         {/* Номер заявки: не жирный, область 330×25 */}
         <div
           style={{
-            fontFamily: 'TT Firs Neue, sans-serif',
+            fontFamily: "'TT Firs Neue', sans-serif",
             fontWeight: 400,
             fontSize: '20px',
             lineHeight: '25px',
@@ -90,7 +90,7 @@ export default function SuccessStep({ orderNumber, onFaq }: SuccessStepProps) {
         {/* 15px между номером заявки и текстом */}
         <p
           style={{
-            fontFamily: 'TT Firs Neue, sans-serif',
+            fontFamily: "'TT Firs Neue', sans-serif",
             fontSize: '14px',
             lineHeight: '1.25',
             fontWeight: 400,
@@ -103,7 +103,7 @@ export default function SuccessStep({ orderNumber, onFaq }: SuccessStepProps) {
         </p>
         <p
           style={{
-            fontFamily: 'TT Firs Neue, sans-serif',
+            fontFamily: "'TT Firs Neue', sans-serif",
             fontSize: '16px',
             lineHeight: '155%',
             fontWeight: 400,
@@ -139,7 +139,7 @@ export default function SuccessStep({ orderNumber, onFaq }: SuccessStepProps) {
                   className="flex items-center gap-[10px]"
                   style={{
                     minHeight: 36,
-                    fontFamily: 'TT Firs Neue, sans-serif',
+                    fontFamily: "'TT Firs Neue', sans-serif",
                     fontSize: '16px',
                     fontWeight: 400,
                     color: rowColor,
@@ -153,7 +153,7 @@ export default function SuccessStep({ orderNumber, onFaq }: SuccessStepProps) {
                       background: step.status === 'completed' ? '#FF1000' : isCurrent ? 'transparent' : '#FFFFFF',
                       border: step.status === 'completed' ? 'none' : isCurrent ? '1px solid #101010' : '1px solid rgba(16, 16, 16, 0.18)',
                       color: step.status === 'completed' ? '#FFFFFF' : isCurrent ? '#101010' : 'rgba(16, 16, 16, 0.35)',
-                      fontFamily: 'TT Firs Neue, sans-serif',
+                      fontFamily: "'TT Firs Neue', sans-serif",
                       fontSize: 13,
                       fontWeight: 500,
                       lineHeight: 1,
@@ -205,7 +205,7 @@ export default function SuccessStep({ orderNumber, onFaq }: SuccessStepProps) {
             border: '1px solid rgba(16, 16, 16, 0.25)',
             background: 'transparent',
             color: 'rgba(16, 16, 16, 0.5)',
-            fontFamily: 'TT Firs Neue, sans-serif',
+            fontFamily: "'TT Firs Neue', sans-serif",
             fontSize: '16px',
             fontWeight: 400,
             marginBottom: 5,
@@ -222,7 +222,7 @@ export default function SuccessStep({ orderNumber, onFaq }: SuccessStepProps) {
             height: 50,
             background: '#101010',
             border: 'none',
-            fontFamily: 'TT Firs Neue, sans-serif',
+            fontFamily: "'TT Firs Neue', sans-serif",
             fontSize: '16px',
             fontWeight: 400,
           }}

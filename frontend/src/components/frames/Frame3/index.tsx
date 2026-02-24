@@ -805,7 +805,7 @@ function Frame3Content() {
     <div
       className="fixed inset-0 flex justify-center overflow-hidden"
       style={{
-        fontFamily: 'TT Firs Neue, sans-serif',
+        fontFamily: "'TT Firs Neue', sans-serif",
         paddingTop: 'var(--sat, 0px)',
         background: '#F5F5F5',
         height: '100svh',
@@ -1411,7 +1411,7 @@ function Frame3Content() {
                 >
                   <div
                     style={{
-                      fontFamily: 'TT Firs Neue, sans-serif',
+                      fontFamily: "'TT Firs Neue', sans-serif",
                       fontSize: '16px',
                       color: 'rgba(16, 16, 16, 0.5)',
                     }}
@@ -1447,7 +1447,7 @@ function Frame3Content() {
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '5px' }}>
                     <div
                       style={{
-                        fontFamily: 'TT Firs Neue, sans-serif',
+                        fontFamily: "'TT Firs Neue', sans-serif",
                         fontWeight: 400,
                         fontSize: '16px',
                         lineHeight: '125%',
@@ -1462,7 +1462,7 @@ function Frame3Content() {
                   </div>
                   <div
                     style={{
-                      fontFamily: 'TT Firs Neue, sans-serif',
+                      fontFamily: "'TT Firs Neue', sans-serif",
                       fontWeight: 400,
                       fontSize: '18px',
                       lineHeight: '165%',
@@ -1581,7 +1581,7 @@ function Frame3Content() {
                   {/* Цена: 22px, line-height 115%, 5px до промо по макету */}
                   <div
                     style={{
-                      fontFamily: 'TT Firs Neue, sans-serif',
+                      fontFamily: "'TT Firs Neue', sans-serif",
                       fontWeight: 400,
                       fontSize: '22px',
                       lineHeight: '115%',
@@ -1605,7 +1605,7 @@ function Frame3Content() {
                     >
                       <div
                         style={{
-                          fontFamily: 'TT Firs Neue, sans-serif',
+                          fontFamily: "'TT Firs Neue', sans-serif",
                           fontWeight: 400,
                           fontSize: '14px',
                           lineHeight: '145%',
@@ -1639,7 +1639,7 @@ function Frame3Content() {
                   {/* Подключение от оператора: 14px 145%, 20px до кнопок по макету */}
                   <div
                     style={{
-                      fontFamily: 'TT Firs Neue, sans-serif',
+                      fontFamily: "'TT Firs Neue', sans-serif",
                       fontWeight: 400,
                       fontSize: '14px',
                       lineHeight: '145%',
@@ -1710,7 +1710,7 @@ function Frame3Content() {
                         background: '#101010',
                         border: '1px solid rgba(16, 16, 16, 0.25)',
                         borderRadius: '10px',
-                        fontFamily: 'TT Firs Neue, sans-serif',
+                        fontFamily: "'TT Firs Neue', sans-serif",
                         fontWeight: 400,
                         fontSize: '16px',
                         lineHeight: '315%',

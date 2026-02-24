@@ -707,7 +707,7 @@ export default function AddressInputModal({
             <div
               className="font-normal"
               style={{
-                fontFamily: 'TT Firs Neue, sans-serif',
+                fontFamily: "'TT Firs Neue', sans-serif",
                 fontSize: '20px',
                 lineHeight: '125%',
                 color: '#101010',
@@ -718,7 +718,7 @@ export default function AddressInputModal({
             <div
               className="font-normal pt-[10px]"
               style={{
-                fontFamily: 'TT Firs Neue, sans-serif',
+                fontFamily: "'TT Firs Neue', sans-serif",
                 fontSize: '14px',
                 lineHeight: '105%',
                 color: 'rgba(16, 16, 16, 0.25)',
@@ -759,7 +759,7 @@ export default function AddressInputModal({
                       <span
                         className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap select-none flex items-center"
                         style={{
-                          fontFamily: 'TT Firs Neue, sans-serif',
+                          fontFamily: "'TT Firs Neue', sans-serif",
                           fontStyle: 'normal',
                           fontWeight: 400,
                           fontSize: '16px',
@@ -813,7 +813,7 @@ export default function AddressInputModal({
                 boxSizing: 'border-box',
                 height: '50px',
                 border: '1px solid #101010',
-                fontFamily: 'TT Firs Neue, sans-serif',
+                fontFamily: "'TT Firs Neue', sans-serif",
                 fontWeight: 400,
                 fontSize: '16px',
                 lineHeight: '125%',
@@ -880,7 +880,7 @@ export default function AddressInputModal({
                 maxHeight: 50,
                 background: canProceed ? '#101010' : 'rgba(16, 16, 16, 0.25)',
                 border: '1px solid rgba(16, 16, 16, 0.25)',
-                fontFamily: 'TT Firs Neue, sans-serif',
+                fontFamily: "'TT Firs Neue', sans-serif",
                 fontWeight: 400,
                 fontSize: '16px',
                 lineHeight: 1,

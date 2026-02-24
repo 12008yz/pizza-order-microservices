@@ -12,7 +12,7 @@ interface SimInfoStepProps {
 }
 
 const textStyles = {
-  fontFamily: 'TT Firs Neue, sans-serif',
+  fontFamily: "'TT Firs Neue', sans-serif",
   fontStyle: 'normal' as const,
   fontWeight: 400,
   fontSize: '16px',
@@ -49,7 +49,7 @@ export default function SimInfoStep({ infoType, showBothWarningsWithDelay = fals
         <div
           className="font-normal"
           style={{
-            fontFamily: 'TT Firs Neue, sans-serif',
+            fontFamily: "'TT Firs Neue', sans-serif",
             fontSize: '20px',
             lineHeight: '125%',
             color: '#101010',
@@ -60,7 +60,7 @@ export default function SimInfoStep({ infoType, showBothWarningsWithDelay = fals
         <div
           className="font-normal pt-[15px]"
           style={{
-            fontFamily: 'TT Firs Neue, sans-serif',
+            fontFamily: "'TT Firs Neue', sans-serif",
             fontSize: '14px',
             lineHeight: '105%',
             color: 'rgba(16, 16, 16, 0.5)',
@@ -132,7 +132,7 @@ export default function SimInfoStep({ infoType, showBothWarningsWithDelay = fals
           className="outline-none flex-1 rounded-[10px] flex items-center justify-center text-center h-[50px] border border-solid"
           style={{
             borderColor: 'rgba(16, 16, 16, 0.25)',
-            fontFamily: 'TT Firs Neue, sans-serif',
+            fontFamily: "'TT Firs Neue', sans-serif",
             fontSize: canProceed ? 16 : 14,
             lineHeight: canProceed ? '100%' : '145%',
             fontWeight: canProceed ? 400 : 400,

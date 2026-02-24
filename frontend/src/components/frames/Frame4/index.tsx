@@ -720,7 +720,7 @@ function Frame4Content() {
                   <span
                     className="font-normal"
                     style={{
-                      fontFamily: 'TT Firs Neue, sans-serif',
+                      fontFamily: "'TT Firs Neue', sans-serif",
                       fontSize: '14px',
                       lineHeight: '145%',
                       color: 'rgba(16, 16, 16, 0.25)',
@@ -742,7 +742,7 @@ function Frame4Content() {
                   className="font-normal"
                   style={{
                     width: '100%',
-                    fontFamily: 'TT Firs Neue, sans-serif',
+                    fontFamily: "'TT Firs Neue', sans-serif",
                     fontSize: '14px',
                     lineHeight: '105%',
                     color: '#101010',

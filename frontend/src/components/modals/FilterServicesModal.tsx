@@ -90,7 +90,7 @@ export default function FilterServicesModal({
           <div
             className="font-normal flex-shrink-0"
             style={{
-              fontFamily: 'TT Firs Neue, sans-serif',
+              fontFamily: "'TT Firs Neue', sans-serif",
               fontSize: '20px',
               lineHeight: '125%',
               color: '#101010',
@@ -119,7 +119,7 @@ export default function FilterServicesModal({
               onClick={onClose}
               className="flex-1 px-4 py-3 border border-[rgba(16,16,16,0.15)] rounded-[10px] hover:bg-gray-50 transition-colors"
               style={{
-                fontFamily: 'TT Firs Neue, sans-serif',
+                fontFamily: "'TT Firs Neue', sans-serif",
                 fontSize: '16px',
                 minHeight: '50px',
               }}
@@ -130,7 +130,7 @@ export default function FilterServicesModal({
               onClick={handleApply}
               className="flex-1 px-4 py-3 bg-[#101010] text-white rounded-[10px] hover:bg-gray-800 transition-colors"
               style={{
-                fontFamily: 'TT Firs Neue, sans-serif',
+                fontFamily: "'TT Firs Neue', sans-serif",
                 fontSize: '16px',
                 minHeight: '50px',
               }}

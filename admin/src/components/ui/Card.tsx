@@ -5,9 +5,11 @@ import { cn } from "@/lib/utils";
 export function Card({
   children,
   className,
+  style,
 }: {
   children: React.ReactNode;
   className?: string;
+  style?: React.CSSProperties;
 }) {
   return (
     <div
@@ -16,7 +18,7 @@ export function Card({
         "border-[rgba(16,16,16,0.1)]",
         className
       )}
-      style={{ boxSizing: "border-box" }}
+      style={{ boxSizing: "border-box", ...style }}
     >
       {children}
     </div>

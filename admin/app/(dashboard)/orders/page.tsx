@@ -85,13 +85,15 @@ function OrdersPageContent() {
 
   return (
     <>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 pt-4">
         {slice.map((order) => (
           <OrderCard key={order.id} order={order} />
         ))}
       </div>
       {filtered.length === 0 && (
-        <p className="text-center text-muted-foreground py-8">Заявок не найдено</p>
+        <p className="text-center py-8" style={{ fontFamily: "'TT Firs Neue', sans-serif", color: "rgba(16,16,16,0.5)" }}>
+          Заявок не найдено
+        </p>
       )}
       {totalPages > 1 && (
         <Pagination

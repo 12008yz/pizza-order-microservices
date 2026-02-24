@@ -306,7 +306,7 @@ function Frame5Content() {
   //     <div
   //       className="relative w-full max-w-[400px] mx-auto bg-[#F5F5F5] flex flex-col items-center justify-center"
   //       style={{
-  //         fontFamily: 'TT Firs Neue, sans-serif',
+  //         fontFamily: "'TT Firs Neue', sans-serif",
   //         minHeight: '100dvh',
   //         padding: 20,
   //         paddingTop: 'calc(20px + var(--sat, 0px))',
@@ -335,7 +335,7 @@ function Frame5Content() {
     <div
       className="relative w-full max-w-[400px] mx-auto flex flex-col overflow-y-auto overflow-x-hidden bg-[#F5F5F5] cursor-pointer"
       style={{
-        fontFamily: 'TT Firs Neue, sans-serif',
+        fontFamily: "'TT Firs Neue', sans-serif",
         minHeight: '100dvh',
         paddingTop: 'var(--sat, 0px)',
         paddingBottom: 'var(--sab, 0px)',

@@ -63,7 +63,7 @@ export default function StepNavigation({
           minHeight: 50,
           background: nextDisabled ? 'rgba(16, 16, 16, 0.25)' : '#101010',
           border: '1px solid rgba(16, 16, 16, 0.25)',
-          fontFamily: 'TT Firs Neue, sans-serif',
+          fontFamily: "'TT Firs Neue', sans-serif",
           fontSize: '16px',
           lineHeight: '125%',
           boxSizing: 'border-box',

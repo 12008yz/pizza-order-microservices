@@ -12,82 +12,283 @@ const statusFilters = [
   { label: "Подключение", value: "connected" },
   { label: "Конкретизирование", value: "contacted" },
   { label: "Вознаграждение", value: "scheduled" },
+];
+
+const secondPanelItems = [
   { label: "Дублирование", value: "duplicate" },
-  { label: "Архивированные", value: "archived" },
+  { label: "Архивирование", value: "archived" },
 ];
 
 const navItems = [
-  { href: "/orders", label: "Заявки" },
   { href: "/addresses", label: "База адресов" },
   { href: "/tariffs", label: "База планов" },
 ];
 
-export function Sidebar({ status, onStatusChange }: { status: string; onStatusChange: (s: string) => void }) {
-  const pathname = usePathname();
+/* Пиксельные константы из макета (без %) */
+const SIDEBAR_WIDTH_PX = 280;
+const PANEL_PADDING_PX = 20;
+const ROW_HEIGHT_PX = 30;
+const CIRCLE_SIZE_PX = 20;
+const GAP_CIRCLE_TEXT_PX = 8;
+const GAP_BETWEEN_ITEMS_PX = 10;
+const GAP_BETWEEN_SECTIONS_PX = 5;
+const PANEL_BORDER_RADIUS_PX = 20;
+const PANEL_BORDER = "1px solid rgba(16, 16, 16, 0.15)";
+
+/** Стиль текста пунктов левого меню (как в макете: И. Ивановых и др.) */
+const menuTextStyle: React.CSSProperties = {
+  fontFamily: "'TT Firs Neue', sans-serif",
+  fontStyle: "normal",
+  fontWeight: 400,
+  fontSize: 16,
+  lineHeight: "125%",
+  display: "flex",
+  alignItems: "center",
+  color: "#101010",
+};
+
+const panelStyle: React.CSSProperties = {
+  boxSizing: "border-box",
+  background: "#FFFFFF",
+  border: PANEL_BORDER,
+  backdropFilter: "blur(7.5px)",
+  WebkitBackdropFilter: "blur(7.5px)",
+  borderRadius: PANEL_BORDER_RADIUS_PX,
+  padding: PANEL_PADDING_PX,
+};
+
+/** Круг 20×20 как в макете (Rectangle 70/90/89) — без обводки строки */
+function HollowCircle() {
+  return (
+    <span
+      className="shrink-0 rounded-full bg-white"
+      style={{
+        width: CIRCLE_SIZE_PX,
+        height: CIRCLE_SIZE_PX,
+        minWidth: CIRCLE_SIZE_PX,
+        minHeight: CIRCLE_SIZE_PX,
+        border: PANEL_BORDER,
+        borderRadius: 100,
+        boxSizing: "border-box",
+      }}
+      aria-hidden
+    />
+  );
+}
+
+/** Круг для «Все» — такой же как у всех (opacity 0.5 задаётся на строке), без синей точки */
+function GrayCircle() {
+  return <HollowCircle />;
+}
+
+/** Строка пункта: только круг 20px слева + текст, без рамки (пиксели) */
+function MenuRow({
+  children,
+  className,
+  style,
+}: {
+  children: React.ReactNode;
+  className?: string;
+  style?: React.CSSProperties;
+}) {
+  return (
+    <div
+      className={cn("flex items-center", className)}
+      style={{
+        minHeight: ROW_HEIGHT_PX,
+        height: ROW_HEIGHT_PX,
+        gap: GAP_CIRCLE_TEXT_PX,
+        ...menuTextStyle,
+        ...style,
+      }}
+    >
+      <HollowCircle />
+      <span className="flex-1 min-w-0 truncate" style={{ width: 160 }}>
+        {children}
+      </span>
+    </div>
+  );
+}
+
+/** Строка с двумя кругами: круг слева + текст + круг справа (И. Ивановых) */
+function UserRow({ children }: { children: React.ReactNode }) {
+  return (
+    <div
+      className="flex items-center justify-between"
+      style={{
+        minHeight: ROW_HEIGHT_PX,
+        height: ROW_HEIGHT_PX,
+        gap: GAP_CIRCLE_TEXT_PX,
+        ...menuTextStyle,
+      }}
+    >
+      <div className="flex items-center gap-[8px] flex-1 min-w-0">
+        <HollowCircle />
+        <span className="truncate" style={{ width: 160 }}>
+          {children}
+        </span>
+      </div>
+      <HollowCircle />
+    </div>
+  );
+}
+
+export function Sidebar({
+  status,
+  onStatusChange,
+  pathname,
+}: {
+  status: string;
+  onStatusChange: (s: string) => void;
+  pathname?: string;
+}) {
+  const currentPathname = usePathname();
+  const path = pathname ?? currentPathname;
   const user = typeof window !== "undefined" ? getUser() : null;
+  const initials = user?.name?.split(/\s+/).map((n) => n.charAt(0)).join(". ") ?? "И. Ивановых";
 
   return (
-    <aside className="w-56 shrink-0 border-r border-border bg-muted/30 flex flex-col">
-      <div className="p-4 border-b border-border">
-        <div className="flex items-center gap-2">
-          <div className="h-9 w-9 rounded-full bg-foreground text-background flex items-center justify-center text-sm font-medium">
-            {user?.name?.charAt(0) ?? "?"}
-          </div>
-          <div className="min-w-0">
-            <p className="text-sm font-medium truncate">{user?.name ?? "Пользователь"}</p>
-            <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
-          </div>
-        </div>
+    <aside
+      className="shrink-0 flex flex-col"
+      style={{
+        width: SIDEBAR_WIDTH_PX,
+        marginLeft: 0,
+        gap: GAP_BETWEEN_SECTIONS_PX,
+      }}
+    >
+      {/* Верхняя панель: И. Ивановых + Все + статусы (только на /orders) */}
+      <div
+        className="flex flex-col"
+        style={{
+          ...panelStyle,
+          gap: GAP_BETWEEN_ITEMS_PX,
+        }}
+      >
+        <UserRow>{initials}</UserRow>
+
+        {path === "/orders" && (
+          <>
+            <label
+              className="flex items-center cursor-pointer"
+              style={{
+                minHeight: ROW_HEIGHT_PX,
+                height: ROW_HEIGHT_PX,
+                gap: GAP_CIRCLE_TEXT_PX,
+                opacity: 0.5,
+                ...menuTextStyle,
+              }}
+            >
+              <input
+                type="radio"
+                name="status"
+                value=""
+                checked={status === ""}
+                onChange={() => onStatusChange("")}
+                className="sr-only"
+              />
+              <span
+                className="shrink-0 flex items-center justify-center"
+                style={{ width: CIRCLE_SIZE_PX, height: CIRCLE_SIZE_PX }}
+              >
+                <GrayCircle />
+              </span>
+              <span style={{ width: 160 }}>Все</span>
+            </label>
+            {statusFilters.slice(1).map(({ label, value }) => {
+              const isActive = status === value;
+              return (
+                <label
+                  key={value}
+                  className="flex items-center cursor-pointer"
+                  style={{
+                    minHeight: ROW_HEIGHT_PX,
+                    height: ROW_HEIGHT_PX,
+                    gap: GAP_CIRCLE_TEXT_PX,
+                    ...menuTextStyle,
+                  }}
+                >
+                  <input
+                    type="radio"
+                    name="status"
+                    value={value}
+                    checked={isActive}
+                    onChange={() => onStatusChange(value)}
+                    className="sr-only"
+                  />
+                  <span
+                    className="shrink-0 flex items-center justify-center"
+                    style={{ width: CIRCLE_SIZE_PX, height: CIRCLE_SIZE_PX }}
+                  >
+                    {isActive ? (
+                      <span
+                        className="rounded-full"
+                        style={{ width: 10, height: 10, background: "#8091FF" }}
+                      />
+                    ) : (
+                      <HollowCircle />
+                    )}
+                  </span>
+                  <span style={{ width: 160 }}>{label}</span>
+                </label>
+              );
+            })}
+          </>
+        )}
       </div>
 
-      {pathname === "/orders" && (
-        <div className="p-3 border-b border-border">
-          <p className="text-xs font-medium text-muted-foreground mb-2">Статусы</p>
-          <div className="space-y-1">
-            {statusFilters.map(({ label, value }) => (
-              <label
-                key={value || "all"}
-                className={cn(
-                  "flex items-center gap-2 py-1 px-2 rounded cursor-pointer text-sm",
-                  status === value ? "bg-foreground text-background" : "hover:bg-border/50"
-                )}
-              >
-                <input
-                  type="radio"
-                  name="status"
-                  value={value}
-                  checked={status === value}
-                  onChange={() => onStatusChange(value)}
-                  className="sr-only"
-                />
-                <span className="w-2 h-2 rounded-full bg-current opacity-80" />
-                {label}
-              </label>
-            ))}
-          </div>
-        </div>
-      )}
+      {/* Вторая панель: Дублирование, Архивирование */}
+      <div
+        className="flex flex-col"
+        style={{
+          ...panelStyle,
+          gap: GAP_BETWEEN_ITEMS_PX,
+        }}
+      >
+        {secondPanelItems.map(({ label }) => (
+          <MenuRow key={label}>{label}</MenuRow>
+        ))}
+      </div>
 
-      <nav className="p-3 flex-1">
-        <p className="text-xs font-medium text-muted-foreground mb-2">Навигация</p>
-        <ul className="space-y-0.5">
-          {navItems.map(({ href, label }) => (
-            <li key={href}>
-              <Link
-                href={href}
-                className={cn(
-                  "block py-2 px-3 rounded-input text-sm",
-                  pathname.startsWith(href)
-                    ? "bg-foreground text-background"
-                    : "text-foreground hover:bg-border/50"
-                )}
+      {/* Третья панель: База адресов, База планов */}
+      <div
+        className="flex flex-col"
+        style={{
+          ...panelStyle,
+          gap: GAP_BETWEEN_ITEMS_PX,
+        }}
+      >
+        {navItems.map(({ href, label }) => {
+          const isActive = path.startsWith(href);
+          return (
+            <Link
+              key={href}
+              href={href}
+              className="flex items-center no-underline hover:opacity-80"
+              style={{
+                minHeight: ROW_HEIGHT_PX,
+                height: ROW_HEIGHT_PX,
+                gap: GAP_CIRCLE_TEXT_PX,
+                ...menuTextStyle,
+              }}
+            >
+              <span
+                className="shrink-0 flex items-center justify-center"
+                style={{ width: CIRCLE_SIZE_PX, height: CIRCLE_SIZE_PX }}
               >
-                {label}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </nav>
+                {isActive ? (
+                  <span
+                    className="rounded-full"
+                    style={{ width: 10, height: 10, background: "#8091FF" }}
+                  />
+                ) : (
+                  <HollowCircle />
+                )}
+              </span>
+              <span style={{ width: 160 }}>{label}</span>
+            </Link>
+          );
+        })}
+      </div>
     </aside>
   );
 }

@@ -26,7 +26,7 @@ export default function RadioOption({ label, selected, onClick, className = '' }
         style={{
           left: '15px',
           top: '15px',
-          fontFamily: 'TT Firs Neue, sans-serif',
+          fontFamily: "'TT Firs Neue', sans-serif",
           fontStyle: 'normal',
           fontWeight: 400,
           fontSize: '16px',

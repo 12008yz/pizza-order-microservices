@@ -9,7 +9,7 @@ export const HINT_TOP = 'var(--header-top, 50px)';
 const HINT_STYLE: React.CSSProperties = {
   width: '240px',
   minHeight: '40px',
-  fontFamily: 'TT Firs Neue, sans-serif',
+  fontFamily: "'TT Firs Neue', sans-serif",
   fontStyle: 'normal',
   fontWeight: 400,
   fontSize: '14px',

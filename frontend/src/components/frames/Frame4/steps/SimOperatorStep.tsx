@@ -50,7 +50,7 @@ export default function SimOperatorStep({
         <div
           className="font-normal"
           style={{
-            fontFamily: 'TT Firs Neue, sans-serif',
+            fontFamily: "'TT Firs Neue', sans-serif",
             fontSize: '20px',
             lineHeight: '125%',
             color: '#101010',
@@ -61,7 +61,7 @@ export default function SimOperatorStep({
         <div
           className="font-normal pt-[15px]"
           style={{
-            fontFamily: 'TT Firs Neue, sans-serif',
+            fontFamily: "'TT Firs Neue', sans-serif",
             fontSize: '14px',
             lineHeight: '105%',
             color: 'rgba(16, 16, 16, 0.25)',
@@ -102,7 +102,7 @@ export default function SimOperatorStep({
                   />
                   <span
                     style={{
-                      fontFamily: 'TT Firs Neue, sans-serif',
+                      fontFamily: "'TT Firs Neue', sans-serif",
                       fontWeight: 400,
                       fontSize: '16px',
                       lineHeight: '125%',
@@ -168,7 +168,7 @@ export default function SimOperatorStep({
           style={{
             background: '#101010',
             border: '1px solid rgba(16, 16, 16, 0.25)',
-            fontFamily: 'TT Firs Neue, sans-serif',
+            fontFamily: "'TT Firs Neue', sans-serif",
             fontSize: '16px',
             lineHeight: '315%',
             boxSizing: 'border-box',

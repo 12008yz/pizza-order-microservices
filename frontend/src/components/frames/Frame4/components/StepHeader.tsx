@@ -12,7 +12,7 @@ export default function StepHeader({ title, description }: StepHeaderProps) {
     <div className="mb-6">
       <h2
         style={{
-          fontFamily: 'TT Firs Neue, sans-serif',
+          fontFamily: "'TT Firs Neue', sans-serif",
           fontWeight: 400,
           fontSize: '24px',
           lineHeight: '125%',
@@ -25,7 +25,7 @@ export default function StepHeader({ title, description }: StepHeaderProps) {
       {description && (
         <p
           style={{
-            fontFamily: 'TT Firs Neue, sans-serif',
+            fontFamily: "'TT Firs Neue', sans-serif",
             fontWeight: 400,
             fontSize: '16px',
             lineHeight: '155%',

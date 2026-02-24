@@ -61,7 +61,7 @@ export default function AddressStep({
       <div className="flex-shrink-0 px-[15px] pt-[12px] pb-[15px]">
         <h2
           style={{
-            fontFamily: 'TT Firs Neue, sans-serif',
+            fontFamily: "'TT Firs Neue', sans-serif",
             fontWeight: 400,
             fontSize: '20px',
             lineHeight: '125%',
@@ -73,7 +73,7 @@ export default function AddressStep({
         </h2>
         <p
           style={{
-            fontFamily: 'TT Firs Neue, sans-serif',
+            fontFamily: "'TT Firs Neue', sans-serif",
             fontStyle: 'normal',
             fontWeight: 400,
             fontSize: '14px',

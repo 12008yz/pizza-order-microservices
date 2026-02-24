@@ -93,7 +93,7 @@ export default function TariffCard({
         {/* Provider Name */}
         <div
           style={{
-            fontFamily: 'TT Firs Neue, sans-serif',
+            fontFamily: "'TT Firs Neue', sans-serif",
             fontWeight: 400,
             fontSize: '14px',
             lineHeight: '125%',
@@ -114,7 +114,7 @@ export default function TariffCard({
         >
           <span
             style={{
-              fontFamily: 'TT Firs Neue, sans-serif',
+              fontFamily: "'TT Firs Neue', sans-serif",
               fontWeight: 400,
               fontSize: '18px',
               lineHeight: '165%',
@@ -152,7 +152,7 @@ export default function TariffCard({
             <div>
               <div
                 style={{
-                  fontFamily: 'TT Firs Neue, sans-serif',
+                  fontFamily: "'TT Firs Neue', sans-serif",
                   fontWeight: 400,
                   fontSize: '16px',
                   lineHeight: '155%',
@@ -163,7 +163,7 @@ export default function TariffCard({
               </div>
               <div
                 style={{
-                  fontFamily: 'TT Firs Neue, sans-serif',
+                  fontFamily: "'TT Firs Neue', sans-serif",
                   fontWeight: 400,
                   fontSize: '14px',
                   lineHeight: '105%',
@@ -185,7 +185,7 @@ export default function TariffCard({
             <div>
               <div
                 style={{
-                  fontFamily: 'TT Firs Neue, sans-serif',
+                  fontFamily: "'TT Firs Neue', sans-serif",
                   fontWeight: 400,
                   fontSize: '16px',
                   lineHeight: '155%',
@@ -196,7 +196,7 @@ export default function TariffCard({
               </div>
               <div
                 style={{
-                  fontFamily: 'TT Firs Neue, sans-serif',
+                  fontFamily: "'TT Firs Neue', sans-serif",
                   fontWeight: 400,
                   fontSize: '13px',
                   lineHeight: '115%',
@@ -218,7 +218,7 @@ export default function TariffCard({
             <div>
               <div
                 style={{
-                  fontFamily: 'TT Firs Neue, sans-serif',
+                  fontFamily: "'TT Firs Neue', sans-serif",
                   fontWeight: 400,
                   fontSize: '16px',
                   lineHeight: '155%',
@@ -231,7 +231,7 @@ export default function TariffCard({
               </div>
               <div
                 style={{
-                  fontFamily: 'TT Firs Neue, sans-serif',
+                  fontFamily: "'TT Firs Neue', sans-serif",
                   fontWeight: 400,
                   fontSize: '14px',
                   lineHeight: '105%',
@@ -261,7 +261,7 @@ export default function TariffCard({
           <div>
             <div
               style={{
-                fontFamily: 'TT Firs Neue, sans-serif',
+                fontFamily: "'TT Firs Neue', sans-serif",
                 fontWeight: 400,
                 fontSize: '16px',
                 lineHeight: '155%',
@@ -272,7 +272,7 @@ export default function TariffCard({
             </div>
             <div
               style={{
-                fontFamily: 'TT Firs Neue, sans-serif',
+                fontFamily: "'TT Firs Neue', sans-serif",
                 fontWeight: 400,
                 fontSize: '14px',
                 lineHeight: '105%',
@@ -295,7 +295,7 @@ export default function TariffCard({
         {/* Price */}
         <div
           style={{
-            fontFamily: 'TT Firs Neue, sans-serif',
+            fontFamily: "'TT Firs Neue', sans-serif",
             fontWeight: 400,
             fontSize: '22px',
             lineHeight: '115%',
@@ -309,7 +309,7 @@ export default function TariffCard({
         {/* Connection Price — 14px 145% по макету */}
         <div
           style={{
-            fontFamily: 'TT Firs Neue, sans-serif',
+            fontFamily: "'TT Firs Neue', sans-serif",
             fontWeight: 400,
             fontSize: '14px',
             lineHeight: '105%',
@@ -333,7 +333,7 @@ export default function TariffCard({
             background: '#101010',
             border: 'none',
             borderRadius: '10px',
-            fontFamily: 'TT Firs Neue, sans-serif',
+            fontFamily: "'TT Firs Neue', sans-serif",
             fontWeight: 400,
             fontSize: '16px',
             lineHeight: '100%',

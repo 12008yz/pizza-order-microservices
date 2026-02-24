@@ -81,7 +81,7 @@ export default function SimTariffCard({ tariff, onConnect, onInfoClick, onFavori
       <div style={{ padding: '24px 20px 0 20px' }}>
         <div
           style={{
-            fontFamily: 'TT Firs Neue, sans-serif',
+            fontFamily: "'TT Firs Neue', sans-serif",
             fontWeight: 400,
             fontSize: '14px',
             lineHeight: '125%',
@@ -94,7 +94,7 @@ export default function SimTariffCard({ tariff, onConnect, onInfoClick, onFavori
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <span
             style={{
-              fontFamily: 'TT Firs Neue, sans-serif',
+              fontFamily: "'TT Firs Neue', sans-serif",
               fontWeight: 400,
               fontSize: '18px',
               lineHeight: '165%',
@@ -129,7 +129,7 @@ export default function SimTariffCard({ tariff, onConnect, onInfoClick, onFavori
             <div>
               <div
                 style={{
-                  fontFamily: 'TT Firs Neue, sans-serif',
+                  fontFamily: "'TT Firs Neue', sans-serif",
                   fontWeight: 400,
                   fontSize: '16px',
                   lineHeight: '155%',
@@ -140,7 +140,7 @@ export default function SimTariffCard({ tariff, onConnect, onInfoClick, onFavori
               </div>
               <div
                 style={{
-                  fontFamily: 'TT Firs Neue, sans-serif',
+                  fontFamily: "'TT Firs Neue', sans-serif",
                   fontWeight: 400,
                   fontSize: '14px',
                   lineHeight: '105%',
@@ -159,7 +159,7 @@ export default function SimTariffCard({ tariff, onConnect, onInfoClick, onFavori
           </div>
           <div
             style={{
-              fontFamily: 'TT Firs Neue, sans-serif',
+              fontFamily: "'TT Firs Neue', sans-serif",
               fontWeight: 400,
               fontSize: '16px',
               lineHeight: '155%',
@@ -178,7 +178,7 @@ export default function SimTariffCard({ tariff, onConnect, onInfoClick, onFavori
             <div>
               <div
                 style={{
-                  fontFamily: 'TT Firs Neue, sans-serif',
+                  fontFamily: "'TT Firs Neue', sans-serif",
                   fontWeight: 400,
                   fontSize: '16px',
                   lineHeight: '155%',
@@ -189,7 +189,7 @@ export default function SimTariffCard({ tariff, onConnect, onInfoClick, onFavori
               </div>
               <div
                 style={{
-                  fontFamily: 'TT Firs Neue, sans-serif',
+                  fontFamily: "'TT Firs Neue', sans-serif",
                   fontWeight: 400,
                   fontSize: '14px',
                   lineHeight: '105%',
@@ -208,7 +208,7 @@ export default function SimTariffCard({ tariff, onConnect, onInfoClick, onFavori
           </div>
           <div
             style={{
-              fontFamily: 'TT Firs Neue, sans-serif',
+              fontFamily: "'TT Firs Neue', sans-serif",
               fontWeight: 400,
               fontSize: '16px',
               lineHeight: '155%',
@@ -220,7 +220,7 @@ export default function SimTariffCard({ tariff, onConnect, onInfoClick, onFavori
         </div>
         <div
           style={{
-            fontFamily: 'TT Firs Neue, sans-serif',
+            fontFamily: "'TT Firs Neue', sans-serif",
             fontWeight: 400,
             fontSize: '14px',
             lineHeight: '105%',
@@ -239,7 +239,7 @@ export default function SimTariffCard({ tariff, onConnect, onInfoClick, onFavori
       <div style={{ padding: '16px 20px' }}>
         <div
           style={{
-            fontFamily: 'TT Firs Neue, sans-serif',
+            fontFamily: "'TT Firs Neue', sans-serif",
             fontWeight: 400,
             fontSize: '22px',
             lineHeight: '115%',
@@ -252,7 +252,7 @@ export default function SimTariffCard({ tariff, onConnect, onInfoClick, onFavori
         {tariff.promoText && (
           <div
             style={{
-              fontFamily: 'TT Firs Neue, sans-serif',
+              fontFamily: "'TT Firs Neue', sans-serif",
               fontWeight: 400,
               fontSize: '14px',
               lineHeight: '105%',
@@ -265,7 +265,7 @@ export default function SimTariffCard({ tariff, onConnect, onInfoClick, onFavori
         )}
         <div
           style={{
-            fontFamily: 'TT Firs Neue, sans-serif',
+            fontFamily: "'TT Firs Neue', sans-serif",
             fontWeight: 400,
             fontSize: '14px',
             lineHeight: '105%',
@@ -293,7 +293,7 @@ export default function SimTariffCard({ tariff, onConnect, onInfoClick, onFavori
           onClick={() => onConnect(tariff.id)}
           className="outline-none cursor-pointer border-0 rounded-[10px] flex-1 h-12 flex items-center justify-center text-white bg-[#101010]"
           style={{
-            fontFamily: 'TT Firs Neue, sans-serif',
+            fontFamily: "'TT Firs Neue', sans-serif",
             fontWeight: 400,
             fontSize: '16px',
           }}

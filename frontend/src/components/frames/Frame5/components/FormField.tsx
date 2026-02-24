@@ -86,7 +86,7 @@ export default function FormField({
   const textColor =
     treatAsEmpty && !focused ? 'rgba(16, 16, 16, 0.5)' : value ? '#101010' : 'rgba(16, 16, 16, 0.5)';
   const textStyle: React.CSSProperties = {
-    fontFamily: 'TT Firs Neue, sans-serif',
+    fontFamily: "'TT Firs Neue', sans-serif",
     fontSize: '16px',
     lineHeight: '125%',
     color: textColor,

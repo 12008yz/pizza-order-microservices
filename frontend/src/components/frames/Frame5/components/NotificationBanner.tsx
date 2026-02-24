@@ -60,7 +60,7 @@ export default function NotificationBanner({
       >
         <span
           style={{
-            fontFamily: 'TT Firs Neue, sans-serif',
+            fontFamily: "'TT Firs Neue', sans-serif",
             fontSize: '14px',
             lineHeight: '145%',
             color: 'rgba(16, 16, 16, 0.25)',
@@ -79,7 +79,7 @@ export default function NotificationBanner({
       </div>
       <div
         style={{
-          fontFamily: 'TT Firs Neue, sans-serif',
+          fontFamily: "'TT Firs Neue', sans-serif",
           fontSize: '14px',
           lineHeight: '105%',
           color: '#101010',

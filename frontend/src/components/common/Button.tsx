@@ -38,7 +38,7 @@ export default function Button({
       className={`${baseStyles} ${variantStyles[variant]} ${className}`}
       style={{
         minHeight: '50px',
-        fontFamily: 'TT Firs Neue, sans-serif',
+        fontFamily: "'TT Firs Neue', sans-serif",
         fontSize: '16px',
         letterSpacing: '0.5px',
       }}

@@ -450,7 +450,7 @@ export default function OrderSummaryStep({
     <div
       className="flex flex-col w-full"
       style={{
-        fontFamily: 'TT Firs Neue, sans-serif',
+        fontFamily: "'TT Firs Neue', sans-serif",
       }}
     >
       {/* Контент сверху, 20px от «Подключение от оператора» до кнопок, кнопки и 20px снизу — без растягивания по высоте */}
@@ -478,7 +478,7 @@ export default function OrderSummaryStep({
             >
               <span
                 style={{
-                  fontFamily: 'TT Firs Neue, sans-serif',
+                  fontFamily: "'TT Firs Neue', sans-serif",
                   fontWeight: 400,
                   fontSize: '16px',
                   lineHeight: '125%',
@@ -495,7 +495,7 @@ export default function OrderSummaryStep({
             </div>
             <div
               style={{
-                fontFamily: 'TT Firs Neue, sans-serif',
+                fontFamily: "'TT Firs Neue', sans-serif",
                 fontWeight: 400,
                 fontSize: '18px',
                 lineHeight: '165%',
@@ -588,7 +588,7 @@ export default function OrderSummaryStep({
               <div style={{ flex: 1, minWidth: 0, maxWidth: '170px', display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 0 }}>
                 <span
                   style={{
-                    fontFamily: 'TT Firs Neue, sans-serif',
+                    fontFamily: "'TT Firs Neue', sans-serif",
                     fontSize: '16px',
                     lineHeight: '155%',
                     color: routerInfo.needsAdd ? 'rgba(255, 16, 0, 0.75)' : '#101010',
@@ -600,7 +600,7 @@ export default function OrderSummaryStep({
                 </span>
                 <span
                   style={{
-                    fontFamily: 'TT Firs Neue, sans-serif',
+                    fontFamily: "'TT Firs Neue', sans-serif",
                     fontSize: '14px',
                     lineHeight: '105%',
                     color: routerInfo.needsAdd ? 'rgba(255, 16, 0, 0.5)' : 'rgba(16, 16, 16, 0.5)',
@@ -627,7 +627,7 @@ export default function OrderSummaryStep({
                 {(routerInfo.priceText || routerInfo.choiceLabel) && (
                   <span
                     style={{
-                      fontFamily: 'TT Firs Neue, sans-serif',
+                      fontFamily: "'TT Firs Neue', sans-serif",
                       fontSize: '14px',
                       lineHeight: '175%',
                       color: 'rgba(16, 16, 16, 0.5)',
@@ -639,7 +639,7 @@ export default function OrderSummaryStep({
                 {routerInfo.noteText && (
                   <span
                     style={{
-                      fontFamily: 'TT Firs Neue, sans-serif',
+                      fontFamily: "'TT Firs Neue', sans-serif",
                       fontSize: '14px',
                       lineHeight: '105%',
                       color: 'rgba(16, 16, 16, 0.5)',
@@ -669,7 +669,7 @@ export default function OrderSummaryStep({
               <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 0 }}>
                 <span
                   style={{
-                    fontFamily: 'TT Firs Neue, sans-serif',
+                    fontFamily: "'TT Firs Neue', sans-serif",
                     fontSize: '16px',
                     lineHeight: '155%',
                     color: tvInfo.isReadOnly || !hasTVTariff ? 'rgba(16, 16, 16, 0.25)' : tvInfo.isActive ? '#101010' : 'rgba(255, 16, 0, 0.75)',
@@ -681,7 +681,7 @@ export default function OrderSummaryStep({
                 </span>
                 <span
                   style={{
-                    fontFamily: 'TT Firs Neue, sans-serif',
+                    fontFamily: "'TT Firs Neue', sans-serif",
                     fontSize: '14px',
                     lineHeight: '105%',
                     color: tvInfo.isReadOnly || !hasTVTariff ? 'rgba(16, 16, 16, 0.5)' : tvInfo.isActive ? 'rgba(16, 16, 16, 0.5)' : 'rgba(255, 16, 0, 0.5)',
@@ -709,7 +709,7 @@ export default function OrderSummaryStep({
                 {(tvInfo.priceText || tvInfo.choiceLabel) && (
                   <span
                     style={{
-                      fontFamily: 'TT Firs Neue, sans-serif',
+                      fontFamily: "'TT Firs Neue', sans-serif",
                       fontSize: '14px',
                       lineHeight: '175%',
                       color: 'rgba(16, 16, 16, 0.5)',
@@ -721,7 +721,7 @@ export default function OrderSummaryStep({
                 {tvInfo.noteText && (
                   <span
                     style={{
-                      fontFamily: 'TT Firs Neue, sans-serif',
+                      fontFamily: "'TT Firs Neue', sans-serif",
                       fontSize: '14px',
                       lineHeight: '105%',
                       color: 'rgba(16, 16, 16, 0.5)',
@@ -752,7 +752,7 @@ export default function OrderSummaryStep({
               <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
                 <span
                   style={{
-                    fontFamily: 'TT Firs Neue, sans-serif',
+                    fontFamily: "'TT Firs Neue', sans-serif",
                     fontSize: '16px',
                     lineHeight: '155%',
                     color: !hasMobileTariff ? 'rgba(16, 16, 16, 0.25)' : simInfo.isActive ? '#101010' : 'rgba(255, 16, 0, 0.75)',
@@ -765,7 +765,7 @@ export default function OrderSummaryStep({
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span
                     style={{
-                      fontFamily: 'TT Firs Neue, sans-serif',
+                      fontFamily: "'TT Firs Neue', sans-serif",
                       fontSize: '14px',
                       lineHeight: '105%',
                       color: !hasMobileTariff ? 'rgba(16, 16, 16, 0.5)' : simInfo.isActive ? 'rgba(16, 16, 16, 0.5)' : 'rgba(255, 16, 0, 0.5)',
@@ -776,7 +776,7 @@ export default function OrderSummaryStep({
                   {simInfo.extra && (
                     <span
                       style={{
-                        fontFamily: 'TT Firs Neue, sans-serif',
+                        fontFamily: "'TT Firs Neue', sans-serif",
                         fontSize: '14px',
                         lineHeight: '105%',
                         color: 'rgba(16, 16, 16, 0.5)',
@@ -901,7 +901,7 @@ export default function OrderSummaryStep({
             background: '#101010',
             border: '1px solid rgba(16, 16, 16, 0.25)',
             borderRadius: '10px',
-            fontFamily: 'TT Firs Neue, sans-serif',
+            fontFamily: "'TT Firs Neue', sans-serif",
             fontSize: '16px',
             lineHeight: '315%',
             color: '#FFFFFF',

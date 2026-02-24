@@ -148,7 +148,7 @@ export default function ConnectionTypeModal({
             <div
               className="font-normal"
               style={{
-                fontFamily: 'TT Firs Neue, sans-serif',
+                fontFamily: "'TT Firs Neue', sans-serif",
                 fontSize: '20px',
                 lineHeight: '25px',
                 color: '#101010',
@@ -160,7 +160,7 @@ export default function ConnectionTypeModal({
               className="font-normal"
               style={{
                 marginTop: '12px',
-                fontFamily: 'TT Firs Neue, sans-serif',
+                fontFamily: "'TT Firs Neue', sans-serif",
                 fontSize: '14px',
                 lineHeight: '15px',
                 color: 'rgba(16, 16, 16, 0.25)',
@@ -193,7 +193,7 @@ export default function ConnectionTypeModal({
                   <span
                     className="flex items-center"
                     style={{
-                      fontFamily: 'TT Firs Neue, sans-serif',
+                      fontFamily: "'TT Firs Neue', sans-serif",
                       fontStyle: 'normal',
                       fontWeight: 400,
                       fontSize: '16px',
@@ -247,7 +247,7 @@ export default function ConnectionTypeModal({
                 height: '50px',
                 background: selectedType ? '#101010' : 'rgba(16, 16, 16, 0.25)',
                 border: '1px solid rgba(16, 16, 16, 0.25)',
-                fontFamily: 'TT Firs Neue, sans-serif',
+                fontFamily: "'TT Firs Neue', sans-serif",
                 fontWeight: 400,
                 fontSize: '16px',
                 lineHeight: '50px',

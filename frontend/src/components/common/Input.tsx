@@ -42,7 +42,7 @@ export default function Input({
           paddingLeft: '15px',
           paddingRight: '16px',
           border: borderColor,
-          fontFamily: 'TT Firs Neue, sans-serif',
+          fontFamily: "'TT Firs Neue', sans-serif",
           fontSize: '16px',
           lineHeight: '125%',
           color: value ? '#101010' : 'rgba(16,16,16,0.5)',

@@ -73,7 +73,7 @@ export default function NumberInput({
         step={step}
         className="flex-1 text-center bg-transparent outline-none"
         style={{
-          fontFamily: 'TT Firs Neue, sans-serif',
+          fontFamily: "'TT Firs Neue', sans-serif",
           fontSize: '16px',
           lineHeight: '125%',
           color: '#101010',

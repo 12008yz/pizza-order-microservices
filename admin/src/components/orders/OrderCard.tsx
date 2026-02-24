@@ -8,24 +8,27 @@ import type { Order } from "@/types";
 import { cn } from "@/lib/utils";
 
 const statusDotColor: Record<string, string> = {
-  new: "bg-status-new",
-  processing: "bg-status-processing",
-  contacted: "bg-status-contacted",
-  scheduled: "bg-status-scheduled",
-  connected: "bg-status-connected",
-  cancelled: "bg-status-cancelled",
-  rejected: "bg-status-rejected",
+  new: "bg-[#8091FF]",
+  processing: "bg-[#FFDD80]",
+  contacted: "bg-[#8091FF]",
+  scheduled: "bg-[#FFDD80]",
+  connected: "bg-[#85EE70]",
+  cancelled: "bg-[#FF8080]",
+  rejected: "bg-[#FF8080]",
 };
 
-const labelStyle = "font-frame text-xs leading-[125%] text-[rgba(16,16,16,0.5)]";
-const valueStyle = "font-frame text-sm truncate text-[#101010]";
+const labelStyle = "font-frame text-[14px] leading-[145%] text-[rgba(16,16,16,0.25)]";
+const valueStyle = "font-frame text-[16px] leading-[125%] text-[#101010] truncate";
 
 export function OrderCard({ order }: { order: Order }) {
   const dotColor = statusDotColor[order.status] ?? "bg-[rgba(16,16,16,0.5)]";
 
   return (
     <Link href={`/orders/${order.id}`} className="block">
-      <Card className="h-full hover:border-[rgba(16,16,16,0.35)] transition-colors rounded-[20px] border-[rgba(16,16,16,0.1)]">
+      <Card
+        className="h-full hover:border-[rgba(16,16,16,0.35)] transition-colors rounded-[20px] border-[rgba(16,16,16,0.15)] backdrop-blur-[7.5px]"
+        style={{ backdropFilter: "blur(7.5px)" }}
+      >
         <div className="flex items-start justify-between gap-2 mb-3">
           <span className={cn("w-3 h-3 rounded-full shrink-0 mt-0.5", dotColor)} />
           <div className="flex gap-1">

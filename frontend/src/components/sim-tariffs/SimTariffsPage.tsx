@@ -110,7 +110,7 @@ export default function SimTariffsPage() {
         </button>
         <h1
           style={{
-            fontFamily: 'TT Firs Neue, sans-serif',
+            fontFamily: "'TT Firs Neue', sans-serif",
             fontWeight: 400,
             fontSize: '20px',
             lineHeight: '125%',
@@ -144,7 +144,7 @@ export default function SimTariffsPage() {
           <div
             style={{
               padding: '24px 20px',
-              fontFamily: 'TT Firs Neue, sans-serif',
+              fontFamily: "'TT Firs Neue', sans-serif",
               fontSize: '14px',
               color: 'rgba(16,16,16,0.6)',
               textAlign: 'center',
@@ -158,7 +158,7 @@ export default function SimTariffsPage() {
           <div
             style={{
               padding: '24px 20px',
-              fontFamily: 'TT Firs Neue, sans-serif',
+              fontFamily: "'TT Firs Neue', sans-serif",
               fontSize: '14px',
               color: 'rgba(16,16,16,0.6)',
               textAlign: 'center',

@@ -191,7 +191,7 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip, initialSte
             >
               <span
                 style={{
-                  fontFamily: 'TT Firs Neue, sans-serif',
+                  fontFamily: "'TT Firs Neue', sans-serif",
                   fontSize: '12px',
                   lineHeight: '165%',
                   color: 'rgba(16, 16, 16, 0.25)',
@@ -217,7 +217,7 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip, initialSte
                 height: '30px',
                 left: '15px',
                 top: '43px',
-                fontFamily: 'TT Firs Neue, sans-serif',
+                fontFamily: "'TT Firs Neue', sans-serif",
                 fontStyle: 'normal',
                 fontWeight: 400,
                 fontSize: '14px',
@@ -277,7 +277,7 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip, initialSte
         <div
           className="font-normal"
           style={{
-            fontFamily: 'TT Firs Neue, sans-serif',
+            fontFamily: "'TT Firs Neue', sans-serif",
             fontSize: '20px',
             lineHeight: '125%',
             color: '#101010',
@@ -289,7 +289,7 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip, initialSte
         <div
           className="font-normal"
           style={{
-            fontFamily: 'TT Firs Neue, sans-serif',
+            fontFamily: "'TT Firs Neue', sans-serif",
             fontSize: '14px',
             lineHeight: '105%',
             color: 'rgba(16, 16, 16, 0.25)',
@@ -315,7 +315,7 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip, initialSte
             <span
               className="font-normal"
               style={{
-                fontFamily: 'TT Firs Neue, sans-serif',
+                fontFamily: "'TT Firs Neue', sans-serif",
                 fontSize: '16px',
                 lineHeight: '125%',
                 color: 'rgba(16, 16, 16, 0.5)',
@@ -341,7 +341,7 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip, initialSte
             <span
               className="font-normal"
               style={{
-                fontFamily: 'TT Firs Neue, sans-serif',
+                fontFamily: "'TT Firs Neue', sans-serif",
                 fontSize: '16px',
                 lineHeight: '125%',
                 color: selectedMethod === 'telegram' ? '#101010' : 'rgba(16, 16, 16, 0.5)',
@@ -377,7 +377,7 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip, initialSte
             <span
               className="font-normal"
               style={{
-                fontFamily: 'TT Firs Neue, sans-serif',
+                fontFamily: "'TT Firs Neue', sans-serif",
                 fontSize: '16px',
                 lineHeight: '125%',
                 color: '#101010',
@@ -437,7 +437,7 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip, initialSte
             style={{
               background: selectedMethod ? '#101010' : 'rgba(16, 16, 16, 0.25)',
               height: '50px',
-              fontFamily: 'TT Firs Neue, sans-serif',
+              fontFamily: "'TT Firs Neue', sans-serif",
               fontSize: '16px',
               transform: isNextBtnPressed && selectedMethod ? 'scale(0.97)' : 'scale(1)',
               transition: 'transform 0.15s ease-out',
@@ -480,7 +480,7 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip, initialSte
         <div
           className="font-normal"
           style={{
-            fontFamily: 'TT Firs Neue, sans-serif',
+            fontFamily: "'TT Firs Neue', sans-serif",
             fontSize: '20px',
             lineHeight: '125%',
             color: '#101010',
@@ -492,7 +492,7 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip, initialSte
         <div
           className="font-normal"
           style={{
-            fontFamily: 'TT Firs Neue, sans-serif',
+            fontFamily: "'TT Firs Neue', sans-serif",
             fontSize: '14px',
             lineHeight: '105%',
             color: 'rgba(16, 16, 16, 0.25)',
@@ -520,7 +520,7 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip, initialSte
             placeholder="Номер сотового телефона"
             className="w-full h-full px-[15px] bg-transparent outline-none rounded-[10px]"
             style={{
-              fontFamily: 'TT Firs Neue, sans-serif',
+              fontFamily: "'TT Firs Neue', sans-serif",
               fontSize: '16px',
               lineHeight: '125%',
               color: phoneFocused ? '#101010' : 'rgba(16, 16, 16, 0.5)',
@@ -566,7 +566,7 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip, initialSte
             style={{
               background: isPhoneValid ? '#101010' : 'rgba(16, 16, 16, 0.25)',
               height: '50px',
-              fontFamily: 'TT Firs Neue, sans-serif',
+              fontFamily: "'TT Firs Neue', sans-serif",
               fontSize: '16px',
               transform: isPhoneNextBtnPressed && isPhoneValid ? 'scale(0.97)' : 'scale(1)',
               transition: 'transform 0.15s ease-out',
@@ -606,7 +606,7 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip, initialSte
         <div
           className="font-normal"
           style={{
-            fontFamily: 'TT Firs Neue, sans-serif',
+            fontFamily: "'TT Firs Neue', sans-serif",
             fontSize: '20px',
             lineHeight: '125%',
             color: '#101010',
@@ -618,7 +618,7 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip, initialSte
         <div
           className="font-normal"
           style={{
-            fontFamily: 'TT Firs Neue, sans-serif',
+            fontFamily: "'TT Firs Neue', sans-serif",
             fontSize: '14px',
             lineHeight: '105%',
             color: 'rgba(16, 16, 16, 0.25)',
@@ -645,7 +645,7 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip, initialSte
             placeholder="Номер сотового телефона"
             className="w-full h-full px-[15px] bg-transparent outline-none rounded-[10px]"
             style={{
-              fontFamily: 'TT Firs Neue, sans-serif',
+              fontFamily: "'TT Firs Neue', sans-serif",
               fontSize: '16px',
               lineHeight: '125%',
               color: phoneFocused ? '#101010' : 'rgba(16, 16, 16, 0.5)',
@@ -660,7 +660,7 @@ export default function ConsultationFlow({ onClose, onSubmit, onSkip, initialSte
           className="w-full rounded-[10px] flex items-center justify-center text-white cursor-pointer outline-none"
           style={{
             height: '50px',
-            fontFamily: 'TT Firs Neue, sans-serif',
+            fontFamily: "'TT Firs Neue', sans-serif",
             fontSize: '16px',
             background: '#101010',
             border: '1px solid rgba(16, 16, 16, 0.25)',

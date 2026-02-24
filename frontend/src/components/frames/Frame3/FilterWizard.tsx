@@ -178,7 +178,7 @@ export default function FilterWizard({ isOpen, onClose, onApply }: FilterWizardP
                {/* Заголовок */}
                <div
                   style={{
-                     fontFamily: 'TT Firs Neue, sans-serif',
+                     fontFamily: "'TT Firs Neue', sans-serif",
                      fontSize: '20px',
                      lineHeight: '125%',
                      color: '#101010',
@@ -189,7 +189,7 @@ export default function FilterWizard({ isOpen, onClose, onApply }: FilterWizardP
                </div>
                <div
                   style={{
-                     fontFamily: 'TT Firs Neue, sans-serif',
+                     fontFamily: "'TT Firs Neue', sans-serif",
                      fontSize: '14px',
                      lineHeight: '105%',
                      color: 'rgba(16, 16, 16, 0.25)',
@@ -276,7 +276,7 @@ export default function FilterWizard({ isOpen, onClose, onApply }: FilterWizardP
                      style={{
                         background: '#101010',
                         height: '50px',
-                        fontFamily: 'TT Firs Neue, sans-serif',
+                        fontFamily: "'TT Firs Neue', sans-serif",
                         fontSize: '16px',
                         transform: isNextBtnPressed ? 'scale(0.97)' : 'scale(1)',
                         transition: 'transform 0.15s ease-out',

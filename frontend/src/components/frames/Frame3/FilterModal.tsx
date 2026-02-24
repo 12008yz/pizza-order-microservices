@@ -62,7 +62,7 @@ export default function FilterModal({ isOpen, onClose }: FilterModalProps) {
           >
             <div
               style={{
-                fontFamily: 'TT Firs Neue, sans-serif',
+                fontFamily: "'TT Firs Neue', sans-serif",
                 fontSize: '20px',
                 lineHeight: '125%',
                 color: '#101010',
@@ -78,7 +78,7 @@ export default function FilterModal({ isOpen, onClose }: FilterModalProps) {
                 onClick={() => setShowProvidersModal(true)}
                 className="outline-none cursor-pointer rounded-[10px] text-left hover:bg-gray-50 transition-colors border border-[rgba(16,16,16,0.25)]"
                 style={{
-                  fontFamily: 'TT Firs Neue, sans-serif',
+                  fontFamily: "'TT Firs Neue', sans-serif",
                   fontSize: '16px',
                   minHeight: '50px',
                   padding: '0 15px',
@@ -92,7 +92,7 @@ export default function FilterModal({ isOpen, onClose }: FilterModalProps) {
                 onClick={() => setShowServicesModal(true)}
                 className="outline-none cursor-pointer rounded-[10px] text-left hover:bg-gray-50 transition-colors border border-[rgba(16,16,16,0.25)]"
                 style={{
-                  fontFamily: 'TT Firs Neue, sans-serif',
+                  fontFamily: "'TT Firs Neue', sans-serif",
                   fontSize: '16px',
                   minHeight: '50px',
                   padding: '0 15px',
@@ -109,7 +109,7 @@ export default function FilterModal({ isOpen, onClose }: FilterModalProps) {
               style={{
                 background: '#101010',
                 minHeight: '50px',
-                fontFamily: 'TT Firs Neue, sans-serif',
+                fontFamily: "'TT Firs Neue', sans-serif",
                 fontSize: '16px',
               }}
             >

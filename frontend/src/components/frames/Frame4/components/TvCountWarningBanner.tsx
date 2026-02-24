@@ -28,7 +28,7 @@ export default function TvCountWarningBanner({
     >
       <p
         style={{
-          fontFamily: 'TT Firs Neue, sans-serif',
+          fontFamily: "'TT Firs Neue', sans-serif",
           fontWeight: 400,
           fontSize: '14px',
           lineHeight: '145%',

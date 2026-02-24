@@ -40,7 +40,7 @@ export default function ConfirmationStep({
     <div className="flex flex-col w-full px-[15px] pt-[12px] pb-[15px]">
       <h2
         style={{
-          fontFamily: 'TT Firs Neue, sans-serif',
+          fontFamily: "'TT Firs Neue', sans-serif",
           fontWeight: 400,
           fontSize: '20px',
           lineHeight: '125%',
@@ -52,7 +52,7 @@ export default function ConfirmationStep({
       </h2>
       <p
         style={{
-          fontFamily: 'TT Firs Neue, sans-serif',
+          fontFamily: "'TT Firs Neue', sans-serif",
           fontSize: '14px',
           lineHeight: '105%',
           color: 'rgba(16, 16, 16, 0.25)',
@@ -64,7 +64,7 @@ export default function ConfirmationStep({
 
       <p
         style={{
-          fontFamily: 'TT Firs Neue, sans-serif',
+          fontFamily: "'TT Firs Neue', sans-serif",
           fontStyle: 'normal',
           fontWeight: 400,
           fontSize: '16px',
@@ -79,7 +79,7 @@ export default function ConfirmationStep({
       {submitError && (
         <div
           style={{
-            fontFamily: 'TT Firs Neue, sans-serif',
+            fontFamily: "'TT Firs Neue', sans-serif",
             fontSize: '14px',
             color: '#b91c1c',
             marginBottom: 12,
@@ -126,7 +126,7 @@ export default function ConfirmationStep({
           style={{
             height: 50,
             border: '1px solid rgba(16, 16, 16, 0.25)',
-            fontFamily: 'TT Firs Neue, sans-serif',
+            fontFamily: "'TT Firs Neue', sans-serif",
             fontSize: canProceed ? 16 : 14,
             background: canProceed ? '#101010' : '#FFFFFF',
             color: canProceed ? '#FFFFFF' : '#101010',
@@ -151,7 +151,7 @@ export default function ConfirmationStep({
             height: 50,
             border: '1px solid rgba(16, 16, 16, 0.25)',
             color: '#101010',
-            fontFamily: 'TT Firs Neue, sans-serif',
+            fontFamily: "'TT Firs Neue', sans-serif",
             fontSize: '16px',
             transform: editPressed ? 'scale(0.97)' : 'scale(1)',
             transition: 'transform 0.15s ease-out',

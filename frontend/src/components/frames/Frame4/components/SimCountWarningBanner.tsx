@@ -57,7 +57,7 @@ export default function SimCountWarningBanner({
       >
         <span
           style={{
-            fontFamily: 'TT Firs Neue, sans-serif',
+            fontFamily: "'TT Firs Neue', sans-serif",
             fontSize: '14px',
             color: 'rgba(16, 16, 16, 0.5)',
           }}
@@ -77,7 +77,7 @@ export default function SimCountWarningBanner({
       {/* Текст предупреждения — отступ 8px от строки «Автоматически закроется через» */}
       <div
         style={{
-          fontFamily: 'TT Firs Neue, sans-serif',
+          fontFamily: "'TT Firs Neue', sans-serif",
           fontSize: '14px',
           lineHeight: '145%',
           color: '#101010',
@@ -90,7 +90,7 @@ export default function SimCountWarningBanner({
       {/* Ссылка */}
       <div
         style={{
-          fontFamily: 'TT Firs Neue, sans-serif',
+          fontFamily: "'TT Firs Neue', sans-serif",
           fontSize: '14px',
           lineHeight: '145%',
           color: '#FF1000',

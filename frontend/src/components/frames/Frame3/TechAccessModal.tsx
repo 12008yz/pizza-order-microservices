@@ -62,7 +62,7 @@ export default function TechAccessModal({ isOpen, onClose }: TechAccessModalProp
             <div
               className="font-normal"
               style={{
-                fontFamily: 'TT Firs Neue, sans-serif',
+                fontFamily: "'TT Firs Neue', sans-serif",
                 fontSize: '20px',
                 lineHeight: '125%',
                 color: '#101010',
@@ -74,7 +74,7 @@ export default function TechAccessModal({ isOpen, onClose }: TechAccessModalProp
 
             <p
               style={{
-                fontFamily: 'TT Firs Neue, sans-serif',
+                fontFamily: "'TT Firs Neue', sans-serif",
                 fontSize: '14px',
                 lineHeight: '105%',
                 color: 'rgba(16, 16, 16, 0.25)',
@@ -89,7 +89,7 @@ export default function TechAccessModal({ isOpen, onClose }: TechAccessModalProp
               onClick={() => setShowApartmentModal(true)}
               className="outline-none cursor-pointer w-full px-4 py-3 border border-[rgba(16,16,16,0.25)] rounded-[10px] text-left hover:bg-gray-50 transition-colors mb-[15px]"
               style={{
-                fontFamily: 'TT Firs Neue, sans-serif',
+                fontFamily: "'TT Firs Neue', sans-serif",
                 fontSize: '16px',
                 minHeight: '50px',
               }}
@@ -103,7 +103,7 @@ export default function TechAccessModal({ isOpen, onClose }: TechAccessModalProp
                 onClick={onClose}
                 className="outline-none cursor-pointer flex-1 px-4 py-3 border border-[rgba(16,16,16,0.15)] rounded-[10px] hover:bg-gray-50 transition-colors h-[50px]"
                 style={{
-                  fontFamily: 'TT Firs Neue, sans-serif',
+                  fontFamily: "'TT Firs Neue', sans-serif",
                   fontSize: '16px',
                   height: '50px',
                 }}
@@ -115,7 +115,7 @@ export default function TechAccessModal({ isOpen, onClose }: TechAccessModalProp
                 onClick={onClose}
                 className="outline-none cursor-pointer flex-1 px-4 py-3 bg-[#101010] text-white rounded-[10px] hover:bg-gray-800 transition-colors h-[50px]"
                 style={{
-                  fontFamily: 'TT Firs Neue, sans-serif',
+                  fontFamily: "'TT Firs Neue', sans-serif",
                   fontSize: '16px',
                   height: '50px',
                 }}

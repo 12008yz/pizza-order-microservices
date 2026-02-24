@@ -40,7 +40,7 @@ export function DashboardLayoutClient({
   return (
     <div
       className="flex h-screen flex-col bg-white"
-      style={{ paddingLeft: 60, paddingTop: 40, paddingBottom: 120, boxSizing: "border-box" }}
+      style={{ paddingLeft: 60, paddingTop: 40, paddingRight: 60, paddingBottom: 120, boxSizing: "border-box" }}
     >
       <div className="flex flex-1 min-h-0" style={{ gap: 5 }}>
         <Sidebar status={status} onStatusChange={handleStatusChange} pathname={pathname} />

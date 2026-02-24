@@ -3,7 +3,6 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { clearAuth } from "@/lib/auth";
 
 interface HeaderProps {
   search?: string;
@@ -21,12 +20,6 @@ export function Header({ search = "", onSearchChange, showSearch = true }: Heade
     if (localSearch.trim()) {
       router.push(`/orders?search=${encodeURIComponent(localSearch.trim())}`);
     }
-  };
-
-  const handleLogout = () => {
-    clearAuth();
-    router.push("/login");
-    router.refresh();
   };
 
   const barStyle: React.CSSProperties = {
@@ -72,21 +65,32 @@ export function Header({ search = "", onSearchChange, showSearch = true }: Heade
       }}
     >
       {showSearch && (
-        <form onSubmit={handleSubmit} className="flex-1 flex items-center min-w-0" style={{ gap: 12 }}>
-          <svg className="shrink-0 text-[#101010]" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden>
-            <path d="M7 12A5 5 0 1 0 7 2a5 5 0 0 0 0 10zm4.5-1.5L14 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-          </svg>
-          <input
-            type="search"
-            placeholder="Искать по номерам и адресам ..."
-            value={localSearch}
-            onChange={(e) => setLocalSearch(e.target.value)}
-            className="flex-1 min-w-0 bg-transparent border-0 outline-none placeholder:text-[rgba(16,16,16,0.25)]"
+        <form onSubmit={handleSubmit} className="flex-1 flex flex-col min-w-0" style={{ gap: 0 }}>
+          <div className="flex items-center" style={{ gap: 12 }}>
+            <svg className="shrink-0 text-[#101010]" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden>
+              <path d="M7 12A5 5 0 1 0 7 2a5 5 0 0 0 0 10zm4.5-1.5L14 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+            </svg>
+            <input
+              type="search"
+              placeholder="Искать по номерам и адресам ..."
+              value={localSearch}
+              onChange={(e) => setLocalSearch(e.target.value)}
+              className="flex-1 min-w-0 bg-transparent border-0 outline-none placeholder:text-[rgba(16,16,16,0.25)]"
+              style={{
+                fontFamily: "'TT Firs Neue', sans-serif",
+                fontSize: 14,
+                lineHeight: "145%",
+                color: "#101010",
+              }}
+            />
+          </div>
+          <div
             style={{
-              fontFamily: "'TT Firs Neue', sans-serif",
-              fontSize: 14,
-              lineHeight: "145%",
-              color: "#101010",
+              width: 440,
+              height: 0,
+              borderBottom: "1px solid rgba(16, 16, 16, 0.15)",
+              marginTop: 5,
+              marginLeft: 28,
             }}
           />
         </form>
@@ -106,19 +110,11 @@ export function Header({ search = "", onSearchChange, showSearch = true }: Heade
         <Link
           href="/orders"
           className="flex items-center justify-center shrink-0 text-[rgba(16,16,16,0.5)] no-underline hover:text-[#101010]"
-          style={{ ...circleStyle, fontFamily: "'TT Firs Neue', sans-serif", fontSize: 14, lineHeight: "215%" }}
+          style={{ fontFamily: "'TT Firs Neue', sans-serif", fontSize: 14, lineHeight: "215%" }}
         >
           +77
         </Link>
       </div>
-      <button
-        type="button"
-        onClick={handleLogout}
-        className="shrink-0 text-sm text-[#101010] hover:opacity-70 border-0 bg-transparent cursor-pointer"
-        style={{ fontFamily: "'TT Firs Neue', sans-serif" }}
-      >
-        Выход
-      </button>
     </header>
   );
 }

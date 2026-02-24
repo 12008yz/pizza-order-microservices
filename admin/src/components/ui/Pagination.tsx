@@ -97,7 +97,6 @@ export function Pagination({ page, totalPages, onPageChange }: PaginationProps) 
       style={{
         width: PAGINATION_WIDTH_PX,
         height: PAGINATION_HEIGHT_PX,
-        marginTop: 50,
         marginLeft: "auto",
         marginRight: "auto",
         gap: 10,

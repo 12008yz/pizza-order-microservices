@@ -17,69 +17,86 @@ const statusDotColor: Record<string, string> = {
   rejected: "bg-[#FF8080]",
 };
 
-const labelStyle = "font-frame text-[14px] leading-[145%] text-[rgba(16,16,16,0.25)]";
-const valueStyle = "font-frame text-[16px] leading-[125%] text-[#101010] truncate";
-
 export function OrderCard({ order }: { order: Order }) {
   const dotColor = statusDotColor[order.status] ?? "bg-[rgba(16,16,16,0.5)]";
 
   return (
-    <Link href={`/orders/${order.id}`} className="block">
-      <Card
-        className="h-full hover:border-[rgba(16,16,16,0.35)] transition-colors rounded-[20px] border-[rgba(16,16,16,0.15)] backdrop-blur-[7.5px]"
-        style={{ backdropFilter: "blur(7.5px)" }}
-      >
-        <div className="flex items-start justify-between gap-2 mb-3">
-          <span className={cn("w-3 h-3 rounded-full shrink-0 mt-0.5", dotColor)} />
-          <div className="flex gap-1">
-            {[1, 2, 3, 4, 5].map((i) => (
-              <span key={i} className="w-1.5 h-1.5 rounded-full bg-[rgba(16,16,16,0.25)]" />
-            ))}
-          </div>
+    <Link href={`/orders/${order.id}`} className="block h-full">
+      <Card className="hover:border-[rgba(16,16,16,0.35)] transition-colors" style={{ width: 240, height: 535 }}>
+        {/* Верхний ряд: точка 10×10 px, отступ 20px до кругов, круги 30×30 px, между кругами 5px */}
+        <div
+          className="flex items-center"
+          style={{
+            marginBottom: 20,
+            gap: 5,
+          }}
+        >
+          <span
+            className={cn("rounded-full shrink-0", dotColor)}
+            style={{ width: 10, height: 10 }}
+          />
+          <span style={{ width: 20, flexShrink: 0 }} aria-hidden />
+          {[1, 2, 3, 4, 5].map((i) => (
+            <span
+              key={i}
+              className="rounded-full border border-[rgba(16,16,16,0.15)] shrink-0 bg-transparent"
+              style={{ width: 30, height: 30 }}
+            />
+          ))}
         </div>
-        <div className="space-y-1.5 text-sm">
-          <div>
-            <p className={labelStyle}>Номер лицевого счёта</p>
-            <p className={valueStyle}>{order.id}</p>
-          </div>
-          <div>
-            <p className={labelStyle}>Номер сот. тел.</p>
-            <p className={valueStyle}>{formatPhone(order.phone)}</p>
-          </div>
-          <div>
-            <p className={labelStyle}>Персона</p>
-            <p className={valueStyle}>Подкл. квартиры</p>
-          </div>
-          <div>
-            <p className={labelStyle}>Имя</p>
-            <p className={valueStyle}>{order.firstName ?? "—"}</p>
-          </div>
-          <div>
-            <p className={labelStyle}>Фамилия</p>
-            <p className={valueStyle}>{order.lastName ?? "—"}</p>
-          </div>
-          <div>
-            <p className={labelStyle}>Дата рождения</p>
-            <p className={valueStyle}>{formatDate(order.dateOfBirth)}</p>
-          </div>
-          <div>
-            <p className={labelStyle}>Гражданство</p>
-            <p className={valueStyle}>{order.citizenship ?? "Российское"}</p>
-          </div>
-          <div>
-            <p className={labelStyle}>Технология</p>
-            <p className={valueStyle}>FTTX · 8</p>
-          </div>
-          <div>
-            <p className={labelStyle}>Компания</p>
-            <p className={valueStyle}>{(order as Order & { provider?: { name: string } }).provider?.name ?? "—"}</p>
-          </div>
-          <div>
-            <p className={labelStyle}>Комплектация</p>
-            <p className={valueStyle}>{(order as Order & { tariff?: { name: string } }).tariff?.name ?? "—"}</p>
-          </div>
+
+        {/* Поля: подпись 14px, значение 16px; между подписью и значением 5px, между полями 5px */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
+          {[
+            { label: "Номер лицевого счёта", value: String(order.id) },
+            { label: "Номер сотового телефона", value: formatPhone(order.phone) },
+            { label: "Персона", value: "Подключение квартиры" },
+            { label: "Имя", value: order.firstName ?? "—" },
+            { label: "Фамилия", value: order.lastName ?? "—" },
+            { label: "Дата рождения", value: formatDate(order.dateOfBirth) },
+            { label: "Гражданство", value: order.citizenship ?? "Российское гражданство" },
+            { label: "Технология", value: "FTTX · 8" },
+            { label: "Компания", value: (order as Order & { provider?: { name: string } }).provider?.name ?? "—" },
+            { label: "Комплектация", value: (order as Order & { tariff?: { name: string } }).tariff?.name ?? "—" },
+          ].map(({ label, value }, i) => (
+            <div
+              key={label}
+              style={{
+                marginBottom: i < 9 ? 5 : 0,
+              }}
+            >
+              <p
+                className="font-frame truncate"
+                style={{
+                  fontSize: 14,
+                  lineHeight: "145%",
+                  color: "rgba(16,16,16,0.25)",
+                  marginBottom: 5,
+                }}
+              >
+                {label}
+              </p>
+              <p
+                className="font-frame font-medium truncate"
+                style={{
+                  fontSize: 16,
+                  lineHeight: "125%",
+                  color: "#101010",
+                }}
+              >
+                {value}
+              </p>
+            </div>
+          ))}
         </div>
-        <div className="mt-3 pt-2 border-t border-[rgba(16,16,16,0.1)]">
+
+        <div
+          style={{
+            marginTop: 15,
+            paddingTop: 15,
+            borderTop: "1px solid rgba(16,16,16,0.1)",
+          }}
+        >
           <Badge status={order.status} />
         </div>
       </Card>

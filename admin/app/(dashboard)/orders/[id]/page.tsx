@@ -51,14 +51,14 @@ export default function OrderDetailPage() {
     );
   }
 
-  const labelStyle = "font-frame text-xs leading-[125%] text-[rgba(16,16,16,0.5)]";
-  const valueStyle = "font-frame text-sm text-[#101010]";
+  const labelStyle = "font-frame leading-[125%] text-[rgba(16,16,16,0.5)]";
+  const valueStyle = "font-frame font-medium leading-[125%] text-[#101010]";
   const sectionTitle = "font-frame text-[20px] leading-[125%] text-[#101010] font-normal border-b border-[rgba(16,16,16,0.1)] pb-2 mb-3";
 
   const col = (title: string, value: string | number | null | undefined) => (
-    <div key={title} className="space-y-0.5">
-      <p className={labelStyle}>{title}</p>
-      <p className={valueStyle}>{value ?? "—"}</p>
+    <div key={title} style={{ marginBottom: 15 }}>
+      <p className={labelStyle} style={{ fontSize: 12, marginBottom: 5 }}>{title}</p>
+      <p className={valueStyle} style={{ fontSize: 16 }}>{value ?? "—"}</p>
     </div>
   );
 

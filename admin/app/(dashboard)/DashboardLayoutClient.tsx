@@ -40,7 +40,7 @@ export function DashboardLayoutClient({
   return (
     <div
       className="flex h-screen flex-col bg-white"
-      style={{ paddingLeft: 60, paddingTop: 40, paddingRight: 60, paddingBottom: 120, boxSizing: "border-box" }}
+      style={{ paddingLeft: 60, paddingTop: 40, paddingRight: 60, paddingBottom: 50, boxSizing: "border-box" }}
     >
       <div className="flex flex-1 min-h-0" style={{ gap: 5 }}>
         <Sidebar status={status} onStatusChange={handleStatusChange} pathname={pathname} />
@@ -50,7 +50,9 @@ export function DashboardLayoutClient({
             onSearchChange={setSearch}
             showSearch={pathname.startsWith("/orders")}
           />
-          <main className="flex-1 overflow-auto min-h-0 px-4 pb-4">{children}</main>
+          <main className="flex-1 flex flex-col min-h-0 overflow-auto" style={{ paddingTop: 0, paddingRight: 5, paddingBottom: 5, paddingLeft: 0 }}>
+            {children}
+          </main>
         </div>
       </div>
     </div>

@@ -1,29 +1,36 @@
 "use client";
 
-import { Suspense, useEffect, useState, useMemo } from "react";
-import { useSearchParams } from "next/navigation";
+import { Suspense, useEffect, useState, useMemo, useRef, useCallback } from "react";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { OrderCard } from "@/components/orders/OrderCard";
 import { Pagination } from "@/components/ui/Pagination";
 import { fetchOrders } from "@/lib/api";
+import { MOCK_ORDERS } from "@/lib/mockOrders";
 import type { Order } from "@/types";
 
 const PAGE_SIZE = 12;
+const SCROLL_END_THRESHOLD_PX = 80;
 
 function OrdersPageContent() {
   const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
   const statusParam = searchParams.get("status") ?? "";
   const searchParam = searchParams.get("search") ?? "";
   const pageParam = parseInt(searchParams.get("page") ?? "1", 10);
 
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [page, setPage] = useState(Math.max(1, pageParam));
+  const [page, setPage] = useState(pageParam);
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setPage(Math.max(1, pageParam));
+  }, [pageParam]);
 
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
-    setError(null);
     fetchOrders({ status: statusParam || undefined })
       .then((res) => {
         if (cancelled) return;
@@ -32,8 +39,8 @@ function OrdersPageContent() {
           : [];
         setOrders(list);
       })
-      .catch((err) => {
-        if (!cancelled) setError(err?.message ?? "Ошибка загрузки заявок");
+      .catch(() => {
+        if (!cancelled) setOrders([]);
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
@@ -41,78 +48,98 @@ function OrdersPageContent() {
     return () => { cancelled = true; };
   }, [statusParam]);
 
+  const sourceOrders = orders.length > 0 ? orders : MOCK_ORDERS;
+
   const filtered = useMemo(() => {
-    if (!searchParam.trim()) return orders;
+    if (!searchParam.trim()) return sourceOrders;
     const q = searchParam.trim().toLowerCase();
-    return orders.filter(
+    return sourceOrders.filter(
       (o) =>
         String(o.id).toLowerCase().includes(q) ||
         o.phone?.replace(/\D/g, "").includes(q.replace(/\D/g, "")) ||
         o.addressString?.toLowerCase().includes(q) ||
         o.fullName?.toLowerCase().includes(q)
     );
-  }, [orders, searchParam]);
+  }, [sourceOrders, searchParam]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
-  const displayPages = 7;
-  const totalPagesForPagination = Math.max(totalPages, displayPages);
   const currentPage = Math.min(page, totalPages);
   const slice = useMemo(
     () => filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE),
     [filtered, currentPage]
   );
 
-  const handlePageChange = (p: number) => {
-    setPage(p);
-    const url = new URL(window.location.href);
-    url.searchParams.set("page", String(p));
-    window.history.pushState({}, "", url.toString());
-  };
+  const handlePageChange = useCallback(
+    (p: number) => {
+      const safePage = Math.max(1, Math.min(p, totalPages));
+      setPage(safePage);
+      const params = new URLSearchParams(searchParams.toString());
+      params.set("page", String(safePage));
+      router.push(`${pathname}?${params.toString()}`);
+      if (scrollRef.current) scrollRef.current.scrollLeft = 0;
+    },
+    [router, pathname, searchParams, totalPages]
+  );
+
+  const handleScroll = useCallback(() => {
+    const el = scrollRef.current;
+    if (!el || slice.length === 0 || currentPage >= totalPages) return;
+    const { scrollLeft, clientWidth, scrollWidth } = el;
+    if (scrollLeft + clientWidth >= scrollWidth - SCROLL_END_THRESHOLD_PX) {
+      handlePageChange(currentPage + 1);
+    }
+  }, [currentPage, totalPages, slice.length, handlePageChange]);
 
   const paginationBlock = (
     <Pagination
-      page={page}
-      totalPages={totalPagesForPagination}
+      page={currentPage}
+      totalPages={totalPages}
       onPageChange={handlePageChange}
     />
   );
 
-  if (error) {
-    return (
-      <>
-        <div className="rounded-card border border-error bg-error/5 p-4 text-error">
-          {error}
-        </div>
-        {paginationBlock}
-      </>
-    );
-  }
-
   if (loading) {
     return (
-      <>
-        <div className="flex items-center justify-center py-12">
+      <div className="flex flex-col flex-1 min-h-0">
+        <div className="flex-1 flex items-center justify-center py-12">
           <p className="text-muted-foreground">Загрузка заявок...</p>
         </div>
-        {paginationBlock}
-      </>
+        <div style={{ flexShrink: 0, marginTop: 50 }}>{paginationBlock}</div>
+      </div>
     );
   }
 
   return (
-    <>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 pt-4">
-        {slice.map((order) => (
-          <OrderCard key={order.id} order={order} />
-        ))}
+    <div className="flex flex-col flex-1 min-h-0">
+      <div className="relative shrink-0 overflow-x-auto overflow-y-hidden">
+        <div
+          ref={scrollRef}
+          onScroll={handleScroll}
+          className="flex overflow-x-auto overflow-y-hidden pb-2 scrollbar-hide"
+          style={{ gap: 5 }}
+        >
+          {slice.map((order) => (
+            <div key={order.id} className="shrink-0" style={{ width: 240 }}>
+              <OrderCard order={order} />
+            </div>
+          ))}
+        </div>
+        {slice.length > 0 && (
+          <div
+            className="absolute top-0 bottom-2 right-0 w-[60px] pointer-events-none"
+            style={{
+              background: "linear-gradient(to right, rgba(255,255,255,0), #ffffff)",
+            }}
+          />
+        )}
+        {filtered.length === 0 && (
+          <p className="text-center py-8" style={{ fontFamily: "'TT Firs Neue', sans-serif", color: "rgba(16,16,16,0.5)" }}>
+            Заявок не найдено
+          </p>
+        )}
       </div>
-      {filtered.length === 0 && (
-        <p className="text-center py-8" style={{ fontFamily: "'TT Firs Neue', sans-serif", color: "rgba(16,16,16,0.5)" }}>
-          Заявок не найдено
-        </p>
-      )}
-      {paginationBlock}
-    </>
+      <div style={{ flexShrink: 0, marginTop: 50 }}>{paginationBlock}</div>
+    </div>
   );
 }
 

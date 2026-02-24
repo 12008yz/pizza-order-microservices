@@ -170,6 +170,15 @@ body {
   color: var(--frame-color-muted);
 }
 
+/* Скрыть полосу прокрутки, скролл остаётся */
+.scrollbar-hide {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
 @layer utilities {
   .text-balance {
     text-wrap: balance;

@@ -14,11 +14,18 @@ export function Card({
   return (
     <div
       className={cn(
-        "rounded-[20px] border border-border bg-white p-5 shadow-card font-frame",
-        "border-[rgba(16,16,16,0.1)]",
+        "bg-white font-frame box-border",
+        "rounded-[20px] border border-[rgba(16,16,16,0.15)]",
         className
       )}
-      style={{ boxSizing: "border-box", ...style }}
+      style={{
+        boxSizing: "border-box",
+        paddingTop: 20,
+        paddingRight: 20,
+        paddingBottom: 20,
+        paddingLeft: 20,
+        ...style,
+      }}
     >
       {children}
     </div>

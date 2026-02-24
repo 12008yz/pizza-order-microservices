@@ -676,7 +676,7 @@ function Frame3Content() {
 
   // Обработчик клика на кнопку тарифа - переходит на Frame4 (оборудование)
   const handleTariffSelect = (tariffId: number) => {
-    // Сохраняем полный тариф в sessionStorage для итоговой карточки (тариф + оборудование)
+    // Сохраняем выбранный тариф в sessionStorage: для Frame4/Frame5 и для отправки в CRM (tariffId + providerId)
     try {
       const selectedTariff = tariffs.find(t => t.id === tariffId);
       if (selectedTariff) {

@@ -78,17 +78,20 @@ export default function NewTariffPage() {
     );
   }
 
+  const labelClass = "block font-frame text-xs leading-[125%] text-[rgba(16,16,16,0.5)] mb-1";
+  const selectClass = "h-[50px] min-h-[50px] rounded-[10px] border border-[rgba(16,16,16,0.25)] pl-[15px] pr-[16px] text-[16px] bg-white font-frame";
+
   return (
-    <div className="max-w-2xl">
-      <h1 className="text-lg font-semibold mb-4">Предложение</h1>
+    <div className="max-w-2xl font-frame">
+      <h1 className="text-[20px] leading-[125%] text-[#101010] font-normal mb-4">Предложение</h1>
       <form onSubmit={handleSubmit} className="space-y-4">
         {step === 1 && (
           <>
             <div className="flex flex-wrap gap-4">
               <div>
-                <label className="block text-xs text-muted-foreground mb-1">Категория</label>
+                <label className={labelClass}>Категория</label>
                 <select
-                  className="rounded-input border border-border px-3 py-2 text-sm min-w-[140px]"
+                  className={selectClass + " min-w-[140px]"}
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
                 >
@@ -97,9 +100,9 @@ export default function NewTariffPage() {
                 </select>
               </div>
               <div>
-                <label className="block text-xs text-muted-foreground mb-1">Название оператора</label>
+                <label className={labelClass}>Название оператора</label>
                 <select
-                  className="rounded-input border border-border px-3 py-2 text-sm min-w-[180px]"
+                  className={selectClass + " min-w-[180px]"}
                   value={providerId}
                   onChange={(e) => setProviderId(e.target.value ? Number(e.target.value) : "")}
                 >
@@ -110,7 +113,7 @@ export default function NewTariffPage() {
                 </select>
               </div>
               <div>
-                <label className="block text-xs text-muted-foreground mb-1">Название тариф. пл.</label>
+                <label className={labelClass}>Название тариф. пл.</label>
                 <Input
                   value={name}
                   onChange={(e) => setName(e.target.value)}
@@ -147,7 +150,7 @@ export default function NewTariffPage() {
             </div>
             <div className="flex flex-wrap gap-4">
               <div>
-                <label className="block text-xs text-muted-foreground mb-1">Плата подк.</label>
+                <label className={labelClass}>Плата подк.</label>
                 <Input
                   type="number"
                   min={0}
@@ -156,7 +159,7 @@ export default function NewTariffPage() {
                 />
               </div>
               <div>
-                <label className="block text-xs text-muted-foreground mb-1">Плата мес.</label>
+                <label className={labelClass}>Плата мес.</label>
                 <Input
                   type="number"
                   min={0}
@@ -165,7 +168,7 @@ export default function NewTariffPage() {
                 />
               </div>
               <div>
-                <label className="block text-xs text-muted-foreground mb-1">Выплата</label>
+                <label className={labelClass}>Выплата</label>
                 <Input
                   type="number"
                   min={0}

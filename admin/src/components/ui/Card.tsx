@@ -12,9 +12,11 @@ export function Card({
   return (
     <div
       className={cn(
-        "rounded-card border border-border bg-background p-4 shadow-card",
+        "rounded-[20px] border border-border bg-white p-5 shadow-card font-frame",
+        "border-[rgba(16,16,16,0.1)]",
         className
       )}
+      style={{ boxSizing: "border-box" }}
     >
       {children}
     </div>

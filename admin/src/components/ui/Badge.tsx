@@ -25,10 +25,11 @@ export function Badge({
   return (
     <span
       className={cn(
-        "inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium",
+        "inline-flex items-center rounded-[10px] px-2.5 py-1 text-xs font-frame",
         color,
         className
       )}
+      style={{ fontFamily: '"TT Firs Neue", sans-serif' }}
     >
       {status}
     </span>

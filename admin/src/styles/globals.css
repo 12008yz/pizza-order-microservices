@@ -4,10 +4,10 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #000000;
+  --foreground: #101010;
   --muted: #f5f5f5;
-  --muted-foreground: #737373;
-  --border: #e5e5e5;
+  --muted-foreground: rgba(16, 16, 16, 0.5);
+  --border: rgba(16, 16, 16, 0.25);
 
   --status-new: #3b82f6;
   --status-processing: #eab308;
@@ -19,13 +19,125 @@
 
   --error: #ef4444;
   --success: #22c55e;
+
+  /* Frame styles from frontend (frames/modals) */
+  --sat: env(safe-area-inset-top, 0px);
+  --sar: env(safe-area-inset-right, 0px);
+  --sab: env(safe-area-inset-bottom, 0px);
+  --sal: env(safe-area-inset-left, 0px);
+  --frame-width: 400px;
+  --frame-side: 20px;
+  --frame-card-width: 360px;
+  --frame-card-radius: 20px;
+  --frame-card-padding: 20px;
+  --frame-field-height: 50px;
+  --frame-field-radius: 10px;
+  --frame-field-padding-x: 15px;
+  --frame-field-padding-r: 16px;
+  --frame-field-gap: 5px;
+  --frame-btn-height: 50px;
+  --frame-font-title: 20px;
+  --frame-font-body: 16px;
+  --frame-font-caption: 14px;
+  --frame-color: #101010;
+  --frame-color-muted: rgba(16, 16, 16, 0.5);
+  --frame-color-border: rgba(16, 16, 16, 0.25);
+  --frame-color-border-active: rgba(16, 16, 16, 0.5);
+  --frame-bg: #f5f5f5;
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-family: "TT Firs Neue", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   font-size: 14px;
+  box-sizing: border-box;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* Карточка по макету frontend: скругление 20px, белый фон */
+.frame-card {
+  border-radius: var(--frame-card-radius);
+  padding: var(--frame-card-padding);
+  background: #fff;
+  box-sizing: border-box;
+}
+
+/* Поля ввода как во frontend (Frame1, Frame5) */
+.frame-input {
+  height: var(--frame-field-height);
+  min-height: var(--frame-field-height);
+  padding-left: var(--frame-field-padding-x);
+  padding-right: var(--frame-field-padding-r);
+  border-radius: var(--frame-field-radius);
+  border: 1px solid var(--frame-color-border);
+  font-family: "TT Firs Neue", sans-serif;
+  font-size: var(--frame-font-body);
+  line-height: 125%;
+  box-sizing: border-box;
+}
+.frame-input:focus,
+.frame-input.active {
+  border-color: var(--frame-color-border-active);
+}
+.frame-input::placeholder {
+  color: var(--frame-color-muted);
+}
+
+/* Анимации смены шагов (Frame4/Frame5) */
+@keyframes frame4StepIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes frame5StepIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Типографика как во frontend */
+.font-frame-title {
+  font-family: "TT Firs Neue", sans-serif;
+  font-weight: 400;
+  font-size: var(--frame-font-title);
+  line-height: 125%;
+  color: var(--frame-color);
+}
+.font-frame-body {
+  font-family: "TT Firs Neue", sans-serif;
+  font-weight: 400;
+  font-size: var(--frame-font-body);
+  line-height: 125%;
+  color: var(--frame-color);
+}
+.font-frame-caption {
+  font-family: "TT Firs Neue", sans-serif;
+  font-weight: 400;
+  font-size: var(--frame-font-caption);
+  line-height: 105%;
+  color: var(--frame-color-muted);
+}
+.font-frame-label {
+  font-family: "TT Firs Neue", sans-serif;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 125%;
+  color: var(--frame-color-muted);
 }
 
 @layer utilities {

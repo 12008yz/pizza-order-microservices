@@ -12,7 +12,11 @@ export interface CreateOrderData {
   tariffId: number;
   fullName: string;
   phone: string;
-  birthDate?: string;
+  /** Имя и фамилия для CRM */
+  firstName?: string | null;
+  lastName?: string | null;
+  /** Дата рождения в формате ISO (YYYY-MM-DD) */
+  dateOfBirth?: string | null;
   email?: string;
   /** Адрес (для API передаётся как addressString) */
   address?: string;

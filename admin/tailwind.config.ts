@@ -13,6 +13,9 @@ const config: Config = {
         muted: "var(--muted)",
         "muted-foreground": "var(--muted-foreground)",
         border: "var(--border)",
+        "frame-bg": "var(--frame-bg)",
+        "frame-color": "var(--frame-color)",
+        "frame-color-muted": "var(--frame-color-muted)",
         "status-new": "var(--status-new)",
         "status-processing": "var(--status-processing)",
         "status-connected": "var(--status-connected)",
@@ -24,11 +27,14 @@ const config: Config = {
         success: "var(--success)",
       },
       borderRadius: {
-        card: "10px",
-        input: "8px",
+        card: "20px",
+        input: "10px",
       },
       boxShadow: {
-        card: "0 1px 3px rgba(0,0,0,0.08)",
+        card: "0 2px 12px rgba(16, 16, 16, 0.08)",
+      },
+      fontFamily: {
+        frame: ['"TT Firs Neue"', "sans-serif"],
       },
     },
   },

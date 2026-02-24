@@ -17,63 +17,66 @@ const statusDotColor: Record<string, string> = {
   rejected: "bg-status-rejected",
 };
 
+const labelStyle = "font-frame text-xs leading-[125%] text-[rgba(16,16,16,0.5)]";
+const valueStyle = "font-frame text-sm truncate text-[#101010]";
+
 export function OrderCard({ order }: { order: Order }) {
-  const dotColor = statusDotColor[order.status] ?? "bg-muted-foreground";
+  const dotColor = statusDotColor[order.status] ?? "bg-[rgba(16,16,16,0.5)]";
 
   return (
     <Link href={`/orders/${order.id}`} className="block">
-      <Card className="h-full hover:border-foreground/30 transition-colors">
+      <Card className="h-full hover:border-[rgba(16,16,16,0.35)] transition-colors rounded-[20px] border-[rgba(16,16,16,0.1)]">
         <div className="flex items-start justify-between gap-2 mb-3">
           <span className={cn("w-3 h-3 rounded-full shrink-0 mt-0.5", dotColor)} />
           <div className="flex gap-1">
             {[1, 2, 3, 4, 5].map((i) => (
-              <span key={i} className="w-1.5 h-1.5 rounded-full bg-muted-foreground/50" />
+              <span key={i} className="w-1.5 h-1.5 rounded-full bg-[rgba(16,16,16,0.25)]" />
             ))}
           </div>
         </div>
         <div className="space-y-1.5 text-sm">
           <div>
-            <p className="text-xs text-muted-foreground">Номер лицевого счёта</p>
-            <p className="font-medium truncate">{order.id}</p>
+            <p className={labelStyle}>Номер лицевого счёта</p>
+            <p className={valueStyle}>{order.id}</p>
           </div>
           <div>
-            <p className="text-xs text-muted-foreground">Номер сот. тел.</p>
-            <p className="truncate">{formatPhone(order.phone)}</p>
+            <p className={labelStyle}>Номер сот. тел.</p>
+            <p className={valueStyle}>{formatPhone(order.phone)}</p>
           </div>
           <div>
-            <p className="text-xs text-muted-foreground">Персона</p>
-            <p className="truncate">Подкл. квартиры</p>
+            <p className={labelStyle}>Персона</p>
+            <p className={valueStyle}>Подкл. квартиры</p>
           </div>
           <div>
-            <p className="text-xs text-muted-foreground">Имя</p>
-            <p className="truncate">{order.firstName ?? "—"}</p>
+            <p className={labelStyle}>Имя</p>
+            <p className={valueStyle}>{order.firstName ?? "—"}</p>
           </div>
           <div>
-            <p className="text-xs text-muted-foreground">Фамилия</p>
-            <p className="truncate">{order.lastName ?? "—"}</p>
+            <p className={labelStyle}>Фамилия</p>
+            <p className={valueStyle}>{order.lastName ?? "—"}</p>
           </div>
           <div>
-            <p className="text-xs text-muted-foreground">Дата рождения</p>
-            <p className="truncate">{formatDate(order.dateOfBirth)}</p>
+            <p className={labelStyle}>Дата рождения</p>
+            <p className={valueStyle}>{formatDate(order.dateOfBirth)}</p>
           </div>
           <div>
-            <p className="text-xs text-muted-foreground">Гражданство</p>
-            <p className="truncate">{order.citizenship ?? "Российское"}</p>
+            <p className={labelStyle}>Гражданство</p>
+            <p className={valueStyle}>{order.citizenship ?? "Российское"}</p>
           </div>
           <div>
-            <p className="text-xs text-muted-foreground">Технология</p>
-            <p className="truncate">FTTX · 8</p>
+            <p className={labelStyle}>Технология</p>
+            <p className={valueStyle}>FTTX · 8</p>
           </div>
           <div>
-            <p className="text-xs text-muted-foreground">Компания</p>
-            <p className="truncate">{order.provider?.name ?? "—"}</p>
+            <p className={labelStyle}>Компания</p>
+            <p className={valueStyle}>{(order as Order & { provider?: { name: string } }).provider?.name ?? "—"}</p>
           </div>
           <div>
-            <p className="text-xs text-muted-foreground">Комплектация</p>
-            <p className="truncate">{order.tariff?.name ?? "—"}</p>
+            <p className={labelStyle}>Комплектация</p>
+            <p className={valueStyle}>{(order as Order & { tariff?: { name: string } }).tariff?.name ?? "—"}</p>
           </div>
         </div>
-        <div className="mt-3 pt-2 border-t border-border">
+        <div className="mt-3 pt-2 border-t border-[rgba(16,16,16,0.1)]">
           <Badge status={order.status} />
         </div>
       </Card>

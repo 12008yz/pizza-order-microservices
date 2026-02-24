@@ -107,14 +107,17 @@ export default function NewAddressPage() {
     );
   }
 
+  const labelClass = "block font-frame text-xs leading-[125%] text-[rgba(16,16,16,0.5)] mb-1";
+  const selectClass = "w-full h-[50px] min-h-[50px] rounded-[10px] border border-[rgba(16,16,16,0.25)] pl-[15px] pr-[16px] text-[16px] bg-white font-frame";
+
   return (
-    <div className="max-w-2xl">
-      <h1 className="text-lg font-semibold mb-4">Проникновение</h1>
+    <div className="max-w-2xl font-frame">
+      <h1 className="text-[20px] leading-[125%] text-[#101010] font-normal mb-4">Проникновение</h1>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-xs text-muted-foreground mb-1">Населённый пункт</label>
+          <label className={labelClass}>Населённый пункт</label>
           <select
-            className="w-full rounded-input border border-border px-3 py-2 text-sm"
+            className={selectClass}
             value={regionId}
             onChange={(e) => setRegionId(e.target.value ? Number(e.target.value) : "")}
           >
@@ -125,9 +128,9 @@ export default function NewAddressPage() {
           </select>
         </div>
         <div>
-          <label className="block text-xs text-muted-foreground mb-1">Город</label>
+          <label className={labelClass}>Город</label>
           <select
-            className="w-full rounded-input border border-border px-3 py-2 text-sm"
+            className={selectClass}
             value={cityId}
             onChange={(e) => setCityId(e.target.value ? Number(e.target.value) : "")}
             disabled={!regionId}
@@ -139,9 +142,9 @@ export default function NewAddressPage() {
           </select>
         </div>
         <div>
-          <label className="block text-xs text-muted-foreground mb-1">Пространство (улица)</label>
+          <label className={labelClass}>Пространство (улица)</label>
           <select
-            className="w-full rounded-input border border-border px-3 py-2 text-sm"
+            className={selectClass}
             value={streetId}
             onChange={(e) => setStreetId(e.target.value ? Number(e.target.value) : "")}
             disabled={!cityId}
@@ -154,9 +157,9 @@ export default function NewAddressPage() {
         </div>
         <div className="flex flex-wrap gap-4">
           <div>
-            <label className="block text-xs text-muted-foreground mb-1">Категория</label>
+            <label className={labelClass}>Категория</label>
             <select
-              className="rounded-input border border-border px-3 py-2 text-sm"
+              className={selectClass + " min-w-[140px]"}
               value={category}
               onChange={(e) => setCategory(e.target.value)}
             >
@@ -165,7 +168,7 @@ export default function NewAddressPage() {
             </select>
           </div>
           <div>
-            <label className="block text-xs text-muted-foreground mb-1">Номер дома</label>
+            <label className={labelClass}>Номер дома</label>
             <Input
               value={houseNumber}
               onChange={(e) => setHouseNumber(e.target.value)}
@@ -173,7 +176,7 @@ export default function NewAddressPage() {
             />
           </div>
           <div>
-            <label className="block text-xs text-muted-foreground mb-1">Подъезды</label>
+            <label className={labelClass}>Подъезды</label>
             <Input
               type="number"
               min={0}
@@ -183,7 +186,7 @@ export default function NewAddressPage() {
             />
           </div>
           <div>
-            <label className="block text-xs text-muted-foreground mb-1">Этажи</label>
+            <label className={labelClass}>Этажи</label>
             <Input
               type="number"
               min={0}
@@ -193,7 +196,7 @@ export default function NewAddressPage() {
             />
           </div>
           <div>
-            <label className="block text-xs text-muted-foreground mb-1">Квартиры</label>
+            <label className={labelClass}>Квартиры</label>
             <Input
               type="number"
               min={0}
@@ -204,9 +207,9 @@ export default function NewAddressPage() {
           </div>
         </div>
         <div>
-          <label className="block text-xs text-muted-foreground mb-1">Провайдер</label>
+          <label className={labelClass}>Провайдер</label>
           <select
-            className="w-full rounded-input border border-border px-3 py-2 text-sm"
+            className={selectClass}
             value={providerId}
             onChange={(e) => setProviderId(e.target.value ? Number(e.target.value) : "")}
           >
@@ -217,7 +220,7 @@ export default function NewAddressPage() {
           </select>
         </div>
         <div>
-          <label className="block text-xs text-muted-foreground mb-1">Комментарий</label>
+          <label className={labelClass}>Комментарий</label>
           <Input
             value={comment}
             onChange={(e) => setComment(e.target.value)}

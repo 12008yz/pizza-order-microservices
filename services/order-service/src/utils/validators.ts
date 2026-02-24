@@ -14,7 +14,13 @@ export const createOrderSchema = Joi.object({
   email: Joi.string().email().allow(null, '').optional(),
   firstName: Joi.string().max(100).allow(null, '').optional(),
   lastName: Joi.string().max(100).allow(null, '').optional(),
-  dateOfBirth: Joi.date().allow(null).optional(),
+  dateOfBirth: Joi.alternatives()
+    .try(
+      Joi.date(),
+      Joi.string().pattern(/^\d{4}-\d{2}-\d{2}$/), // ISO YYYY-MM-DD от фронта
+      Joi.allow(null, '')
+    )
+    .optional(),
   citizenship: Joi.string().max(100).allow(null, '').optional(),
   regionId: Joi.number().integer().positive().allow(null).optional(),
   cityId: Joi.number().integer().positive().allow(null).optional(),
@@ -95,7 +101,11 @@ export const validateCreateOrder = (
     return next(appError);
   }
 
-  // Заменяем body на валидированные данные
+  // Пустую или невалидную строку dateOfBirth приводим к null (в БД не должно попадать "Invalid date")
+  if (value.dateOfBirth === '' || (typeof value.dateOfBirth === 'string' && value.dateOfBirth.trim().toLowerCase() === 'invalid date')) {
+    value.dateOfBirth = null;
+  }
+
   req.body = value;
   next();
 };

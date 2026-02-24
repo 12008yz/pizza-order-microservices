@@ -19,14 +19,16 @@ export function Button({
     <button
       type="button"
       className={cn(
-        "rounded-input px-4 py-2 text-sm font-medium transition-colors",
+        "rounded-[10px] h-[50px] min-h-[50px] px-4 text-[16px] font-normal transition-colors font-frame box-border",
+        "border border-[rgba(16,16,16,0.25)]",
         variant === "primary" &&
-          "bg-foreground text-background hover:opacity-90 disabled:bg-muted disabled:text-muted-foreground disabled:cursor-not-allowed",
+          "bg-[#101010] text-white hover:opacity-90 disabled:bg-[rgba(16,16,16,0.25)] disabled:text-white disabled:cursor-not-allowed",
         variant === "secondary" &&
-          "border border-border bg-muted text-foreground hover:bg-border",
-        variant === "ghost" && "hover:bg-muted text-foreground",
+          "bg-white text-[#101010] hover:bg-[#F5F5F5]",
+        variant === "ghost" && "bg-transparent text-[#101010] hover:bg-[#F5F5F5] border-transparent",
         className
       )}
+      style={{ fontFamily: '"TT Firs Neue", sans-serif', lineHeight: "315%" }}
       disabled={disabled}
       {...props}
     >

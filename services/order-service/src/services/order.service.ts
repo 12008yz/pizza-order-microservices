@@ -40,6 +40,20 @@ function deriveRouterOption(data: {
   return 'none';
 }
 
+/** Приводит dateOfBirth к null или валидной дате (ISO YYYY-MM-DD / Date), чтобы не записывать в БД "Invalid date". */
+function normalizeDateOfBirth(v: unknown): string | Date | null {
+  if (v == null || v === '') return null;
+  if (v instanceof Date) return isNaN(v.getTime()) ? null : v;
+  if (typeof v === 'string') {
+    const s = v.trim();
+    if (!s || s.toLowerCase() === 'invalid date') return null;
+    const d = new Date(s);
+    if (isNaN(d.getTime())) return null;
+    return s.match(/^\d{4}-\d{2}-\d{2}$/) ? s : d.toISOString().slice(0, 10);
+  }
+  return null;
+}
+
 const PROVIDER_SERVICE_URL = process.env.PROVIDER_SERVICE_URL || 'http://localhost:3003';
 const LOCATION_SERVICE_URL = process.env.LOCATION_SERVICE_URL || 'http://localhost:3005';
 const AVAILABILITY_SERVICE_URL = process.env.AVAILABILITY_SERVICE_URL || 'http://localhost:3006';
@@ -177,9 +191,11 @@ export class OrderService {
     const transaction = await sequelize.transaction();
 
     try {
+      const dateOfBirth = normalizeDateOfBirth(data.dateOfBirth);
       const order = await Order.create(
         {
           ...data,
+          dateOfBirth: dateOfBirth ?? null,
           routerOption: routerOptionForCost,
           userId: userId || null,
           status: 'new',
@@ -399,6 +415,28 @@ export class OrderService {
     }
   }
 
+  /**
+   * Загружает тариф и провайдера из provider-service для отображения в CRM
+   */
+  private async fetchTariffAndProvider(
+    tariffId: number,
+    providerId: number
+  ): Promise<{ tariff: any; provider: any }> {
+    const [tariffRes, providerRes] = await Promise.allSettled([
+      providerClient.get(`/api/tariffs/${tariffId}`),
+      providerClient.get(`/api/providers/${providerId}`),
+    ]);
+    const tariff =
+      tariffRes.status === 'fulfilled' && tariffRes.value?.data?.success
+        ? tariffRes.value.data.data
+        : null;
+    const provider =
+      providerRes.status === 'fulfilled' && providerRes.value?.data?.success
+        ? providerRes.value.data.data
+        : null;
+    return { tariff, provider };
+  }
+
   async getOrderById(id: number, userId?: number) {
     const where: any = { id };
 
@@ -414,7 +452,18 @@ export class OrderService {
       throw error;
     }
 
-    return order;
+    const plain = order.get({ plain: true }) as any;
+    try {
+      const { tariff, provider } = await this.fetchTariffAndProvider(
+        order.tariffId,
+        order.providerId
+      );
+      plain.tariff = tariff;
+      plain.provider = provider;
+    } catch (err: any) {
+      logger.warn('Failed to enrich order with tariff/provider', { orderId: id, error: err?.message });
+    }
+    return plain;
   }
 
   async getUserOrders(userId: number) {
@@ -460,9 +509,41 @@ export class OrderService {
       }
     }
 
-    return await Order.findAll({
+    const orders = await Order.findAll({
       where,
       order: [['createdAt', 'DESC']],
+    });
+
+    // Обогащаем заказы данными тарифа и провайдера для CRM
+    const tariffIds = [...new Set(orders.map((o) => o.tariffId))];
+    const providerIds = [...new Set(orders.map((o) => o.providerId))];
+    const tariffMap = new Map<number, any>();
+    const providerMap = new Map<number, any>();
+
+    await Promise.all([
+      ...tariffIds.map(async (tid) => {
+        try {
+          const res = await providerClient.get(`/api/tariffs/${tid}`);
+          if (res.data?.success && res.data.data) tariffMap.set(tid, res.data.data);
+        } catch (e) {
+          // ignore
+        }
+      }),
+      ...providerIds.map(async (pid) => {
+        try {
+          const res = await providerClient.get(`/api/providers/${pid}`);
+          if (res.data?.success && res.data.data) providerMap.set(pid, res.data.data);
+        } catch (e) {
+          // ignore
+        }
+      }),
+    ]);
+
+    return orders.map((order) => {
+      const plain = order.get({ plain: true }) as any;
+      plain.tariff = tariffMap.get(order.tariffId) ?? null;
+      plain.provider = providerMap.get(order.providerId) ?? null;
+      return plain;
     });
   }
 

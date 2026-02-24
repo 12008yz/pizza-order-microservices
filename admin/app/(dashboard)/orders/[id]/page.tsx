@@ -51,62 +51,70 @@ export default function OrderDetailPage() {
     );
   }
 
+  const labelStyle = "font-frame text-xs leading-[125%] text-[rgba(16,16,16,0.5)]";
+  const valueStyle = "font-frame text-sm text-[#101010]";
+  const sectionTitle = "font-frame text-[20px] leading-[125%] text-[#101010] font-normal border-b border-[rgba(16,16,16,0.1)] pb-2 mb-3";
+
   const col = (title: string, value: string | number | null | undefined) => (
-    <div key={title}>
-      <p className="text-xs text-muted-foreground">{title}</p>
-      <p className="text-sm">{value ?? "—"}</p>
+    <div key={title} className="space-y-0.5">
+      <p className={labelStyle}>{title}</p>
+      <p className={valueStyle}>{value ?? "—"}</p>
     </div>
   );
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 font-frame">
       <div className="flex items-center justify-between">
-        <Link href="/orders" className="text-sm text-muted-foreground hover:underline">
+        <Link href="/orders" className="text-sm text-[rgba(16,16,16,0.5)] hover:underline">
           ← К списку заявок
         </Link>
         <Badge status={order.status} />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="space-y-3">
-          <h3 className="text-base font-semibold border-b border-border pb-2">Персональные данные</h3>
+        <Card className="space-y-3 rounded-[20px] border-[rgba(16,16,16,0.1)]">
+          <h3 className={sectionTitle}>Персональные данные</h3>
           {col("Номер лицевого счёта", String(order.id))}
           {col("Номер сотового телефона", formatPhone(order.phone))}
           {col("Персона", "Подкл. квартиры")}
           {col("Имя", order.firstName)}
           {col("Фамилия", order.lastName)}
           {col("Дата рождения", formatDate(order.dateOfBirth))}
-          {col("Гражданство", order.citizenship)}
+          {col("Гражданство", order.citizenship ?? "Российское")}
           {col("Технология", "FTTX · 8")}
           {col("Компания", (order as Order & { provider?: { name: string } }).provider?.name)}
           {col("Комплектация", (order as Order & { tariff?: { name: string } }).tariff?.name)}
         </Card>
 
-        <Card className="space-y-3">
-          <h3 className="text-base font-semibold border-b border-border pb-2">Адрес</h3>
+        <Card className="space-y-3 rounded-[20px] border-[rgba(16,16,16,0.1)]">
+          <h3 className={sectionTitle}>Адрес</h3>
           {col("Номер идентификатора", order.buildingId ? String(order.buildingId) : null)}
           {col("Адрес", order.addressString)}
           {col("Подъезд", order.entrance)}
           {col("Этаж", order.floor)}
           {col("Квартира", order.apartmentId ? String(order.apartmentId) : null)}
-          {col("Плата подключения", order.totalConnectionPrice ? `${order.totalConnectionPrice} р.` : null)}
-          {col("Плата месячная", order.totalMonthlyPrice ? `${order.totalMonthlyPrice} р.` : null)}
+          {col("Плата подключения", order.totalConnectionPrice != null ? `${order.totalConnectionPrice} р.` : null)}
+          {col("Плата месячная", order.totalMonthlyPrice != null ? `${order.totalMonthlyPrice} р.` : null)}
         </Card>
 
-        <Card className="space-y-3">
-          <h3 className="text-base font-semibold border-b border-border pb-2">Статусы и даты</h3>
+        <Card className="space-y-3 rounded-[20px] border-[rgba(16,16,16,0.1)]">
+          <h3 className={sectionTitle}>Статусы и даты</h3>
           {col("Фаза", order.status)}
           {col("Дата появления", formatDate(order.createdAt))}
           {col("Дата назначения", formatDate(order.preferredDate))}
           {col("Дата подключения", null)}
           {col("WI-оборудование", order.routerOption)}
+          {col("Роутер: потребность", order.routerNeed)}
+          {col("Роутер: покупка/аренда", order.routerPurchase)}
+          {col("Роутер: оператор", order.routerOperator)}
+          {col("Роутер: конфиг", order.routerConfig)}
           {col("TV-оборудование", order.tvSettopOption)}
           {col("SIM-карта", order.simCardOption)}
           {col("Назначен", order.assignedTo)}
         </Card>
 
-        <Card className="space-y-3">
-          <h3 className="text-base font-semibold border-b border-border pb-2">Комментарии</h3>
+        <Card className="space-y-3 rounded-[20px] border-[rgba(16,16,16,0.1)]">
+          <h3 className={sectionTitle}>Комментарии</h3>
           {col("Комментарий", order.comment)}
           {col("Внутренний", order.internalComment)}
         </Card>

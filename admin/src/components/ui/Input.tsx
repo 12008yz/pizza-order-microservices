@@ -13,12 +13,14 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     <input
       ref={ref}
       className={cn(
-        "w-full rounded-input border bg-background px-3 py-2 text-sm outline-none transition-colors",
-        "border-border placeholder:text-muted-foreground",
+        "w-full h-[50px] min-h-[50px] rounded-[10px] border bg-white outline-none transition-colors font-frame",
+        "pl-[15px] pr-[16px] text-[16px] leading-[125%] box-border",
+        "border-[rgba(16,16,16,0.25)] placeholder:text-[rgba(16,16,16,0.5)]",
+        "focus:border-[rgba(16,16,16,0.5)]",
         error && "border-error focus:border-error",
-        !error && "focus:border-foreground focus:ring-1 focus:ring-foreground",
         className
       )}
+      style={{ fontFamily: '"TT Firs Neue", sans-serif' }}
       {...props}
     />
   )

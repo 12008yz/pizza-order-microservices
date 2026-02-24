@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { loginAdmin } from "@/lib/api";
 import { getAccessToken } from "@/lib/auth";
@@ -56,34 +55,72 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-muted/30 p-4">
+    <div className="min-h-screen bg-white relative">
+      {/* Форма: отступ слева 60px, снизу 120px */}
       <form
         onSubmit={handleSubmit}
-        className="w-full max-w-sm flex flex-col gap-4 rounded-card border border-border bg-background p-6 shadow-card"
+        className="flex flex-col gap-4 absolute w-[280px] max-w-[calc(100vw-120px)] p-5"
+        style={{
+          left: 60,
+          bottom: 120,
+          boxSizing: "border-box",
+          background: "#FFFFFF",
+          border: "1px solid rgba(16, 16, 16, 0.15)",
+          backdropFilter: "blur(7.5px)",
+          WebkitBackdropFilter: "blur(7.5px)",
+          borderRadius: 20,
+        }}
       >
-        <h1 className="text-lg font-semibold text-center">Вход в админ-панель</h1>
         <Input
           type="text"
-          placeholder="Первое слово (напр. А12)"
+          placeholder="Мое слово"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
           autoComplete="email"
           error={!!error}
+          className="w-full placeholder:text-[rgba(16,16,16,0.25)]"
         />
         <Input
           type="password"
-          placeholder="Второе слово (напр. А13)"
+          placeholder="Чистое слово"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
           autoComplete="current-password"
           error={!!error}
+          className="w-full placeholder:text-[rgba(16,16,16,0.25)]"
         />
-        {error && <p className="text-sm text-error">{error}</p>}
-        <Button type="submit" disabled={loading} className="w-full">
+        {error && (
+          <p className="text-sm text-[#ef4444]" style={{ fontFamily: "'TT Firs Neue', sans-serif" }}>
+            {error}
+          </p>
+        )}
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full outline-none cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed"
+          style={{
+            boxSizing: "border-box",
+            height: 50,
+            minHeight: 50,
+            background: "#101010",
+            border: "1px solid rgba(16, 16, 16, 0.25)",
+            borderRadius: 10,
+            fontFamily: "'TT Firs Neue', sans-serif",
+            fontStyle: "normal",
+            fontWeight: 400,
+            fontSize: 16,
+            lineHeight: "315%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            textAlign: "center",
+            color: "#FFFFFF",
+          }}
+        >
           {loading ? "Вход..." : "Подтвердить"}
-        </Button>
+        </button>
       </form>
     </div>
   );

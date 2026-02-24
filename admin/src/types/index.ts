@@ -35,6 +35,8 @@ export interface Order {
   routerOption: string | null;
   routerNeed: string | null;
   routerPurchase: string | null;
+  routerOperator: string | null;
+  routerConfig: string | null;
   routerPrice: number | null;
   tvSettopOption: string | null;
   tvSettopPrice: number | null;

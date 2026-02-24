@@ -26,9 +26,11 @@ const SELECTED_TARIFF_KEY = 'selectedTariff';
 const ADDRESS_DATA_KEY = 'addressData';
 const ORDER_PERSONAL_DATA_KEY = 'orderPersonalData';
 
+/** Тариф, выбранный во Frame3 и сохранённый в sessionStorage; передаётся в CRM при создании заказа */
 interface SelectedTariff {
   id: number;
   providerId: number;
+  numericProviderId?: number;
   providerName?: string;
   tariffName?: string;
   price?: string;
@@ -216,7 +218,7 @@ function Frame5Content() {
         return;
       }
 
-      const rawProviderId = (selectedTariff as { numericProviderId?: number }).numericProviderId ?? selectedTariff.providerId;
+      const rawProviderId = selectedTariff.numericProviderId ?? selectedTariff.providerId;
       const providerIdNum = typeof rawProviderId === 'number' ? rawProviderId : parseInt(String(rawProviderId), 10);
       const tariffIdNum = Number(selectedTariff.id);
       if (!Number.isFinite(providerIdNum) || !Number.isFinite(tariffIdNum)) {
@@ -224,12 +226,31 @@ function Frame5Content() {
         return;
       }
 
+      // Нормализация даты рождения из формата ДД.ММ.ГГГГ в ISO (ГГГГ-ММ-ДД) для backend; не отправляем невалидные даты
+      const normalizedBirthDate = (() => {
+        const raw = personalData.birthDate?.trim();
+        if (!raw) return null;
+        const parts = raw.split('.');
+        if (parts.length !== 3) return null;
+        const [dd, mm, yyyy] = parts;
+        if (!dd || !mm || !yyyy) return null;
+        const day = dd.padStart(2, '0');
+        const month = mm.padStart(2, '0');
+        const year = yyyy.length === 2 ? `20${yyyy}` : yyyy;
+        const iso = `${year}-${month}-${day}`;
+        const d = new Date(iso);
+        if (Number.isNaN(d.getTime())) return null;
+        return iso;
+      })();
+
       const payload: CreateOrderData = {
         providerId: providerIdNum,
         tariffId: tariffIdNum,
         fullName: `${personalData.firstName.trim()} ${personalData.lastName.trim()}`,
         phone: personalData.phone.replace(/\D/g, ''),
-        ...(personalData.birthDate?.trim() && { birthDate: personalData.birthDate.trim() }),
+        firstName: personalData.firstName.trim() || null,
+        lastName: personalData.lastName.trim() || null,
+        ...(normalizedBirthDate && { dateOfBirth: normalizedBirthDate }),
         addressString: [
           addressData.city,
           addressData.street,

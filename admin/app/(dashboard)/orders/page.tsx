@@ -119,7 +119,7 @@ function OrdersPageContent() {
           style={{ gap: 5 }}
         >
           {slice.map((order) => (
-            <div key={order.id} className="shrink-0" style={{ width: 240 }}>
+            <div key={order.id} className="shrink-0" style={{ width: 242 }}>
               <OrderCard order={order} />
             </div>
           ))}

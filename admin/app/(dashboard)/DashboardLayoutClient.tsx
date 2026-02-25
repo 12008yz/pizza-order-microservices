@@ -29,13 +29,8 @@ export function DashboardLayoutClient({
     window.history.replaceState({}, "", url.toString());
   }, [pathname, searchParams]);
 
-  if (loading || !isAuthenticated) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-muted-foreground">Загрузка...</p>
-      </div>
-    );
-  }
+  // Не скрываем layout при загрузке/проверке авторизации — сайдбар и шапка всегда на месте
+  const showContent = !loading && isAuthenticated;
 
   return (
     <div
@@ -51,7 +46,11 @@ export function DashboardLayoutClient({
             showSearch={pathname.startsWith("/orders")}
           />
           <main className="flex-1 flex flex-col min-h-0 overflow-auto" style={{ paddingTop: 0, paddingRight: 5, paddingBottom: 5, paddingLeft: 0 }}>
-            {children}
+            {showContent ? children : (
+              <div className="flex flex-1 items-center justify-center">
+                <p className="text-muted-foreground">Загрузка...</p>
+              </div>
+            )}
           </main>
         </div>
       </div>

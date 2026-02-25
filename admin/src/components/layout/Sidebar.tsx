@@ -156,7 +156,7 @@ export function Sidebar({
         gap: GAP_BETWEEN_SECTIONS_PX,
       }}
     >
-      {/* Верхняя панель: И. Ивановых + Все + статусы (только на /orders) */}
+      {/* Верхняя панель: всегда одна и та же — И. Ивановых + Все + статусы (на всех страницах) */}
       <div
         className="flex flex-col"
         style={{
@@ -166,44 +166,19 @@ export function Sidebar({
       >
         <UserRow>{initials}</UserRow>
 
-        {path === "/orders" && (
+        {path === "/orders" ? (
           <>
-            <label
-              className="flex items-center cursor-pointer"
-              style={{
-                minHeight: ROW_HEIGHT_PX,
-                height: ROW_HEIGHT_PX,
-                gap: GAP_CIRCLE_TEXT_PX,
-                opacity: 0.5,
-                ...menuTextStyle,
-              }}
-            >
-              <input
-                type="radio"
-                name="status"
-                value=""
-                checked={status === ""}
-                onChange={() => onStatusChange("")}
-                className="sr-only"
-              />
-              <span
-                className="shrink-0 flex items-center justify-center"
-                style={{ width: CIRCLE_SIZE_PX, height: CIRCLE_SIZE_PX }}
-              >
-                <GrayCircle />
-              </span>
-              <span style={{ width: 160 }}>Все</span>
-            </label>
-            {statusFilters.slice(1).map(({ label, value }) => {
+            {statusFilters.map(({ label, value }) => {
               const isActive = status === value;
               return (
                 <label
-                  key={value}
+                  key={value || "all"}
                   className="flex items-center cursor-pointer"
                   style={{
                     minHeight: ROW_HEIGHT_PX,
                     height: ROW_HEIGHT_PX,
                     gap: GAP_CIRCLE_TEXT_PX,
+                    opacity: isActive ? 0.5 : 1,
                     ...menuTextStyle,
                   }}
                 >
@@ -219,19 +194,36 @@ export function Sidebar({
                     className="shrink-0 flex items-center justify-center"
                     style={{ width: CIRCLE_SIZE_PX, height: CIRCLE_SIZE_PX }}
                   >
-                    {isActive ? (
-                      <span
-                        className="rounded-full"
-                        style={{ width: 10, height: 10, background: "#8091FF" }}
-                      />
-                    ) : (
-                      <HollowCircle />
-                    )}
+                    {isActive ? <GrayCircle /> : <HollowCircle />}
                   </span>
                   <span style={{ width: 160 }}>{label}</span>
                 </label>
               );
             })}
+          </>
+        ) : (
+          <>
+            {statusFilters.map(({ label, value }) => (
+              <Link
+                key={value || "all"}
+                href={value ? `/orders?status=${value}` : "/orders"}
+                className="flex items-center no-underline hover:opacity-80"
+                style={{
+                  minHeight: ROW_HEIGHT_PX,
+                  height: ROW_HEIGHT_PX,
+                  gap: GAP_CIRCLE_TEXT_PX,
+                  ...menuTextStyle,
+                }}
+              >
+                <span
+                  className="shrink-0 flex items-center justify-center"
+                  style={{ width: CIRCLE_SIZE_PX, height: CIRCLE_SIZE_PX }}
+                >
+                  <HollowCircle />
+                </span>
+                <span style={{ width: 160 }}>{label}</span>
+              </Link>
+            ))}
           </>
         )}
       </div>

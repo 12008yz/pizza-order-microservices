@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 
 interface HeaderProps {
   search?: string;
@@ -13,13 +13,36 @@ interface HeaderProps {
 export function Header({ search = "", onSearchChange, showSearch = true }: HeaderProps) {
   const [localSearch, setLocalSearch] = useState(search);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+
+  useEffect(() => {
+    setLocalSearch(search);
+  }, [search]);
+
+  const applySearch = (value: string) => {
+    const trimmed = value.trim();
+    onSearchChange?.(trimmed);
+    const params = new URLSearchParams(searchParams.toString());
+    if (trimmed) {
+      params.set("search", trimmed);
+      params.set("page", "1");
+    } else {
+      params.delete("search");
+      params.set("page", "1");
+    }
+    const query = params.toString();
+    router.replace(query ? `${pathname}?${query}` : pathname);
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const v = e.target.value;
+    setLocalSearch(v);
+    applySearch(v);
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSearchChange?.(localSearch.trim());
-    if (localSearch.trim()) {
-      router.push(`/orders?search=${encodeURIComponent(localSearch.trim())}`);
-    }
   };
 
   const barStyle: React.CSSProperties = {
@@ -74,7 +97,7 @@ export function Header({ search = "", onSearchChange, showSearch = true }: Heade
               type="search"
               placeholder="Искать по номерам и адресам ..."
               value={localSearch}
-              onChange={(e) => setLocalSearch(e.target.value)}
+              onChange={handleChange}
               className="flex-1 min-w-0 bg-transparent border-0 outline-none placeholder:text-[rgba(16,16,16,0.25)]"
               style={{
                 fontFamily: "'TT Firs Neue', sans-serif",

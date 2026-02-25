@@ -52,13 +52,9 @@ function OrdersPageContent() {
 
   const filtered = useMemo(() => {
     if (!searchParam.trim()) return sourceOrders;
-    const q = searchParam.trim().toLowerCase();
-    return sourceOrders.filter(
-      (o) =>
-        String(o.id).toLowerCase().includes(q) ||
-        o.phone?.replace(/\D/g, "").includes(q.replace(/\D/g, "")) ||
-        o.addressString?.toLowerCase().includes(q) ||
-        o.fullName?.toLowerCase().includes(q)
+    const q = searchParam.trim();
+    return sourceOrders.filter((o) =>
+      String(o.id).includes(q)
     );
   }, [sourceOrders, searchParam]);
 

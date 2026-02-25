@@ -22,6 +22,7 @@ function OrdersPageContent() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(pageParam);
+  const [expandedOrderId, setExpandedOrderId] = useState<number | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -64,6 +65,15 @@ function OrdersPageContent() {
     () => filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE),
     [filtered, currentPage]
   );
+
+  // При поиске по номеру сразу раскрывать первую найденную карточку
+  useEffect(() => {
+    if (searchParam.trim() && slice.length > 0) {
+      setExpandedOrderId(slice[0].id);
+    } else if (!searchParam.trim()) {
+      setExpandedOrderId(null);
+    }
+  }, [searchParam, slice]);
 
   const handlePageChange = useCallback(
     (p: number) => {
@@ -114,11 +124,27 @@ function OrdersPageContent() {
           className="flex overflow-x-auto overflow-y-hidden pb-2 scrollbar-hide"
           style={{ gap: 5 }}
         >
-          {slice.map((order) => (
-            <div key={order.id} className="shrink-0" style={{ width: 242 }}>
-              <OrderCard order={order} />
-            </div>
-          ))}
+          {slice.map((order) => {
+            const isExpanded = expandedOrderId === order.id;
+            return (
+              <div
+                key={order.id}
+                role="button"
+                tabIndex={0}
+                onClick={() => setExpandedOrderId(isExpanded ? null : order.id)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    setExpandedOrderId(isExpanded ? null : order.id);
+                  }
+                }}
+                className="shrink-0 transition-[width] duration-200 ease-out"
+                style={{ width: isExpanded ? 730 : 242 }}
+              >
+                <OrderCard order={order} isExpanded={isExpanded} />
+              </div>
+            );
+          })}
         </div>
         {slice.length > 0 && (
           <div

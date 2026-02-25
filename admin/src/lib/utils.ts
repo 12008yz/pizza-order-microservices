@@ -19,3 +19,13 @@ export function formatDate(dateStr: string | null): string {
     year: "numeric",
   });
 }
+
+export function formatPrice(value: number | null | undefined): string {
+  if (value == null) return "—";
+  return `${value} р.`;
+}
+
+export function formatPriceMonthly(value: number | null | undefined): string {
+  if (value == null) return "—";
+  return `${value} р./мес.`;
+}

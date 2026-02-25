@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { getUser } from "@/lib/auth";
@@ -144,8 +145,13 @@ export function Sidebar({
 }) {
   const currentPathname = usePathname();
   const path = pathname ?? currentPathname;
-  const user = typeof window !== "undefined" ? getUser() : null;
-  const initials = user?.name?.split(/\s+/).map((n) => n.charAt(0)).join(". ") ?? "И. Ивановых";
+  const [initials, setInitials] = useState("И. Ивановых");
+
+  useEffect(() => {
+    const user = getUser();
+    const value = user?.name?.split(/\s+/).map((n) => n.charAt(0)).join(". ") ?? "И. Ивановых";
+    setInitials(value);
+  }, []);
 
   return (
     <aside

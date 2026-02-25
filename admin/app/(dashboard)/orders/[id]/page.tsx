@@ -80,7 +80,7 @@ export default function OrderDetailPage() {
           {col("Имя", order.firstName)}
           {col("Фамилия", order.lastName)}
           {col("Дата рождения", formatDate(order.dateOfBirth))}
-          {col("Гражданство", order.citizenship ?? "Российское")}
+          {col("Гражданство", order.citizenship ?? "Российское гражданство")}
           {col("Технология", "FTTX · 8")}
           {col("Компания", (order as Order & { provider?: { name: string } }).provider?.name)}
           {col("Комплектация", (order as Order & { tariff?: { name: string } }).tariff?.name)}

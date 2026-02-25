@@ -12,7 +12,7 @@ const base: Omit<Order, "id"> = {
   phone: "+7 111 111-11-11",
   email: null,
   dateOfBirth: "11.11.1111",
-  citizenship: "Российское",
+  citizenship: "Российское гражданство",
   regionId: null,
   cityId: null,
   streetId: null,

@@ -260,6 +260,7 @@ export function Sidebar({
                 minHeight: ROW_HEIGHT_PX,
                 height: ROW_HEIGHT_PX,
                 gap: GAP_CIRCLE_TEXT_PX,
+                opacity: isActive ? 0.5 : 1,
                 ...menuTextStyle,
               }}
             >
@@ -267,14 +268,7 @@ export function Sidebar({
                 className="shrink-0 flex items-center justify-center"
                 style={{ width: CIRCLE_SIZE_PX, height: CIRCLE_SIZE_PX }}
               >
-                {isActive ? (
-                  <span
-                    className="rounded-full"
-                    style={{ width: 10, height: 10, background: "#8091FF" }}
-                  />
-                ) : (
-                  <HollowCircle />
-                )}
+                {isActive ? <GrayCircle /> : <HollowCircle />}
               </span>
               <span style={{ width: 160 }}>{label}</span>
             </Link>

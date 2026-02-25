@@ -66,7 +66,7 @@ export function OrderCard({ order }: { order: Order }) {
           ))}
         </div>
 
-        {/* Поля: подпись 14px, значение 16px; между подписью и значением 5px, между полями 5px */}
+        {/* Поля по макету: группа 200×40; подпись 14px/145%, #101010 25%; значение 16px/125%, #101010; font-weight 400 */}
         <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
           {[
             { label: "Номер лицевого счёта", value: String(order.id) },
@@ -84,25 +84,39 @@ export function OrderCard({ order }: { order: Order }) {
               key={label}
               style={{
                 marginBottom: i < 9 ? 5 : 0,
+                minHeight: 40,
               }}
             >
               <p
                 className="font-frame truncate"
                 style={{
+                  fontFamily: "'TT Firs Neue', sans-serif",
+                  fontStyle: "normal",
+                  fontWeight: 400,
                   fontSize: 14,
                   lineHeight: "145%",
-                  color: "rgba(16,16,16,0.25)",
-                  marginBottom: 5,
+                  display: "flex",
+                  alignItems: "center",
+                  color: "rgba(16, 16, 16, 0.25)",
+                  margin: 0,
+                  minHeight: 20,
                 }}
               >
                 {label}
               </p>
               <p
-                className="font-frame font-medium truncate"
+                className="font-frame truncate"
                 style={{
+                  fontFamily: "'TT Firs Neue', sans-serif",
+                  fontStyle: "normal",
+                  fontWeight: 400,
                   fontSize: 16,
                   lineHeight: "125%",
+                  display: "flex",
+                  alignItems: "center",
                   color: "#101010",
+                  margin: 0,
+                  minHeight: 20,
                 }}
               >
                 {value}

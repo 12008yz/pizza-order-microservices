@@ -9,6 +9,7 @@ import { MOCK_ORDERS } from "@/lib/mockOrders";
 import type { Order } from "@/types";
 
 const CARD_WIDTH_COLLAPSED = 242;
+const CARD_WIDTH_EXPANDED = 730;
 const CARD_GAP_PX = 5;
 const SCROLL_END_THRESHOLD_PX = 80;
 
@@ -205,8 +206,10 @@ function OrdersPageContent() {
           className="flex overflow-x-auto overflow-y-hidden pb-2 scrollbar-hide"
           style={{ gap: CARD_GAP_PX }}
         >
-          {slice.map((order) => {
+          {slice.map((order, index) => {
             const isExpanded = expandedOrderId === order.id;
+            const isAmongLastTwo = index >= slice.length - 2;
+            const expandToLeft = isExpanded && isAmongLastTwo;
             return (
               <div
                 key={order.id}
@@ -219,8 +222,12 @@ function OrdersPageContent() {
                     setExpandedOrderId(order.id);
                   }
                 }}
-                className="shrink-0 transition-[width] duration-200 ease-out"
-                style={{ width: isExpanded ? 730 : 242 }}
+                className="shrink-0 transition-all duration-200 ease-out"
+                style={{
+                  width: isExpanded ? CARD_WIDTH_EXPANDED : CARD_WIDTH_COLLAPSED,
+                  marginLeft: expandToLeft ? -(CARD_WIDTH_EXPANDED - CARD_WIDTH_COLLAPSED) : 0,
+                  zIndex: expandToLeft ? 1 : undefined,
+                }}
               >
                 <OrderCard order={order} isExpanded={isExpanded} onOrderChange={handleOrderChange} />
               </div>

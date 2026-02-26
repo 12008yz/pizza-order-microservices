@@ -8,8 +8,18 @@ import { fetchOrders, updateOrder as updateOrderApi } from "@/lib/api";
 import { MOCK_ORDERS } from "@/lib/mockOrders";
 import type { Order } from "@/types";
 
-const PAGE_SIZE = 12;
+const CARD_WIDTH_COLLAPSED = 242;
+const CARD_GAP_PX = 5;
 const SCROLL_END_THRESHOLD_PX = 80;
+
+/** Сколько карточек показывать на странице: только те, что полностью помещаются, без «перемычки» (полувидимой карточки). Вычитаем один слот (карточка + отступ), чтобы следующая страница всегда начиналась с первой полностью видимой карточки. */
+function getCardsPerPage(viewportWidthPx: number): number {
+  if (viewportWidthPx <= 0) return 1;
+  const cardWithGap = CARD_WIDTH_COLLAPSED + CARD_GAP_PX;
+  const reservePx = CARD_GAP_PX + 40 + cardWithGap;
+  const safeWidth = Math.max(0, viewportWidthPx - reservePx);
+  return Math.max(1, Math.floor(safeWidth / cardWithGap));
+}
 
 function OrdersPageContent() {
   const searchParams = useSearchParams();
@@ -23,9 +33,33 @@ function OrdersPageContent() {
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(pageParam);
   const [expandedOrderId, setExpandedOrderId] = useState<number | null>(null);
+  const [viewportWidth, setViewportWidth] = useState(() =>
+    typeof window !== "undefined" ? window.innerWidth : 0
+  );
+  const viewportRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pendingSavesRef = useRef<Map<number, Order>>(new Map());
+
+  useEffect(() => {
+    const el = viewportRef.current;
+    if (!el) return;
+    const updateWidth = () => {
+      const w = el.clientWidth;
+      if (w > 0) setViewportWidth(w);
+    };
+    const ro = new ResizeObserver((entries) => {
+      const { width } = entries[0]?.contentRect ?? {};
+      if (typeof width === "number" && width > 0) setViewportWidth(width);
+    });
+    ro.observe(el);
+    updateWidth();
+    const raf = requestAnimationFrame(updateWidth);
+    return () => {
+      cancelAnimationFrame(raf);
+      ro.disconnect();
+    };
+  }, []);
 
   useEffect(() => {
     setPage(Math.max(1, pageParam));
@@ -61,11 +95,24 @@ function OrdersPageContent() {
     );
   }, [sourceOrders, searchParam]);
 
-  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const effectiveViewportWidth =
+    viewportWidth > 0 ? viewportWidth : (typeof window !== "undefined" ? window.innerWidth : 1200);
+  const cardsPerPage = getCardsPerPage(effectiveViewportWidth);
+  const totalPages = Math.max(1, Math.ceil(filtered.length / cardsPerPage));
   const currentPage = Math.min(page, totalPages);
+
+  useEffect(() => {
+    if (totalPages >= 1 && page > totalPages) {
+      setPage(totalPages);
+      const params = new URLSearchParams(searchParams.toString());
+      params.set("page", String(totalPages));
+      router.replace(`${pathname}?${params.toString()}`);
+    }
+  }, [totalPages, page, router, pathname, searchParams]);
+
   const slice = useMemo(
-    () => filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE),
-    [filtered, currentPage]
+    () => filtered.slice((currentPage - 1) * cardsPerPage, currentPage * cardsPerPage),
+    [filtered, currentPage, cardsPerPage]
   );
 
   // При поиске по номеру сразу раскрывать первую найденную карточку (только при изменении поиска, не при обновлении заявки)
@@ -136,7 +183,7 @@ function OrdersPageContent() {
 
   if (loading) {
     return (
-      <div className="flex flex-col flex-1 min-h-0">
+      <div className="flex flex-col flex-1 min-h-0 min-w-0">
         <div className="flex-1 flex items-center justify-center py-12">
           <p className="text-muted-foreground">Загрузка заявок...</p>
         </div>
@@ -146,13 +193,17 @@ function OrdersPageContent() {
   }
 
   return (
-    <div className="flex flex-col flex-1 min-h-0">
-      <div className="relative shrink-0 overflow-x-auto overflow-y-hidden">
+    <div className="flex flex-col flex-1 min-h-0 min-w-0">
+      <div
+        ref={viewportRef}
+        className="relative min-w-0 w-full overflow-x-auto overflow-y-hidden"
+        style={{ flex: "1 1 0" }}
+      >
         <div
           ref={scrollRef}
           onScroll={handleScroll}
           className="flex overflow-x-auto overflow-y-hidden pb-2 scrollbar-hide"
-          style={{ gap: 5 }}
+          style={{ gap: CARD_GAP_PX }}
         >
           {slice.map((order) => {
             const isExpanded = expandedOrderId === order.id;

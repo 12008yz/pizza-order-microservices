@@ -1,8 +1,17 @@
 "use client";
 
+import { useCallback, useState, useRef, useEffect } from "react";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
-import { formatPhone, formatDate, formatPrice, formatPriceMonthly } from "@/lib/utils";
+import {
+  formatPhone,
+  formatDate,
+  formatPrice,
+  formatPriceMonthly,
+  parsePhoneFromDisplay,
+  parseDateFromDisplay,
+  parsePriceFromDisplay,
+} from "@/lib/utils";
 import type { Order } from "@/types";
 import { cn } from "@/lib/utils";
 
@@ -25,6 +34,10 @@ const statusPhaseLabel: Record<string, string> = {
   cancelled: "Отменён",
   rejected: "Отклонён",
 };
+
+const statusLabelToKey: Record<string, string> = Object.fromEntries(
+  Object.entries(statusPhaseLabel).map(([k, v]) => [v, k])
+);
 
 const labelStyle: React.CSSProperties = {
   fontFamily: "'TT Firs Neue', sans-serif",
@@ -52,22 +65,90 @@ const valueStyle: React.CSSProperties = {
   minHeight: 20,
 };
 
-function FieldRow({
+const inputStyle: React.CSSProperties = {
+  ...valueStyle,
+  width: "100%",
+  maxWidth: "100%",
+  padding: 0,
+  margin: 0,
+  border: "none",
+  outline: "none",
+  background: "transparent",
+  boxSizing: "border-box",
+  cursor: "text",
+};
+
+function EditableFieldRow({
   label,
   value,
   last,
+  isExpanded,
+  fieldKey,
+  onFieldChange,
+  parseDisplayToRaw,
 }: {
   label: string;
   value: string;
   last?: boolean;
+  isExpanded?: boolean;
+  fieldKey?: keyof Order;
+  onFieldChange?: (key: keyof Order, val: string | number | null) => void;
+  parseDisplayToRaw?: (key: keyof Order, display: string) => string | number | null;
 }) {
+  const canEdit = isExpanded && fieldKey && onFieldChange != null && parseDisplayToRaw != null;
+  const displayValue = value;
+
+  // В открытой карточке показываем тот же формат, что и в закрытой (value уже отформатирован)
+  const nextVal = value ?? "";
+  const [localValue, setLocalValue] = useState(nextVal);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (!canEdit) return;
+    if (inputRef.current !== document.activeElement) {
+      setLocalValue(nextVal);
+    }
+  }, [nextVal, canEdit]);
+
+  const handleChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (!fieldKey || !onFieldChange || !parseDisplayToRaw) return;
+      const v = e.target.value;
+      setLocalValue(v);
+      const raw = parseDisplayToRaw(fieldKey, v);
+      onFieldChange(fieldKey, raw);
+    },
+    [fieldKey, onFieldChange, parseDisplayToRaw]
+  );
+
+  if (canEdit) {
+    return (
+      <div style={{ marginBottom: last ? 0 : 5, minHeight: 40 }}>
+        <p className="font-frame truncate" style={labelStyle}>
+          {label}
+        </p>
+        <input
+          ref={inputRef}
+          type="text"
+          className="font-frame"
+          style={inputStyle}
+          value={localValue}
+          onChange={handleChange}
+          onClick={(e) => e.stopPropagation()}
+          onKeyDown={(e) => e.stopPropagation()}
+          aria-label={label}
+        />
+      </div>
+    );
+  }
+
   return (
     <div style={{ marginBottom: last ? 0 : 5, minHeight: 40 }}>
       <p className="font-frame truncate" style={labelStyle}>
         {label}
       </p>
       <p className="font-frame truncate" style={valueStyle}>
-        {value}
+        {displayValue}
       </p>
     </div>
   );
@@ -78,50 +159,91 @@ const EXPANDED_WIDTH = 730;
 const CARD_HEIGHT = 535;
 const CARD_PADDING = 20;
 
+type FieldDef = { label: string; value: string; fieldKey?: keyof Order };
+
 export function OrderCard({
   order,
   isExpanded,
+  onOrderChange,
 }: {
   order: Order;
   isExpanded?: boolean;
+  onOrderChange?: (order: Order) => void;
 }) {
   const dotColor = statusDotColor[order.status] ?? "bg-[rgba(16,16,16,0.5)]";
   const orderWithRelations = order as Order & { provider?: { name: string }; tariff?: { name: string } };
 
-  const column1Fields = [
+  const handleFieldChange = useCallback(
+    (key: keyof Order, val: string | number | null) => {
+      onOrderChange?.({ ...order, [key]: val } as Order);
+    },
+    [order, onOrderChange]
+  );
+
+  const parseDisplayToRaw = useCallback(
+    (key: keyof Order, display: string): string | number | null => {
+      const s = display.trim();
+      if (key === "phone") return s === "—" || !s ? "" : parsePhoneFromDisplay(s);
+      if (
+        key === "dateOfBirth" ||
+        key === "preferredDate" ||
+        key === "createdAt" ||
+        key === "updatedAt"
+      ) {
+        const parsed = parseDateFromDisplay(s);
+        return parsed as string | null;
+      }
+      if (key === "status") {
+        if (s === "—" || !s) return null;
+        return (statusLabelToKey[s] ?? s) as string;
+      }
+      if (
+        key === "totalConnectionPrice" ||
+        key === "totalMonthlyPrice" ||
+        key === "totalEquipmentPrice"
+      ) {
+        return parsePriceFromDisplay(s);
+      }
+      if (s === "—" || s === "") return null;
+      return s;
+    },
+    []
+  );
+
+  const column1Fields: FieldDef[] = [
     { label: "Номер лицевого счёта", value: String(order.id) },
-    { label: "Номер сотового телефона", value: formatPhone(order.phone) },
+    { label: "Номер сотового телефона", value: formatPhone(order.phone), fieldKey: "phone" },
     { label: "Персона", value: "Подключение квартиры" },
-    { label: "Имя", value: order.firstName ?? "—" },
-    { label: "Фамилия", value: order.lastName ?? "—" },
-    { label: "Дата рождения", value: formatDate(order.dateOfBirth) },
-    { label: "Гражданство", value: order.citizenship ?? "Российское гражданство" },
+    { label: "Имя", value: order.firstName ?? "—", fieldKey: "firstName" },
+    { label: "Фамилия", value: order.lastName ?? "—", fieldKey: "lastName" },
+    { label: "Дата рождения", value: formatDate(order.dateOfBirth), fieldKey: "dateOfBirth" },
+    { label: "Гражданство", value: order.citizenship ?? "Российское гражданство", fieldKey: "citizenship" },
     { label: "Технология", value: "FTTX · 8" },
     { label: "Компания", value: orderWithRelations.provider?.name ?? "—" },
     { label: "Комплектация", value: orderWithRelations.tariff?.name ?? "—" },
   ];
 
-  const column2Fields = [
+  const column2Fields: FieldDef[] = [
     { label: "Номер идентификатора", value: String(order.id) },
-    { label: "Название населённого пункта", value: order.addressString ?? "—" },
-    { label: "Название пространства", value: order.addressString ?? "—" },
+    { label: "Название населённого пункта", value: order.addressString ?? "—", fieldKey: "addressString" },
+    { label: "Название пространства", value: order.addressString ?? "—", fieldKey: "addressString" },
     { label: "Номер дома", value: "—" },
-    { label: "Номер подъезда", value: order.entrance ?? "—" },
-    { label: "Номер этажа", value: order.floor ?? "—" },
-    { label: "Квартира", value: order.addressString ?? "—" },
-    { label: "Плата, подключения", value: formatPrice(order.totalConnectionPrice) },
-    { label: "Плата, месячная", value: formatPriceMonthly(order.totalMonthlyPrice) },
-    { label: "Выплата за клиента", value: formatPrice(order.totalMonthlyPrice) },
+    { label: "Номер подъезда", value: order.entrance ?? "—", fieldKey: "entrance" },
+    { label: "Номер этажа", value: order.floor ?? "—", fieldKey: "floor" },
+    { label: "Квартира", value: order.addressString ?? "—", fieldKey: "addressString" },
+    { label: "Плата, подключения", value: formatPrice(order.totalConnectionPrice), fieldKey: "totalConnectionPrice" },
+    { label: "Плата, месячная", value: formatPriceMonthly(order.totalMonthlyPrice), fieldKey: "totalMonthlyPrice" },
+    { label: "Выплата за клиента", value: formatPrice(order.totalMonthlyPrice), fieldKey: "totalMonthlyPrice" },
   ];
 
-  const column3Fields = [
-    { label: "Фаза", value: statusPhaseLabel[order.status] ?? order.status },
-    { label: "Дата появления", value: formatDate(order.createdAt) },
-    { label: "Дата назначения", value: formatDate(order.preferredDate) },
-    { label: "Дата подключения", value: formatDate(order.updatedAt) },
-    { label: "WI-оборудование", value: order.routerOption ?? order.routerConfig ?? "—" },
-    { label: "TV-оборудование", value: order.tvSettopOption ?? "Не предусмотрено" },
-    { label: "SIM-карта", value: order.simCardOption ?? "—" },
+  const column3Fields: FieldDef[] = [
+    { label: "Фаза", value: statusPhaseLabel[order.status] ?? order.status, fieldKey: "status" },
+    { label: "Дата появления", value: formatDate(order.createdAt), fieldKey: "createdAt" },
+    { label: "Дата назначения", value: formatDate(order.preferredDate), fieldKey: "preferredDate" },
+    { label: "Дата подключения", value: formatDate(order.updatedAt), fieldKey: "updatedAt" },
+    { label: "WI-оборудование", value: order.routerOption ?? order.routerConfig ?? "—", fieldKey: "routerOption" },
+    { label: "TV-оборудование", value: order.tvSettopOption ?? "Не предусмотрено", fieldKey: "tvSettopOption" },
+    { label: "SIM-карта", value: order.simCardOption ?? "—", fieldKey: "simCardOption" },
   ];
 
   const cardContent = (
@@ -254,12 +376,16 @@ export function OrderCard({
               </div>
             )}
             <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
-            {column1Fields.map(({ label, value }, i) => (
-              <FieldRow
-                key={label}
+            {column1Fields.map(({ label, value, fieldKey }, i) => (
+              <EditableFieldRow
+                key={`col1-${label}-${i}`}
                 label={label}
                 value={value}
                 last={i === column1Fields.length - 1}
+                isExpanded={isExpanded}
+                fieldKey={fieldKey}
+                onFieldChange={handleFieldChange}
+                parseDisplayToRaw={parseDisplayToRaw}
               />
             ))}
           </div>
@@ -294,12 +420,16 @@ export function OrderCard({
               className="flex-1 min-w-[200px] flex flex-col"
               style={{ boxSizing: "border-box", paddingLeft: 20 }}
             >
-              {column2Fields.map(({ label, value }, i) => (
-                <FieldRow
-                  key={label}
+              {column2Fields.map(({ label, value, fieldKey }, i) => (
+                <EditableFieldRow
+                  key={`col2-${label}-${i}`}
                   label={label}
                   value={value}
                   last={i === column2Fields.length - 1}
+                  isExpanded={isExpanded}
+                  fieldKey={fieldKey}
+                  onFieldChange={handleFieldChange}
+                  parseDisplayToRaw={parseDisplayToRaw}
                 />
               ))}
             </div>
@@ -320,12 +450,16 @@ export function OrderCard({
               className="flex-1 min-w-[200px] flex flex-col"
               style={{ boxSizing: "border-box", paddingLeft: 20 }}
             >
-              {column3Fields.map(({ label, value }, i) => (
-                <FieldRow
-                  key={label}
+              {column3Fields.map(({ label, value, fieldKey }, i) => (
+                <EditableFieldRow
+                  key={`col3-${label}-${i}`}
                   label={label}
                   value={value}
                   last={i === column3Fields.length - 1}
+                  isExpanded={isExpanded}
+                  fieldKey={fieldKey}
+                  onFieldChange={handleFieldChange}
+                  parseDisplayToRaw={parseDisplayToRaw}
                 />
               ))}
             </div>

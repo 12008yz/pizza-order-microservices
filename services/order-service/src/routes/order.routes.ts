@@ -5,6 +5,7 @@ import {
   getMyOrders,
   getAllOrders,
   updateOrderStatus,
+  updateOrder,
   assignOrder,
   getOrdersByPhone,
   calculateOrderCost,
@@ -40,6 +41,9 @@ router.get('/:id', authenticateToken, getOrderById);
 
 // История статусов заявки - требует авторизации
 router.get('/:id/status-history', authenticateToken, getOrderStatusHistory);
+
+// Обновление заявки (для админов) - частичное обновление полей
+router.put('/:id', authenticateToken, updateOrder);
 
 // Обновление статуса (для админов) - требует авторизации и валидации
 router.put('/:id/status', authenticateToken, validateUpdateOrderStatus, updateOrderStatus);

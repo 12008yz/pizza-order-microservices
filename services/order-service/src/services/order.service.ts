@@ -611,4 +611,61 @@ export class OrderService {
     logger.info(`Order ${id} assigned to ${assignedTo}`);
     return order;
   }
+
+  /**
+   * Обновление полей заявки (для админки). Разрешены только перечисленные поля.
+   */
+  async updateOrder(id: number, data: Record<string, unknown>): Promise<Order> {
+    const order = await Order.findByPk(id);
+    if (!order) {
+      const error = new Error('Order not found') as AppError;
+      error.statusCode = 404;
+      throw error;
+    }
+
+    const allowed = [
+      'firstName', 'lastName', 'fullName', 'phone', 'email', 'dateOfBirth', 'citizenship',
+      'addressString', 'entrance', 'floor', 'intercom', 'preferredDate', 'preferredTimeFrom', 'preferredTimeTo',
+      'comment', 'internalComment', 'status', 'assignedTo',
+      'routerOption', 'routerNeed', 'routerPurchase', 'routerOperator', 'routerConfig', 'routerPrice',
+      'tvSettopOption', 'tvSettopPrice', 'simCardOption', 'simCardPrice',
+      'totalMonthlyPrice', 'totalConnectionPrice', 'totalEquipmentPrice',
+      'createdAt', 'updatedAt',
+    ] as const;
+
+    const payload: Record<string, unknown> = {};
+    for (const key of allowed) {
+      if (data[key] !== undefined) payload[key] = data[key];
+    }
+
+    if (payload.dateOfBirth !== undefined) {
+      payload.dateOfBirth = normalizeDateOfBirth(payload.dateOfBirth);
+    }
+    if (payload.preferredDate !== undefined) {
+      payload.preferredDate = normalizeDateOfBirth(payload.preferredDate) ?? null;
+    }
+    if (payload.createdAt !== undefined) {
+      const v = payload.createdAt;
+      if (typeof v === 'string') {
+        const d = new Date(v);
+        payload.createdAt = !Number.isNaN(d.getTime()) ? d.toISOString() : v;
+      }
+    }
+    if (payload.updatedAt !== undefined) {
+      const v = payload.updatedAt;
+      if (typeof v === 'string') {
+        const d = new Date(v);
+        payload.updatedAt = !Number.isNaN(d.getTime()) ? d.toISOString() : v;
+      }
+    }
+    if (payload.fullName === undefined && (payload.firstName !== undefined || payload.lastName !== undefined)) {
+      const first = payload.firstName !== undefined ? String(payload.firstName) : order.firstName ?? '';
+      const last = payload.lastName !== undefined ? String(payload.lastName) : order.lastName ?? '';
+      payload.fullName = [first, last].filter(Boolean).join(' ').trim() || order.fullName;
+    }
+
+    await order.update(payload as any);
+    logger.info('Order updated', { orderId: id, fields: Object.keys(payload) });
+    return order;
+  }
 }

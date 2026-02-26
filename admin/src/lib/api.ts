@@ -92,6 +92,11 @@ export async function fetchOrder(id: string | number) {
   return (data as { success?: boolean; data?: unknown }).data;
 }
 
+export async function updateOrder(id: number, payload: Record<string, unknown>) {
+  const { data } = await orderApi.put<{ success: boolean; data: unknown }>(`/api/orders/${id}`, payload);
+  return (data as { success?: boolean; data?: unknown }).data;
+}
+
 export async function fetchBuildings(streetId: number) {
   const { data } = await locationApi.get<{ success: boolean; data: unknown[] }>(
     "/api/locations/buildings",

@@ -4,7 +4,7 @@ import { Suspense, useEffect, useState, useMemo, useRef, useCallback } from "rea
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { OrderCard } from "@/components/orders/OrderCard";
 import { Pagination } from "@/components/ui/Pagination";
-import { fetchOrders } from "@/lib/api";
+import { fetchOrders, updateOrder as updateOrderApi } from "@/lib/api";
 import { MOCK_ORDERS } from "@/lib/mockOrders";
 import type { Order } from "@/types";
 
@@ -24,6 +24,8 @@ function OrdersPageContent() {
   const [page, setPage] = useState(pageParam);
   const [expandedOrderId, setExpandedOrderId] = useState<number | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pendingSavesRef = useRef<Map<number, Order>>(new Map());
 
   useEffect(() => {
     setPage(Math.max(1, pageParam));
@@ -66,14 +68,42 @@ function OrdersPageContent() {
     [filtered, currentPage]
   );
 
-  // При поиске по номеру сразу раскрывать первую найденную карточку
+  // При поиске по номеру сразу раскрывать первую найденную карточку (только при изменении поиска, не при обновлении заявки)
+  const prevSearchRef = useRef(searchParam);
   useEffect(() => {
+    if (prevSearchRef.current === searchParam) return;
+    prevSearchRef.current = searchParam;
     if (searchParam.trim() && slice.length > 0) {
       setExpandedOrderId(slice[0].id);
     } else if (!searchParam.trim()) {
       setExpandedOrderId(null);
     }
   }, [searchParam, slice]);
+
+  const handleOrderChange = useCallback((updated: Order) => {
+    setOrders((prev) => prev.map((o) => (o.id === updated.id ? updated : o)));
+
+    pendingSavesRef.current.set(updated.id, updated);
+
+    if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
+    saveTimeoutRef.current = setTimeout(() => {
+      saveTimeoutRef.current = null;
+      const pending = new Map(pendingSavesRef.current);
+      pendingSavesRef.current.clear();
+      pending.forEach((order) => {
+        const payload: Record<string, unknown> = { ...order };
+        delete payload.tariff;
+        delete payload.provider;
+        updateOrderApi(order.id, payload).catch(() => {});
+      });
+    }, 600);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
+    };
+  }, []);
 
   const handlePageChange = useCallback(
     (p: number) => {
@@ -131,17 +161,17 @@ function OrdersPageContent() {
                 key={order.id}
                 role="button"
                 tabIndex={0}
-                onClick={() => setExpandedOrderId(isExpanded ? null : order.id)}
+                onClick={() => setExpandedOrderId(order.id)}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" || e.key === " ") {
                     e.preventDefault();
-                    setExpandedOrderId(isExpanded ? null : order.id);
+                    setExpandedOrderId(order.id);
                   }
                 }}
                 className="shrink-0 transition-[width] duration-200 ease-out"
                 style={{ width: isExpanded ? 730 : 242 }}
               >
-                <OrderCard order={order} isExpanded={isExpanded} />
+                <OrderCard order={order} isExpanded={isExpanded} onOrderChange={handleOrderChange} />
               </div>
             );
           })}

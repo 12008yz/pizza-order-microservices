@@ -241,3 +241,30 @@ export const assignOrder = async (
     next(error);
   }
 };
+
+/**
+ * Обновление заявки (частичное) — для админки
+ * PUT /api/orders/:id
+ */
+export const updateOrder = async (
+  req: AuthRequest | any,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    if (!req.user || req.user.userType !== 'admin') {
+      const error = new Error('Admin access required') as any;
+      error.statusCode = 403;
+      throw error;
+    }
+
+    const { id } = req.params;
+    const order = await orderService.updateOrder(parseInt(id), req.body);
+    res.status(200).json({
+      success: true,
+      data: order,
+    });
+  } catch (error) {
+    next(error);
+  }
+};

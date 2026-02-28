@@ -242,8 +242,21 @@ export function OrderCard({
     { label: "Дата назначения", value: formatDate(order.preferredDate), fieldKey: "preferredDate" },
     { label: "Дата подключения", value: formatDate(order.updatedAt), fieldKey: "updatedAt" },
     { label: "WI-оборудование", value: order.routerOption ?? order.routerConfig ?? "—", fieldKey: "routerOption" },
+    {
+      label: "WI - количество",
+      value: order.routerOption || order.routerConfig ? "1 шт." : "—",
+    },
     { label: "TV-оборудование", value: order.tvSettopOption ?? "Не предусмотрено", fieldKey: "tvSettopOption" },
+    {
+      label: "TV - количество",
+      value:
+        order.tvSettopOption && order.tvSettopOption !== "Не предусмотрено" ? "1 шт." : "Не предусмотрено",
+    },
     { label: "SIM-карта", value: order.simCardOption ?? "—", fieldKey: "simCardOption" },
+    {
+      label: "SIM-карта - количество",
+      value: order.simCardOption && order.simCardOption !== "—" ? "1 шт." : "—",
+    },
   ];
 
   const cardContent = (
@@ -376,32 +389,32 @@ export function OrderCard({
               </div>
             )}
             <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
-            {column1Fields.map(({ label, value, fieldKey }, i) => (
-              <EditableFieldRow
-                key={`col1-${label}-${i}`}
-                label={label}
-                value={value}
-                last={i === column1Fields.length - 1}
-                isExpanded={isExpanded}
-                fieldKey={fieldKey}
-                onFieldChange={handleFieldChange}
-                parseDisplayToRaw={parseDisplayToRaw}
-              />
-            ))}
+              {column1Fields.map(({ label, value, fieldKey }, i) => (
+                <EditableFieldRow
+                  key={`col1-${label}-${i}`}
+                  label={label}
+                  value={value}
+                  last={i === column1Fields.length - 1}
+                  isExpanded={isExpanded}
+                  fieldKey={fieldKey}
+                  onFieldChange={handleFieldChange}
+                  parseDisplayToRaw={parseDisplayToRaw}
+                />
+              ))}
+            </div>
+            <div
+              style={{
+                marginTop: 15,
+                paddingTop: 15,
+                borderTop: "1px solid rgba(16,16,16,0.1)",
+              }}
+            >
+              <Badge status={order.status} />
+            </div>
           </div>
-          <div
-            style={{
-              marginTop: 15,
-              paddingTop: 15,
-              borderTop: "1px solid rgba(16,16,16,0.1)",
-            }}
-          >
-            <Badge status={order.status} />
-          </div>
-        </div>
 
-        {/* Колонки 2 и 3 — только в развёрнутом виде. Отступ 20px и Rectangle 68 между колонками. */}
-        {isExpanded && (
+          {/* Колонки 2 и 3 — только в развёрнутом виде. Отступ 20px и Rectangle 68 между колонками. */}
+          {isExpanded && (
           <>
             <span style={{ width: 20, minWidth: 20, flexShrink: 0 }} aria-hidden />
             <div
@@ -464,7 +477,7 @@ export function OrderCard({
               ))}
             </div>
           </>
-        )}
+          )}
         </div>
       </div>
     </Card>

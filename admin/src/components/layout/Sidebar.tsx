@@ -35,6 +35,12 @@ const GAP_BETWEEN_ITEMS_PX = 10;
 const GAP_BETWEEN_SECTIONS_PX = 5;
 const PANEL_BORDER_RADIUS_PX = 20;
 const PANEL_BORDER = "1px solid rgba(16, 16, 16, 0.15)";
+/** Высоты блоков левого меню: первый 345px, второй и третий по 110px */
+const FIRST_PANEL_HEIGHT_PX = 345;
+const SECOND_PANEL_HEIGHT_PX = 110;
+const THIRD_PANEL_HEIGHT_PX = 110;
+/** Отступ от имени пользователя до вкладок меню */
+const GAP_USER_TO_MENU_PX = 45;
 
 /** Стиль текста пунктов левого меню (как в макете: И. Ивановых и др.) */
 const menuTextStyle: React.CSSProperties = {
@@ -168,9 +174,13 @@ export function Sidebar({
         style={{
           ...panelStyle,
           gap: GAP_BETWEEN_ITEMS_PX,
+          height: FIRST_PANEL_HEIGHT_PX,
+          minHeight: FIRST_PANEL_HEIGHT_PX,
         }}
       >
-        <UserRow>{initials}</UserRow>
+        <div style={{ marginBottom: GAP_USER_TO_MENU_PX - GAP_BETWEEN_ITEMS_PX }}>
+          <UserRow>{initials}</UserRow>
+        </div>
 
         {path === "/orders" ? (
           <>
@@ -240,6 +250,8 @@ export function Sidebar({
         style={{
           ...panelStyle,
           gap: GAP_BETWEEN_ITEMS_PX,
+          height: SECOND_PANEL_HEIGHT_PX,
+          minHeight: SECOND_PANEL_HEIGHT_PX,
         }}
       >
         {secondPanelItems.map(({ label }) => (
@@ -253,6 +265,8 @@ export function Sidebar({
         style={{
           ...panelStyle,
           gap: GAP_BETWEEN_ITEMS_PX,
+          height: THIRD_PANEL_HEIGHT_PX,
+          minHeight: THIRD_PANEL_HEIGHT_PX,
         }}
       >
         {navItems.map(({ href, label }) => {

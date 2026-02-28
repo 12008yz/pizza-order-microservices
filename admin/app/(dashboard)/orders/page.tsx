@@ -164,9 +164,18 @@ function OrdersPageContent() {
   const filtered = useMemo(() => {
     if (!searchParam.trim()) return sourceOrders;
     const q = searchParam.trim();
-    return sourceOrders.filter((o) =>
+    const list = sourceOrders.filter((o) =>
       String(o.id).includes(q)
     );
+    // Сортировка: при поиске "1" сначала 1, потом 10, 11… (точное совпадение и префикс по возрастанию id)
+    list.sort((a, b) => {
+      const sa = String(a.id);
+      const sb = String(b.id);
+      if (sa === q && sb !== q) return -1;
+      if (sa !== q && sb === q) return 1;
+      return a.id - b.id;
+    });
+    return list;
   }, [sourceOrders, searchParam]);
 
   const effectiveViewportWidth =
@@ -281,8 +290,25 @@ function OrdersPageContent() {
         >
           {slice.map((order, index) => {
             const isExpanded = expandedOrderId === order.id;
-            const isAmongLastTwo = index >= slice.length - 2;
-            const expandToLeft = isExpanded && isAmongLastTwo;
+            const isAmongLastTwo = slice.length >= 2 && index >= slice.length - 2;
+            const isLastCard = index === slice.length - 1;
+            const isSecondToLast = index === slice.length - 2;
+            // Если справа действительно есть место — последние 2 карточки раскрываются вправо (без сдвига влево)
+            const rowWidthWhenLastExpanded =
+              (slice.length - 1) * (CARD_WIDTH_COLLAPSED + CARD_GAP_PX) + CARD_WIDTH_EXPANDED;
+            const rowWidthWhenSecondToLastExpanded =
+              (slice.length - 2) * (CARD_WIDTH_COLLAPSED + CARD_GAP_PX) +
+              CARD_WIDTH_EXPANDED +
+              CARD_GAP_PX +
+              CARD_WIDTH_COLLAPSED;
+            const hasSpaceOnRight = isLastCard
+              ? effectiveViewportWidth >= rowWidthWhenLastExpanded
+              : isSecondToLast && effectiveViewportWidth >= rowWidthWhenSecondToLastExpanded;
+            const expandToLeft =
+              isExpanded &&
+              isAmongLastTwo &&
+              index > 0 &&
+              !hasSpaceOnRight;
             return (
               <div
                 key={order.id}

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { Select, type SelectOption } from "@/components/ui/Select";
 import { fetchRegions, fetchCities, fetchStreets, fetchProviders } from "@/lib/api";
 import { locationApi } from "@/lib/api";
 
@@ -199,18 +200,16 @@ export default function NewAddressPage() {
       <form onSubmit={handleSubmit}>
         {/* Название населённого пункта + круг справа (от круга до поля 37px) */}
         <div style={{ display: "flex", alignItems: "center", gap: 37, marginBottom: 10 }}>
-          <select
-            style={{ ...selectStyle, flex: 1, minWidth: 0, maxWidth: 868, border: validationError ? "1px solid #FF3030" : fieldBorder }}
-            value={regionId}
-            onChange={(e) => { setRegionId(e.target.value ? Number(e.target.value) : ""); setValidationError(false); }}
-          >
-            <option value="">Название населённого пункта</option>
-            {regions.map((r) => (
-              <option key={r.id} value={r.id}>
-                {r.name}
-              </option>
-            ))}
-          </select>
+          <div style={{ flex: 1, minWidth: 0, maxWidth: 868 }}>
+            <Select
+              value={regionId === "" ? null : regionId}
+              options={regions.map((r) => ({ value: r.id, label: r.name }))}
+              onChange={(v) => { setRegionId(v != null ? Number(v) : ""); setValidationError(false); }}
+              placeholder="Название населённого пункта"
+              frameStyle
+              invalid={validationError}
+            />
+          </div>
           <span
             style={{
               boxSizing: "border-box",
@@ -229,32 +228,28 @@ export default function NewAddressPage() {
         {/* Название пространства населённого пункта + круг справа (от круга до поля 37px): сначала город, после выбора города — улица */}
         <div style={{ display: "flex", alignItems: "center", gap: 37, marginBottom: 10 }}>
           {!cityId ? (
-            <select
-              style={{ ...selectStyle, flex: 1, minWidth: 0, maxWidth: 868, border: validationError ? "1px solid #FF3030" : fieldBorder }}
-              value={cityId}
-              onChange={(e) => { setCityId(e.target.value ? Number(e.target.value) : ""); setValidationError(false); }}
-              disabled={!regionId}
-            >
-              <option value="">Название пространства населённого пункта</option>
-              {cities.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.name}
-                </option>
-              ))}
-            </select>
+            <div style={{ flex: 1, minWidth: 0, maxWidth: 868 }}>
+              <Select
+                value={cityId === "" ? null : cityId}
+                options={cities.map((c) => ({ value: c.id, label: c.name }))}
+                onChange={(v) => { setCityId(v != null ? Number(v) : ""); setValidationError(false); }}
+                placeholder="Название пространства населённого пункта"
+                disabled={!regionId}
+                frameStyle
+                invalid={validationError}
+              />
+            </div>
           ) : (
-            <select
-              style={{ ...selectStyle, flex: 1, minWidth: 0, maxWidth: 868, border: validationError ? "1px solid #FF3030" : fieldBorder }}
-              value={streetId}
-              onChange={(e) => { setStreetId(e.target.value ? Number(e.target.value) : ""); setValidationError(false); }}
-            >
-              <option value="">Название пространства населённого пункта</option>
-              {streets.map((s) => (
-                <option key={s.id} value={s.id}>
-                  {s.name}
-                </option>
-              ))}
-            </select>
+            <div style={{ flex: 1, minWidth: 0, maxWidth: 868 }}>
+              <Select
+                value={streetId === "" ? null : streetId}
+                options={streets.map((s) => ({ value: s.id, label: s.name }))}
+                onChange={(v) => { setStreetId(v != null ? Number(v) : ""); setValidationError(false); }}
+                placeholder="Название пространства населённого пункта"
+                frameStyle
+                invalid={validationError}
+              />
+            </div>
           )}
           <span
             style={{
@@ -281,50 +276,74 @@ export default function NewAddressPage() {
           }}
         >
           <div style={{ width: 155, flexShrink: 0 }}>
-            <select
-              style={{ ...selectStyle, border: validationError ? "1px solid #FF3030" : fieldBorder }}
+            <Select
               value={category}
-              onChange={(e) => setCategory(e.target.value)}
-            >
-              <option value="residential">Жилое, кв.</option>
-              <option value="private">Частный сектор</option>
-              <option value="office">Офис</option>
-            </select>
+              options={[
+                { value: "residential", label: "Жилое, кв." },
+                { value: "private", label: "Частный сектор" },
+                { value: "office", label: "Офис" },
+              ]}
+              onChange={(v) => setCategory(v != null ? String(v) : "residential")}
+              placeholder="Категория"
+              frameStyle
+              invalid={validationError}
+            />
           </div>
           <div style={{ width: 155, flexShrink: 0 }}>
-            <input
-              type="text"
-              style={{ ...fieldStyle, paddingRight: 16, border: validationError ? "1px solid #FF3030" : fieldBorder }}
-              value={houseNumber}
-              onChange={(e) => { setHouseNumber(e.target.value); setValidationError(false); }}
+            <Select
+              value={houseNumber || null}
+              options={[
+                { value: "", label: "—" },
+                ...Array.from({ length: 30 }, (_, i) => ({ value: String(i + 1), label: String(i + 1) })),
+                ...(houseNumber && !/^\d+$/.test(houseNumber) ? [{ value: houseNumber, label: houseNumber }] : []),
+              ]}
+              onChange={(v) => { setHouseNumber(v != null ? String(v) : ""); setValidationError(false); }}
               placeholder="Номеры"
+              frameStyle
+              invalid={validationError}
+              showAddNew
             />
           </div>
           <div style={{ width: 155, flexShrink: 0 }}>
-            <input
-              type="text"
-              style={{ ...fieldStyle, paddingRight: 16, border: validationError ? "1px solid #FF3030" : fieldBorder }}
-              value={entrances}
-              onChange={(e) => setEntrances(e.target.value)}
+            <Select
+              value={entrances || null}
+              options={[
+                { value: "", label: "—" },
+                ...Array.from({ length: 20 }, (_, i) => ({ value: String(i + 1), label: String(i + 1) })),
+              ]}
+              onChange={(v) => setEntrances(v != null ? String(v) : "")}
               placeholder="Подъезды"
+              frameStyle
+              invalid={validationError}
+              showAddNew
             />
           </div>
           <div style={{ width: 155, flexShrink: 0 }}>
-            <input
-              type="text"
-              style={{ ...fieldStyle, paddingRight: 16, border: validationError ? "1px solid #FF3030" : fieldBorder }}
-              value={floors}
-              onChange={(e) => setFloors(e.target.value)}
+            <Select
+              value={floors || null}
+              options={[
+                { value: "", label: "—" },
+                ...Array.from({ length: 25 }, (_, i) => ({ value: String(i + 1), label: String(i + 1) })),
+              ]}
+              onChange={(v) => setFloors(v != null ? String(v) : "")}
               placeholder="Полеты"
+              frameStyle
+              invalid={validationError}
+              showAddNew
             />
           </div>
           <div style={{ width: 155, flexShrink: 0 }}>
-            <input
-              type="text"
-              style={{ ...fieldStyle, paddingRight: 16, border: validationError ? "1px solid #FF3030" : fieldBorder }}
-              value={apartments}
-              onChange={(e) => setApartments(e.target.value)}
+            <Select
+              value={apartments || null}
+              options={[
+                { value: "", label: "—" },
+                ...Array.from({ length: 50 }, (_, i) => ({ value: String(i + 1), label: String(i + 1) })),
+              ]}
+              onChange={(v) => setApartments(v != null ? String(v) : "")}
               placeholder="Квартиры"
+              frameStyle
+              invalid={validationError}
+              showAddNew
             />
           </div>
         </div>
@@ -332,18 +351,13 @@ export default function NewAddressPage() {
         {/* Ряд: Категория (второй) + Краткое описание */}
         <div style={{ display: "flex", gap: 10, marginBottom: 10 }}>
           <div style={{ width: 155, flexShrink: 0 }}>
-            <select
-              style={selectStyle}
-              value={providerId}
-              onChange={(e) => setProviderId(e.target.value ? Number(e.target.value) : "")}
-            >
-              <option value="">Категория</option>
-              {providers.map((p) => (
-                <option key={p.id} value={p.id}>
-                  {p.name}
-                </option>
-              ))}
-            </select>
+            <Select
+              value={providerId === "" ? null : providerId}
+              options={providers.map((p) => ({ value: p.id, label: p.name }))}
+              onChange={(v) => setProviderId(v != null ? Number(v) : "")}
+              placeholder="Категория"
+              frameStyle
+            />
           </div>
           <div style={{ flex: 1, minWidth: 0, maxWidth: 650 }}>
             <input

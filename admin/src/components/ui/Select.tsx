@@ -20,6 +20,12 @@ interface SelectProps {
   /** Открывать список вверх (для полей внизу колонки, напр. Компания) */
   placement?: "down" | "up";
   onOpenChange?: (open: boolean) => void;
+  /** Макет фрейма: заголовок в списке (placeholder + стрелка вверх), опции 20px, border 0.5, круг 16px с галочкой */
+  frameStyle?: boolean;
+  /** Красная обводка при невалидной форме */
+  invalid?: boolean;
+  /** Показать внизу списка «Новое вкл...» с синим + */
+  showAddNew?: boolean;
 }
 
 const labelStyle: React.CSSProperties = {
@@ -49,6 +55,9 @@ export function Select({
   inline,
   placement = "down",
   onOpenChange,
+  frameStyle = false,
+  invalid = false,
+  showAddNew = false,
 }: SelectProps) {
   const [open, setOpen] = useState(false);
   const [dropdownStyle, setDropdownStyle] = useState<{
@@ -201,15 +210,30 @@ export function Select({
         disabled={disabled}
         onClick={() => !disabled && setOpen((v) => !v)}
         className={cn(
-          "w-full rounded-[10px] border outline-none text-left px-[15px] cursor-pointer flex items-center justify-between min-h-[50px]",
-          "border-[rgba(16,16,16,0.25)] hover:border-[rgba(16,16,16,0.5)]",
+          "w-full border outline-none text-left px-[15px] cursor-pointer flex items-center justify-between min-h-[50px]",
+          frameStyle && open ? "rounded-t-[10px] rounded-b-none" : "rounded-[10px]",
+          !frameStyle && "border-[rgba(16,16,16,0.25)] hover:border-[rgba(16,16,16,0.5)]",
           disabled && "opacity-70 cursor-default"
         )}
-        style={{ ...labelStyle, boxSizing: "border-box" }}
+        style={{
+          ...labelStyle,
+          boxSizing: "border-box",
+          border: invalid ? "1px solid #FF3030" : frameStyle ? "1px solid rgba(16, 16, 16, 0.5)" : undefined,
+          ...(frameStyle && open ? { borderBottom: "none" } : {}),
+        }}
         aria-haspopup="listbox"
         aria-expanded={open}
       >
-        <span className="truncate">{displayText}</span>
+        <span
+          className="truncate"
+          style={
+            frameStyle && (value == null || value === "" || !selectedOption)
+              ? { color: "rgba(16, 16, 16, 0.25)" }
+              : undefined
+          }
+        >
+          {displayText}
+        </span>
         <svg
           width="12"
           height="6"
@@ -218,19 +242,46 @@ export function Select({
           className="flex-shrink-0 ml-2 transition-transform"
           style={{ transform: open ? "rotate(180deg)" : "rotate(0deg)" }}
         >
-          <path
-            d="M0.11 5.34L5.7 0.11C5.78 0.04 5.89 0 6 0C6.11 0 6.22 0.04 6.3 0.11L11.89 5.34C11.96 5.42 12 5.51 12 5.61C12 5.72 11.96 5.81 11.88 5.89C11.8 5.96 11.7 6 11.59 6C11.48 6 11.37 5.96 11.29 5.89L6 0.95L0.71 5.89C0.63 5.96 0.52 6 0.41 6C0.3 6 0.19 5.96 0.11 5.89C0.04 5.81 0 5.72 0 5.61C0 5.51 0.04 5.42 0.11 5.34Z"
-            fill="#101010"
-          />
+          <path d="M1 1L6 5L11 1" stroke="#101010" strokeWidth="1.5" strokeLinecap="round" />
         </svg>
       </button>
-      {open && options.length > 0 && (
+      {open && (options.length > 0 || frameStyle || showAddNew) && (
         <div
           role="listbox"
-          className="absolute left-0 right-0 z-[100] rounded-[10px] border border-[rgba(16,16,16,0.25)] bg-white overflow-hidden shadow-lg max-h-[240px] overflow-y-auto mt-1"
-          style={{ boxSizing: "border-box" }}
+          className={cn(
+            "absolute left-0 right-0 z-[100] bg-white overflow-hidden shadow-lg",
+            frameStyle ? "rounded-b-[10px] overflow-y-auto scrollbar-hide border border-t-0 border-[rgba(16,16,16,0.5)]" : "rounded-[10px] overflow-y-auto mt-1 border border-[rgba(16,16,16,0.25)]"
+          )}
+          style={{
+            boxSizing: "border-box",
+            ...(frameStyle ? { top: "100%", marginTop: 0 } : {}),
+            minHeight: frameStyle ? 140 : undefined,
+            maxHeight: 240,
+            padding: frameStyle ? 15 : undefined,
+          }}
           onClick={(e) => e.stopPropagation()}
         >
+          {frameStyle && (
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                minHeight: 30,
+                boxSizing: "border-box",
+                fontFamily: "'TT Firs Neue', sans-serif",
+                fontWeight: 400,
+                fontSize: 16,
+                lineHeight: "125%",
+                color: "rgba(16, 16, 16, 0.25)",
+              }}
+            >
+              <span>{placeholder}</span>
+              <svg width="12" height="6" viewBox="0 0 12 6" fill="none" style={{ transform: "rotate(180deg)", flexShrink: 0 }}>
+                <path d="M1 1L6 5L11 1" stroke="#101010" strokeWidth="1.5" strokeLinecap="round" />
+              </svg>
+            </div>
+          )}
           {options.map((opt) => {
             const isSelected = value === opt.value;
             return (
@@ -239,9 +290,11 @@ export function Select({
                 role="option"
                 aria-selected={isSelected}
                 onClick={() => handleSelect(opt)}
-                className="flex items-center justify-between px-[15px] cursor-pointer w-full select-none hover:bg-[rgba(16,16,16,0.04)]"
+                className="flex items-center justify-between cursor-pointer w-full select-none hover:bg-[rgba(16,16,16,0.04)]"
                 style={{
-                  minHeight: 40,
+                  minHeight: frameStyle ? 30 : 40,
+                  paddingLeft: frameStyle ? 0 : 15,
+                  paddingRight: frameStyle ? 0 : 15,
                   boxSizing: "border-box",
                   fontFamily: "'TT Firs Neue', sans-serif",
                   fontWeight: 400,
@@ -252,11 +305,13 @@ export function Select({
               >
                 <span className="flex-1 truncate">{opt.label}</span>
                 <div
-                  className="w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 ml-2"
+                  className="rounded-full flex items-center justify-center flex-shrink-0 ml-2"
                   style={{
+                    width: 16,
+                    height: 16,
                     boxSizing: "border-box",
                     background: isSelected ? "#101010" : "transparent",
-                    border: isSelected ? "none" : "1px solid rgba(16, 16, 16, 0.5)",
+                    border: "1px solid rgba(16, 16, 16, 0.5)",
                   }}
                 >
                   {isSelected && (
@@ -274,6 +329,49 @@ export function Select({
               </div>
             );
           })}
+          {frameStyle && showAddNew && (
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "flex-start",
+                gap: 8,
+                minHeight: 30,
+                marginTop: 4,
+                paddingTop: 4,
+                borderTop: "1px solid rgba(16, 16, 16, 0.1)",
+                boxSizing: "border-box",
+                fontFamily: "'TT Firs Neue', sans-serif",
+                fontWeight: 400,
+                fontSize: 16,
+                lineHeight: "125%",
+                color: "#3b82f6",
+                cursor: "pointer",
+              }}
+              role="button"
+              tabIndex={0}
+              onClick={(e) => { e.stopPropagation(); }}
+              onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") e.preventDefault(); }}
+            >
+              <span>Новое вкл...</span>
+              <span
+                style={{
+                  width: 16,
+                  height: 16,
+                  borderRadius: "50%",
+                  background: "#3b82f6",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexShrink: 0,
+                }}
+              >
+                <svg width="10" height="10" viewBox="0 0 16 16" fill="none">
+                  <path d="M8 2v12M2 8h12" stroke="#FFFFFF" strokeWidth="1.5" strokeLinecap="round" />
+                </svg>
+              </span>
+            </div>
+          )}
         </div>
       )}
     </div>

@@ -39,18 +39,31 @@ export function DashboardLayoutClient({
   return (
     <div
       className="flex h-screen flex-col bg-white"
-      style={{ paddingLeft: 60, paddingTop: 40, paddingRight: 60, paddingBottom: 50, boxSizing: "border-box" }}
+      style={{ paddingLeft: 60, paddingTop: 40, paddingRight: 0, paddingBottom: 50, boxSizing: "border-box" }}
     >
       <div className="flex flex-1 min-h-0" style={{ gap: 5 }}>
         <Sidebar status={status} onStatusChange={handleStatusChange} pathname={pathname} />
-        <div className="flex-1 flex flex-col min-w-0 min-h-0" style={{ gap: 5 }}>
-          <Header
-            search={search}
-            onSearchChange={setSearch}
-            showSearch={pathname.startsWith("/orders") || pathname.startsWith("/addresses")}
-            searchPlaceholder={pathname.startsWith("/addresses") ? "Искать по параметрам и тарифным планам..." : undefined}
-          />
-          <main className="flex-1 flex flex-col min-h-0 overflow-auto" style={{ paddingTop: 0, paddingRight: 5, paddingBottom: 5, paddingLeft: 0 }}>
+        <div
+          className={`flex-1 flex flex-col min-w-0 min-h-0 ${pathname.startsWith("/addresses") ? "overflow-y-auto" : ""}`}
+          style={{ gap: 5 }}
+        >
+          <div style={{ paddingRight: 60 }}>
+            <Header
+              search={search}
+              onSearchChange={setSearch}
+              showSearch={pathname.startsWith("/orders") || pathname.startsWith("/addresses")}
+              searchPlaceholder={pathname.startsWith("/addresses") ? "Искать по параметрам и тарифным планам..." : undefined}
+            />
+          </div>
+          <main
+            className={pathname.startsWith("/addresses") ? "flex flex-col flex-none min-h-0" : "flex-1 flex flex-col min-h-0 overflow-auto"}
+            style={{
+              paddingTop: 0,
+              paddingRight: 0,
+              paddingBottom: pathname.startsWith("/addresses") ? 24 : 5,
+              paddingLeft: 0,
+            }}
+          >
             {showContent ? children : (
               <div className="flex flex-1 items-center justify-center">
                 <p className="text-muted-foreground">Загрузка...</p>

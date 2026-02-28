@@ -155,18 +155,10 @@ export default function AddressesPage() {
   }
 
   return (
-    <div className="flex flex-col flex-1 min-h-0 min-w-0">
-      <div className="flex flex-wrap items-center justify-end gap-4 mb-4">
-        <Link
-          href="/addresses/new"
-          className="rounded-input bg-foreground text-background px-4 py-2 text-sm font-medium hover:opacity-90"
-        >
-          + Проникновение
-        </Link>
-      </div>
+    <div className="flex flex-col min-w-0">
       <div
-        className="relative min-w-0 w-full overflow-x-auto overflow-y-hidden pb-2"
-        style={{ flex: "1 1 0" }}
+        className="relative min-w-0 w-full overflow-x-auto overflow-y-visible"
+        style={{ minHeight: 560, marginBottom: -50 }}
       >
         {filtered.length === 0 ? (
           <p className="text-center py-8" style={{ fontFamily: "'TT Firs Neue', sans-serif", color: "rgba(16,16,16,0.5)" }}>
@@ -174,8 +166,8 @@ export default function AddressesPage() {
           </p>
         ) : (
           <div
-            className="flex overflow-x-auto overflow-y-hidden pb-2 scrollbar-hide"
-            style={{ gap: 5 }}
+            className="flex overflow-x-auto overflow-y-visible scrollbar-hide pb-6"
+            style={{ gap: 5, alignItems: "flex-start" }}
           >
             {slice.map((addr) => (
               <AddressCard key={addr.id} address={addr} />
@@ -184,6 +176,14 @@ export default function AddressesPage() {
         )}
       </div>
       <div style={{ flexShrink: 0, marginTop: 50 }}>{paginationBlock}</div>
+      <div className="flex flex-wrap items-center justify-end gap-4" style={{ flexShrink: 0, marginTop: 16 }}>
+        <Link
+          href="/addresses/new"
+          className="rounded-input bg-foreground text-background px-4 py-2 text-sm font-medium hover:opacity-90"
+        >
+          + Проникновение
+        </Link>
+      </div>
     </div>
   );
 }

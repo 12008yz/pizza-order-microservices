@@ -26,7 +26,7 @@ const navItems = [
 ];
 
 /* Пиксельные константы из макета (без %) */
-const SIDEBAR_WIDTH_PX = 280;
+const SIDEBAR_WIDTH_PX = 240;
 const PANEL_PADDING_PX = 20;
 const ROW_HEIGHT_PX = 30;
 const CIRCLE_SIZE_PX = 20;

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useState, useEffect } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { Header } from "@/components/layout/Header";
@@ -18,6 +18,10 @@ export function DashboardLayoutClient({
   const [status, setStatus] = useState(statusFromUrl);
   const [search, setSearch] = useState(searchFromUrl);
   const { loading, isAuthenticated } = useAuth();
+
+  useEffect(() => {
+    setSearch(searchParams.get("search") ?? "");
+  }, [pathname, searchParams]);
 
   const handleStatusChange = useCallback((s: string) => {
     setStatus(s);
@@ -43,7 +47,8 @@ export function DashboardLayoutClient({
           <Header
             search={search}
             onSearchChange={setSearch}
-            showSearch={pathname.startsWith("/orders")}
+            showSearch={pathname.startsWith("/orders") || pathname.startsWith("/addresses")}
+            searchPlaceholder={pathname.startsWith("/addresses") ? "Искать по параметрам и тарифным планам..." : undefined}
           />
           <main className="flex-1 flex flex-col min-h-0 overflow-auto" style={{ paddingTop: 0, paddingRight: 5, paddingBottom: 5, paddingLeft: 0 }}>
             {showContent ? children : (

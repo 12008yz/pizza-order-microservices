@@ -114,6 +114,18 @@ export interface Building {
   street?: { name: string; city?: { name: string; region?: { name: string } } };
 }
 
+/** Адрес, извлечённый из заявок (уникальный по населённому пункту + пространство + дом). */
+export interface OrderAddress {
+  id: string;
+  category: string;
+  settlementName: string;
+  spaceName: string;
+  houseNumber: string;
+  entrances: string | null;
+  floors: string | null;
+  apartments: string | null;
+}
+
 export interface PaginatedResponse<T> {
   orders?: T[];
   data?: T[];

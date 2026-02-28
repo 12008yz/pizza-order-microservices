@@ -8,9 +8,13 @@ interface HeaderProps {
   search?: string;
   onSearchChange?: (v: string) => void;
   showSearch?: boolean;
+  /** Плейсхолдер поля поиска (по умолчанию — для заявок). */
+  searchPlaceholder?: string;
 }
 
-export function Header({ search = "", onSearchChange, showSearch = true }: HeaderProps) {
+const DEFAULT_SEARCH_PLACEHOLDER = "Искать по номерам и адресам ...";
+
+export function Header({ search = "", onSearchChange, showSearch = true, searchPlaceholder = DEFAULT_SEARCH_PLACEHOLDER }: HeaderProps) {
   const [localSearch, setLocalSearch] = useState(search);
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -95,7 +99,7 @@ export function Header({ search = "", onSearchChange, showSearch = true }: Heade
             </svg>
             <input
               type="search"
-              placeholder="Искать по номерам и адресам ..."
+              placeholder={searchPlaceholder}
               value={localSearch}
               onChange={handleChange}
               className="flex-1 min-w-0 bg-transparent border-0 outline-none placeholder:text-[rgba(16,16,16,0.25)]"

@@ -1,145 +1,162 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import { AddressCard } from "@/components/addresses/AddressCard";
-import { Button } from "@/components/ui/Button";
-import { fetchRegions, fetchCities, fetchStreets, fetchBuildings } from "@/lib/api";
-import type { Building } from "@/types";
+import { Pagination } from "@/components/ui/Pagination";
+import { fetchOrders } from "@/lib/api";
+import { MOCK_ORDERS } from "@/lib/mockOrders";
+import type { Order, OrderAddress } from "@/types";
 
-interface Region {
-  id: number;
-  name: string;
+function parseAddressParts(s: string | null | undefined): { settlement: string; space: string; house: string } {
+  if (!s?.trim()) return { settlement: "", space: "", house: "" };
+  const raw = s.split(",").map((p) => p.trim());
+  return {
+    settlement: raw[0] ?? "",
+    space: raw[1] ?? "",
+    house: raw[2] ?? "",
+  };
 }
-interface City {
-  id: number;
-  name: string;
+
+function orderToCategory(connectionType: string | null | undefined): string {
+  if (connectionType === "private") return "Частный сектор";
+  if (connectionType === "office") return "Офис";
+  return "Жилое, кв.";
 }
-interface Street {
-  id: number;
-  name: string;
+
+/** Форматирует номер дома: "9 к 6" → "д. 9 к 6", уже "д. 9" не дублируем. */
+function formatHouseNumber(house: string): string {
+  if (!house?.trim()) return "—";
+  const t = house.trim();
+  if (t.toLowerCase().startsWith("д.")) return t;
+  return `д. ${t}`;
 }
+
+/** Уникальные адреса из списка заявок (по населённому пункту + пространство + дом; при наличии buildingId — по нему). Заявки без адреса и без buildingId не попадают в список. */
+function uniqueAddressesFromOrders(orders: Order[]): OrderAddress[] {
+  const seen = new Map<string, OrderAddress>();
+  for (const o of orders) {
+    const { settlement, space, house } = parseAddressParts(o.addressString);
+    const hasAddress = o.buildingId != null || settlement || space || house;
+    if (!hasAddress) continue;
+    const key = o.buildingId != null
+      ? `b_${o.buildingId}`
+      : `a_${[settlement, space, house].join("\0").toLowerCase()}`;
+    if (seen.has(key)) continue;
+    seen.set(key, {
+      id: key,
+      category: orderToCategory(o.connectionType),
+      settlementName: settlement || "—",
+      spaceName: space || "—",
+      houseNumber: formatHouseNumber(house),
+      entrances: o.entrance ?? null,
+      floors: o.floor ?? null,
+      apartments: null,
+    });
+  }
+  return Array.from(seen.values());
+}
+
+const CARDS_PER_PAGE = 8;
 
 export default function AddressesPage() {
-  const [regions, setRegions] = useState<Region[]>([]);
-  const [cities, setCities] = useState<City[]>([]);
-  const [streets, setStreets] = useState<Street[]>([]);
-  const [buildings, setBuildings] = useState<Building[]>([]);
-  const [regionId, setRegionId] = useState<number | "">("");
-  const [cityId, setCityId] = useState<number | "">("");
-  const [streetId, setStreetId] = useState<number | "">("");
-  const [loadingBuildings, setLoadingBuildings] = useState(false);
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParam = searchParams.get("search") ?? "";
+  const pageParam = parseInt(searchParams.get("page") ?? "1", 10);
+
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(pageParam);
 
   useEffect(() => {
     let cancelled = false;
-    fetchRegions()
-      .then((res: { success?: boolean; data?: Region[] }) => {
+    fetchOrders({})
+      .then((res) => {
         if (cancelled) return;
-        setRegions(Array.isArray(res?.data) ? res.data : []);
+        const raw = (res as { data?: Order[] }).data ?? (Array.isArray(res) ? res : []);
+        const list = Array.isArray(raw) ? raw : [];
+        setOrders(list);
       })
-      .catch(() => {});
+      .catch(() => {
+        if (!cancelled) setOrders([]);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
     return () => { cancelled = true; };
   }, []);
 
-  useEffect(() => {
-    if (!regionId) {
-      setCities([]);
-      setCityId("");
-      setStreets([]);
-      setStreetId("");
-      return;
-    }
-    let cancelled = false;
-    fetchCities(regionId as number)
-      .then((res: { success?: boolean; data?: City[] }) => {
-        if (cancelled) return;
-        setCities(Array.isArray(res?.data) ? res.data : []);
-        setCityId("");
-        setStreets([]);
-        setStreetId("");
-      })
-      .catch(() => setCities([]));
-    return () => { cancelled = true; };
-  }, [regionId]);
+  const sourceOrders = orders.length > 0 ? orders : MOCK_ORDERS;
+  const addresses = useMemo(() => uniqueAddressesFromOrders(sourceOrders), [sourceOrders]);
+
+  const filtered = useMemo(() => {
+    if (!searchParam.trim()) return addresses;
+    const q = searchParam.trim().toLowerCase();
+    return addresses.filter(
+      (a) =>
+        a.settlementName.toLowerCase().includes(q) ||
+        a.spaceName.toLowerCase().includes(q) ||
+        a.houseNumber.toLowerCase().includes(q) ||
+        a.category.toLowerCase().includes(q)
+    );
+  }, [addresses, searchParam]);
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / CARDS_PER_PAGE));
+  const currentPage = Math.min(page, totalPages);
+  const slice = useMemo(
+    () => filtered.slice((currentPage - 1) * CARDS_PER_PAGE, currentPage * CARDS_PER_PAGE),
+    [filtered, currentPage]
+  );
 
   useEffect(() => {
-    if (!cityId) {
-      setStreets([]);
-      setStreetId("");
-      return;
-    }
-    let cancelled = false;
-    fetchStreets(cityId as number)
-      .then((res: { success?: boolean; data?: Street[] }) => {
-        if (cancelled) return;
-        setStreets(Array.isArray(res?.data) ? res.data : []);
-        setStreetId("");
-      })
-      .catch(() => setStreets([]));
-    return () => { cancelled = true; };
-  }, [cityId]);
+    setPage(Math.max(1, Math.min(pageParam, totalPages || 1)));
+  }, [pageParam, totalPages]);
 
-  const loadBuildings = () => {
-    if (!streetId) return;
-    setLoadingBuildings(true);
-    setBuildings([]);
-    fetchBuildings(streetId as number)
-      .then((list) => {
-        setBuildings(Array.isArray(list) ? (list as Building[]) : []);
-      })
-      .catch(() => setBuildings([]))
-      .finally(() => setLoadingBuildings(false));
-  };
+  useEffect(() => {
+    if (totalPages >= 1 && page > totalPages) {
+      setPage(totalPages);
+      const params = new URLSearchParams(searchParams.toString());
+      params.set("page", String(totalPages));
+      router.replace(`${pathname}?${params.toString()}`);
+    }
+  }, [totalPages, page, router, pathname, searchParams]);
+
+  const handlePageChange = useCallback(
+    (p: number) => {
+      const safePage = Math.max(1, Math.min(p, totalPages));
+      setPage(safePage);
+      const params = new URLSearchParams(searchParams.toString());
+      params.set("page", String(safePage));
+      router.push(`${pathname}?${params.toString()}`);
+    },
+    [router, pathname, searchParams, totalPages]
+  );
+
+  const paginationBlock = (
+    <Pagination
+      page={currentPage}
+      totalPages={totalPages}
+      onPageChange={handlePageChange}
+    />
+  );
+
+  if (loading) {
+    return (
+      <div className="flex flex-col flex-1 min-h-0 min-w-0">
+        <div className="flex-1 flex items-center justify-center py-12">
+          <p className="text-muted-foreground">Загрузка адресов...</p>
+        </div>
+        <div style={{ flexShrink: 0, marginTop: 50 }}>{paginationBlock}</div>
+      </div>
+    );
+  }
 
   return (
-    <div className="space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <div className="flex flex-wrap items-end gap-4">
-        <div>
-          <label className="block text-xs text-muted-foreground mb-1">Регион</label>
-          <select
-            className="rounded-input border border-border px-3 py-2 text-sm min-w-[200px]"
-            value={regionId}
-            onChange={(e) => setRegionId(e.target.value ? Number(e.target.value) : "")}
-          >
-            <option value="">Выберите регион</option>
-            {regions.map((r) => (
-              <option key={r.id} value={r.id}>{r.name}</option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <label className="block text-xs text-muted-foreground mb-1">Город</label>
-          <select
-            className="rounded-input border border-border px-3 py-2 text-sm min-w-[200px]"
-            value={cityId}
-            onChange={(e) => setCityId(e.target.value ? Number(e.target.value) : "")}
-            disabled={!regionId}
-          >
-            <option value="">Выберите город</option>
-            {cities.map((c) => (
-              <option key={c.id} value={c.id}>{c.name}</option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <label className="block text-xs text-muted-foreground mb-1">Улица</label>
-          <select
-            className="rounded-input border border-border px-3 py-2 text-sm min-w-[200px]"
-            value={streetId}
-            onChange={(e) => setStreetId(e.target.value ? Number(e.target.value) : "")}
-            disabled={!cityId}
-          >
-            <option value="">Выберите улицу</option>
-            {streets.map((s) => (
-              <option key={s.id} value={s.id}>{s.name}</option>
-            ))}
-          </select>
-        </div>
-        <Button onClick={loadBuildings} disabled={!streetId || loadingBuildings}>
-          {loadingBuildings ? "Загрузка..." : "Показать здания"}
-        </Button>
-        </div>
+    <div className="flex flex-col flex-1 min-h-0 min-w-0">
+      <div className="flex flex-wrap items-center justify-end gap-4 mb-4">
         <Link
           href="/addresses/new"
           className="rounded-input bg-foreground text-background px-4 py-2 text-sm font-medium hover:opacity-90"
@@ -147,16 +164,26 @@ export default function AddressesPage() {
           + Проникновение
         </Link>
       </div>
-
-      {loadingBuildings && <p className="text-muted-foreground">Загрузка зданий...</p>}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-        {buildings.map((b) => (
-          <AddressCard key={b.id} building={b} />
-        ))}
+      <div
+        className="relative min-w-0 w-full overflow-x-auto overflow-y-hidden pb-2"
+        style={{ flex: "1 1 0" }}
+      >
+        {filtered.length === 0 ? (
+          <p className="text-center py-8" style={{ fontFamily: "'TT Firs Neue', sans-serif", color: "rgba(16,16,16,0.5)" }}>
+            Адресов не найдено
+          </p>
+        ) : (
+          <div
+            className="flex overflow-x-auto overflow-y-hidden pb-2 scrollbar-hide"
+            style={{ gap: 5 }}
+          >
+            {slice.map((addr) => (
+              <AddressCard key={addr.id} address={addr} />
+            ))}
+          </div>
+        )}
       </div>
-      {!loadingBuildings && buildings.length === 0 && streetId && (
-        <p className="text-muted-foreground">Зданий по выбранной улице не найдено</p>
-      )}
+      <div style={{ flexShrink: 0, marginTop: 50 }}>{paginationBlock}</div>
     </div>
   );
 }

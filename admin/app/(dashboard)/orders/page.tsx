@@ -157,6 +157,8 @@ function OrdersPageContent() {
         if (!cancelled) setStreets([]);
       });
     return () => { cancelled = true; };
+  // Зависимость только от длины: перезапрос улиц при смене списка городов
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cities.length]);
 
   const sourceOrders = orders.length > 0 ? orders : MOCK_ORDERS;

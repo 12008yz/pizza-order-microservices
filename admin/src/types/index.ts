@@ -33,6 +33,8 @@ export interface Order {
   preferredTimeFrom: string | null;
   preferredTimeTo: string | null;
   routerOption: string | null;
+  /** Количество WI-оборудования, напр. "1 шт." */
+  routerQuantity?: string | null;
   routerNeed: string | null;
   routerPurchase: string | null;
   routerOperator: string | null;
@@ -50,6 +52,8 @@ export interface Order {
   comment: string | null;
   createdAt: string;
   updatedAt: string;
+  /** Режим подключения: apartment | private | office */
+  connectionType?: string | null;
   // Joined from other services
   tariff?: Tariff;
   provider?: Provider;

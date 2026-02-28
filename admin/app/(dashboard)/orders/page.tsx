@@ -4,7 +4,7 @@ import { Suspense, useEffect, useState, useMemo, useRef, useCallback } from "rea
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { OrderCard } from "@/components/orders/OrderCard";
 import { Pagination } from "@/components/ui/Pagination";
-import { fetchOrders, updateOrder as updateOrderApi } from "@/lib/api";
+import { fetchOrders, fetchProviders, fetchTariffs, fetchRegions, fetchCities, fetchStreets, updateOrder as updateOrderApi } from "@/lib/api";
 import { MOCK_ORDERS } from "@/lib/mockOrders";
 import type { Order } from "@/types";
 
@@ -31,6 +31,10 @@ function OrdersPageContent() {
   const pageParam = parseInt(searchParams.get("page") ?? "1", 10);
 
   const [orders, setOrders] = useState<Order[]>([]);
+  const [providers, setProviders] = useState<{ id: number; name: string }[]>([]);
+  const [tariffs, setTariffs] = useState<{ id: number; name: string }[]>([]);
+  const [cities, setCities] = useState<{ id: number; name: string }[]>([]);
+  const [streets, setStreets] = useState<{ id: number; name: string }[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(pageParam);
   const [expandedOrderId, setExpandedOrderId] = useState<number | null>(null);
@@ -85,6 +89,75 @@ function OrdersPageContent() {
       });
     return () => { cancelled = true; };
   }, [statusParam]);
+
+  useEffect(() => {
+    let cancelled = false;
+    Promise.all([fetchProviders(), fetchTariffs()])
+      .then(([provRes, tariffRes]) => {
+        if (cancelled) return;
+        const provList = Array.isArray((provRes as { data?: { id: number; name: string }[] }).data)
+          ? (provRes as { data: { id: number; name: string }[] }).data
+          : Array.isArray(provRes)
+            ? (provRes as { id: number; name: string }[])
+            : [];
+        const tariffList = Array.isArray((tariffRes as { data?: { id: number; name: string }[] }).data)
+          ? (tariffRes as { data: { id: number; name: string }[] }).data
+          : Array.isArray(tariffRes)
+            ? (tariffRes as { id: number; name: string }[])
+            : [];
+        setProviders(provList.map((p) => ({ id: p.id, name: p.name })));
+        setTariffs(tariffList.map((t) => ({ id: t.id, name: t.name })));
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setProviders([]);
+          setTariffs([]);
+        }
+      });
+    return () => { cancelled = true; };
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetchRegions()
+      .then((regionsRes: unknown) => {
+        const data = (regionsRes as { data?: { id: number; name: string }[] })?.data;
+        const list = Array.isArray(data) ? data : [];
+        return Promise.all(list.map((r: { id: number }) => fetchCities(r.id)));
+      })
+      .then((cityResponses) => {
+        if (cancelled) return;
+        const allCities: { id: number; name: string }[] = [];
+        cityResponses.forEach((res: unknown) => {
+          const data = (res as { data?: { id: number; name: string }[] })?.data;
+          if (Array.isArray(data)) data.forEach((c) => allCities.push({ id: c.id, name: c.name }));
+        });
+        setCities(allCities);
+      })
+      .catch(() => {
+        if (!cancelled) setCities([]);
+      });
+    return () => { cancelled = true; };
+  }, []);
+
+  useEffect(() => {
+    if (cities.length === 0) return;
+    let cancelled = false;
+    Promise.all(cities.slice(0, 20).map((c) => fetchStreets(c.id)))
+      .then((streetResponses) => {
+        if (cancelled) return;
+        const allStreets: { id: number; name: string }[] = [];
+        streetResponses.forEach((res: unknown) => {
+          const data = (res as { data?: { id: number; name: string }[] })?.data;
+          if (Array.isArray(data)) data.forEach((s) => allStreets.push({ id: s.id, name: s.name }));
+        });
+        setStreets(allStreets);
+      })
+      .catch(() => {
+        if (!cancelled) setStreets([]);
+      });
+    return () => { cancelled = true; };
+  }, [cities.length]);
 
   const sourceOrders = orders.length > 0 ? orders : MOCK_ORDERS;
 
@@ -229,7 +302,7 @@ function OrdersPageContent() {
                   zIndex: expandToLeft ? 1 : undefined,
                 }}
               >
-                <OrderCard order={order} isExpanded={isExpanded} onOrderChange={handleOrderChange} />
+                <OrderCard order={order} isExpanded={isExpanded} onOrderChange={handleOrderChange} providers={providers} tariffs={tariffs} cities={cities} streets={streets} />
               </div>
             );
           })}

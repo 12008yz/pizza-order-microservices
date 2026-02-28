@@ -13,6 +13,16 @@ const statusColors: Record<OrderStatus, string> = {
   rejected: "bg-status-rejected text-white",
 };
 
+const statusPhaseLabel: Record<string, string> = {
+  new: "Формирование",
+  processing: "Наведение",
+  contacted: "Конкретизирование",
+  scheduled: "Вознаграждение",
+  connected: "Подключение",
+  cancelled: "Отменён",
+  rejected: "Отклонён",
+};
+
 export function Badge({
   status,
   className,
@@ -22,6 +32,7 @@ export function Badge({
 }) {
   const color =
     statusColors[status as OrderStatus] ?? "bg-muted text-muted-foreground";
+  const label = statusPhaseLabel[status as OrderStatus] ?? status;
   return (
     <span
       className={cn(
@@ -31,7 +42,7 @@ export function Badge({
       )}
       style={{ fontFamily: '"TT Firs Neue", sans-serif' }}
     >
-      {status}
+      {label}
     </span>
   );
 }

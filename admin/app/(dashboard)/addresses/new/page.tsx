@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Select, type SelectOption } from "@/components/ui/Select";
+import { Select } from "@/components/ui/Select";
 import { fetchRegions, fetchCities, fetchStreets, fetchProviders } from "@/lib/api";
 import { locationApi } from "@/lib/api";
 
@@ -146,15 +146,6 @@ export default function NewAddressPage() {
     outline: "none",
   };
 
-  const selectStyle: React.CSSProperties = {
-    ...fieldStyle,
-    appearance: "none",
-    backgroundImage: `url("data:image/svg+xml,%3Csvg width='12' height='6' viewBox='0 0 12 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L6 5L11 1' stroke='%23101010' stroke-width='1.5'/%3E%3C/svg%3E")`,
-    backgroundRepeat: "no-repeat",
-    backgroundPosition: "right 15px center",
-    cursor: "pointer",
-  };
-
   return (
     <div
       style={{
@@ -168,7 +159,7 @@ export default function NewAddressPage() {
         paddingLeft: 20,
         paddingRight: 20,
         paddingTop: 20,
-        paddingBottom: 20,
+        paddingBottom: 10,
         fontFamily,
       }}
     >
@@ -263,6 +254,7 @@ export default function NewAddressPage() {
                 options={streets.map((s) => ({ value: s.id, label: s.name }))}
                 onChange={(v) => { setStreetId(v != null ? Number(v) : ""); setValidationError(false); }}
                 placeholder="Название пространства населённого пункта"
+                displayWhenEmpty={cities.find((c) => c.id === cityId)?.name}
                 frameStyle
                 invalid={validationError}
               />
@@ -378,8 +370,8 @@ export default function NewAddressPage() {
           </div>
         </div>
 
-        {/* Ряд: Категория (второй) + Краткое описание */}
-        <div style={{ display: "flex", gap: 10, marginBottom: 10 }}>
+        {/* Ряд: Категория (второй) + Краткое описание — отступ до кнопки 20px */}
+        <div style={{ display: "flex", gap: 10, marginBottom: 20 }}>
           <div style={{ width: 155, flexShrink: 0 }}>
             <Select
               value={providerId === "" ? null : providerId}
@@ -405,11 +397,13 @@ export default function NewAddressPage() {
           <p style={{ fontSize: 14, color: "var(--error)", marginBottom: 12 }}>{error}</p>
         )}
 
-        {/* Кнопка Проникновение: по макету Group 7711 — при невалидной форме opacity 0.15, "+" в белом круге, серый "+", текст белый */}
+        {/* Кнопка Проникновение: по макету Group 7711 — при невалидной форме opacity 0.15, "+" в белом круге, серый "+", текст белый; отступ сверху 0, чтобы до белого блока было 20px */}
         <button
           type="submit"
           disabled={saving}
           style={{
+            marginTop: 0,
+            marginBottom: 0,
             boxSizing: "border-box",
             width: 200,
             height: 50,

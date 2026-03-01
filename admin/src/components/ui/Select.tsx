@@ -28,6 +28,8 @@ interface SelectProps {
   showAddNew?: boolean;
   /** Вызов при клике на «Новое вкл...» */
   onAddNew?: () => void;
+  /** Текст в триггере, когда value пустой (например, выбранный город при выборе улицы) */
+  displayWhenEmpty?: string;
 }
 
 const labelStyle: React.CSSProperties = {
@@ -84,6 +86,7 @@ export function Select({
   invalid = false,
   showAddNew = false,
   onAddNew,
+  displayWhenEmpty,
 }: SelectProps) {
   const [open, setOpen] = useState(false);
   const [dropdownStyle, setDropdownStyle] = useState<{
@@ -97,7 +100,9 @@ export function Select({
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const selectedOption = options.find((o) => o.value === value);
-  const displayText = selectedOption?.label ?? (value != null && value !== "" ? String(value) : placeholder);
+  const displayText =
+    selectedOption?.label ??
+    (value != null && value !== "" ? String(value) : (displayWhenEmpty ?? placeholder));
 
   useEffect(() => {
     onOpenChange?.(open);
@@ -262,7 +267,7 @@ export function Select({
       <span
         className="truncate"
         style={
-          frameStyle && (open || !selectedOption)
+          frameStyle && (open || displayText === placeholder)
             ? { color: "rgba(16, 16, 16, 0.25)" }
             : undefined
         }
@@ -275,9 +280,38 @@ export function Select({
     </button>
   );
 
+  /** Текущий выбор — показываем вверху окна при открытии, чтобы не исчезал */
+  const currentSelectionLabel =
+    frameStyle && open && displayText !== placeholder ? displayText : null;
+
+  /** В frameStyle при открытии выбранное показываем один раз: либо в шапке (currentSelectionLabel), либо в списке; в списке выбранную опцию не дублируем */
+  const optionsToShow =
+    frameStyle && open && currentSelectionLabel != null
+      ? options.filter((o) => o.value !== value)
+      : options;
+
   const dropdownList = (
     <>
-      {options.map((opt) => {
+      {currentSelectionLabel != null && (
+        <div
+          style={{
+            minHeight: 20,
+            paddingLeft: 0,
+            paddingRight: 0,
+            boxSizing: "border-box",
+            fontFamily: "'TT Firs Neue', sans-serif",
+            fontWeight: 400,
+            fontSize: 16,
+            lineHeight: "125%",
+            color: "#101010",
+            flexShrink: 0,
+          }}
+          aria-hidden
+        >
+          {currentSelectionLabel}
+        </div>
+      )}
+      {optionsToShow.map((opt) => {
         const isSelected = value === opt.value;
         return (
           <div
@@ -373,15 +407,15 @@ export function Select({
     </div>
   );
 
-  if (frameStyle && open && (options.length > 0 || showAddNew)) {
+  if (frameStyle && open) {
     const frameHeight = showAddNew ? FRAME_DROPDOWN_HEIGHT : FRAME_DROPDOWN_HEIGHT_FIRST;
     const isFirstField = !showAddNew;
     return (
-      <div ref={containerRef} className="relative" style={{ width: 155, height: frameHeight }}>
+      <div ref={containerRef} className="relative w-full" style={{ minWidth: 155, height: frameHeight }}>
         <div
-          className="flex flex-col rounded-[10px] overflow-hidden bg-white"
+          className="flex flex-col rounded-[10px] overflow-hidden bg-white w-full"
           style={{
-            width: 155,
+            minWidth: 155,
             height: frameHeight,
             boxSizing: "border-box",
             border: "1px solid rgba(16,16,16,0.5)",

@@ -10,9 +10,18 @@ const fontFamily = "'TT Firs Neue', sans-serif";
 const fieldBorder = "1px solid rgba(16, 16, 16, 0.5)";
 const fieldHeight = 50;
 const fieldRadius = 10;
-/** Круг 16×16 справа у полей (как в макете Group 7734) */
+/** Круг 16×16 справа у полей (как в макете Group 7734); при выборе — синяя галочка */
 const FIELD_CIRCLE_SIZE = 16;
 const FIELD_CIRCLE_BORDER = "1px solid rgba(16, 16, 16, 0.5)";
+
+const SuccessCheckIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+    <path
+      d="M8 0C6.41775 0 4.87103 0.469192 3.55544 1.34824C2.23985 2.22729 1.21447 3.47672 0.608967 4.93853C0.00346625 6.40034 -0.15496 8.00887 0.153721 9.56072C0.462403 11.1126 1.22433 12.538 2.34315 13.6569C3.46197 14.7757 4.88743 15.5376 6.43928 15.8463C7.99113 16.155 9.59966 15.9965 11.0615 15.391C12.5233 14.7855 13.7727 13.7602 14.6518 12.4446C15.5308 11.129 16 9.58225 16 8C15.9978 5.87895 15.1542 3.84542 13.6544 2.34562C12.1546 0.845814 10.121 0.00223986 8 0ZM11.5123 6.58923L7.20462 10.8969C7.14747 10.9541 7.0796 10.9995 7.00489 11.0305C6.93018 11.0615 6.8501 11.0774 6.76923 11.0774C6.68836 11.0774 6.60828 11.0615 6.53358 11.0305C6.45887 10.9995 6.391 10.9541 6.33385 10.8969L4.48769 9.05077C4.37222 8.9353 4.30735 8.77868 4.30735 8.61538C4.30735 8.45208 4.37222 8.29547 4.48769 8.18C4.60317 8.06453 4.75978 7.99966 4.92308 7.99966C5.08638 7.99966 5.24299 8.06453 5.35846 8.18L6.76923 9.59154L10.6415 5.71846C10.6987 5.66128 10.7666 5.61593 10.8413 5.58499C10.916 5.55404 10.9961 5.53812 11.0769 5.53812C11.1578 5.53812 11.2379 5.55404 11.3126 5.58499C11.3873 5.61593 11.4551 5.66128 11.5123 5.71846C11.5695 5.77564 11.6148 5.84351 11.6458 5.91822C11.6767 5.99292 11.6927 6.07299 11.6927 6.15385C11.6927 6.2347 11.6767 6.31477 11.6458 6.38947C11.6148 6.46418 11.5695 6.53205 11.5123 6.58923Z"
+      fill="#0075FF"
+    />
+  </svg>
+);
 
 interface Region {
   id: number;
@@ -152,16 +161,19 @@ export default function NewAddressPage() {
         position: "relative",
         boxSizing: "border-box",
         width: 915,
-        height: 380,
+        minHeight: 380,
         background: "#FFFFFF",
         border: "1px solid rgba(16, 16, 16, 0.15)",
         backdropFilter: "blur(7.5px)",
         borderRadius: 20,
-        padding: "20px 20px 20px",
+        paddingLeft: 20,
+        paddingRight: 20,
+        paddingTop: 20,
+        paddingBottom: 20,
         fontFamily,
       }}
     >
-      {/* Заголовок и закрытие: круг 30×30 по центру маленьких кругов (центр 16px = 8px от края, 30px = 15px от края → сдвиг влево на 7px) */}
+      {/* Заголовок и закрытие: круг 30×30; правый столбец 30px для выравнивания с нижними кругами */}
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 10 }}>
         <h1
           style={{
@@ -175,7 +187,7 @@ export default function NewAddressPage() {
         >
           Проникновение
         </h1>
-        <div style={{ marginRight: -7 }}>
+        <div style={{ width: 30, minWidth: 30, display: "flex", justifyContent: "center" }}>
           <Link
             href="/addresses"
             style={{
@@ -197,10 +209,10 @@ export default function NewAddressPage() {
         </div>
       </div>
 
-      <form onSubmit={handleSubmit}>
-        {/* Название населённого пункта + круг справа (от круга до поля 37px) */}
-        <div style={{ display: "flex", alignItems: "center", gap: 37, marginBottom: 10 }}>
-          <div style={{ flex: 1, minWidth: 0, maxWidth: 868 }}>
+      <form className="address-form" onSubmit={handleSubmit}>
+        {/* Название населённого пункта + круг справа (колонка 30px; gap 30 — правый край поля совпадает с рядом Категория/Краткое описание) */}
+        <div style={{ display: "flex", alignItems: "center", gap: 30, marginBottom: 10 }}>
+          <div style={{ flex: 1, minWidth: 0 }}>
             <Select
               value={regionId === "" ? null : regionId}
               options={regions.map((r) => ({ value: r.id, label: r.name }))}
@@ -210,25 +222,31 @@ export default function NewAddressPage() {
               invalid={validationError}
             />
           </div>
-          <span
-            style={{
-              boxSizing: "border-box",
-              width: FIELD_CIRCLE_SIZE,
-              height: FIELD_CIRCLE_SIZE,
-              minWidth: FIELD_CIRCLE_SIZE,
-              minHeight: FIELD_CIRCLE_SIZE,
-              border: FIELD_CIRCLE_BORDER,
-              borderRadius: "50%",
-              flexShrink: 0,
-            }}
-            aria-hidden
-          />
+          <div style={{ width: 30, minWidth: 30, display: "flex", justifyContent: "center", flexShrink: 0 }}>
+            <span
+              style={{
+                boxSizing: "border-box",
+                width: FIELD_CIRCLE_SIZE,
+                height: FIELD_CIRCLE_SIZE,
+                minWidth: FIELD_CIRCLE_SIZE,
+                minHeight: FIELD_CIRCLE_SIZE,
+                border: regionId !== "" ? "none" : FIELD_CIRCLE_BORDER,
+                borderRadius: "50%",
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+              aria-hidden
+            >
+              {regionId !== "" ? <SuccessCheckIcon /> : null}
+            </span>
+          </div>
         </div>
 
-        {/* Название пространства населённого пункта + круг справа (от круга до поля 37px): сначала город, после выбора города — улица */}
-        <div style={{ display: "flex", alignItems: "center", gap: 37, marginBottom: 10 }}>
+        {/* Название пространства населённого пункта + круг справа (колонка 30px; gap 30 — правый край совпадает с нижними рядами) */}
+        <div style={{ display: "flex", alignItems: "center", gap: 30, marginBottom: 10 }}>
           {!cityId ? (
-            <div style={{ flex: 1, minWidth: 0, maxWidth: 868 }}>
+            <div style={{ flex: 1, minWidth: 0 }}>
               <Select
                 value={cityId === "" ? null : cityId}
                 options={cities.map((c) => ({ value: c.id, label: c.name }))}
@@ -240,7 +258,7 @@ export default function NewAddressPage() {
               />
             </div>
           ) : (
-            <div style={{ flex: 1, minWidth: 0, maxWidth: 868 }}>
+            <div style={{ flex: 1, minWidth: 0 }}>
               <Select
                 value={streetId === "" ? null : streetId}
                 options={streets.map((s) => ({ value: s.id, label: s.name }))}
@@ -251,19 +269,25 @@ export default function NewAddressPage() {
               />
             </div>
           )}
-          <span
-            style={{
-              boxSizing: "border-box",
-              width: FIELD_CIRCLE_SIZE,
-              height: FIELD_CIRCLE_SIZE,
-              minWidth: FIELD_CIRCLE_SIZE,
-              minHeight: FIELD_CIRCLE_SIZE,
-              border: FIELD_CIRCLE_BORDER,
-              borderRadius: "50%",
-              flexShrink: 0,
-            }}
-            aria-hidden
-          />
+          <div style={{ width: 30, minWidth: 30, display: "flex", justifyContent: "center", flexShrink: 0 }}>
+            <span
+              style={{
+                boxSizing: "border-box",
+                width: FIELD_CIRCLE_SIZE,
+                height: FIELD_CIRCLE_SIZE,
+                minWidth: FIELD_CIRCLE_SIZE,
+                minHeight: FIELD_CIRCLE_SIZE,
+                border: (cityId !== "" || streetId !== "") ? "none" : FIELD_CIRCLE_BORDER,
+                borderRadius: "50%",
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+              aria-hidden
+            >
+              {(cityId !== "" || streetId !== "") ? <SuccessCheckIcon /> : null}
+            </span>
+          </div>
         </div>
 
         {/* Ряд: Категория, Номеры, Подъезды, Полеты, Квартиры */}
@@ -362,6 +386,7 @@ export default function NewAddressPage() {
           <div style={{ flex: 1, minWidth: 0, maxWidth: 650 }}>
             <input
               type="text"
+              className={validationError ? "invalid-field" : undefined}
               style={{ ...fieldStyle, paddingRight: 16, width: "100%" }}
               value={comment}
               onChange={(e) => setComment(e.target.value)}

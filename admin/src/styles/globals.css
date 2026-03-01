@@ -118,6 +118,24 @@ body {
   color: var(--frame-color-muted);
 }
 
+/* Форма «Проникновение»: обводка полей не пропадает при фокусе */
+.address-form input:focus,
+.address-form button[aria-haspopup="listbox"]:focus {
+  outline: none;
+}
+.address-form input:focus {
+  border: 1px solid rgba(16, 16, 16, 0.5);
+}
+.address-form input.invalid-field:focus {
+  border-color: #FF3030;
+}
+.address-form button[aria-haspopup="listbox"]:focus {
+  border: 1px solid rgba(16, 16, 16, 0.5);
+}
+.address-form button[aria-haspopup="listbox"].invalid-select:focus {
+  border-color: #FF3030;
+}
+
 /* Анимации смены шагов (Frame4/Frame5) */
 @keyframes frame4StepIn {
   from {

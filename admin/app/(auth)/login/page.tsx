@@ -55,7 +55,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white relative">
+    <div className="min-h-screen bg-[#F5F5F5] relative">
       {/* Форма: отступ слева 60px, снизу 120px */}
       <form
         onSubmit={handleSubmit}

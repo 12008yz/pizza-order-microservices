@@ -117,7 +117,7 @@ export function Select({
     <div
       ref={dropdownRef}
       role="listbox"
-      className="fixed z-[9999] rounded-[10px] border border-[rgba(16,16,16,0.25)] bg-white shadow-lg overflow-hidden overflow-y-auto"
+      className="fixed z-[9999] rounded-[10px] border border-[rgba(16,16,16,0.25)] bg-white overflow-hidden overflow-y-auto"
       style={{
         ...(dropdownStyle.top != null ? { top: dropdownStyle.top } : {}),
         ...(dropdownStyle.bottom != null ? { bottom: dropdownStyle.bottom } : {}),
@@ -249,7 +249,7 @@ export function Select({
         <div
           role="listbox"
           className={cn(
-            "absolute left-0 right-0 z-[100] bg-white overflow-hidden shadow-lg",
+            "absolute left-0 right-0 z-[100] bg-white overflow-hidden",
             frameStyle ? "rounded-b-[10px] overflow-y-auto scrollbar-hide border border-t-0 border-[rgba(16,16,16,0.5)]" : "rounded-[10px] overflow-y-auto mt-1 border border-[rgba(16,16,16,0.25)]"
           )}
           style={{

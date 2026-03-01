@@ -760,7 +760,6 @@ export function OrderCard({
                 minWidth: 6,
                 boxSizing: "border-box",
                 background: "linear-gradient(90deg, rgba(16,16,16,0.12) 0%, #FFFFFF 25%, #FFFFFF 75%, rgba(16,16,16,0.12) 100%)",
-                boxShadow: "inset 0 1px 0 rgba(255,255,255,0.9), inset 0 -1px 0 rgba(16,16,16,0.06)",
                 border: "1px solid rgba(16, 16, 16, 0.1)",
               }}
               aria-hidden
@@ -815,7 +814,6 @@ export function OrderCard({
                 minWidth: 6,
                 boxSizing: "border-box",
                 background: "linear-gradient(90deg, rgba(16,16,16,0.12) 0%, #FFFFFF 25%, #FFFFFF 75%, rgba(16,16,16,0.12) 100%)",
-                boxShadow: "inset 0 1px 0 rgba(255,255,255,0.9), inset 0 -1px 0 rgba(16,16,16,0.06)",
                 border: "1px solid rgba(16, 16, 16, 0.1)",
               }}
               aria-hidden

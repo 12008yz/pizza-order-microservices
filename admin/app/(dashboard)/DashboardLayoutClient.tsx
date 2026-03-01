@@ -38,7 +38,7 @@ export function DashboardLayoutClient({
 
   return (
     <div
-      className="flex h-screen flex-col bg-white"
+      className="flex h-screen flex-col bg-[#F5F5F5]"
       style={{ paddingLeft: 60, paddingTop: 40, paddingRight: 0, paddingBottom: 50, boxSizing: "border-box" }}
     >
       <div className="flex flex-1 min-h-0" style={{ gap: 5 }}>

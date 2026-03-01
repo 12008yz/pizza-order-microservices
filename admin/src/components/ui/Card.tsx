@@ -15,7 +15,7 @@ export function Card({
     <div
       className={cn(
         "bg-white font-frame box-border",
-        "rounded-[20px] border border-[rgba(16,16,16,0.15)]",
+        "rounded-[20px] border border-transparent hover:border-[rgba(16,16,16,0.15)] transition-colors",
         className
       )}
       style={{

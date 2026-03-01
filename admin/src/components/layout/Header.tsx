@@ -53,7 +53,6 @@ export function Header({ search = "", onSearchChange, showSearch = true, searchP
     height: 70,
     minHeight: 70,
     background: "#FFFFFF",
-    border: "1px solid rgba(16, 16, 16, 0.15)",
     backdropFilter: "blur(7.5px)",
     WebkitBackdropFilter: "blur(7.5px)",
     borderRadius: 20,

@@ -72,7 +72,7 @@ export default function OrderDetailPage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="space-y-3 rounded-[20px] border-[rgba(16,16,16,0.1)]">
+        <Card className="space-y-3 rounded-[20px]">
           <h3 className={sectionTitle}>Персональные данные</h3>
           {col("Номер лицевого счёта", String(order.id))}
           {col("Номер сотового телефона", formatPhone(order.phone))}
@@ -86,7 +86,7 @@ export default function OrderDetailPage() {
           {col("Комплектация", (order as Order & { tariff?: { name: string } }).tariff?.name)}
         </Card>
 
-        <Card className="space-y-3 rounded-[20px] border-[rgba(16,16,16,0.1)]">
+        <Card className="space-y-3 rounded-[20px]">
           <h3 className={sectionTitle}>Адрес</h3>
           {col("Номер идентификатора", order.buildingId ? String(order.buildingId) : null)}
           {col("Адрес", order.addressString)}
@@ -97,7 +97,7 @@ export default function OrderDetailPage() {
           {col("Плата месячная", order.totalMonthlyPrice != null ? `${order.totalMonthlyPrice} р.` : null)}
         </Card>
 
-        <Card className="space-y-3 rounded-[20px] border-[rgba(16,16,16,0.1)]">
+        <Card className="space-y-3 rounded-[20px]">
           <h3 className={sectionTitle}>Статусы и даты</h3>
           {col("Фаза", order.status)}
           {col("Дата появления", formatDate(order.createdAt))}
@@ -113,7 +113,7 @@ export default function OrderDetailPage() {
           {col("Назначен", order.assignedTo)}
         </Card>
 
-        <Card className="space-y-3 rounded-[20px] border-[rgba(16,16,16,0.1)]">
+        <Card className="space-y-3 rounded-[20px]">
           <h3 className={sectionTitle}>Комментарии</h3>
           {col("Комментарий", order.comment)}
           {col("Внутренний", order.internalComment)}

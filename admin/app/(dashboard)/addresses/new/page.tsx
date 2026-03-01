@@ -163,7 +163,6 @@ export default function NewAddressPage() {
         width: 915,
         minHeight: 380,
         background: "#FFFFFF",
-        border: "1px solid rgba(16, 16, 16, 0.15)",
         backdropFilter: "blur(7.5px)",
         borderRadius: 20,
         paddingLeft: 20,
@@ -315,9 +314,9 @@ export default function NewAddressPage() {
           </div>
           <div style={{ width: 155, flexShrink: 0 }}>
             <Select
-              value={houseNumber || null}
+              value={houseNumber === "" ? "" : houseNumber || null}
               options={[
-                { value: "", label: "—" },
+                { value: "", label: "Неизвестно" },
                 ...Array.from({ length: 30 }, (_, i) => ({ value: String(i + 1), label: String(i + 1) })),
                 ...(houseNumber && !/^\d+$/.test(houseNumber) ? [{ value: houseNumber, label: houseNumber }] : []),
               ]}
@@ -326,48 +325,55 @@ export default function NewAddressPage() {
               frameStyle
               invalid={validationError}
               showAddNew
+              onAddNew={() => { const v = window.prompt("Введите номер дома"); if (v != null && v.trim() !== "") setHouseNumber(v.trim()); }}
             />
           </div>
           <div style={{ width: 155, flexShrink: 0 }}>
             <Select
-              value={entrances || null}
+              value={entrances === "" ? "" : entrances || null}
               options={[
-                { value: "", label: "—" },
+                { value: "", label: "Неизвестно" },
                 ...Array.from({ length: 20 }, (_, i) => ({ value: String(i + 1), label: String(i + 1) })),
+                ...(entrances && (parseInt(entrances, 10) > 20 || !/^\d+$/.test(entrances)) ? [{ value: entrances, label: entrances }] : []),
               ]}
               onChange={(v) => setEntrances(v != null ? String(v) : "")}
               placeholder="Подъезды"
               frameStyle
               invalid={validationError}
               showAddNew
+              onAddNew={() => { const v = window.prompt("Введите количество подъездов"); if (v != null && v.trim() !== "") setEntrances(v.trim()); }}
             />
           </div>
           <div style={{ width: 155, flexShrink: 0 }}>
             <Select
-              value={floors || null}
+              value={floors === "" ? "" : floors || null}
               options={[
-                { value: "", label: "—" },
+                { value: "", label: "Неизвестно" },
                 ...Array.from({ length: 25 }, (_, i) => ({ value: String(i + 1), label: String(i + 1) })),
+                ...(floors && (parseInt(floors, 10) > 25 || !/^\d+$/.test(floors)) ? [{ value: floors, label: floors }] : []),
               ]}
               onChange={(v) => setFloors(v != null ? String(v) : "")}
               placeholder="Полеты"
               frameStyle
               invalid={validationError}
               showAddNew
+              onAddNew={() => { const v = window.prompt("Введите количество этажей"); if (v != null && v.trim() !== "") setFloors(v.trim()); }}
             />
           </div>
           <div style={{ width: 155, flexShrink: 0 }}>
             <Select
-              value={apartments || null}
+              value={apartments === "" ? "" : apartments || null}
               options={[
-                { value: "", label: "—" },
+                { value: "", label: "Неизвестно" },
                 ...Array.from({ length: 50 }, (_, i) => ({ value: String(i + 1), label: String(i + 1) })),
+                ...(apartments && (parseInt(apartments, 10) > 50 || !/^\d+$/.test(apartments)) ? [{ value: apartments, label: apartments }] : []),
               ]}
               onChange={(v) => setApartments(v != null ? String(v) : "")}
               placeholder="Квартиры"
               frameStyle
               invalid={validationError}
               showAddNew
+              onAddNew={() => { const v = window.prompt("Введите количество квартир"); if (v != null && v.trim() !== "") setApartments(v.trim()); }}
             />
           </div>
         </div>

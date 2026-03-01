@@ -57,7 +57,6 @@ const menuTextStyle: React.CSSProperties = {
 const panelStyle: React.CSSProperties = {
   boxSizing: "border-box",
   background: "#FFFFFF",
-  border: PANEL_BORDER,
   backdropFilter: "blur(7.5px)",
   WebkitBackdropFilter: "blur(7.5px)",
   borderRadius: PANEL_BORDER_RADIUS_PX,

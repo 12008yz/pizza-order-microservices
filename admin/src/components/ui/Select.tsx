@@ -26,6 +26,8 @@ interface SelectProps {
   invalid?: boolean;
   /** Показать внизу списка «Новое вкл...» с синим + */
   showAddNew?: boolean;
+  /** Вызов при клике на «Новое вкл...» */
+  onAddNew?: () => void;
 }
 
 const labelStyle: React.CSSProperties = {
@@ -35,6 +37,10 @@ const labelStyle: React.CSSProperties = {
   lineHeight: "125%",
   color: "#101010",
 };
+
+const FRAME_DROPDOWN_HEIGHT = 180;
+/** Высота первого поля «Категория» (без «Новое вкл...») */
+const FRAME_DROPDOWN_HEIGHT_FIRST = 140;
 
 /** Стрелка: закрыт — вниз, открыт — вверх */
 const ArrowIcon = ({ open }: { open: boolean }) => (
@@ -77,6 +83,7 @@ export function Select({
   frameStyle = false,
   invalid = false,
   showAddNew = false,
+  onAddNew,
 }: SelectProps) {
   const [open, setOpen] = useState(false);
   const [dropdownStyle, setDropdownStyle] = useState<{
@@ -155,7 +162,7 @@ export function Select({
             role="option"
             aria-selected={isSelected}
             onClick={() => handleSelect(opt)}
-            className="flex items-center justify-between px-[12px] cursor-pointer w-full select-none hover:bg-[rgba(16,16,16,0.04)]"
+            className="flex items-center justify-between px-[12px] cursor-pointer w-full select-none"
             style={{
               minHeight: 40,
               boxSizing: "border-box",
@@ -237,14 +244,16 @@ export function Select({
       style={{
         ...labelStyle,
         boxSizing: "border-box",
-        paddingLeft: frameStyle ? 10 : 15,
-        paddingRight: frameStyle ? 10 : 15,
+        paddingLeft: 10,
+        paddingRight: 14.5,
         border:
           invalid
             ? "1px solid #FF3030"
-            : frameStyle
-              ? "1px solid rgba(16, 16, 16, 0.5)"
-              : undefined,
+            : frameStyle && open
+              ? "none"
+              : frameStyle
+                ? "1px solid rgba(16, 16, 16, 0.5)"
+                : undefined,
         ...(frameStyle && open ? { height: 50, flexShrink: 0 } : {}),
       }}
       aria-haspopup="listbox"
@@ -253,14 +262,16 @@ export function Select({
       <span
         className="truncate"
         style={
-          frameStyle && (open || value == null || value === "" || !selectedOption)
+          frameStyle && (open || !selectedOption)
             ? { color: "rgba(16, 16, 16, 0.25)" }
             : undefined
         }
       >
         {frameStyle && open ? placeholder : displayText}
       </span>
-      <ArrowIcon open={open} />
+      <span style={{ width: 16, minWidth: 16, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <ArrowIcon open={open} />
+      </span>
     </button>
   );
 
@@ -274,7 +285,7 @@ export function Select({
             role="option"
             aria-selected={isSelected}
             onClick={() => handleSelect(opt)}
-            className="flex items-center justify-between cursor-pointer w-full select-none hover:bg-[rgba(16,16,16,0.04)]"
+            className="flex items-center justify-between cursor-pointer w-full select-none"
             style={{
               minHeight: frameStyle ? 20 : 40,
               paddingLeft: frameStyle ? 0 : 15,
@@ -313,66 +324,80 @@ export function Select({
           </div>
         );
       })}
-      {frameStyle && showAddNew && (
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "flex-start",
-            gap: 8,
-            minHeight: 20,
-            flexShrink: 0,
-            boxSizing: "border-box",
-            fontFamily: "'TT Firs Neue', sans-serif",
-            fontWeight: 400,
-            fontSize: 16,
-            lineHeight: "125%",
-            color: "#3b82f6",
-            cursor: "pointer",
-          }}
-          role="button"
-          tabIndex={0}
-          onClick={(e) => { e.stopPropagation(); }}
-          onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") e.preventDefault(); }}
-        >
-          <span>Новое вкл...</span>
-          <span
-            style={{
-              width: 16,
-              height: 16,
-              borderRadius: "50%",
-              background: "#3b82f6",
-              display: "inline-flex",
-              alignItems: "center",
-              justifyContent: "center",
-              flexShrink: 0,
-            }}
-          >
-            <svg width="10" height="10" viewBox="0 0 16 16" fill="none">
-              <path d="M8 2v12M2 8h12" stroke="#FFFFFF" strokeWidth="1.5" strokeLinecap="round" />
-            </svg>
-          </span>
-        </div>
-      )}
     </>
   );
 
+  const showAddNewRow = frameStyle && showAddNew && (
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        minHeight: 20,
+        flexShrink: 0,
+        boxSizing: "border-box",
+        fontFamily: "'TT Firs Neue', sans-serif",
+        fontWeight: 400,
+        fontSize: 16,
+        lineHeight: "125%",
+        color: "#3b82f6",
+        cursor: "pointer",
+        marginTop: 10,
+        paddingTop: 0,
+        paddingBottom: 0,
+        paddingLeft: 10,
+        paddingRight: 10,
+      }}
+      role="button"
+      tabIndex={0}
+      onClick={(e) => { e.stopPropagation(); onAddNew?.(); }}
+      onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onAddNew?.(); } }}
+    >
+      <span className="flex-1 truncate">Новое вкл...</span>
+      <span
+        style={{
+          width: 16,
+          height: 16,
+          borderRadius: "50%",
+          background: "#3b82f6",
+          display: "inline-flex",
+          alignItems: "center",
+          justifyContent: "center",
+          flexShrink: 0,
+        }}
+      >
+        <svg width="10" height="10" viewBox="0 0 16 16" fill="none">
+          <path d="M8 2v12M2 8h12" stroke="#FFFFFF" strokeWidth="1.5" strokeLinecap="round" />
+        </svg>
+      </span>
+    </div>
+  );
+
   if (frameStyle && open && (options.length > 0 || showAddNew)) {
+    const frameHeight = showAddNew ? FRAME_DROPDOWN_HEIGHT : FRAME_DROPDOWN_HEIGHT_FIRST;
+    const isFirstField = !showAddNew;
     return (
-      <div ref={containerRef} className="relative" style={{ width: 155, height: 140 }}>
+      <div ref={containerRef} className="relative" style={{ width: 155, height: frameHeight }}>
         <div
-          className="flex flex-col rounded-[10px] border border-[rgba(16,16,16,0.5)] overflow-hidden bg-white"
-          style={{ width: 155, height: 140, boxSizing: "border-box" }}
+          className="flex flex-col rounded-[10px] overflow-hidden bg-white"
+          style={{
+            width: 155,
+            height: frameHeight,
+            boxSizing: "border-box",
+            border: "1px solid rgba(16,16,16,0.5)",
+            paddingBottom: isFirstField ? 10 : 15,
+          }}
           onClick={(e) => e.stopPropagation()}
         >
           {triggerButton}
           <div
             role="listbox"
-            className="overflow-y-auto scrollbar-hide flex flex-col flex-1 min-h-0"
-            style={{ paddingTop: 0, paddingRight: 10, paddingBottom: 10, paddingLeft: 10, gap: 10 }}
+            className={cn("flex flex-col flex-1 min-h-0", isFirstField ? "overflow-hidden" : "overflow-y-auto scrollbar-hide")}
+            style={{ paddingTop: 0, paddingRight: 10, paddingBottom: showAddNew ? 0 : 10, paddingLeft: 10, gap: 10 }}
           >
             {dropdownList}
           </div>
+          {showAddNewRow}
         </div>
       </div>
     );

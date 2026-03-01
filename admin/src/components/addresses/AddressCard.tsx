@@ -57,7 +57,7 @@ function Row({ label, value, underline }: { label: string; value: string; underl
 export function AddressCard({ address }: AddressCardProps) {
   return (
     <div
-      className="bg-white rounded-[20px] border border-[rgba(16,16,16,0.15)] hover:border-[rgba(16,16,16,0.35)] transition-colors shrink-0"
+      className="bg-white rounded-[20px] border border-transparent hover:border-[rgba(16,16,16,0.35)] transition-colors shrink-0"
       style={{
         width: CARD_WIDTH,
         minHeight: CARD_MIN_HEIGHT,

@@ -82,7 +82,7 @@ export function Header({ search = "", onSearchChange, showSearch = true, searchP
 
   return (
     <header
-      className="flex items-center shrink-0"
+      className="flex items-center shrink-0 w-full min-w-0"
       style={{
         ...barStyle,
         paddingLeft: 20,
@@ -107,6 +107,7 @@ export function Header({ search = "", onSearchChange, showSearch = true, searchP
                 fontSize: 14,
                 lineHeight: "145%",
                 color: "#101010",
+                minWidth: 0,
               }}
             />
           </div>

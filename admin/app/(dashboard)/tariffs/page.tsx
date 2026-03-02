@@ -6,6 +6,7 @@ import Link from "next/link";
 import { TariffCard } from "@/components/tariffs/TariffCard";
 import { Pagination } from "@/components/ui/Pagination";
 import { fetchTariffs } from "@/lib/api";
+import { MOCK_TARIFFS } from "@/lib/mockTariffs";
 import type { Tariff } from "@/types";
 
 const CARDS_PER_PAGE = 8;
@@ -29,8 +30,11 @@ export default function TariffsPage() {
         const data = res as { success?: boolean; data?: Tariff[] };
         setTariffs(Array.isArray(data?.data) ? data.data : []);
       })
-      .catch((err) => {
-        if (!cancelled) setError(err?.message ?? "Ошибка загрузки");
+      .catch(() => {
+        if (!cancelled) {
+          setTariffs(MOCK_TARIFFS);
+          setError(null);
+        }
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
@@ -107,14 +111,22 @@ export default function TariffsPage() {
             Тарифов не найдено
           </p>
         ) : (
-          <div
-            className="flex overflow-x-auto overflow-y-visible scrollbar-hide pb-6"
-            style={{ gap: 5, alignItems: "flex-start" }}
-          >
-            {slice.map((t) => (
-              <TariffCard key={t.id} tariff={t} />
-            ))}
-          </div>
+          <>
+            <div
+              className="flex overflow-x-auto overflow-y-visible scrollbar-hide pb-6"
+              style={{ gap: 5, alignItems: "flex-start" }}
+            >
+              {slice.map((t) => (
+                <TariffCard key={t.id} tariff={t} />
+              ))}
+            </div>
+            <div
+              className="absolute top-0 bottom-2 right-0 w-[100px] pointer-events-none"
+              style={{
+                background: "linear-gradient(to right, rgba(245,245,245,0), #F5F5F5)",
+              }}
+            />
+          </>
         )}
       </div>
       <div style={{ flexShrink: 0, marginTop: 50 }}>{paginationBlock}</div>

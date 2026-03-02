@@ -47,11 +47,11 @@ export function DashboardLayoutClient({
           className={`flex-1 flex flex-col min-w-0 min-h-0 ${pathname.startsWith("/addresses") ? "overflow-y-auto" : ""}`}
           style={{ gap: 5 }}
         >
-          <div style={{ paddingRight: 60 }}>
+          <div className="shrink-0 min-w-0 w-full" style={{ paddingRight: 60 }}>
             <Header
               search={search}
               onSearchChange={setSearch}
-              showSearch={pathname.startsWith("/orders") || pathname.startsWith("/addresses")}
+              showSearch={pathname.startsWith("/orders") || pathname.startsWith("/addresses") || pathname.startsWith("/tariffs")}
               searchPlaceholder={pathname.startsWith("/addresses") ? "Искать по параметрам и тарифным планам..." : undefined}
             />
           </div>

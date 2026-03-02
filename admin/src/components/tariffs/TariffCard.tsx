@@ -3,113 +3,188 @@
 import { Card } from "@/components/ui/Card";
 import type { Tariff } from "@/types";
 
-/** Иконка галочки как во frontend Frame3 */
+/** Как в карточке адреса: отступ между рядами 5px, стили подписи и значения */
+const ROW_GAP = 5;
+
+const labelStyle: React.CSSProperties = {
+  fontFamily: "'TT Firs Neue', sans-serif",
+  fontStyle: "normal",
+  fontWeight: 400,
+  fontSize: 14,
+  lineHeight: "145%",
+  display: "flex",
+  alignItems: "center",
+  color: "rgba(16, 16, 16, 0.25)",
+  margin: 0,
+  minHeight: 20,
+};
+
+const valueStyle: React.CSSProperties = {
+  fontFamily: "'TT Firs Neue', sans-serif",
+  fontStyle: "normal",
+  fontWeight: 400,
+  fontSize: 16,
+  lineHeight: "125%",
+  display: "flex",
+  alignItems: "center",
+  color: "#101010",
+  margin: 0,
+  minHeight: 20,
+};
+
+/** Круг 30×30 с галочкой — как серые круги в карточке адреса, но с иконкой внутри */
 function CheckCircleIcon() {
   return (
-    <span className="inline-flex items-center justify-center flex-shrink-0 w-4 h-4 rounded-full border border-[#101010] bg-white">
-      <svg width="8" height="6" viewBox="0 0 8 6" fill="none" aria-hidden>
+    <span
+      className="inline-flex items-center justify-center flex-shrink-0 rounded-full bg-transparent"
+      style={{
+        width: 30,
+        height: 30,
+        minWidth: 30,
+        minHeight: 30,
+        border: "1px solid rgba(16, 16, 16, 0.15)",
+        borderRadius: 15,
+        boxSizing: "border-box",
+      }}
+    >
+      <svg width="10" height="8" viewBox="0 0 8 6" fill="none" aria-hidden>
         <path d="M1 3L3 5L7 1" stroke="#101010" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
     </span>
   );
 }
 
-const labelStyle = "font-frame text-xs leading-[125%] text-[rgba(16,16,16,0.5)]";
-const valueStyle = "font-frame text-sm truncate text-[#101010]";
-const featureText = "font-frame text-[16px] leading-[155%] text-[#101010]";
-const featureDesc = "font-frame text-[14px] leading-[105%] text-[rgba(16,16,16,0.5)]";
+/** Как на странице «База адресов»: карточка 240×535px, отступ между карточками 5px */
+const CARD_WIDTH = 240;
+const CARD_MIN_HEIGHT = 535;
 
 export function TariffCard({ tariff }: { tariff: Tariff }) {
   const providerName = (tariff as Tariff & { provider?: { name: string } }).provider?.name ?? "—";
   const category = "Жилое, кв.";
 
   return (
-    <Card className="rounded-[20px] p-5">
-      <div className="flex items-start justify-between gap-2 mb-3">
-        <div className="flex gap-1">
-          <span className="w-2 h-2 rounded-full bg-[rgba(16,16,16,0.25)]" />
-          <span className="w-2 h-2 rounded-full bg-[rgba(16,16,16,0.25)]" />
+    <Card
+      className="rounded-[20px] p-5 shrink-0"
+      style={{
+        width: CARD_WIDTH,
+        minWidth: CARD_WIDTH,
+        minHeight: CARD_MIN_HEIGHT,
+        boxSizing: "border-box",
+      }}
+    >
+      {/* Как в карточке адреса: 3 серых круга 30×30 сверху; третий прижат к правому краю — 20px от края за счёт padding карточки */}
+      <div
+        className="flex items-start shrink-0"
+        style={{
+          flexDirection: "row",
+          marginBottom: 12,
+          minHeight: 30,
+          boxSizing: "border-box",
+          width: "100%",
+        }}
+      >
+        <div className="flex items-start shrink-0" style={{ gap: 5 }}>
+          {[1, 2].map((i) => (
+            <span
+              key={i}
+              className="shrink-0 bg-transparent"
+              style={{
+                width: 30,
+                height: 30,
+                minWidth: 30,
+                minHeight: 30,
+                border: "1px solid rgba(16, 16, 16, 0.15)",
+                borderRadius: 15,
+                boxSizing: "border-box",
+              }}
+            />
+          ))}
         </div>
-        <div className="flex gap-1">
-          <span className="w-2 h-2 rounded-full bg-[rgba(16,16,16,0.25)]" />
-          <span className="w-2 h-2 rounded-full bg-[rgba(16,16,16,0.25)]" />
-        </div>
+        <span
+          className="shrink-0 bg-transparent"
+          style={{
+            width: 30,
+            height: 30,
+            minWidth: 30,
+            minHeight: 30,
+            border: "1px solid rgba(16, 16, 16, 0.15)",
+            borderRadius: 15,
+            boxSizing: "border-box",
+            marginLeft: "auto",
+          }}
+        />
       </div>
 
-      <div className="space-y-1.5 text-sm">
-        <div>
-          <p className={labelStyle}>Категория</p>
-          <p className={valueStyle}>{category}</p>
-        </div>
-        <div>
-          <p className={labelStyle}>Название опер.</p>
-          <p className={valueStyle}>{providerName}</p>
-        </div>
-        <div>
-          <p className={labelStyle}>Тарифный план</p>
-          <p className={valueStyle}>{tariff.name}</p>
-        </div>
+      <div style={{ marginBottom: ROW_GAP }}>
+        <p style={labelStyle}>Категория</p>
+        <p style={valueStyle}>{category}</p>
+      </div>
+      <div style={{ marginBottom: ROW_GAP }}>
+        <p style={labelStyle}>Название опер.</p>
+        <p style={valueStyle} title={providerName}>{providerName}</p>
+      </div>
+      <div style={{ marginBottom: ROW_GAP }}>
+        <p style={labelStyle}>Тарифный план</p>
+        <p style={valueStyle} title={tariff.name}>{tariff.name}</p>
       </div>
 
-      <div className="h-px bg-[rgba(16,16,16,0.1)] max-w-[330px] my-3" />
-
-      <div className="flex flex-col gap-[5px] mb-3">
-        <div className="flex items-center min-h-[40px] gap-[9px]">
+      <div className="flex flex-col" style={{ gap: ROW_GAP, marginBottom: ROW_GAP }}>
+        <div className="flex items-center gap-2 min-h-[20px]">
           <CheckCircleIcon />
           <div className="flex-1 min-w-0">
-            <p className={featureText}>{tariff.speed ? `${tariff.speed} Мбит/сек` : "—"}</p>
-            <p className={featureDesc}>Безлимитное соединение в квартире</p>
+            <p style={{ ...valueStyle, margin: 0 }}>{tariff.speed ? `${tariff.speed} Мбит/сек` : "—"}</p>
+            <p style={{ ...labelStyle, margin: 0, marginTop: 2 }}>Безлимитное соединение в квартире</p>
           </div>
         </div>
-        <div className="flex items-center min-h-[40px] gap-[9px]">
+        <div className="flex items-center gap-2 min-h-[20px]">
           <CheckCircleIcon />
           <div className="flex-1 min-w-0">
-            <p className={featureText}>{tariff.tvChannels ? `${tariff.tvChannels} каналов` : "—"}</p>
-            <p className={featureDesc}>{tariff.hasTV ? "Телевидение" : " "}</p>
+            <p style={{ ...valueStyle, margin: 0 }}>{tariff.tvChannels ? `${tariff.tvChannels} каналов` : "—"}</p>
+            <p style={{ ...labelStyle, margin: 0, marginTop: 2 }}>{tariff.hasTV ? "Телевидение" : " "}</p>
           </div>
         </div>
-        <div className="flex items-center min-h-[40px] gap-[9px]">
+        <div className="flex items-center gap-2 min-h-[20px]">
           <CheckCircleIcon />
           <div className="flex-1 min-w-0">
-            <p className={featureText}>
+            <p style={{ ...valueStyle, margin: 0 }}>
               {tariff.mobileGB != null
                 ? tariff.mobileGB >= 999
                   ? "безлимит гигабайтов"
                   : `${tariff.mobileMinutes ?? 0} мин · ${tariff.mobileGB} гигабайтов`
                 : "—"}
             </p>
-            <p className={featureDesc}>{tariff.hasMobile ? "Мобильное соединение" : " "}</p>
+            <p style={{ ...labelStyle, margin: 0, marginTop: 2 }}>{tariff.hasMobile ? "Мобильное соединение" : " "}</p>
           </div>
         </div>
       </div>
 
-      <div className="h-px bg-[rgba(16,16,16,0.1)] max-w-[330px] my-2" />
-
-      <div className="font-frame text-[22px] leading-[115%] text-[#101010] mb-1">
-        {tariff.price != null ? `${tariff.price} р./мес.` : "—"}
+      <div style={{ marginBottom: ROW_GAP }}>
+        <p style={valueStyle}>{tariff.price != null ? `${tariff.price} р./мес.` : "—"}</p>
       </div>
-      <div className={featureDesc + " mb-3"}>
-        {tariff.connectionPrice === 0
-          ? "Подключение от оператора за 0 р."
-          : `Подключение от оператора за ${tariff.connectionPrice ?? "—"} р.`}
+      <div style={{ marginBottom: ROW_GAP }}>
+        <p style={labelStyle}>
+          {tariff.connectionPrice === 0
+            ? "Подключение от оператора за 0 р."
+            : `Подключение от оператора за ${tariff.connectionPrice ?? "—"} р.`}
+        </p>
       </div>
 
-      <div className="space-y-1.5 text-sm border-t border-[rgba(16,16,16,0.1)] pt-2">
-        <div>
-          <p className={labelStyle}>WI</p>
-          <p className={valueStyle}>{tariff.speed ? `${tariff.speed} Мбит/сек` : "—"}</p>
+      <div style={{ display: "flex", flexDirection: "column", gap: ROW_GAP }}>
+        <div style={{ marginBottom: 0 }}>
+          <p style={labelStyle}>WI</p>
+          <p style={valueStyle}>{tariff.speed ? `${tariff.speed} Мбит/сек` : "—"}</p>
         </div>
-        <div>
-          <p className={labelStyle}>TV</p>
-          <p className={valueStyle}>{tariff.tvChannels ? `${tariff.tvChannels} кан` : "—"}</p>
+        <div style={{ marginBottom: 0 }}>
+          <p style={labelStyle}>TV</p>
+          <p style={valueStyle}>{tariff.tvChannels ? `${tariff.tvChannels} кан` : "—"}</p>
         </div>
-        <div>
-          <p className={labelStyle}>SIM</p>
-          <p className={valueStyle}>{tariff.mobileGB != null ? String(tariff.mobileGB) : "—"}</p>
+        <div style={{ marginBottom: 0 }}>
+          <p style={labelStyle}>SIM</p>
+          <p style={valueStyle}>{tariff.mobileGB != null ? String(tariff.mobileGB) : "—"}</p>
         </div>
-        <div>
-          <p className={labelStyle}>Плата, мес.</p>
-          <p className={valueStyle}>{tariff.price != null ? `${tariff.price} р.` : "—"}</p>
+        <div style={{ marginBottom: 0 }}>
+          <p style={labelStyle}>Плата, мес.</p>
+          <p style={valueStyle}>{tariff.price != null ? `${tariff.price} р.` : "—"}</p>
         </div>
       </div>
     </Card>

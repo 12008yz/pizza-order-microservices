@@ -67,7 +67,7 @@ export function AddressCard({ address }: AddressCardProps) {
         WebkitBackdropFilter: "blur(7.5px)",
       }}
     >
-      {/* По макету: только 3 серых круга сверху (Rectangle 41, 40, 42) */}
+      {/* По макету: только 3 серых круга сверху; третий прижат к правому краю — 20px от края карточки за счёт padding карточки */}
       <div
         className="flex items-start shrink-0"
         dir="ltr"
@@ -75,25 +75,40 @@ export function AddressCard({ address }: AddressCardProps) {
           flexDirection: "row",
           marginBottom: 12,
           minHeight: 30,
-          gap: 5,
           boxSizing: "border-box",
+          width: "100%",
         }}
       >
-        {[1, 2, 3].map((i) => (
-          <span
-            key={i}
-            className="shrink-0 bg-transparent"
-            style={{
-              width: 30,
-              height: 30,
-              minWidth: 30,
-              minHeight: 30,
-              border: "1px solid rgba(16, 16, 16, 0.15)",
-              borderRadius: 15,
-              boxSizing: "border-box",
-            }}
-          />
-        ))}
+        <div className="flex items-start shrink-0" style={{ gap: 5 }}>
+          {[1, 2].map((i) => (
+            <span
+              key={i}
+              className="shrink-0 bg-transparent"
+              style={{
+                width: 30,
+                height: 30,
+                minWidth: 30,
+                minHeight: 30,
+                border: "1px solid rgba(16, 16, 16, 0.15)",
+                borderRadius: 15,
+                boxSizing: "border-box",
+              }}
+            />
+          ))}
+        </div>
+        <span
+          className="shrink-0 bg-transparent"
+          style={{
+            width: 30,
+            height: 30,
+            minWidth: 30,
+            minHeight: 30,
+            border: "1px solid rgba(16, 16, 16, 0.15)",
+            borderRadius: 15,
+            boxSizing: "border-box",
+            marginLeft: "auto",
+          }}
+        />
       </div>
       {/* Категория — значение с подчёркиванием, как в макете */}
       <div style={{ marginBottom: ROW_GAP }}>

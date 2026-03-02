@@ -15,6 +15,7 @@ export default function TariffsPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
+  const searchParam = searchParams.get("search") ?? "";
   const pageParam = parseInt(searchParams.get("page") ?? "1", 10);
 
   const [tariffs, setTariffs] = useState<Tariff[]>([]);
@@ -42,11 +43,23 @@ export default function TariffsPage() {
     return () => { cancelled = true; };
   }, []);
 
-  const totalPages = Math.max(1, Math.ceil(tariffs.length / CARDS_PER_PAGE));
+  const filtered = useMemo(() => {
+    if (!searchParam.trim()) return tariffs;
+    const q = searchParam.trim().toLowerCase();
+    return tariffs.filter((t) => {
+      const name = (t.name ?? "").toLowerCase();
+      const desc = (t.description ?? "").toLowerCase();
+      const tech = (t.technology ?? "").toLowerCase();
+      const providerName = ((t as Tariff & { provider?: { name: string } }).provider?.name ?? "").toLowerCase();
+      return name.includes(q) || desc.includes(q) || tech.includes(q) || providerName.includes(q);
+    });
+  }, [tariffs, searchParam]);
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / CARDS_PER_PAGE));
   const currentPage = Math.min(page, totalPages);
   const slice = useMemo(
-    () => tariffs.slice((currentPage - 1) * CARDS_PER_PAGE, currentPage * CARDS_PER_PAGE),
-    [tariffs, currentPage]
+    () => filtered.slice((currentPage - 1) * CARDS_PER_PAGE, currentPage * CARDS_PER_PAGE),
+    [filtered, currentPage]
   );
 
   useEffect(() => {
@@ -58,9 +71,10 @@ export default function TariffsPage() {
       setPage(totalPages);
       const params = new URLSearchParams(searchParams.toString());
       params.set("page", String(totalPages));
+      if (searchParam) params.set("search", searchParam);
       router.replace(`${pathname}?${params.toString()}`);
     }
-  }, [totalPages, page, router, pathname, searchParams]);
+  }, [totalPages, page, router, pathname, searchParams, searchParam]);
 
   const handlePageChange = useCallback(
     (p: number) => {
@@ -68,9 +82,10 @@ export default function TariffsPage() {
       setPage(safePage);
       const params = new URLSearchParams(searchParams.toString());
       params.set("page", String(safePage));
+      if (searchParam) params.set("search", searchParam);
       router.push(`${pathname}?${params.toString()}`);
     },
-    [router, pathname, searchParams, totalPages]
+    [router, pathname, searchParams, searchParam, totalPages]
   );
 
   const paginationBlock = (
@@ -106,7 +121,7 @@ export default function TariffsPage() {
         className="relative min-w-0 w-full overflow-x-auto overflow-y-visible"
         style={{ minHeight: 560, marginBottom: -50 }}
       >
-        {tariffs.length === 0 ? (
+        {filtered.length === 0 ? (
           <p className="text-center py-8" style={{ fontFamily: "'TT Firs Neue', sans-serif", color: "rgba(16,16,16,0.5)" }}>
             Тарифов не найдено
           </p>

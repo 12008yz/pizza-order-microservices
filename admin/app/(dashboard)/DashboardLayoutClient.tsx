@@ -52,7 +52,13 @@ export function DashboardLayoutClient({
               search={search}
               onSearchChange={setSearch}
               showSearch={pathname.startsWith("/orders") || pathname.startsWith("/addresses") || pathname.startsWith("/tariffs")}
-              searchPlaceholder={pathname.startsWith("/addresses") ? "Искать по параметрам и тарифным планам..." : undefined}
+              searchPlaceholder={
+                pathname.startsWith("/addresses")
+                  ? "Искать по параметрам и тарифным планам..."
+                  : pathname.startsWith("/tariffs")
+                    ? "Искать по тарифам и операторам..."
+                    : undefined
+              }
             />
           </div>
           <main

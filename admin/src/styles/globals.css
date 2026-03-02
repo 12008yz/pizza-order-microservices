@@ -118,7 +118,7 @@ body {
   color: var(--frame-color-muted);
 }
 
-/* Форма «Проникновение»: обводка полей не пропадает при фокусе */
+/* Форма «Проникновение» / «Предложение»: обводка полей не пропадает при фокусе */
 .address-form input:focus,
 .address-form button[aria-haspopup="listbox"]:focus {
   outline: none;
@@ -126,7 +126,15 @@ body {
 .address-form input:focus {
   border: 1px solid rgba(16, 16, 16, 0.5);
 }
-.address-form input.invalid-field:focus {
+.address-form input::placeholder {
+  color: rgba(16, 16, 16, 0.25);
+}
+.address-form .field-with-arrow:focus-within {
+  border: 1px solid rgba(16, 16, 16, 0.5);
+}
+
+.address-form input.invalid-field:focus,
+.address-form div.invalid-field {
   border-color: #FF3030;
 }
 .address-form button[aria-haspopup="listbox"]:focus {

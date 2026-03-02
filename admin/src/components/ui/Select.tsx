@@ -30,6 +30,8 @@ interface SelectProps {
   onAddNew?: () => void;
   /** Текст в триггере, когда value пустой (например, выбранный город при выборе улицы) */
   displayWhenEmpty?: string;
+  /** Высота открытого выпадающего списка при frameStyle (по умолчанию 140 или 180) */
+  frameOpenHeight?: number;
 }
 
 const labelStyle: React.CSSProperties = {
@@ -87,6 +89,7 @@ export function Select({
   showAddNew = false,
   onAddNew,
   displayWhenEmpty,
+  frameOpenHeight,
 }: SelectProps) {
   const [open, setOpen] = useState(false);
   const [dropdownStyle, setDropdownStyle] = useState<{
@@ -249,8 +252,7 @@ export function Select({
       style={{
         ...labelStyle,
         boxSizing: "border-box",
-        paddingLeft: 10,
-        paddingRight: 14.5,
+        ...(frameStyle ? { paddingTop: 15, paddingBottom: 15, paddingLeft: 15, paddingRight: 18 } : { paddingLeft: 10, paddingRight: 14.5 }),
         border:
           invalid
             ? "1px solid #FF3030"
@@ -259,7 +261,7 @@ export function Select({
               : frameStyle
                 ? "1px solid rgba(16, 16, 16, 0.5)"
                 : undefined,
-        ...(frameStyle && open ? { height: 50, flexShrink: 0 } : {}),
+        ...(frameStyle && open ? { height: 50, flexShrink: 0, marginBottom: 0 } : {}),
       }}
       aria-haspopup="listbox"
       aria-expanded={open}
@@ -379,8 +381,8 @@ export function Select({
         marginTop: 10,
         paddingTop: 0,
         paddingBottom: 0,
-        paddingLeft: 10,
-        paddingRight: 10,
+        paddingLeft: 15,
+        paddingRight: 15,
       }}
       role="button"
       tabIndex={0}
@@ -408,7 +410,7 @@ export function Select({
   );
 
   if (frameStyle && open) {
-    const frameHeight = showAddNew ? FRAME_DROPDOWN_HEIGHT : FRAME_DROPDOWN_HEIGHT_FIRST;
+    const frameHeight = frameOpenHeight ?? (showAddNew ? FRAME_DROPDOWN_HEIGHT : FRAME_DROPDOWN_HEIGHT_FIRST);
     const isFirstField = !showAddNew;
     return (
       <div ref={containerRef} className="relative w-full" style={{ minWidth: 155, height: frameHeight }}>
@@ -419,7 +421,7 @@ export function Select({
             height: frameHeight,
             boxSizing: "border-box",
             border: "1px solid rgba(16,16,16,0.5)",
-            paddingBottom: isFirstField ? 10 : 15,
+            paddingBottom: 15,
           }}
           onClick={(e) => e.stopPropagation()}
         >
@@ -427,7 +429,7 @@ export function Select({
           <div
             role="listbox"
             className={cn("flex flex-col flex-1 min-h-0", isFirstField ? "overflow-hidden" : "overflow-y-auto scrollbar-hide")}
-            style={{ paddingTop: 0, paddingRight: 10, paddingBottom: showAddNew ? 0 : 10, paddingLeft: 10, gap: 10 }}
+            style={{ marginTop: -15, paddingTop: 10, paddingRight: 15, paddingBottom: showAddNew ? 0 : 15, paddingLeft: 15, gap: 10 }}
           >
             {dropdownList}
           </div>

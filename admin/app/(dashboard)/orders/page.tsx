@@ -283,6 +283,7 @@ function OrdersPageContent() {
         ref={viewportRef}
         className="relative min-w-0 w-full overflow-x-auto overflow-y-hidden"
         style={{ flex: "1 1 0" }}
+        onClick={() => setExpandedOrderId(null)}
       >
         <div
           ref={scrollRef}
@@ -316,7 +317,10 @@ function OrdersPageContent() {
                 key={order.id}
                 role="button"
                 tabIndex={0}
-                onClick={() => setExpandedOrderId(order.id)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setExpandedOrderId(order.id);
+                }}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" || e.key === " ") {
                     e.preventDefault();

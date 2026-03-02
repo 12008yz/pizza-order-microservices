@@ -10,16 +10,13 @@ const fontFamily = "'TT Firs Neue', sans-serif";
 const fieldBorder = "1px solid rgba(16, 16, 16, 0.5)";
 const fieldHeight = 50;
 const fieldRadius = 10;
-/** Круг 16×16 справа у полей (как в макете Group 7734); при выборе — синяя галочка */
+/** Круг 16×16 справа у полей; при выборе — чёрный фон и белая галочка (как в frontend modals) */
 const FIELD_CIRCLE_SIZE = 16;
 const FIELD_CIRCLE_BORDER = "1px solid rgba(16, 16, 16, 0.5)";
 
-const SuccessCheckIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
-    <path
-      d="M8 0C6.41775 0 4.87103 0.469192 3.55544 1.34824C2.23985 2.22729 1.21447 3.47672 0.608967 4.93853C0.00346625 6.40034 -0.15496 8.00887 0.153721 9.56072C0.462403 11.1126 1.22433 12.538 2.34315 13.6569C3.46197 14.7757 4.88743 15.5376 6.43928 15.8463C7.99113 16.155 9.59966 15.9965 11.0615 15.391C12.5233 14.7855 13.7727 13.7602 14.6518 12.4446C15.5308 11.129 16 9.58225 16 8C15.9978 5.87895 15.1542 3.84542 13.6544 2.34562C12.1546 0.845814 10.121 0.00223986 8 0ZM11.5123 6.58923L7.20462 10.8969C7.14747 10.9541 7.0796 10.9995 7.00489 11.0305C6.93018 11.0615 6.8501 11.0774 6.76923 11.0774C6.68836 11.0774 6.60828 11.0615 6.53358 11.0305C6.45887 10.9995 6.391 10.9541 6.33385 10.8969L4.48769 9.05077C4.37222 8.9353 4.30735 8.77868 4.30735 8.61538C4.30735 8.45208 4.37222 8.29547 4.48769 8.18C4.60317 8.06453 4.75978 7.99966 4.92308 7.99966C5.08638 7.99966 5.24299 8.06453 5.35846 8.18L6.76923 9.59154L10.6415 5.71846C10.6987 5.66128 10.7666 5.61593 10.8413 5.58499C10.916 5.55404 10.9961 5.53812 11.0769 5.53812C11.1578 5.53812 11.2379 5.55404 11.3126 5.58499C11.3873 5.61593 11.4551 5.66128 11.5123 5.71846C11.5695 5.77564 11.6148 5.84351 11.6458 5.91822C11.6767 5.99292 11.6927 6.07299 11.6927 6.15385C11.6927 6.2347 11.6767 6.31477 11.6458 6.38947C11.6148 6.46418 11.5695 6.53205 11.5123 6.58923Z"
-      fill="#0075FF"
-    />
+const WhiteCheckIcon = () => (
+  <svg width="8" height="6" viewBox="0 0 8 6" fill="none" aria-hidden>
+    <path d="M1 3L3 5L7 1" stroke="#FFFFFF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
   </svg>
 );
 
@@ -159,7 +156,7 @@ export default function NewAddressPage() {
         paddingLeft: 20,
         paddingRight: 20,
         paddingTop: 20,
-        paddingBottom: 10,
+        paddingBottom: 19,
         fontFamily,
       }}
     >
@@ -200,13 +197,14 @@ export default function NewAddressPage() {
       </div>
 
       <form className="address-form" onSubmit={handleSubmit}>
-        {/* Название населённого пункта + круг справа (колонка 30px; gap 30 — правый край поля совпадает с рядом Категория/Краткое описание) */}
+        {/* Название населённого пункта + круг справа; ширина поля как у второго ряда (выравнивание по уровню) */}
         <div style={{ display: "flex", alignItems: "center", gap: 30, marginBottom: 10 }}>
           <div style={{ flex: 1, minWidth: 0 }}>
             <Select
               value={regionId === "" ? null : regionId}
               options={regions.map((r) => ({ value: r.id, label: r.name }))}
               onChange={(v) => { setRegionId(v != null ? Number(v) : ""); setValidationError(false); }}
+              onFocus={() => setValidationError(false)}
               placeholder="Название населённого пункта"
               frameStyle
               invalid={validationError}
@@ -225,10 +223,11 @@ export default function NewAddressPage() {
                 display: "inline-flex",
                 alignItems: "center",
                 justifyContent: "center",
+                background: regionId !== "" ? "#101010" : "transparent",
               }}
               aria-hidden
             >
-              {regionId !== "" ? <SuccessCheckIcon /> : null}
+              {regionId !== "" ? <WhiteCheckIcon /> : null}
             </span>
           </div>
         </div>
@@ -241,6 +240,7 @@ export default function NewAddressPage() {
                 value={cityId === "" ? null : cityId}
                 options={cities.map((c) => ({ value: c.id, label: c.name }))}
                 onChange={(v) => { setCityId(v != null ? Number(v) : ""); setValidationError(false); }}
+                onFocus={() => setValidationError(false)}
                 placeholder="Название пространства населённого пункта"
                 disabled={!regionId}
                 frameStyle
@@ -253,6 +253,7 @@ export default function NewAddressPage() {
                 value={streetId === "" ? null : streetId}
                 options={streets.map((s) => ({ value: s.id, label: s.name }))}
                 onChange={(v) => { setStreetId(v != null ? Number(v) : ""); setValidationError(false); }}
+                onFocus={() => setValidationError(false)}
                 placeholder="Название пространства населённого пункта"
                 displayWhenEmpty={cities.find((c) => c.id === cityId)?.name}
                 frameStyle
@@ -273,10 +274,11 @@ export default function NewAddressPage() {
                 display: "inline-flex",
                 alignItems: "center",
                 justifyContent: "center",
+                background: (cityId !== "" || streetId !== "") ? "#101010" : "transparent",
               }}
               aria-hidden
             >
-              {(cityId !== "" || streetId !== "") ? <SuccessCheckIcon /> : null}
+              {(cityId !== "" || streetId !== "") ? <WhiteCheckIcon /> : null}
             </span>
           </div>
         </div>
@@ -299,6 +301,7 @@ export default function NewAddressPage() {
                 { value: "office", label: "Офис" },
               ]}
               onChange={(v) => setCategory(v != null ? String(v) : "residential")}
+              onFocus={() => setValidationError(false)}
               placeholder="Категория"
               frameStyle
               invalid={validationError}
@@ -313,6 +316,7 @@ export default function NewAddressPage() {
                 ...(houseNumber && !/^\d+$/.test(houseNumber) ? [{ value: houseNumber, label: houseNumber }] : []),
               ]}
               onChange={(v) => { setHouseNumber(v != null ? String(v) : ""); setValidationError(false); }}
+              onFocus={() => setValidationError(false)}
               placeholder="Номеры"
               frameStyle
               invalid={validationError}
@@ -329,6 +333,7 @@ export default function NewAddressPage() {
                 ...(entrances && (parseInt(entrances, 10) > 20 || !/^\d+$/.test(entrances)) ? [{ value: entrances, label: entrances }] : []),
               ]}
               onChange={(v) => setEntrances(v != null ? String(v) : "")}
+              onFocus={() => setValidationError(false)}
               placeholder="Подъезды"
               frameStyle
               invalid={validationError}
@@ -345,6 +350,7 @@ export default function NewAddressPage() {
                 ...(floors && (parseInt(floors, 10) > 25 || !/^\d+$/.test(floors)) ? [{ value: floors, label: floors }] : []),
               ]}
               onChange={(v) => setFloors(v != null ? String(v) : "")}
+              onFocus={() => setValidationError(false)}
               placeholder="Полеты"
               frameStyle
               invalid={validationError}
@@ -361,6 +367,7 @@ export default function NewAddressPage() {
                 ...(apartments && (parseInt(apartments, 10) > 50 || !/^\d+$/.test(apartments)) ? [{ value: apartments, label: apartments }] : []),
               ]}
               onChange={(v) => setApartments(v != null ? String(v) : "")}
+              onFocus={() => setValidationError(false)}
               placeholder="Квартиры"
               frameStyle
               invalid={validationError}
@@ -377,6 +384,7 @@ export default function NewAddressPage() {
               value={providerId === "" ? null : providerId}
               options={providers.map((p) => ({ value: p.id, label: p.name }))}
               onChange={(v) => setProviderId(v != null ? Number(v) : "")}
+              onFocus={() => setValidationError(false)}
               placeholder="Категория"
               frameStyle
             />
@@ -388,6 +396,7 @@ export default function NewAddressPage() {
               style={{ ...fieldStyle, paddingRight: 16, width: "100%" }}
               value={comment}
               onChange={(e) => setComment(e.target.value)}
+              onFocus={() => setValidationError(false)}
               placeholder="Краткое описание"
             />
           </div>

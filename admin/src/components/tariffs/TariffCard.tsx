@@ -46,10 +46,11 @@ export function TariffCard({ tariff }: { tariff: Tariff }) {
 
   return (
     <Card
-      className="rounded-[20px] shrink-0 flex flex-col"
+      className="rounded-[20px] shrink-0 flex flex-col overflow-hidden"
       style={{
         width: CARD_WIDTH,
         minWidth: CARD_WIDTH,
+        height: CARD_HEIGHT,
         minHeight: CARD_HEIGHT,
         padding: CARD_PADDING_PX,
         boxSizing: "border-box",
@@ -98,38 +99,38 @@ export function TariffCard({ tariff }: { tariff: Tariff }) {
         />
       </div>
 
-      <div style={rowWrap(ROW_GAP_PX)}>
+      <div style={rowWrap(ROW_GAP_PX)} className="min-w-0">
         <p style={labelStyle}>Категория</p>
-        <p style={valueStyle}>{category}</p>
+        <p className="truncate" style={valueStyle}>{category}</p>
       </div>
-      <div style={rowWrap(ROW_GAP_PX)}>
+      <div style={rowWrap(ROW_GAP_PX)} className="min-w-0">
         <p style={labelStyle}>Название оператора</p>
-        <p style={valueStyle} title={providerName}>{providerName}</p>
+        <p className="truncate" style={valueStyle} title={providerName}>{providerName}</p>
       </div>
-      <div style={rowWrap(ROW_GAP_PX)}>
+      <div style={rowWrap(ROW_GAP_PX)} className="min-w-0">
         <p style={labelStyle}>Название тарифного плана</p>
-        <p style={valueStyle} title={tariff.name}>{tariff.name}</p>
+        <p className="truncate" style={valueStyle} title={tariff.name}>{tariff.name}</p>
       </div>
 
-      <div style={rowWrap(ROW_GAP_PX)}>
+      <div style={rowWrap(ROW_GAP_PX)} className="min-w-0">
         <p style={labelStyle}>WI</p>
-        <p style={valueStyle}>{tariff.speed ? `${tariff.speed} Мбит/сек` : "—"}</p>
+        <p className="truncate" style={valueStyle}>{tariff.speed ? `${tariff.speed} Мбит/сек` : "—"}</p>
       </div>
-      <div style={rowWrap(ROW_GAP_PX)}>
+      <div style={rowWrap(ROW_GAP_PX)} className="min-w-0">
         <p style={labelStyle}>TV</p>
-        <p style={valueStyle}>{tariff.tvChannels ? `${tariff.tvChannels} кан` : "—"}</p>
+        <p className="truncate" style={valueStyle}>{tariff.tvChannels ? `${tariff.tvChannels} кан` : "—"}</p>
       </div>
-      <div style={rowWrap(ROW_GAP_PX)}>
+      <div style={rowWrap(ROW_GAP_PX)} className="min-w-0">
         <p style={labelStyle}>TV</p>
-        <p style={valueStyle}>—</p>
+        <p className="truncate" style={valueStyle}>—</p>
       </div>
-      <div style={rowWrap(ROW_GAP_PX)}>
+      <div style={rowWrap(ROW_GAP_PX)} className="min-w-0">
         <p style={labelStyle}>SIM</p>
-        <p style={valueStyle}>{tariff.mobileMinutes != null ? String(tariff.mobileMinutes) : "—"}</p>
+        <p className="truncate" style={valueStyle}>{tariff.mobileMinutes != null ? String(tariff.mobileMinutes) : "—"}</p>
       </div>
-      <div style={rowWrap(ROW_GAP_PX)}>
+      <div style={rowWrap(ROW_GAP_PX)} className="min-w-0">
         <p style={labelStyle}>SIM</p>
-        <p style={valueStyle}>
+        <p className="truncate" style={valueStyle}>
           {tariff.mobileGB != null
             ? tariff.mobileGB >= 999
               ? "безлимит гигабайтов"
@@ -137,13 +138,13 @@ export function TariffCard({ tariff }: { tariff: Tariff }) {
             : "—"}
         </p>
       </div>
-      <div style={rowWrap(ROW_GAP_PX)}>
+      <div style={rowWrap(ROW_GAP_PX)} className="min-w-0">
         <p style={labelStyle}>SIM</p>
-        <p style={valueStyle}>{tariff.mobileSMS != null ? `${tariff.mobileSMS} смс` : "—"}</p>
+        <p className="truncate" style={valueStyle}>{tariff.mobileSMS != null ? `${tariff.mobileSMS} смс` : "—"}</p>
       </div>
-      <div style={{ marginBottom: 0 }}>
+      <div style={{ marginBottom: 0 }} className="min-w-0">
         <p style={labelStyle}>Плата, мес.</p>
-        <p style={valueStyle}>{tariff.price != null ? `${tariff.price} р.` : "—"}</p>
+        <p className="truncate" style={valueStyle}>{tariff.price != null ? `${tariff.price} р.` : "—"}</p>
       </div>
     </Card>
   );

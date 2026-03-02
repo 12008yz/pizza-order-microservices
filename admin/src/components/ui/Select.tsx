@@ -32,6 +32,8 @@ interface SelectProps {
   displayWhenEmpty?: string;
   /** Высота открытого выпадающего списка при frameStyle (по умолчанию 140 или 180) */
   frameOpenHeight?: number;
+  /** Вызов при фокусе/открытии поля (например снять красную обводку валидации) */
+  onFocus?: () => void;
 }
 
 const labelStyle: React.CSSProperties = {
@@ -42,9 +44,12 @@ const labelStyle: React.CSSProperties = {
   color: "#101010",
 };
 
-const FRAME_DROPDOWN_HEIGHT = 180;
+/** Высота при showAddNew: три полные строки в скролле (90px) + отступ 10 + строка «Новое вкл...» 20, без лишнего отступа снизу */
+const FRAME_DROPDOWN_HEIGHT = 50 + 90 + 10 + 20; // 170
 /** Высота первого поля «Категория» (без «Новое вкл...») */
 const FRAME_DROPDOWN_HEIGHT_FIRST = 140;
+/** Высота скролла при showAddNew: 3 строки по 30px (20 + gap 10), чтобы не было видно части следующей цифры */
+const FRAME_ADD_NEW_LIST_HEIGHT = 90;
 
 /** Стрелка: закрыт — вниз, открыт — вверх */
 const ArrowIcon = ({ open }: { open: boolean }) => (
@@ -90,6 +95,7 @@ export function Select({
   onAddNew,
   displayWhenEmpty,
   frameOpenHeight,
+  onFocus,
 }: SelectProps) {
   const [open, setOpen] = useState(false);
   const [dropdownStyle, setDropdownStyle] = useState<{
@@ -241,7 +247,14 @@ export function Select({
     <button
       type="button"
       disabled={disabled}
-      onClick={() => !disabled && setOpen((v) => !v)}
+      onFocus={() => onFocus?.()}
+      onClick={() => {
+        if (disabled) return;
+        setOpen((prev) => {
+          if (!prev) onFocus?.();
+          return !prev;
+        });
+      }}
       className={cn(
         "w-full border outline-none text-left cursor-pointer flex items-center justify-between min-h-[50px]",
         frameStyle && open ? "rounded-t-[10px] rounded-b-none" : "rounded-[10px]",
@@ -267,7 +280,7 @@ export function Select({
       aria-expanded={open}
     >
       <span
-        className="truncate"
+        className="truncate min-w-0"
         style={
           frameStyle && (open || displayText === placeholder)
             ? { color: "rgba(16, 16, 16, 0.25)" }
@@ -296,6 +309,7 @@ export function Select({
     <>
       {currentSelectionLabel != null && (
         <div
+          className="flex items-center justify-between w-full min-w-0 flex-shrink-0"
           style={{
             minHeight: 20,
             paddingLeft: 0,
@@ -306,11 +320,24 @@ export function Select({
             fontSize: 16,
             lineHeight: "125%",
             color: "#101010",
-            flexShrink: 0,
           }}
           aria-hidden
         >
-          {currentSelectionLabel}
+          <span className="min-w-0 truncate">{currentSelectionLabel}</span>
+          <div
+            className="rounded-full flex items-center justify-center flex-shrink-0 ml-2"
+            style={{
+              width: 16,
+              height: 16,
+              boxSizing: "border-box",
+              background: "#101010",
+              border: "1px solid rgba(16, 16, 16, 0.5)",
+            }}
+          >
+            <svg width="8" height="6" viewBox="0 0 8 6" fill="none" aria-hidden>
+              <path d="M1 3L3 5L7 1" stroke="#FFFFFF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </div>
         </div>
       )}
       {optionsToShow.map((opt) => {
@@ -321,7 +348,7 @@ export function Select({
             role="option"
             aria-selected={isSelected}
             onClick={() => handleSelect(opt)}
-            className="flex items-center justify-between cursor-pointer w-full select-none"
+            className="flex items-center justify-between cursor-pointer w-full select-none min-w-0"
             style={{
               minHeight: frameStyle ? 20 : 40,
               paddingLeft: frameStyle ? 0 : 15,
@@ -334,7 +361,7 @@ export function Select({
               color: isSelected ? "#101010" : "rgba(16, 16, 16, 0.5)",
             }}
           >
-            <span className="flex-1 truncate">{opt.label}</span>
+            <span className="flex-1 min-w-0 truncate">{opt.label}</span>
             <div
               className="rounded-full flex items-center justify-center flex-shrink-0 ml-2"
               style={{
@@ -421,15 +448,26 @@ export function Select({
             height: frameHeight,
             boxSizing: "border-box",
             border: "1px solid rgba(16,16,16,0.5)",
-            paddingBottom: 15,
+            paddingBottom: showAddNew ? 0 : 15,
           }}
           onClick={(e) => e.stopPropagation()}
         >
           {triggerButton}
           <div
             role="listbox"
-            className={cn("flex flex-col flex-1 min-h-0", isFirstField ? "overflow-hidden" : "overflow-y-auto scrollbar-hide")}
-            style={{ marginTop: -15, paddingTop: 10, paddingRight: 15, paddingBottom: showAddNew ? 0 : 15, paddingLeft: 15, gap: 10 }}
+            className={cn(
+              "flex flex-col",
+              isFirstField ? "flex-1 min-h-0 overflow-hidden" : "overflow-y-auto scrollbar-hide"
+            )}
+            style={{
+              marginTop: -15,
+              paddingTop: 10,
+              paddingRight: 15,
+              paddingBottom: showAddNew ? 0 : 15,
+              paddingLeft: 15,
+              gap: 10,
+              ...(showAddNew ? { height: FRAME_ADD_NEW_LIST_HEIGHT, minHeight: FRAME_ADD_NEW_LIST_HEIGHT } : { flex: 1, minHeight: 0 }),
+            }}
           >
             {dropdownList}
           </div>

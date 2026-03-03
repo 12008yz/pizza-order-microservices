@@ -13,7 +13,6 @@ export default function SimPage() {
         minHeight: 380,
         background: "#FFFFFF",
         borderRadius: 20,
-        border: "1px solid rgba(16, 16, 16, 0.15)",
         padding: 20,
         fontFamily,
       }}

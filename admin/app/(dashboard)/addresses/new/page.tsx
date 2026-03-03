@@ -10,7 +10,7 @@ const fontFamily = "'TT Firs Neue', sans-serif";
 const fieldBorder = "1px solid rgba(16, 16, 16, 0.5)";
 const fieldHeight = 50;
 const fieldRadius = 10;
-/** Круг 16×16 справа у полей; при выборе — чёрный фон и белая галочка (как в frontend modals) */
+/** Круг 16×16 справа у полей; при выборе — голубой фон и белая галочка (первые два поля) */
 const FIELD_CIRCLE_SIZE = 16;
 const FIELD_CIRCLE_BORDER = "1px solid rgba(16, 16, 16, 0.5)";
 
@@ -153,6 +153,7 @@ export default function NewAddressPage() {
         background: "#FFFFFF",
         backdropFilter: "blur(7.5px)",
         borderRadius: 20,
+        border: "none",
         paddingLeft: 20,
         paddingRight: 20,
         paddingTop: 20,
@@ -223,7 +224,7 @@ export default function NewAddressPage() {
                 display: "inline-flex",
                 alignItems: "center",
                 justifyContent: "center",
-                background: regionId !== "" ? "#101010" : "transparent",
+                background: regionId !== "" ? "#3b82f6" : "transparent",
               }}
               aria-hidden
             >
@@ -274,7 +275,7 @@ export default function NewAddressPage() {
                 display: "inline-flex",
                 alignItems: "center",
                 justifyContent: "center",
-                background: (cityId !== "" || streetId !== "") ? "#101010" : "transparent",
+                background: (cityId !== "" || streetId !== "") ? "#3b82f6" : "transparent",
               }}
               aria-hidden
             >

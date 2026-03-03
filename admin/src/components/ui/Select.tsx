@@ -24,7 +24,7 @@ interface SelectProps {
   frameStyle?: boolean;
   /** Красная обводка при невалидной форме */
   invalid?: boolean;
-  /** Показать внизу списка «Новое вкл...» с синим + */
+  /** Показать внизу списка «Новое включить» с синим + */
   showAddNew?: boolean;
   /** Вызов при клике на «Новое вкл...» */
   onAddNew?: () => void;
@@ -44,7 +44,7 @@ const labelStyle: React.CSSProperties = {
   color: "#101010",
 };
 
-/** Высота при showAddNew: три полные строки в скролле (90px) + отступ 10 + строка «Новое вкл...» 20, без лишнего отступа снизу */
+/** Высота при showAddNew: три полные строки в скролле (90px) + отступ 10 + строка «Новое включить» 20, без лишнего отступа снизу */
 const FRAME_DROPDOWN_HEIGHT = 50 + 90 + 10 + 20; // 170
 /** Высота первого поля «Категория» (без «Новое вкл...») */
 const FRAME_DROPDOWN_HEIGHT_FIRST = 140;
@@ -416,7 +416,7 @@ export function Select({
       onClick={(e) => { e.stopPropagation(); onAddNew?.(); }}
       onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onAddNew?.(); } }}
     >
-      <span className="flex-1 truncate">Новое вкл...</span>
+      <span className="flex-1 truncate">Новое включить</span>
       <span
         style={{
           width: 16,

@@ -280,6 +280,20 @@ export default function NewTariffPage() {
               placeholder="Название оператора"
               frameStyle
               invalid={validationError}
+              frameOpenHeight={DROPDOWN_OPEN_HEIGHT}
+              showAddNew
+              onAddNew={async () => {
+                const v = typeof window !== "undefined" ? window.prompt("Введите название оператора") : null;
+                if (v == null || v.trim() === "") return;
+                try {
+                  const { data } = await providerApi.post<{ id?: number; data?: { id?: number } }>("/api/providers", { name: v.trim() });
+                  const id = (data as { id?: number })?.id ?? (data as { data?: { id?: number } })?.data?.id;
+                  fetchProviders().then((res: { data?: Provider[] }) => setProviders(Array.isArray(res?.data) ? res.data : []));
+                  if (typeof id === "number") setProviderId(id);
+                } catch {
+                  fetchProviders().then((res: { data?: Provider[] }) => setProviders(Array.isArray(res?.data) ? res.data : []));
+                }
+              }}
             />
           </div>
           <div style={{ flex: 1, minWidth: 0, maxWidth: 320 }}>
@@ -291,6 +305,12 @@ export default function NewTariffPage() {
               placeholder="Название тарифного плана"
               frameStyle
               invalid={validationError}
+              frameOpenHeight={DROPDOWN_OPEN_HEIGHT}
+              showAddNew
+              onAddNew={() => {
+                setTariffId(null);
+                setName("");
+              }}
             />
           </div>
         </div>

@@ -416,7 +416,7 @@ export function Select({
       onClick={(e) => { e.stopPropagation(); onAddNew?.(); }}
       onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onAddNew?.(); } }}
     >
-      <span className="flex-1 truncate">Новое включить</span>
+      <span className="flex-1 truncate">Новое вкл...</span>
       <span
         style={{
           width: 16,

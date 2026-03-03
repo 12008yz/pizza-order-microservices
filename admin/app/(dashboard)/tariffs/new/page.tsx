@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Select } from "@/components/ui/Select";
 import { fetchProviders, fetchTariffs, fetchRegions } from "@/lib/api";
 import { providerApi } from "@/lib/api";
@@ -50,7 +51,10 @@ interface Region {
   name: string;
 }
 
+const OFFER_STORAGE_KEY = "tariffs_new_offer";
+
 export default function NewTariffPage() {
+  const router = useRouter();
   const [category, setCategory] = useState("residential");
   const [providerId, setProviderId] = useState<number | "">("");
   const [tariffId, setTariffId] = useState<number | null>(null);
@@ -154,6 +158,40 @@ export default function NewTariffPage() {
       return;
     }
     setValidationError(false);
+
+    // Если отмечены WI, TV или SIM — сохраняем данные и открываем соответствующие шаги вместо создания тарифа
+    if (hasWi || hasTv || hasSim) {
+      const offer = {
+        category,
+        providerId: Number(providerId),
+        name: name.trim(),
+        regionId,
+        regionName,
+        connectionPrice: connPrice,
+        monthlyPrice: monthPrice,
+        payout: payout != null ? Number(payout) : null,
+        technology,
+        hasWi,
+        hasTv,
+        hasSim,
+      };
+      if (typeof window !== "undefined") {
+        sessionStorage.setItem(OFFER_STORAGE_KEY, JSON.stringify(offer));
+      }
+      if (hasWi) {
+        router.push("/tariffs/new/wi");
+        return;
+      }
+      if (hasTv) {
+        router.push("/tariffs/new/tv");
+        return;
+      }
+      if (hasSim) {
+        router.push("/tariffs/new/sim");
+        return;
+      }
+    }
+
     setSaving(true);
     try {
       await providerApi.post("/api/tariffs", {

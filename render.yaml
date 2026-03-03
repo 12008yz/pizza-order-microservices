@@ -1,4 +1,4 @@
-# Render Blueprint — только frontend (Next.js в Docker)
+# Render Blueprint — frontend + admin (Next.js в Docker)
 # Документация: https://render.com/docs/blueprint-spec
 services:
   - type: web
@@ -6,6 +6,15 @@ services:
     name: tariff-frontend
     dockerfilePath: frontend/Dockerfile
     dockerContext: frontend
+    plan: free
+    region: frankfurt
+    autoDeployTrigger: commit
+
+  - type: web
+    runtime: docker
+    name: tariff-admin
+    dockerfilePath: admin/Dockerfile
+    dockerContext: admin
     plan: free
     region: frankfurt
     autoDeployTrigger: commit

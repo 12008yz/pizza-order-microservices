@@ -24,6 +24,11 @@ function createClient(baseURL: string): AxiosInstance {
     (r) => r,
     async (err) => {
       const original = err.config;
+      const isDemoToken = typeof window !== "undefined" && getAccessToken() === "demo-access";
+      if (isDemoToken) {
+        // Демо-режим без бэкенда: не сбрасывать авторизацию при 401
+        return Promise.reject(err);
+      }
       if (err.response?.status === 401 && !original._retry && typeof window !== "undefined") {
         original._retry = true;
         const refresh = getRefreshToken();

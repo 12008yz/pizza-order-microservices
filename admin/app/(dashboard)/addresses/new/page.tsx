@@ -37,6 +37,28 @@ interface Provider {
   name: string;
 }
 
+/** Моковые данные для работы без сервера */
+const MOCK_REGIONS: Region[] = [
+  { id: 1, name: "Москва" },
+  { id: 2, name: "Московская обл." },
+  { id: 3, name: "Санкт-Петербург" },
+  { id: 4, name: "Ленинградская обл." },
+];
+
+const MOCK_CITIES: City[] = [
+  { id: 1, name: "гор. Москва, Московская обл." },
+  { id: 2, name: "Химки" },
+  { id: 3, name: "Подольск" },
+  { id: 4, name: "Балашиха" },
+];
+
+const MOCK_STREETS: Street[] = [
+  { id: 1, name: "наб. Кремлевская" },
+  { id: 2, name: "ул. Тверская" },
+  { id: 3, name: "ул. Арбат" },
+  { id: 4, name: "пр. Мира" },
+];
+
 export default function NewAddressPage() {
   const [regions, setRegions] = useState<Region[]>([]);
   const [cities, setCities] = useState<City[]>([]);
@@ -58,7 +80,9 @@ export default function NewAddressPage() {
   const [validationError, setValidationError] = useState(false);
 
   useEffect(() => {
-    fetchRegions().then((res: { data?: Region[] }) => setRegions(Array.isArray(res?.data) ? res.data : []));
+    fetchRegions()
+      .then((res: { data?: Region[] }) => setRegions(Array.isArray(res?.data) && res.data.length > 0 ? res.data : MOCK_REGIONS))
+      .catch(() => setRegions(MOCK_REGIONS));
     fetchProviders().then((res: { data?: Provider[] }) => setProviders(Array.isArray(res?.data) ? res.data : []));
   }, []);
 
@@ -68,12 +92,20 @@ export default function NewAddressPage() {
       setCityId("");
       return;
     }
-    fetchCities(regionId as number).then((res: { data?: City[] }) => {
-      setCities(Array.isArray(res?.data) ? res.data : []);
-      setCityId("");
-      setStreets([]);
-      setStreetId("");
-    });
+    fetchCities(regionId as number)
+      .then((res: { data?: City[] }) => {
+        const list = Array.isArray(res?.data) && res.data.length > 0 ? res.data : MOCK_CITIES;
+        setCities(list);
+        setCityId("");
+        setStreets([]);
+        setStreetId("");
+      })
+      .catch(() => {
+        setCities(MOCK_CITIES);
+        setCityId("");
+        setStreets([]);
+        setStreetId("");
+      });
   }, [regionId]);
 
   useEffect(() => {
@@ -82,10 +114,9 @@ export default function NewAddressPage() {
       setStreetId("");
       return;
     }
-    fetchStreets(cityId as number).then((res: { data?: Street[] }) => {
-      setStreets(Array.isArray(res?.data) ? res.data : []);
-      setStreetId("");
-    });
+    fetchStreets(cityId as number)
+      .then((res: { data?: Street[] }) => setStreets(Array.isArray(res?.data) && res.data.length > 0 ? res.data : MOCK_STREETS))
+      .catch(() => setStreets(MOCK_STREETS));
   }, [cityId]);
 
   const handleSubmit = async (e: React.FormEvent) => {

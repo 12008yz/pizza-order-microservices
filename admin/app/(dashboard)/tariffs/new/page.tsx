@@ -51,6 +51,64 @@ interface Region {
   name: string;
 }
 
+/** Моковые данные для работы без сервера */
+const MOCK_PROVIDERS: Provider[] = [
+  { id: 1, name: "МТС" },
+  { id: 2, name: "Ростелеком" },
+  { id: 3, name: "Мегафон" },
+  { id: 4, name: "Марьино.net" },
+];
+
+const MOCK_REGIONS: Region[] = [
+  { id: 1, name: "Москва" },
+  { id: 2, name: "Московская обл." },
+  { id: 3, name: "Санкт-Петербург" },
+  { id: 4, name: "Ленинградская обл." },
+];
+
+const MOCK_TARIFFS: Tariff[] = [
+  {
+    id: 1,
+    name: "Базовый",
+    description: "",
+    providerId: 1,
+    speed: 100,
+    price: 500,
+    connectionPrice: 0,
+    technology: "fiber",
+    hasTV: true,
+    tvChannels: 55,
+    hasMobile: false,
+    mobileMinutes: null,
+    mobileGB: null,
+    mobileSMS: null,
+    promoPrice: null,
+    promoMonths: null,
+    promoText: null,
+    isActive: true,
+  },
+  {
+    id: 2,
+    name: "Оптимальный",
+    description: "",
+    providerId: 1,
+    speed: 300,
+    price: 699,
+    connectionPrice: 99,
+    technology: "fiber",
+    hasTV: true,
+    tvChannels: 55,
+    hasMobile: false,
+    mobileMinutes: null,
+    mobileGB: null,
+    mobileSMS: null,
+    promoPrice: null,
+    promoMonths: null,
+    promoText: null,
+    isActive: true,
+  },
+];
+
 const OFFER_STORAGE_KEY = "tariffs_new_offer";
 
 export default function NewTariffPage() {
@@ -76,14 +134,18 @@ export default function NewTariffPage() {
   const [validationError, setValidationError] = useState(false);
 
   useEffect(() => {
-    fetchProviders().then((res: { data?: Provider[] }) => setProviders(Array.isArray(res?.data) ? res.data : []));
+    fetchProviders()
+      .then((res: { data?: Provider[] }) => setProviders(Array.isArray(res?.data) && res.data.length > 0 ? res.data : MOCK_PROVIDERS))
+      .catch(() => setProviders(MOCK_PROVIDERS));
     fetchTariffs()
       .then((res: unknown) => {
         const data = (res as { data?: Tariff[] })?.data;
-        setTariffs(Array.isArray(data) ? data : []);
+        setTariffs(Array.isArray(data) && data.length > 0 ? data : MOCK_TARIFFS);
       })
-      .catch(() => setTariffs([]));
-    fetchRegions().then((res: { data?: Region[] }) => setRegions(Array.isArray(res?.data) ? res.data : []));
+      .catch(() => setTariffs(MOCK_TARIFFS));
+    fetchRegions()
+      .then((res: { data?: Region[] }) => setRegions(Array.isArray(res?.data) && res.data.length > 0 ? res.data : MOCK_REGIONS))
+      .catch(() => setRegions(MOCK_REGIONS));
   }, []);
 
   /** Опции для «Название тарифного плана» из БД */

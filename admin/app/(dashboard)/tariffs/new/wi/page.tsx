@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Select } from "@/components/ui/Select";
 import { providerApi } from "@/lib/api";
 
@@ -81,6 +82,7 @@ interface SavedOffer {
 }
 
 export default function WiPage() {
+  const router = useRouter();
   const [category, setCategory] = useState<string | number | null>("residential");
   const [performance, setPerformance] = useState<string | number | null>(null);
   const [purchaseType, setPurchaseType] = useState("installment");
@@ -109,6 +111,15 @@ export default function WiPage() {
       return;
     }
     setError("");
+    // Если ещё есть шаги TV или SIM — переходим на следующий, тариф создаём только на последнем шаге
+    if (offer.hasTv) {
+      router.push("/tariffs/new/tv");
+      return;
+    }
+    if (offer.hasSim) {
+      router.push("/tariffs/new/sim");
+      return;
+    }
     setSaving(true);
     try {
       await providerApi.post("/api/tariffs", {

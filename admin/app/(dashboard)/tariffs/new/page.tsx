@@ -113,15 +113,16 @@ const OFFER_STORAGE_KEY = "tariffs_new_offer";
 
 export default function NewTariffPage() {
   const router = useRouter();
-  const [category, setCategory] = useState("residential");
+  // Стартовое состояние без предустановленных значений — всё выбирает пользователь
+  const [category, setCategory] = useState("");
   const [providerId, setProviderId] = useState<number | "">("");
   const [tariffId, setTariffId] = useState<number | null>(null);
   const [name, setName] = useState("");
   const [regionId, setRegionId] = useState<number | null>(null);
-  const [hasWi, setHasWi] = useState(true);
-  const [hasTv, setHasTv] = useState(true);
+  const [hasWi, setHasWi] = useState(false);
+  const [hasTv, setHasTv] = useState(false);
   const [hasSim, setHasSim] = useState(false);
-  const [technology, setTechnology] = useState<string>("FTTX · 8");
+  const [technology, setTechnology] = useState<string>("");
   const [connectionPrice, setConnectionPrice] = useState<string | number | null>(null);
   const [monthlyPrice, setMonthlyPrice] = useState<string | number | null>(null);
   const [payout, setPayout] = useState<string | number | null>(null);
@@ -360,9 +361,9 @@ export default function NewTariffPage() {
         <div style={{ display: "flex", gap, marginBottom: gap }}>
           <div style={{ ...FIELD_155, flexShrink: 0 }}>
             <Select
-              value={category}
+              value={category || null}
               options={CATEGORY_OPTIONS}
-              onChange={(v) => { setCategory(v != null ? String(v) : "residential"); setValidationError(false); }}
+              onChange={(v) => { setCategory(v != null ? String(v) : ""); setValidationError(false); }}
               onFocus={() => setValidationError(false)}
               placeholder="Категория"
               frameStyle

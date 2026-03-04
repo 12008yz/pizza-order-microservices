@@ -67,11 +67,12 @@ export default function NewAddressPage() {
   const [regionId, setRegionId] = useState<number | "">("");
   const [cityId, setCityId] = useState<number | "">("");
   const [streetId, setStreetId] = useState<number | "">("");
-  const [category, setCategory] = useState("residential");
-  const [houseNumber, setHouseNumber] = useState("");
-  const [entrances, setEntrances] = useState("");
-  const [floors, setFloors] = useState("");
-  const [apartments, setApartments] = useState("");
+  // По умолчанию ничего не выбрано — пользователь сам задаёт значения
+  const [category, setCategory] = useState("");
+  const [houseNumber, setHouseNumber] = useState<string | null>(null);
+  const [entrances, setEntrances] = useState<string | null>(null);
+  const [floors, setFloors] = useState<string | null>(null);
+  const [apartments, setApartments] = useState<string | null>(null);
   const [providerId, setProviderId] = useState<number | "">("");
   const [comment, setComment] = useState("");
   const [saving, setSaving] = useState(false);
@@ -122,7 +123,7 @@ export default function NewAddressPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    if (!streetId || !houseNumber.trim()) {
+    if (!streetId || !houseNumber || !houseNumber.trim()) {
       setValidationError(true);
       return;
     }
@@ -326,13 +327,13 @@ export default function NewAddressPage() {
         >
           <div style={{ width: 155, flexShrink: 0 }}>
             <Select
-              value={category}
+              value={category || null}
               options={[
                 { value: "residential", label: "Жилое, кв." },
                 { value: "private", label: "Частный сектор" },
                 { value: "office", label: "Офис" },
               ]}
-              onChange={(v) => setCategory(v != null ? String(v) : "residential")}
+              onChange={(v) => setCategory(v != null ? String(v) : "")}
               onFocus={() => setValidationError(false)}
               placeholder="Категория"
               frameStyle
@@ -341,13 +342,13 @@ export default function NewAddressPage() {
           </div>
           <div style={{ width: 155, flexShrink: 0 }}>
             <Select
-              value={houseNumber === "" ? "" : houseNumber || null}
+              value={houseNumber === null ? null : houseNumber}
               options={[
                 { value: "", label: "Неизвестно" },
                 ...Array.from({ length: 30 }, (_, i) => ({ value: String(i + 1), label: String(i + 1) })),
                 ...(houseNumber && !/^\d+$/.test(houseNumber) ? [{ value: houseNumber, label: houseNumber }] : []),
               ]}
-              onChange={(v) => { setHouseNumber(v != null ? String(v) : ""); setValidationError(false); }}
+              onChange={(v) => { setHouseNumber(v === null ? null : String(v)); setValidationError(false); }}
               onFocus={() => setValidationError(false)}
               placeholder="Номеры"
               frameStyle
@@ -358,13 +359,13 @@ export default function NewAddressPage() {
           </div>
           <div style={{ width: 155, flexShrink: 0 }}>
             <Select
-              value={entrances === "" ? "" : entrances || null}
+              value={entrances === null ? null : entrances}
               options={[
                 { value: "", label: "Неизвестно" },
                 ...Array.from({ length: 20 }, (_, i) => ({ value: String(i + 1), label: String(i + 1) })),
                 ...(entrances && (parseInt(entrances, 10) > 20 || !/^\d+$/.test(entrances)) ? [{ value: entrances, label: entrances }] : []),
               ]}
-              onChange={(v) => setEntrances(v != null ? String(v) : "")}
+              onChange={(v) => setEntrances(v === null ? null : String(v))}
               onFocus={() => setValidationError(false)}
               placeholder="Подъезды"
               frameStyle
@@ -375,13 +376,13 @@ export default function NewAddressPage() {
           </div>
           <div style={{ width: 155, flexShrink: 0 }}>
             <Select
-              value={floors === "" ? "" : floors || null}
+              value={floors === null ? null : floors}
               options={[
                 { value: "", label: "Неизвестно" },
                 ...Array.from({ length: 25 }, (_, i) => ({ value: String(i + 1), label: String(i + 1) })),
                 ...(floors && (parseInt(floors, 10) > 25 || !/^\d+$/.test(floors)) ? [{ value: floors, label: floors }] : []),
               ]}
-              onChange={(v) => setFloors(v != null ? String(v) : "")}
+              onChange={(v) => setFloors(v === null ? null : String(v))}
               onFocus={() => setValidationError(false)}
               placeholder="Полеты"
               frameStyle
@@ -392,13 +393,13 @@ export default function NewAddressPage() {
           </div>
           <div style={{ width: 155, flexShrink: 0 }}>
             <Select
-              value={apartments === "" ? "" : apartments || null}
+              value={apartments === null ? null : apartments}
               options={[
                 { value: "", label: "Неизвестно" },
                 ...Array.from({ length: 50 }, (_, i) => ({ value: String(i + 1), label: String(i + 1) })),
                 ...(apartments && (parseInt(apartments, 10) > 50 || !/^\d+$/.test(apartments)) ? [{ value: apartments, label: apartments }] : []),
               ]}
-              onChange={(v) => setApartments(v != null ? String(v) : "")}
+              onChange={(v) => setApartments(v === null ? null : String(v))}
               onFocus={() => setValidationError(false)}
               placeholder="Квартиры"
               frameStyle

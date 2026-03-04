@@ -129,8 +129,8 @@ export function Select({
     if (left < 0) left = 0;
     setDropdownStyle(
       placement === "up"
-        ? { bottom: window.innerHeight - rect.top + 4, left, minWidth }
-        : { top: rect.bottom + 4, left, minWidth }
+        ? { bottom: window.innerHeight - rect.top, left, minWidth }
+        : { top: rect.bottom, left, minWidth }
     );
   }, [open, inline, placement]);
 
@@ -157,18 +157,21 @@ export function Select({
     <div
       ref={dropdownRef}
       role="listbox"
-      className="fixed z-[9999] rounded-[10px] border border-[rgba(16,16,16,0.25)] bg-white overflow-hidden overflow-y-auto"
+      className="fixed z-[9999] rounded-[10px] border border-[rgba(16,16,16,0.25)] bg-white overflow-hidden"
       style={{
         ...(dropdownStyle.top != null ? { top: dropdownStyle.top } : {}),
         ...(dropdownStyle.bottom != null ? { bottom: dropdownStyle.bottom } : {}),
         left: dropdownStyle.left,
         minWidth: dropdownStyle.minWidth,
-        maxHeight: 240,
+        paddingTop: 15,
+        paddingBottom: 15,
+        paddingLeft: 15,
+        paddingRight: 15,
         boxSizing: "border-box",
       }}
       onClick={(e) => e.stopPropagation()}
     >
-      {options.map((opt) => {
+      {options.map((opt, index) => {
         const isSelected = value === opt.value;
         return (
           <div
@@ -176,9 +179,10 @@ export function Select({
             role="option"
             aria-selected={isSelected}
             onClick={() => handleSelect(opt)}
-            className="flex items-center justify-between px-[12px] cursor-pointer w-full select-none"
+            className="flex items-center justify-between cursor-pointer w-full select-none"
             style={{
-              minHeight: 40,
+              minHeight: 20,
+              marginBottom: index === options.length - 1 ? 0 : 10,
               boxSizing: "border-box",
               fontFamily: "'TT Firs Neue', sans-serif",
               fontWeight: 400,

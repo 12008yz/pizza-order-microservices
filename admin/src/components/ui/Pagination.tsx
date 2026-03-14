@@ -10,6 +10,8 @@ const PAGINATION_WIDTH_PX = 270;
 const PAGINATION_HEIGHT_PX = 30;
 const ARROW_SIZE_PX = 20;
 const PAGE_CIRCLE_SIZE_PX = 30;
+/** Фон выделенной страницы (Ellipse 1 в макете) */
+const PAGE_ACTIVE_BG = "#F0F0F0";
 const NUMBER_STYLE: React.CSSProperties = {
   fontFamily: "'TT Firs Neue', sans-serif",
   fontStyle: "normal",
@@ -112,7 +114,7 @@ export function Pagination({ page, totalPages, onPageChange }: PaginationProps) 
             width: PAGE_CIRCLE_SIZE_PX,
             height: PAGE_CIRCLE_SIZE_PX,
             ...NUMBER_STYLE,
-            background: p === page ? "#F0F0F0" : "transparent",
+            background: p === page ? PAGE_ACTIVE_BG : "transparent",
           }}
           aria-label={p === page ? `Страница ${p}` : `Перейти на страницу ${p}`}
           aria-current={p === page ? "page" : undefined}

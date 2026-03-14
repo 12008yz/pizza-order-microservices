@@ -205,6 +205,15 @@ function OrdersPageContent() {
     return [expanded, ...filtered.filter((o) => o.id !== expandedOrderId)];
   }, [filtered, expandedOrderId]);
 
+  // При раскрытии карточки она ставится первой в displaySlice — прокручиваем карусель в начало, чтобы она была видна
+  useEffect(() => {
+    if (expandedOrderId == null) return;
+    const t = setTimeout(() => {
+      carouselRef.current?.scrollToSlide(0);
+    }, 50);
+    return () => clearTimeout(t);
+  }, [expandedOrderId]);
+
   // При поиске по номеру сразу раскрывать первую найденную карточку (только при изменении поиска, не при обновлении заявки)
   const prevSearchRef = useRef(searchParam);
   useEffect(() => {

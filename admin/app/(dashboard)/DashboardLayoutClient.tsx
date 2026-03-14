@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState, useEffect } from "react";
+import { useCallback, useState, useEffect, useRef } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { Header } from "@/components/layout/Header";
@@ -13,6 +13,7 @@ export function DashboardLayoutClient({
 }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const mainScrollRef = useRef<HTMLDivElement>(null);
   const statusFromUrl = searchParams.get("status") ?? "";
   const searchFromUrl = searchParams.get("search") ?? "";
   const [status, setStatus] = useState(statusFromUrl);
@@ -22,6 +23,14 @@ export function DashboardLayoutClient({
   useEffect(() => {
     setSearch(searchParams.get("search") ?? "");
   }, [pathname, searchParams]);
+
+  useEffect(() => {
+    if (!pathname.startsWith("/addresses")) return;
+    const id = requestAnimationFrame(() => {
+      mainScrollRef.current && (mainScrollRef.current.scrollTop = 0);
+    });
+    return () => cancelAnimationFrame(id);
+  }, [pathname]);
 
   const handleStatusChange = useCallback((s: string) => {
     setStatus(s);
@@ -44,6 +53,7 @@ export function DashboardLayoutClient({
       <div className="flex flex-1 min-h-0" style={{ gap: 5 }}>
         <Sidebar status={status} onStatusChange={handleStatusChange} pathname={pathname} />
         <div
+          ref={mainScrollRef}
           className={`flex-1 flex flex-col min-w-0 min-h-0 overflow-x-hidden ${pathname.startsWith("/addresses") ? "overflow-y-auto" : ""}`}
           style={{ gap: 5 }}
         >

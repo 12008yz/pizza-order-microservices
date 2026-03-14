@@ -24,19 +24,17 @@ const NUMBER_STYLE: React.CSSProperties = {
 
 const ArrowSvg = ({ left }: { left: boolean }) => (
   <svg
-    width="12"
-    height="12"
-    viewBox="0 0 12 12"
+    width="6"
+    height="10"
+    viewBox="0 0 6 10"
     fill="none"
-    style={{ transform: left ? "rotate(90deg)" : "rotate(-90deg)", flexShrink: 0 }}
+    xmlns="http://www.w3.org/2000/svg"
+    style={{ transform: left ? "scaleX(-1)" : undefined, flexShrink: 0 }}
     aria-hidden
   >
     <path
-      d="M3 4L6 8L9 4"
-      stroke="#101010"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
+      d="M0.659175 0.0937862L5.88537 4.75306C5.95877 4.81858 6 4.9074 6 5C6 5.0926 5.95877 5.18142 5.88537 5.24694L0.659176 9.90621C0.584872 9.96794 0.486596 10.0015 0.38505 9.99995C0.283505 9.99835 0.186619 9.96167 0.114804 9.89765C0.0429895 9.83363 0.00185271 9.74725 6.10509e-05 9.65672C-0.00173061 9.56619 0.0359627 9.47857 0.105199 9.41233L5.05375 5L0.105199 0.58767C0.0359623 0.521427 -0.001731 0.433811 6.06438e-05 0.343281C0.00185229 0.252751 0.0429891 0.166375 0.114804 0.10235C0.186618 0.0383258 0.283504 0.00165165 0.38505 5.43426e-05C0.486595 -0.00154296 0.584872 0.0320602 0.659175 0.0937862Z"
+      fill="#101010"
     />
   </svg>
 );

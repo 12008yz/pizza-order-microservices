@@ -1,8 +1,9 @@
 "use client";
 
 import { Suspense, useEffect, useState, useMemo, useRef, useCallback } from "react";
-import { useSearchParams, useRouter, usePathname } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { OrderCard } from "@/components/orders/OrderCard";
+import { Carousel, type CarouselApi } from "@/components/ui/Carousel";
 import { Pagination } from "@/components/ui/Pagination";
 import { fetchOrders, fetchProviders, fetchTariffs, fetchRegions, fetchCities, fetchStreets, updateOrder as updateOrderApi } from "@/lib/api";
 import { MOCK_ORDERS } from "@/lib/mockOrders";
@@ -11,24 +12,20 @@ import type { Order } from "@/types";
 const CARD_WIDTH_COLLAPSED = 242;
 const CARD_WIDTH_EXPANDED = 730;
 const CARD_GAP_PX = 5;
-const SCROLL_END_THRESHOLD_PX = 80;
 
-/** Сколько карточек показывать на странице: только те, что полностью помещаются, без «перемычки» (полувидимой карточки). Вычитаем один слот (карточка + отступ), чтобы следующая страница всегда начиналась с первой полностью видимой карточки. */
+/** Сколько карточек помещается в видимую область (по ширине свернутой карточки). Резерв по краям — чтобы 11-я карточка уже уходила на следующую «страницу». */
 function getCardsPerPage(viewportWidthPx: number): number {
   if (viewportWidthPx <= 0) return 1;
   const cardWithGap = CARD_WIDTH_COLLAPSED + CARD_GAP_PX;
-  const reservePx = CARD_GAP_PX + 40 + cardWithGap;
+  const reservePx = 60;
   const safeWidth = Math.max(0, viewportWidthPx - reservePx);
   return Math.max(1, Math.floor(safeWidth / cardWithGap));
 }
 
 function OrdersPageContent() {
   const searchParams = useSearchParams();
-  const router = useRouter();
-  const pathname = usePathname();
   const statusParam = searchParams.get("status") ?? "";
   const searchParam = searchParams.get("search") ?? "";
-  const pageParam = parseInt(searchParams.get("page") ?? "1", 10);
 
   const [orders, setOrders] = useState<Order[]>([]);
   const [providers, setProviders] = useState<{ id: number; name: string }[]>([]);
@@ -36,13 +33,13 @@ function OrdersPageContent() {
   const [cities, setCities] = useState<{ id: number; name: string }[]>([]);
   const [streets, setStreets] = useState<{ id: number; name: string }[]>([]);
   const [loading, setLoading] = useState(true);
-  const [page, setPage] = useState(pageParam);
   const [expandedOrderId, setExpandedOrderId] = useState<number | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
   const [viewportWidth, setViewportWidth] = useState(() =>
     typeof window !== "undefined" ? window.innerWidth : 0
   );
   const viewportRef = useRef<HTMLDivElement>(null);
-  const scrollRef = useRef<HTMLDivElement>(null);
+  const carouselRef = useRef<CarouselApi>(null);
   const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pendingSavesRef = useRef<Map<number, Order>>(new Map());
 
@@ -65,10 +62,6 @@ function OrdersPageContent() {
       ro.disconnect();
     };
   }, []);
-
-  useEffect(() => {
-    setPage(Math.max(1, pageParam));
-  }, [pageParam]);
 
   useEffect(() => {
     let cancelled = false;
@@ -184,33 +177,45 @@ function OrdersPageContent() {
     viewportWidth > 0 ? viewportWidth : (typeof window !== "undefined" ? window.innerWidth : 1200);
   const cardsPerPage = getCardsPerPage(effectiveViewportWidth);
   const totalPages = Math.max(1, Math.ceil(filtered.length / cardsPerPage));
-  const currentPage = Math.min(page, totalPages);
+  const safePage = Math.min(currentPage, totalPages);
 
-  useEffect(() => {
-    if (totalPages >= 1 && page > totalPages) {
-      setPage(totalPages);
-      const params = new URLSearchParams(searchParams.toString());
-      params.set("page", String(totalPages));
-      router.replace(`${pathname}?${params.toString()}`);
-    }
-  }, [totalPages, page, router, pathname, searchParams]);
-
-  const slice = useMemo(
-    () => filtered.slice((currentPage - 1) * cardsPerPage, currentPage * cardsPerPage),
-    [filtered, currentPage, cardsPerPage]
+  const handleScrollIndexChange = useCallback(
+    (index: number) => {
+      const page = Math.min(totalPages, 1 + Math.floor(index / cardsPerPage));
+      setCurrentPage(page);
+    },
+    [cardsPerPage, totalPages]
   );
+
+  const handlePageChange = useCallback(
+    (page: number) => {
+      const targetPage = Math.max(1, Math.min(page, totalPages));
+      setCurrentPage(targetPage);
+      const firstSlideIndex = (targetPage - 1) * cardsPerPage;
+      carouselRef.current?.scrollToSlide(firstSlideIndex);
+    },
+    [cardsPerPage, totalPages]
+  );
+
+  // При открытии карточки — ставим её первой; при закрытии — исходный порядок
+  const displaySlice = useMemo(() => {
+    if (!expandedOrderId || filtered.length === 0) return filtered;
+    const expanded = filtered.find((o) => o.id === expandedOrderId);
+    if (!expanded) return filtered;
+    return [expanded, ...filtered.filter((o) => o.id !== expandedOrderId)];
+  }, [filtered, expandedOrderId]);
 
   // При поиске по номеру сразу раскрывать первую найденную карточку (только при изменении поиска, не при обновлении заявки)
   const prevSearchRef = useRef(searchParam);
   useEffect(() => {
     if (prevSearchRef.current === searchParam) return;
     prevSearchRef.current = searchParam;
-    if (searchParam.trim() && slice.length > 0) {
-      setExpandedOrderId(slice[0].id);
+    if (searchParam.trim() && filtered.length > 0) {
+      setExpandedOrderId(filtered[0].id);
     } else if (!searchParam.trim()) {
       setExpandedOrderId(null);
     }
-  }, [searchParam, slice]);
+  }, [searchParam, filtered]);
 
   const handleOrderChange = useCallback((updated: Order) => {
     setOrders((prev) => prev.map((o) => (o.id === updated.id ? updated : o)));
@@ -237,42 +242,12 @@ function OrdersPageContent() {
     };
   }, []);
 
-  const handlePageChange = useCallback(
-    (p: number) => {
-      const safePage = Math.max(1, Math.min(p, totalPages));
-      setPage(safePage);
-      const params = new URLSearchParams(searchParams.toString());
-      params.set("page", String(safePage));
-      router.push(`${pathname}?${params.toString()}`);
-      if (scrollRef.current) scrollRef.current.scrollLeft = 0;
-    },
-    [router, pathname, searchParams, totalPages]
-  );
-
-  const handleScroll = useCallback(() => {
-    const el = scrollRef.current;
-    if (!el || slice.length === 0 || currentPage >= totalPages) return;
-    const { scrollLeft, clientWidth, scrollWidth } = el;
-    if (scrollLeft + clientWidth >= scrollWidth - SCROLL_END_THRESHOLD_PX) {
-      handlePageChange(currentPage + 1);
-    }
-  }, [currentPage, totalPages, slice.length, handlePageChange]);
-
-  const paginationBlock = (
-    <Pagination
-      page={currentPage}
-      totalPages={totalPages}
-      onPageChange={handlePageChange}
-    />
-  );
-
   if (loading) {
     return (
       <div className="flex flex-col flex-1 min-h-0 min-w-0">
         <div className="flex-1 flex items-center justify-center py-12">
           <p className="text-muted-foreground">Загрузка заявок...</p>
         </div>
-        <div style={{ flexShrink: 0, marginTop: 50 }}>{paginationBlock}</div>
       </div>
     );
   }
@@ -281,26 +256,30 @@ function OrdersPageContent() {
     <div className="flex flex-col flex-1 min-h-0 min-w-0">
       <div
         ref={viewportRef}
-        className="relative min-w-0 w-full overflow-x-auto overflow-y-hidden"
+        className="relative min-w-0 w-full flex-1 min-h-0 flex flex-col"
         style={{ flex: "1 1 0" }}
         onClick={() => setExpandedOrderId(null)}
       >
-        <div
-          ref={scrollRef}
-          onScroll={handleScroll}
-          className="flex overflow-x-auto overflow-y-hidden pb-2 scrollbar-hide"
-          style={{ gap: CARD_GAP_PX }}
+        <Carousel
+          ref={carouselRef}
+          options={{ axis: "x", dragFree: true, align: "start" }}
+          gap={CARD_GAP_PX}
+          viewportClassName="flex-1 min-h-0 pb-2"
+          containerClassName="pb-2"
+          showArrows={false}
+          overflowY="hidden"
+          className="flex-1 min-h-0"
+          onScrollIndexChange={handleScrollIndexChange}
         >
-          {slice.map((order, index) => {
+          {displaySlice.map((order, index) => {
             const isExpanded = expandedOrderId === order.id;
-            const isAmongLastTwo = slice.length >= 2 && index >= slice.length - 2;
-            const isLastCard = index === slice.length - 1;
-            const isSecondToLast = index === slice.length - 2;
-            // Если справа действительно есть место — последние 2 карточки раскрываются вправо (без сдвига влево)
+            const isAmongLastTwo = displaySlice.length >= 2 && index >= displaySlice.length - 2;
+            const isLastCard = index === displaySlice.length - 1;
+            const isSecondToLast = index === displaySlice.length - 2;
             const rowWidthWhenLastExpanded =
-              (slice.length - 1) * (CARD_WIDTH_COLLAPSED + CARD_GAP_PX) + CARD_WIDTH_EXPANDED;
+              (displaySlice.length - 1) * (CARD_WIDTH_COLLAPSED + CARD_GAP_PX) + CARD_WIDTH_EXPANDED;
             const rowWidthWhenSecondToLastExpanded =
-              (slice.length - 2) * (CARD_WIDTH_COLLAPSED + CARD_GAP_PX) +
+              (displaySlice.length - 2) * (CARD_WIDTH_COLLAPSED + CARD_GAP_PX) +
               CARD_WIDTH_EXPANDED +
               CARD_GAP_PX +
               CARD_WIDTH_COLLAPSED;
@@ -327,7 +306,7 @@ function OrdersPageContent() {
                     setExpandedOrderId(order.id);
                   }
                 }}
-                className="shrink-0 transition-all duration-200 ease-out"
+                className="shrink-0 transition-all duration-200 ease-out flex-[0_0_auto]"
                 style={{
                   width: isExpanded ? CARD_WIDTH_EXPANDED : CARD_WIDTH_COLLAPSED,
                   marginLeft: expandToLeft ? -(CARD_WIDTH_EXPANDED - CARD_WIDTH_COLLAPSED) : 0,
@@ -338,8 +317,8 @@ function OrdersPageContent() {
               </div>
             );
           })}
-        </div>
-        {slice.length > 0 && (
+        </Carousel>
+        {displaySlice.length > 0 && (
           <div
             className="absolute top-0 bottom-2 right-0 w-[100px] pointer-events-none"
             style={{
@@ -352,8 +331,16 @@ function OrdersPageContent() {
             Заявок не найдено
           </p>
         )}
+        {displaySlice.length > 0 && totalPages > 1 && (
+          <div style={{ flexShrink: 0, marginTop: 24 }}>
+            <Pagination
+              page={safePage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+            />
+          </div>
+        )}
       </div>
-      <div style={{ flexShrink: 0, marginTop: 50 }}>{paginationBlock}</div>
     </div>
   );
 }

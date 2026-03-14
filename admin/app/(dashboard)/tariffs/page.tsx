@@ -1,27 +1,53 @@
 "use client";
 
-import { useEffect, useState, useMemo, useCallback } from "react";
-import { useSearchParams, useRouter, usePathname } from "next/navigation";
+import { useEffect, useState, useMemo, useRef, useCallback } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { TariffCard } from "@/components/tariffs/TariffCard";
+import { Carousel, type CarouselApi } from "@/components/ui/Carousel";
 import { Pagination } from "@/components/ui/Pagination";
 import { fetchTariffs } from "@/lib/api";
 import { MOCK_TARIFFS } from "@/lib/mockTariffs";
 import type { Tariff } from "@/types";
 
-const CARDS_PER_PAGE = 8;
+const CARD_WIDTH = 240;
+const CARD_GAP_PX = 5;
+
+function getCardsPerPage(viewportWidthPx: number): number {
+  if (viewportWidthPx <= 0) return 1;
+  const cardWithGap = CARD_WIDTH + CARD_GAP_PX;
+  const reservePx = 60;
+  const safeWidth = Math.max(0, viewportWidthPx - reservePx);
+  return Math.max(1, Math.floor(safeWidth / cardWithGap));
+}
 
 export default function TariffsPage() {
   const searchParams = useSearchParams();
-  const router = useRouter();
-  const pathname = usePathname();
   const searchParam = searchParams.get("search") ?? "";
-  const pageParam = parseInt(searchParams.get("page") ?? "1", 10);
+  const viewportRef = useRef<HTMLDivElement>(null);
+  const carouselRef = useRef<CarouselApi>(null);
 
   const [tariffs, setTariffs] = useState<Tariff[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [page, setPage] = useState(pageParam);
+  const [viewportWidth, setViewportWidth] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  useEffect(() => {
+    const el = viewportRef.current;
+    if (!el) return;
+    const update = () => {
+      const w = el.clientWidth;
+      if (w > 0) setViewportWidth(w);
+    };
+    const ro = new ResizeObserver((entries) => {
+      const { width } = entries[0]?.contentRect ?? {};
+      if (typeof width === "number" && width > 0) setViewportWidth(width);
+    });
+    ro.observe(el);
+    update();
+    return () => ro.disconnect();
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -55,45 +81,26 @@ export default function TariffsPage() {
     });
   }, [tariffs, searchParam]);
 
-  const totalPages = Math.max(1, Math.ceil(filtered.length / CARDS_PER_PAGE));
-  const currentPage = Math.min(page, totalPages);
-  const slice = useMemo(
-    () => filtered.slice((currentPage - 1) * CARDS_PER_PAGE, currentPage * CARDS_PER_PAGE),
-    [filtered, currentPage]
+  const effectiveWidth = viewportWidth > 0 ? viewportWidth : (typeof window !== "undefined" ? window.innerWidth : 1200);
+  const cardsPerPage = getCardsPerPage(effectiveWidth);
+  const totalPages = Math.max(1, Math.ceil(filtered.length / cardsPerPage));
+  const safePage = Math.min(currentPage, totalPages);
+
+  const handleScrollIndexChange = useCallback(
+    (index: number) => {
+      const page = Math.min(totalPages, 1 + Math.floor(index / cardsPerPage));
+      setCurrentPage(page);
+    },
+    [cardsPerPage, totalPages]
   );
-
-  useEffect(() => {
-    setPage(Math.max(1, Math.min(pageParam, totalPages || 1)));
-  }, [pageParam, totalPages]);
-
-  useEffect(() => {
-    if (totalPages >= 1 && page > totalPages) {
-      setPage(totalPages);
-      const params = new URLSearchParams(searchParams.toString());
-      params.set("page", String(totalPages));
-      if (searchParam) params.set("search", searchParam);
-      router.replace(`${pathname}?${params.toString()}`);
-    }
-  }, [totalPages, page, router, pathname, searchParams, searchParam]);
 
   const handlePageChange = useCallback(
-    (p: number) => {
-      const safePage = Math.max(1, Math.min(p, totalPages));
-      setPage(safePage);
-      const params = new URLSearchParams(searchParams.toString());
-      params.set("page", String(safePage));
-      if (searchParam) params.set("search", searchParam);
-      router.push(`${pathname}?${params.toString()}`);
+    (page: number) => {
+      const targetPage = Math.max(1, Math.min(page, totalPages));
+      setCurrentPage(targetPage);
+      carouselRef.current?.scrollToSlide((targetPage - 1) * cardsPerPage);
     },
-    [router, pathname, searchParams, searchParam, totalPages]
-  );
-
-  const paginationBlock = (
-    <Pagination
-      page={currentPage}
-      totalPages={totalPages}
-      onPageChange={handlePageChange}
-    />
+    [cardsPerPage, totalPages]
   );
 
   if (error) {
@@ -110,7 +117,6 @@ export default function TariffsPage() {
         <div className="flex-1 flex items-center justify-center py-12">
           <p className="text-muted-foreground">Загрузка тарифов...</p>
         </div>
-        <div style={{ flexShrink: 0, marginTop: 50 }}>{paginationBlock}</div>
       </div>
     );
   }
@@ -118,7 +124,7 @@ export default function TariffsPage() {
   return (
     <div className="flex flex-col min-w-0">
       <div
-        className="relative min-w-0 w-full overflow-x-auto overflow-y-visible"
+        className="relative min-w-0 w-full"
         style={{ minHeight: 560, marginBottom: -50 }}
       >
         {filtered.length === 0 ? (
@@ -127,14 +133,29 @@ export default function TariffsPage() {
           </p>
         ) : (
           <>
-            <div
-              className="flex overflow-x-auto overflow-y-visible scrollbar-hide pb-6"
-              style={{ gap: 5, alignItems: "flex-start" }}
-            >
-              {slice.map((t) => (
-                <TariffCard key={t.id} tariff={t} />
-              ))}
+            <div ref={viewportRef} className="min-w-0 w-full">
+              <Carousel
+                ref={carouselRef}
+                options={{ axis: "x", dragFree: true, align: "start" }}
+                gap={CARD_GAP_PX}
+                viewportClassName="pb-6"
+                containerClassName="pb-6"
+                showArrows={false}
+                overflowY="visible"
+                onScrollIndexChange={handleScrollIndexChange}
+              >
+                {filtered.map((t) => (
+                  <div key={t.id} className="shrink-0 flex-[0_0_auto]">
+                    <TariffCard tariff={t} />
+                  </div>
+                ))}
+              </Carousel>
             </div>
+            {totalPages > 1 && (
+              <div style={{ marginTop: 24 }}>
+                <Pagination page={safePage} totalPages={totalPages} onPageChange={handlePageChange} />
+              </div>
+            )}
             <div
               className="absolute top-0 bottom-2 right-0 w-[100px] pointer-events-none"
               style={{
@@ -144,7 +165,6 @@ export default function TariffsPage() {
           </>
         )}
       </div>
-      <div style={{ flexShrink: 0, marginTop: 50 }}>{paginationBlock}</div>
       <div className="flex flex-wrap items-center justify-end gap-4" style={{ flexShrink: 0, marginTop: 16 }}>
         <Link
           href="/tariffs/new"

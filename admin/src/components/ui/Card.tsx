@@ -14,7 +14,7 @@ export function Card({
   return (
     <div
       className={cn(
-        "bg-white font-frame box-border",
+        "bg-white font-frame box-border select-none",
         "rounded-[20px] border border-transparent hover:border-[rgba(16,16,16,0.15)] transition-colors",
         className
       )}
@@ -24,6 +24,8 @@ export function Card({
         paddingRight: 20,
         paddingBottom: 20,
         paddingLeft: 20,
+        WebkitUserSelect: "none",
+        userSelect: "none",
         ...style,
       }}
     >

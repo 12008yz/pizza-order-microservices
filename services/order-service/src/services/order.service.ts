@@ -41,7 +41,7 @@ function deriveRouterOption(data: {
 }
 
 /** Приводит dateOfBirth к null или валидной дате (ISO YYYY-MM-DD / Date), чтобы не записывать в БД "Invalid date". */
-function normalizeDateOfBirth(v: unknown): string | Date | null {
+function normalizeDateOfBirth(v: unknown): Date | null {
   if (v == null || v === '') return null;
   if (v instanceof Date) return isNaN(v.getTime()) ? null : v;
   if (typeof v === 'string') {
@@ -49,7 +49,7 @@ function normalizeDateOfBirth(v: unknown): string | Date | null {
     if (!s || s.toLowerCase() === 'invalid date') return null;
     const d = new Date(s);
     if (isNaN(d.getTime())) return null;
-    return s.match(/^\d{4}-\d{2}-\d{2}$/) ? s : d.toISOString().slice(0, 10);
+    return d;
   }
   return null;
 }

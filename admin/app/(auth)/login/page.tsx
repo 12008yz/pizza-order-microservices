@@ -78,38 +78,41 @@ export default function LoginPage() {
       {/* Форма: отступ слева 60px, снизу 120px */}
       <form
         onSubmit={handleSubmit}
-        className="flex flex-col gap-4 absolute w-[280px] max-w-[calc(100vw-120px)] p-5"
+        className="flex flex-col absolute w-[280px] max-w-[calc(100vw-120px)]"
         style={{
           left: 60,
           bottom: 120,
           boxSizing: "border-box",
+          padding: 20,
+          gap: 20,
           background: "#FFFFFF",
-          border: "1px solid rgba(16, 16, 16, 0.15)",
           backdropFilter: "blur(7.5px)",
           WebkitBackdropFilter: "blur(7.5px)",
           borderRadius: 20,
         }}
       >
-        <Input
-          type="text"
-          placeholder="Мое слово"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          autoComplete="email"
-          error={!!error}
-          className="w-full placeholder:text-[rgba(16,16,16,0.25)]"
-        />
-        <Input
-          type="password"
-          placeholder="Чистое слово"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          autoComplete="current-password"
-          error={!!error}
-          className="w-full placeholder:text-[rgba(16,16,16,0.25)]"
-        />
+        <div className="flex flex-col" style={{ gap: 5 }}>
+          <Input
+            type="text"
+            placeholder="Мое слово"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            autoComplete="email"
+            error={!!error}
+            className="w-full placeholder:text-[rgba(16,16,16,0.25)]"
+          />
+          <Input
+            type="password"
+            placeholder="Чистое слово"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            autoComplete="current-password"
+            error={!!error}
+            className="w-full placeholder:text-[rgba(16,16,16,0.25)]"
+          />
+        </div>
         {error && (
           <p className="text-sm text-[#ef4444]" style={{ fontFamily: "'TT Firs Neue', sans-serif" }}>
             {error}

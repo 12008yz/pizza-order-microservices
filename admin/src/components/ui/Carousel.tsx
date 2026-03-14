@@ -2,7 +2,7 @@
 
 import React, { useCallback, useEffect, useImperativeHandle, useRef, useState, forwardRef } from "react";
 import useEmblaCarousel from "embla-carousel-react";
-import type { EmblaCarouselType } from "embla-carousel";
+import type { EmblaCarouselType, EmblaOptionsType } from "embla-carousel";
 import { cn } from "@/lib/utils";
 
 const ARROW_SIZE_PX = 36;
@@ -69,7 +69,7 @@ export const Carousel = forwardRef<CarouselApi, CarouselProps>(function Carousel
   },
   ref
 ) {
-  const mergedOptions = { ...defaultOptions, ...options };
+  const mergedOptions = { ...defaultOptions, ...options } as EmblaOptionsType;
   const [emblaRef, emblaApi] = useEmblaCarousel(mergedOptions);
   const prevBtnRef = useRef<HTMLButtonElement>(null);
   const nextBtnRef = useRef<HTMLButtonElement>(null);

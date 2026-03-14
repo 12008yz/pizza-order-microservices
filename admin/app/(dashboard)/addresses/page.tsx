@@ -166,7 +166,7 @@ export default function AddressesPage() {
     <div className="flex flex-col min-w-0">
       <div
         className="relative min-w-0 w-full"
-        style={{ minHeight: 560, marginBottom: -50 }}
+        style={{ marginBottom: -50 }}
       >
         {filtered.length === 0 ? (
           <p className="text-center py-8" style={{ fontFamily: "'TT Firs Neue', sans-serif", color: "rgba(16,16,16,0.5)" }}>
@@ -174,13 +174,14 @@ export default function AddressesPage() {
           </p>
         ) : (
           <>
-            <div ref={viewportRef} className="min-w-0 w-full">
+            <div ref={viewportRef} className="min-w-0 w-full" style={{ height: 535, flexShrink: 0 }}>
               <Carousel
                 ref={carouselRef}
+                className="h-full"
                 options={{ axis: "x", dragFree: true, align: "start" }}
                 gap={CARD_GAP_PX}
-                viewportClassName="pb-6"
-                containerClassName="pb-6"
+                viewportClassName="min-h-0 h-full"
+                containerClassName=""
                 showArrows={false}
                 overflowY="visible"
                 onScrollIndexChange={handleScrollIndexChange}
@@ -193,7 +194,17 @@ export default function AddressesPage() {
               </Carousel>
             </div>
             {totalPages > 1 && (
-              <div style={{ marginTop: 24 }}>
+              <div
+                style={{
+                  marginTop: 50,
+                  width: "100vw",
+                  position: "relative",
+                  left: -305,
+                  marginLeft: 0,
+                  display: "flex",
+                  justifyContent: "center",
+                }}
+              >
                 <Pagination page={safePage} totalPages={totalPages} onPageChange={handlePageChange} />
               </div>
             )}

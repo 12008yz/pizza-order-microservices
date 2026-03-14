@@ -256,21 +256,22 @@ function OrdersPageContent() {
     <div className="flex flex-col flex-1 min-h-0 min-w-0">
       <div
         ref={viewportRef}
-        className="relative min-w-0 w-full flex-1 min-h-0 flex flex-col"
-        style={{ flex: "1 1 0" }}
+        className="relative min-w-0 w-full flex flex-col"
+        style={{ flexShrink: 0 }}
         onClick={() => setExpandedOrderId(null)}
       >
-        <Carousel
-          ref={carouselRef}
-          options={{ axis: "x", dragFree: true, align: "start" }}
-          gap={CARD_GAP_PX}
-          viewportClassName="flex-1 min-h-0 pb-2"
-          containerClassName="pb-2"
-          showArrows={false}
-          overflowY="hidden"
-          className="flex-1 min-h-0"
-          onScrollIndexChange={handleScrollIndexChange}
-        >
+        <div style={{ height: 535, flexShrink: 0 }}>
+          <Carousel
+            ref={carouselRef}
+            options={{ axis: "x", dragFree: true, align: "start" }}
+            gap={CARD_GAP_PX}
+            viewportClassName="min-h-0 h-full"
+            containerClassName=""
+            showArrows={false}
+            overflowY="hidden"
+            className="min-h-0 w-full h-full"
+            onScrollIndexChange={handleScrollIndexChange}
+          >
           {displaySlice.map((order, index) => {
             const isExpanded = expandedOrderId === order.id;
             const isAmongLastTwo = displaySlice.length >= 2 && index >= displaySlice.length - 2;
@@ -317,7 +318,8 @@ function OrdersPageContent() {
               </div>
             );
           })}
-        </Carousel>
+          </Carousel>
+        </div>
         {displaySlice.length > 0 && (
           <div
             className="absolute top-0 bottom-2 right-0 w-[100px] pointer-events-none"
@@ -332,7 +334,18 @@ function OrdersPageContent() {
           </p>
         )}
         {displaySlice.length > 0 && totalPages > 1 && (
-          <div style={{ flexShrink: 0, marginTop: 24 }}>
+          <div
+            style={{
+              flexShrink: 0,
+              marginTop: 50,
+              width: "100vw",
+              position: "relative",
+              left: -305,
+              marginLeft: 0,
+              display: "flex",
+              justifyContent: "center",
+            }}
+          >
             <Pagination
               page={safePage}
               totalPages={totalPages}

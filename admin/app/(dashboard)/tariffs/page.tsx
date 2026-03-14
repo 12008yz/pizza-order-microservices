@@ -152,7 +152,17 @@ export default function TariffsPage() {
               </Carousel>
             </div>
             {totalPages > 1 && (
-              <div style={{ marginTop: 24 }}>
+              <div
+                style={{
+                  marginTop: 50,
+                  width: "100vw",
+                  position: "relative",
+                  left: -305,
+                  marginLeft: 0,
+                  display: "flex",
+                  justifyContent: "center",
+                }}
+              >
                 <Pagination page={safePage} totalPages={totalPages} onPageChange={handlePageChange} />
               </div>
             )}

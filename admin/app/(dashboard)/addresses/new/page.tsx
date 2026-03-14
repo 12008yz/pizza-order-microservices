@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Select } from "@/components/ui/Select";
 import { fetchRegions, fetchCities, fetchStreets, fetchProviders } from "@/lib/api";
@@ -10,9 +10,10 @@ const fontFamily = "'TT Firs Neue', sans-serif";
 const fieldBorder = "1px solid rgba(16, 16, 16, 0.5)";
 const fieldHeight = 50;
 const fieldRadius = 10;
-/** Круг 16×16 справа у полей; при выборе — голубой фон и белая галочка (первые два поля) */
+/** Круг 16×16 справа у полей; голубой и галочка — только после клика по кругу (сохранение адреса для новых проникновений) */
 const FIELD_CIRCLE_SIZE = 16;
 const FIELD_CIRCLE_BORDER = "1px solid rgba(16, 16, 16, 0.5)";
+const PINNED_ADDRESS_STORAGE_KEY = "admin-pinned-address";
 
 const WhiteCheckIcon = () => (
   <svg width="8" height="6" viewBox="0 0 8 6" fill="none" aria-hidden>
@@ -59,6 +60,38 @@ const MOCK_STREETS: Street[] = [
   { id: 4, name: "пр. Мира" },
 ];
 
+interface PinnedAddress {
+  regionId: number;
+  cityId: number | null;
+  streetId: number | null;
+}
+
+function loadPinnedAddress(): PinnedAddress | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = window.localStorage.getItem(PINNED_ADDRESS_STORAGE_KEY);
+    if (!raw) return null;
+    const p = JSON.parse(raw) as { regionId?: number; cityId?: number | null; streetId?: number | null };
+    if (p.regionId == null) return null;
+    return {
+      regionId: p.regionId,
+      cityId: p.cityId ?? null,
+      streetId: p.streetId ?? null,
+    };
+  } catch {
+    return null;
+  }
+}
+
+function savePinnedAddress(pinned: PinnedAddress | null) {
+  if (typeof window === "undefined") return;
+  if (!pinned) {
+    window.localStorage.removeItem(PINNED_ADDRESS_STORAGE_KEY);
+    return;
+  }
+  window.localStorage.setItem(PINNED_ADDRESS_STORAGE_KEY, JSON.stringify(pinned));
+}
+
 export default function NewAddressPage() {
   const [regions, setRegions] = useState<Region[]>([]);
   const [cities, setCities] = useState<City[]>([]);
@@ -67,6 +100,9 @@ export default function NewAddressPage() {
   const [regionId, setRegionId] = useState<number | "">("");
   const [cityId, setCityId] = useState<number | "">("");
   const [streetId, setStreetId] = useState<number | "">("");
+  /** Закреплённый адрес: голубой круг только при совпадении с текущим выбором; сохраняется по клику на круг */
+  const [pinned, setPinned] = useState<PinnedAddress | null>(null);
+  const [restoredOnce, setRestoredOnce] = useState(false);
   // По умолчанию ничего не выбрано — пользователь сам задаёт значения
   const [category, setCategory] = useState("");
   const [houseNumber, setHouseNumber] = useState<string | null>(null);
@@ -79,6 +115,12 @@ export default function NewAddressPage() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const [validationError, setValidationError] = useState(false);
+  /** Значения cityId/streetId для восстановления после загрузки списков; задаётся в эффекте восстановления, читается в эффектах городов/улиц */
+  const pendingRestoreRef = useRef<{ cityId: number | null; streetId: number | null } | null>(null);
+
+  useEffect(() => {
+    setPinned(loadPinnedAddress());
+  }, []);
 
   useEffect(() => {
     fetchRegions()
@@ -87,25 +129,43 @@ export default function NewAddressPage() {
     fetchProviders().then((res: { data?: Provider[] }) => setProviders(Array.isArray(res?.data) ? res.data : []));
   }, []);
 
+  /** Восстановление закреплённого адреса после загрузки регионов; сохраняем cityId/streetId в ref для последующего восстановления */
+  useEffect(() => {
+    if (restoredOnce || regions.length === 0 || !pinned) return;
+    setRegionId(pinned.regionId);
+    pendingRestoreRef.current = {
+      cityId: pinned.cityId,
+      streetId: pinned.streetId,
+    };
+    setRestoredOnce(true);
+  }, [pinned, regions.length, restoredOnce]);
+
   useEffect(() => {
     if (!regionId) {
       setCities([]);
       setCityId("");
+      pendingRestoreRef.current = null;
       return;
     }
+    const cityToRestore =
+      pendingRestoreRef.current?.cityId != null ? pendingRestoreRef.current.cityId : "";
     fetchCities(regionId as number)
       .then((res: { data?: City[] }) => {
         const list = Array.isArray(res?.data) && res.data.length > 0 ? res.data : MOCK_CITIES;
         setCities(list);
-        setCityId("");
-        setStreets([]);
-        setStreetId("");
+        setCityId(cityToRestore);
+        if (!cityToRestore) {
+          setStreets([]);
+          setStreetId("");
+          pendingRestoreRef.current = null;
+        }
       })
       .catch(() => {
         setCities(MOCK_CITIES);
         setCityId("");
         setStreets([]);
         setStreetId("");
+        pendingRestoreRef.current = null;
       });
   }, [regionId]);
 
@@ -115,9 +175,19 @@ export default function NewAddressPage() {
       setStreetId("");
       return;
     }
+    const streetToRestore =
+      pendingRestoreRef.current?.streetId != null ? pendingRestoreRef.current.streetId : "";
     fetchStreets(cityId as number)
-      .then((res: { data?: Street[] }) => setStreets(Array.isArray(res?.data) && res.data.length > 0 ? res.data : MOCK_STREETS))
-      .catch(() => setStreets(MOCK_STREETS));
+      .then((res: { data?: Street[] }) => {
+        const list = Array.isArray(res?.data) && res.data.length > 0 ? res.data : MOCK_STREETS;
+        setStreets(list);
+        setStreetId(streetToRestore);
+        pendingRestoreRef.current = null;
+      })
+      .catch(() => {
+        setStreets(MOCK_STREETS);
+        pendingRestoreRef.current = null;
+      });
   }, [cityId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -230,7 +300,7 @@ export default function NewAddressPage() {
       </div>
 
       <form className="address-form" onSubmit={handleSubmit}>
-        {/* Название населённого пункта + круг справа; ширина поля как у второго ряда (выравнивание по уровню) */}
+        {/* Название населённого пункта + круг: голубой и галочка только после клика (сохранение для новых проникновений) */}
         <div style={{ display: "flex", alignItems: "center", gap: 30, marginBottom: 10 }}>
           <div style={{ flex: 1, minWidth: 0 }}>
             <Select
@@ -244,28 +314,44 @@ export default function NewAddressPage() {
             />
           </div>
           <div style={{ width: 30, minWidth: 30, display: "flex", justifyContent: "center", flexShrink: 0 }}>
-            <span
+            <button
+              type="button"
+              onClick={() => {
+                if (regionId === "") return;
+                const isCurrentlyPinned =
+                  pinned != null && regionId === pinned.regionId && pinned.cityId == null && pinned.streetId == null;
+                if (isCurrentlyPinned) {
+                  setPinned(null);
+                  savePinnedAddress(null);
+                  return;
+                }
+                const next: PinnedAddress = { regionId: regionId as number, cityId: null, streetId: null };
+                setPinned(next);
+                savePinnedAddress(next);
+              }}
               style={{
                 boxSizing: "border-box",
                 width: FIELD_CIRCLE_SIZE,
                 height: FIELD_CIRCLE_SIZE,
                 minWidth: FIELD_CIRCLE_SIZE,
                 minHeight: FIELD_CIRCLE_SIZE,
-                border: regionId !== "" ? "none" : FIELD_CIRCLE_BORDER,
+                border: pinned != null && regionId === pinned.regionId ? "none" : FIELD_CIRCLE_BORDER,
                 borderRadius: "50%",
                 display: "inline-flex",
                 alignItems: "center",
                 justifyContent: "center",
-                background: regionId !== "" ? "#3b82f6" : "transparent",
+                background: pinned != null && regionId === pinned.regionId ? "#3b82f6" : "transparent",
+                cursor: regionId !== "" ? "pointer" : "default",
+                padding: 0,
               }}
-              aria-hidden
+              aria-label={pinned != null && regionId === pinned.regionId ? "Закреплённый регион" : "Закрепить регион для новых проникновений"}
             >
-              {regionId !== "" ? <WhiteCheckIcon /> : null}
-            </span>
+              {pinned != null && regionId === pinned.regionId ? <WhiteCheckIcon /> : null}
+            </button>
           </div>
         </div>
 
-        {/* Название пространства населённого пункта + круг справа (колонка 30px; gap 30 — правый край совпадает с нижними рядами) */}
+        {/* Название пространства населённого пункта + круг: голубой только после клика (сохранить город/улицу для новых проникновений) */}
         <div style={{ display: "flex", alignItems: "center", gap: 30, marginBottom: 10 }}>
           {!cityId ? (
             <div style={{ flex: 1, minWidth: 0 }}>
@@ -295,24 +381,76 @@ export default function NewAddressPage() {
             </div>
           )}
           <div style={{ width: 30, minWidth: 30, display: "flex", justifyContent: "center", flexShrink: 0 }}>
-            <span
+            <button
+              type="button"
+              onClick={() => {
+                if (regionId === "" || (cityId === "" && streetId === "")) return;
+                const isSecondFieldPinned =
+                  pinned != null &&
+                  (pinned.cityId != null || pinned.streetId != null) &&
+                  pinned.regionId === regionId &&
+                  (pinned.cityId ?? "") === cityId &&
+                  (pinned.streetId ?? "") === streetId;
+                if (isSecondFieldPinned) {
+                  setPinned(null);
+                  savePinnedAddress(null);
+                  return;
+                }
+                const next: PinnedAddress = {
+                  regionId: regionId as number,
+                  cityId: cityId !== "" ? (cityId as number) : null,
+                  streetId: streetId !== "" ? (streetId as number) : null,
+                };
+                setPinned(next);
+                savePinnedAddress(next);
+              }}
               style={{
                 boxSizing: "border-box",
                 width: FIELD_CIRCLE_SIZE,
                 height: FIELD_CIRCLE_SIZE,
                 minWidth: FIELD_CIRCLE_SIZE,
                 minHeight: FIELD_CIRCLE_SIZE,
-                border: (cityId !== "" || streetId !== "") ? "none" : FIELD_CIRCLE_BORDER,
+                border:
+                  pinned != null &&
+                  (pinned.cityId != null || pinned.streetId != null) &&
+                  pinned.regionId === regionId &&
+                  (pinned.cityId ?? "") === cityId &&
+                  (pinned.streetId ?? "") === streetId
+                    ? "none"
+                    : FIELD_CIRCLE_BORDER,
                 borderRadius: "50%",
                 display: "inline-flex",
                 alignItems: "center",
                 justifyContent: "center",
-                background: (cityId !== "" || streetId !== "") ? "#3b82f6" : "transparent",
+                background:
+                  pinned != null &&
+                  (pinned.cityId != null || pinned.streetId != null) &&
+                  pinned.regionId === regionId &&
+                  (pinned.cityId ?? "") === cityId &&
+                  (pinned.streetId ?? "") === streetId
+                    ? "#3b82f6"
+                    : "transparent",
+                cursor: regionId !== "" && (cityId !== "" || streetId !== "") ? "pointer" : "default",
+                padding: 0,
               }}
-              aria-hidden
+              aria-label={
+                pinned != null &&
+                (pinned.cityId != null || pinned.streetId != null) &&
+                pinned.regionId === regionId &&
+                (pinned.cityId ?? "") === cityId &&
+                (pinned.streetId ?? "") === streetId
+                  ? "Закреплённый адрес"
+                  : "Закрепить адрес для новых проникновений"
+              }
             >
-              {(cityId !== "" || streetId !== "") ? <WhiteCheckIcon /> : null}
-            </span>
+              {pinned != null &&
+              (pinned.cityId != null || pinned.streetId != null) &&
+              pinned.regionId === regionId &&
+              (pinned.cityId ?? "") === cityId &&
+              (pinned.streetId ?? "") === streetId ? (
+                <WhiteCheckIcon />
+              ) : null}
+            </button>
           </div>
         </div>
 
@@ -354,6 +492,7 @@ export default function NewAddressPage() {
               frameStyle
               invalid={validationError}
               showAddNew
+              searchable
               onAddNew={() => { const v = window.prompt("Введите номер дома"); if (v != null && v.trim() !== "") setHouseNumber(v.trim()); }}
             />
           </div>
@@ -371,6 +510,7 @@ export default function NewAddressPage() {
               frameStyle
               invalid={validationError}
               showAddNew
+              searchable
               onAddNew={() => { const v = window.prompt("Введите количество подъездов"); if (v != null && v.trim() !== "") setEntrances(v.trim()); }}
             />
           </div>
@@ -388,6 +528,7 @@ export default function NewAddressPage() {
               frameStyle
               invalid={validationError}
               showAddNew
+              searchable
               onAddNew={() => { const v = window.prompt("Введите количество этажей"); if (v != null && v.trim() !== "") setFloors(v.trim()); }}
             />
           </div>
@@ -405,13 +546,14 @@ export default function NewAddressPage() {
               frameStyle
               invalid={validationError}
               showAddNew
+              searchable
               onAddNew={() => { const v = window.prompt("Введите количество квартир"); if (v != null && v.trim() !== "") setApartments(v.trim()); }}
             />
           </div>
         </div>
 
-        {/* Ряд: Категория (второй) + Краткое описание — отступ до кнопки 20px */}
-        <div style={{ display: "flex", gap: 10, marginBottom: 20 }}>
+        {/* Ряд: Категория (второй) + Краткое описание — без зазора под правым полем; отступ до кнопки 20px */}
+        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20 }}>
           <div style={{ width: 155, flexShrink: 0 }}>
             <Select
               value={providerId === "" ? null : providerId}

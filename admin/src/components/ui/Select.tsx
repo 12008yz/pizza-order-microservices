@@ -34,6 +34,8 @@ interface SelectProps {
   frameOpenHeight?: number;
   /** Вызов при фокусе/открытии поля (например снять красную обводку валидации) */
   onFocus?: () => void;
+  /** Поле с поиском: при открытии показывается ввод, список фильтруется по введённому тексту */
+  searchable?: boolean;
 }
 
 const labelStyle: React.CSSProperties = {
@@ -44,11 +46,11 @@ const labelStyle: React.CSSProperties = {
   color: "#101010",
 };
 
-/** Высота при showAddNew: три полные строки в скролле (90px) + отступ 10 + строка «Новое включить» 20, без лишнего отступа снизу */
-const FRAME_DROPDOWN_HEIGHT = 50 + 90 + 10 + 20; // 170
+/** Высота при showAddNew: список 90px + строка «Новое включить» 20 + отступ снизу 20 */
+const FRAME_DROPDOWN_HEIGHT = 50 + 90 + 20 + 20; // 180
 /** Высота первого поля «Категория» (без «Новое вкл...») */
 const FRAME_DROPDOWN_HEIGHT_FIRST = 140;
-/** Высота скролла при showAddNew: 3 строки по 30px (20 + gap 10), чтобы не было видно части следующей цифры */
+/** Высота скролла при showAddNew */
 const FRAME_ADD_NEW_LIST_HEIGHT = 90;
 
 /** Стрелка: закрыт — вниз, открыт — вверх */
@@ -96,8 +98,11 @@ export function Select({
   displayWhenEmpty,
   frameOpenHeight,
   onFocus,
+  searchable = false,
 }: SelectProps) {
   const [open, setOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const [dropdownStyle, setDropdownStyle] = useState<{
     top?: number;
     bottom?: number;
@@ -116,6 +121,11 @@ export function Select({
   useEffect(() => {
     onOpenChange?.(open);
   }, [open, onOpenChange]);
+
+  useEffect(() => {
+    if (!open) setSearchQuery("");
+    else if (searchable) searchInputRef.current?.focus();
+  }, [open, searchable]);
 
   useLayoutEffect(() => {
     if (!open || !inline || !buttonRef.current) {
@@ -247,6 +257,49 @@ export function Select({
     );
   }
 
+  /** При searchable и открытом списке верхняя строка — как триггер по макету, но с полем ввода вместо текста */
+  const searchableInputRow =
+    frameStyle && open && searchable ? (
+      <div
+        className="flex items-center justify-between rounded-t-[10px] w-full min-h-[50px]"
+        style={{
+          height: 50,
+          flexShrink: 0,
+          boxSizing: "border-box",
+          paddingTop: 15,
+          paddingBottom: 15,
+          paddingLeft: 15,
+          paddingRight: 18,
+          background: "#FFFFFF",
+        }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <input
+          ref={searchInputRef}
+          type="text"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          onKeyDown={(e) => e.stopPropagation()}
+          placeholder={placeholder}
+          className="placeholder:opacity-100 min-w-0 truncate"
+          style={{
+            ...labelStyle,
+            flex: 1,
+            minWidth: 0,
+            border: "none",
+            outline: "none",
+            background: "transparent",
+            padding: 0,
+            color: searchQuery ? "#101010" : "rgba(16, 16, 16, 0.25)",
+          }}
+          aria-label={placeholder}
+        />
+        <span style={{ width: 16, minWidth: 16, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <ArrowIcon open={true} />
+        </span>
+      </div>
+    ) : null;
+
   const triggerButton = (
     <button
       type="button"
@@ -299,15 +352,22 @@ export function Select({
     </button>
   );
 
-  /** Текущий выбор — показываем вверху окна при открытии, чтобы не исчезал */
+  /** Текущий выбор — показываем вверху при открытии (только если не searchable: при searchable верхняя строка — поле ввода) */
   const currentSelectionLabel =
-    frameStyle && open && displayText !== placeholder ? displayText : null;
+    frameStyle && open && !searchable && displayText !== placeholder ? displayText : null;
 
   /** В frameStyle при открытии выбранное показываем один раз: либо в шапке (currentSelectionLabel), либо в списке; в списке выбранную опцию не дублируем */
   const optionsToShow =
     frameStyle && open && currentSelectionLabel != null
       ? options.filter((o) => o.value !== value)
       : options;
+
+  /** При searchable фильтруем по введённому тексту */
+  const q = searchQuery.trim().toLowerCase();
+  const optionsForList =
+    searchable && open && q
+      ? optionsToShow.filter((o) => String(o.label).toLowerCase().includes(q))
+      : optionsToShow;
 
   const dropdownList = (
     <>
@@ -344,7 +404,7 @@ export function Select({
           </div>
         </div>
       )}
-      {optionsToShow.map((opt) => {
+      {optionsForList.map((opt) => {
         const isSelected = value === opt.value;
         return (
           <div
@@ -355,6 +415,9 @@ export function Select({
             className="flex items-center justify-between cursor-pointer w-full select-none min-w-0"
             style={{
               minHeight: frameStyle ? 20 : 40,
+              height: frameStyle ? 20 : undefined,
+              flexShrink: 0,
+              scrollSnapAlign: frameStyle ? "start" : undefined,
               paddingLeft: frameStyle ? 0 : 15,
               paddingRight: frameStyle ? 0 : 15,
               boxSizing: "border-box",
@@ -409,9 +472,9 @@ export function Select({
         lineHeight: "125%",
         color: "#3b82f6",
         cursor: "pointer",
-        marginTop: 10,
+        marginTop: 0,
         paddingTop: 0,
-        paddingBottom: 0,
+        paddingBottom: 20,
         paddingLeft: 15,
         paddingRight: 15,
       }}
@@ -456,7 +519,7 @@ export function Select({
           }}
           onClick={(e) => e.stopPropagation()}
         >
-          {triggerButton}
+          {searchable ? searchableInputRow : triggerButton}
           <div
             role="listbox"
             className={cn(
@@ -464,13 +527,21 @@ export function Select({
               isFirstField ? "flex-1 min-h-0 overflow-hidden" : "overflow-y-auto scrollbar-hide"
             )}
             style={{
-              marginTop: -15,
-              paddingTop: 10,
+              marginTop: searchable ? 0 : -15,
+              paddingTop: searchable ? 0 : 10,
               paddingRight: 15,
               paddingBottom: showAddNew ? 0 : 15,
               paddingLeft: 15,
               gap: 10,
-              ...(showAddNew ? { height: FRAME_ADD_NEW_LIST_HEIGHT, minHeight: FRAME_ADD_NEW_LIST_HEIGHT } : { flex: 1, minHeight: 0 }),
+              ...(showAddNew
+                ? {
+                    height: FRAME_ADD_NEW_LIST_HEIGHT,
+                    minHeight: FRAME_ADD_NEW_LIST_HEIGHT,
+                    maxHeight: FRAME_ADD_NEW_LIST_HEIGHT,
+                    flexShrink: 0,
+                    scrollSnapType: "y mandatory",
+                  }
+                : { flex: 1, minHeight: 0 }),
             }}
           >
             {dropdownList}

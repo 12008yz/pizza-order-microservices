@@ -24,11 +24,6 @@ function createClient(baseURL: string): AxiosInstance {
     (r) => r,
     async (err) => {
       const original = err.config;
-      const isDemoToken = typeof window !== "undefined" && getAccessToken() === "demo-access";
-      if (isDemoToken) {
-        // Демо-режим без бэкенда: не сбрасывать авторизацию при 401
-        return Promise.reject(err);
-      }
       if (err.response?.status === 401 && !original._retry && typeof window !== "undefined") {
         original._retry = true;
         const refresh = getRefreshToken();
@@ -61,6 +56,20 @@ export const authApi = axios.create({
   baseURL: AUTH_SERVICE_URL,
   headers: { "Content-Type": "application/json" },
 });
+
+/** Проверяет, что текущий токен валиден. При 401 возвращает false. */
+export async function verifyToken(): Promise<boolean> {
+  const token = getAccessToken();
+  if (!token) return false;
+  try {
+    const res = await axios.get<{ success?: boolean }>(`${AUTH_SERVICE_URL}/api/auth/verify`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return res?.data?.success !== false;
+  } catch {
+    return false;
+  }
+}
 
 export async function loginAdmin(body: LoginRequest): Promise<LoginResponse> {
   const { data: res } = await authApi.post<{ success: boolean; data: LoginResponse }>(

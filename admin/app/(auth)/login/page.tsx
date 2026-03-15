@@ -1,21 +1,47 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/Input";
-import { loginAdmin } from "@/lib/api";
-import { getAccessToken, setTokens, setUser } from "@/lib/auth";
+import { loginAdmin, verifyToken } from "@/lib/api";
+import { getAccessToken, clearAuth } from "@/lib/auth";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [checkingAuth, setCheckingAuth] = useState(true);
   const router = useRouter();
 
-  if (typeof window !== "undefined" && getAccessToken()) {
-    router.replace("/orders");
-    return null;
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const token = getAccessToken();
+    if (!token) {
+      setCheckingAuth(false);
+      return;
+    }
+    verifyToken()
+      .then((valid) => {
+        if (valid) {
+          router.replace("/orders");
+        } else {
+          clearAuth();
+          setCheckingAuth(false);
+        }
+      })
+      .catch(() => {
+        clearAuth();
+        setCheckingAuth(false);
+      });
+  }, [router]);
+
+  if (checkingAuth) {
+    return (
+      <div className="min-h-screen bg-[#F5F5F5] flex items-center justify-center">
+        <p style={{ fontFamily: "'TT Firs Neue', sans-serif", color: "rgba(16,16,16,0.5)" }}>Проверка входа...</p>
+      </div>
+    );
   }
 
   // Кириллические буквы-двойники в латиницу, чтобы «А12» и «A12» давали один логин
@@ -38,23 +64,6 @@ export default function LoginPage() {
     setError("");
     setLoading(true);
     const normalizedLogin = wordToLogin(email.trim());
-    const isDemoCredentials = normalizedLogin === "1" && password === "2";
-
-    if (isDemoCredentials) {
-      setTokens("demo-access", "demo-refresh");
-      setUser({
-        id: 1,
-        email: "1@admin.local",
-        name: "Admin",
-        role: "admin",
-        department: null,
-        isActive: true,
-      });
-      router.push("/orders");
-      router.refresh();
-      setLoading(false);
-      return;
-    }
 
     try {
       const loginEmail = email.includes("@")

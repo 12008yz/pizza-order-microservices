@@ -7,7 +7,6 @@ import { TariffCard } from "@/components/tariffs/TariffCard";
 import { Carousel, type CarouselApi } from "@/components/ui/Carousel";
 import { Pagination } from "@/components/ui/Pagination";
 import { fetchTariffs } from "@/lib/api";
-import { MOCK_TARIFFS } from "@/lib/mockTariffs";
 import type { Tariff } from "@/types";
 
 const CARD_WIDTH = 240;
@@ -56,11 +55,12 @@ export default function TariffsPage() {
         if (cancelled) return;
         const data = res as { success?: boolean; data?: Tariff[] };
         setTariffs(Array.isArray(data?.data) ? data.data : []);
+        setError(null);
       })
       .catch(() => {
         if (!cancelled) {
-          setTariffs(MOCK_TARIFFS);
-          setError(null);
+          setTariffs([]);
+          setError("Не удалось загрузить тарифы. Проверьте, что бэкенд запущен.");
         }
       })
       .finally(() => {

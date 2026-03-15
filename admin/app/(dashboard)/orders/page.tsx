@@ -6,7 +6,6 @@ import { OrderCard } from "@/components/orders/OrderCard";
 import { Carousel, type CarouselApi } from "@/components/ui/Carousel";
 import { Pagination } from "@/components/ui/Pagination";
 import { fetchOrders, fetchProviders, fetchTariffs, fetchRegions, fetchCities, fetchStreets, updateOrder as updateOrderApi } from "@/lib/api";
-import { MOCK_ORDERS } from "@/lib/mockOrders";
 import type { Order } from "@/types";
 
 const CARD_WIDTH_COLLAPSED = 242;
@@ -154,7 +153,7 @@ function OrdersPageContent() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cities.length]);
 
-  const sourceOrders = orders.length > 0 ? orders : MOCK_ORDERS;
+  const sourceOrders = orders;
 
   const filtered = useMemo(() => {
     if (!searchParam.trim()) return sourceOrders;

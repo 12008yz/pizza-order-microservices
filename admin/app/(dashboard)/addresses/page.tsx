@@ -7,7 +7,6 @@ import { AddressCard } from "@/components/addresses/AddressCard";
 import { Carousel, type CarouselApi } from "@/components/ui/Carousel";
 import { Pagination } from "@/components/ui/Pagination";
 import { fetchOrders } from "@/lib/api";
-import { MOCK_ORDERS } from "@/lib/mockOrders";
 import type { Order, OrderAddress } from "@/types";
 
 const CARD_WIDTH = 240;
@@ -115,8 +114,7 @@ export default function AddressesPage() {
     return () => { cancelled = true; };
   }, []);
 
-  const sourceOrders = orders.length > 0 ? orders : MOCK_ORDERS;
-  const addresses = useMemo(() => uniqueAddressesFromOrders(sourceOrders), [sourceOrders]);
+  const addresses = useMemo(() => uniqueAddressesFromOrders(orders), [orders]);
 
   const filtered = useMemo(() => {
     if (!searchParam.trim()) return addresses;

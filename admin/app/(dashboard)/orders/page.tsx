@@ -331,9 +331,11 @@ function OrdersPageContent() {
         </div>
         {displaySlice.length > 0 && (
           <div
-            className="absolute top-0 bottom-2 right-0 w-[100px] pointer-events-none"
+            className="absolute right-0 top-0 pointer-events-none"
             style={{
-              background: "linear-gradient(to right, rgba(255,255,255,0), #ffffff)",
+              width: 60,
+              height: 535,
+              background: "linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, #FFFFFF 100%)",
             }}
           />
         )}

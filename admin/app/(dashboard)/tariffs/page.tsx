@@ -167,9 +167,11 @@ export default function TariffsPage() {
               </div>
             )}
             <div
-              className="absolute top-0 bottom-2 right-0 w-[100px] pointer-events-none"
+              className="absolute right-0 top-0 pointer-events-none"
               style={{
-                background: "linear-gradient(to right, rgba(245,245,245,0), #F5F5F5)",
+                width: 60,
+                height: 535,
+                background: "linear-gradient(90deg, rgba(245, 245, 245, 0) 0%, #F5F5F5 100%)",
               }}
             />
           </>

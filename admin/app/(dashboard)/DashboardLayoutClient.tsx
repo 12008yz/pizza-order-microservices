@@ -27,7 +27,7 @@ export function DashboardLayoutClient({
   useEffect(() => {
     if (!pathname.startsWith("/addresses")) return;
     const id = requestAnimationFrame(() => {
-      mainScrollRef.current && (mainScrollRef.current.scrollTop = 0);
+      if (mainScrollRef.current) mainScrollRef.current.scrollTop = 0;
     });
     return () => cancelAnimationFrame(id);
   }, [pathname]);

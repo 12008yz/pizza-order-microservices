@@ -57,7 +57,7 @@ function Row({ label, value, underline }: { label: string; value: string; underl
 export function AddressCard({ address }: AddressCardProps) {
   return (
     <div
-      className="bg-white rounded-[20px] border border-transparent hover:border-[rgba(16,16,16,0.35)] transition-colors shrink-0"
+      className="bg-white rounded-[20px] border border-transparent hover:border-[rgba(16,16,16,0.35)] transition-colors shrink-0 select-none"
       style={{
         width: CARD_WIDTH,
         minHeight: CARD_MIN_HEIGHT,
@@ -65,6 +65,8 @@ export function AddressCard({ address }: AddressCardProps) {
         boxSizing: "border-box",
         backdropFilter: "blur(7.5px)",
         WebkitBackdropFilter: "blur(7.5px)",
+        WebkitUserSelect: "none",
+        userSelect: "none",
       }}
     >
       {/* По макету: только 3 серых круга сверху; третий прижат к правому краю — 20px от края карточки за счёт padding карточки */}

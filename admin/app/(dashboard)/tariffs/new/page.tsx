@@ -381,6 +381,7 @@ export default function NewTariffPage() {
               frameStyle
               invalid={validationError}
               frameOpenHeight={DROPDOWN_OPEN_HEIGHT}
+              searchable
               showAddNew
               onAddNew={async () => {
                 const v = typeof window !== "undefined" ? window.prompt("Введите название оператора") : null;
@@ -406,6 +407,7 @@ export default function NewTariffPage() {
               frameStyle
               invalid={validationError}
               frameOpenHeight={DROPDOWN_OPEN_HEIGHT}
+              searchable
               showAddNew
               onAddNew={() => {
                 setTariffId(null);

@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { getUser } from "@/lib/auth";
-import { cn } from "@/lib/utils";
 
 const statusFilters = [
   { label: "Все", value: "" },
@@ -85,35 +84,6 @@ function HollowCircle() {
 /** Круг для «Все» — такой же как у всех (opacity 0.5 задаётся на строке), без синей точки */
 function GrayCircle() {
   return <HollowCircle />;
-}
-
-/** Строка пункта: только круг 20px слева + текст, без рамки (пиксели) */
-function MenuRow({
-  children,
-  className,
-  style,
-}: {
-  children: React.ReactNode;
-  className?: string;
-  style?: React.CSSProperties;
-}) {
-  return (
-    <div
-      className={cn("flex items-center", className)}
-      style={{
-        minHeight: ROW_HEIGHT_PX,
-        height: ROW_HEIGHT_PX,
-        gap: GAP_CIRCLE_TEXT_PX,
-        ...menuTextStyle,
-        ...style,
-      }}
-    >
-      <HollowCircle />
-      <span className="flex-1 min-w-0 truncate" style={{ width: 160 }}>
-        {children}
-      </span>
-    </div>
-  );
 }
 
 /** Строка с двумя кругами: круг слева + текст + круг справа (И. Ивановых) */
@@ -253,9 +223,66 @@ export function Sidebar({
           minHeight: SECOND_PANEL_HEIGHT_PX,
         }}
       >
-        {secondPanelItems.map(({ label }) => (
-          <MenuRow key={label}>{label}</MenuRow>
-        ))}
+        {path === "/orders" ? (
+          <>
+            {secondPanelItems.map(({ label, value }) => {
+              const isActive = status === value;
+              return (
+                <label
+                  key={value}
+                  className="flex items-center cursor-pointer"
+                  style={{
+                    minHeight: ROW_HEIGHT_PX,
+                    height: ROW_HEIGHT_PX,
+                    gap: GAP_CIRCLE_TEXT_PX,
+                    opacity: isActive ? 0.5 : 1,
+                    ...menuTextStyle,
+                  }}
+                >
+                  <input
+                    type="radio"
+                    name="status"
+                    value={value}
+                    checked={isActive}
+                    onChange={() => onStatusChange(value)}
+                    className="sr-only"
+                  />
+                  <span
+                    className="shrink-0 flex items-center justify-center"
+                    style={{ width: CIRCLE_SIZE_PX, height: CIRCLE_SIZE_PX }}
+                  >
+                    {isActive ? <GrayCircle /> : <HollowCircle />}
+                  </span>
+                  <span style={{ width: 160 }}>{label}</span>
+                </label>
+              );
+            })}
+          </>
+        ) : (
+          <>
+            {secondPanelItems.map(({ label, value }) => (
+              <Link
+                key={value}
+                href="/orders"
+                className="flex items-center no-underline hover:opacity-80"
+                style={{
+                  minHeight: ROW_HEIGHT_PX,
+                  height: ROW_HEIGHT_PX,
+                  gap: GAP_CIRCLE_TEXT_PX,
+                  ...menuTextStyle,
+                }}
+              >
+                <span
+                  className="shrink-0 flex items-center justify-center"
+                  style={{ width: CIRCLE_SIZE_PX, height: CIRCLE_SIZE_PX }}
+                >
+                  <HollowCircle />
+                </span>
+                <span style={{ width: 160 }}>{label}</span>
+              </Link>
+            ))}
+          </>
+        )}
       </div>
 
       {/* Третья панель: База адресов, База планов */}

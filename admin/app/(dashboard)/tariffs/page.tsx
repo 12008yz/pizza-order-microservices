@@ -103,14 +103,6 @@ export default function TariffsPage() {
     [cardsPerPage, totalPages]
   );
 
-  if (error) {
-    return (
-      <div className="flex flex-col flex-1 min-h-0 min-w-0">
-        <p className="text-error">{error}</p>
-      </div>
-    );
-  }
-
   if (loading) {
     return (
       <div className="flex flex-col flex-1 min-h-0 min-w-0">
@@ -122,7 +114,12 @@ export default function TariffsPage() {
   }
 
   return (
-    <div className="flex flex-col min-w-0">
+    <div className="flex flex-col min-w-0 flex-1">
+      {error && (
+        <p className="text-error mb-4" style={{ fontFamily: "'TT Firs Neue', sans-serif" }}>
+          {error}
+        </p>
+      )}
       <div
         className="relative min-w-0 w-full"
         style={{ minHeight: 560, marginBottom: -50 }}

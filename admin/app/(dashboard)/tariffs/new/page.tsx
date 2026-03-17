@@ -110,6 +110,7 @@ const MOCK_TARIFFS: Tariff[] = [
 ];
 
 const OFFER_STORAGE_KEY = "tariffs_new_offer";
+const OFFER_DRAFT_STORAGE_KEY = "tariffs_new_offer_draft";
 
 export default function NewTariffPage() {
   const router = useRouter();
@@ -159,6 +160,90 @@ export default function NewTariffPage() {
       .catch(() => setRegions(MOCK_REGIONS));
   }, []);
 
+  // Восстановление черновика из sessionStorage
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      const raw = window.sessionStorage.getItem(OFFER_DRAFT_STORAGE_KEY);
+      if (!raw) return;
+      const draft = JSON.parse(raw) as {
+        category?: string;
+        providerId?: number | "";
+        tariffId?: number | null;
+        name?: string;
+        regionId?: number | null;
+        hasWi?: boolean;
+        hasTv?: boolean;
+        hasSim?: boolean;
+        technology?: string;
+        connectionPrice?: number | string | null;
+        monthlyPrice?: number | string | null;
+        payout?: number | string | null;
+        serviceTechnology?: { wi?: string | null; tv?: string | null; sim?: string | null };
+      };
+      if (draft.category != null) setCategory(draft.category);
+      if (draft.providerId !== undefined) setProviderId(draft.providerId);
+      if (draft.tariffId !== undefined) setTariffId(draft.tariffId);
+      if (draft.name != null) setName(draft.name);
+      if (draft.regionId !== undefined) setRegionId(draft.regionId);
+      if (draft.hasWi !== undefined) setHasWi(draft.hasWi);
+      if (draft.hasTv !== undefined) setHasTv(draft.hasTv);
+      if (draft.hasSim !== undefined) setHasSim(draft.hasSim);
+      if (draft.technology != null) setTechnology(draft.technology);
+      if (draft.connectionPrice !== undefined) setConnectionPrice(draft.connectionPrice);
+      if (draft.monthlyPrice !== undefined) setMonthlyPrice(draft.monthlyPrice);
+      if (draft.payout !== undefined) setPayout(draft.payout);
+      if (draft.serviceTechnology) {
+        setServiceTechnology({
+          wi: draft.serviceTechnology.wi ?? null,
+          tv: draft.serviceTechnology.tv ?? null,
+          sim: draft.serviceTechnology.sim ?? null,
+        });
+      }
+    } catch {
+      // игнорируем битые данные
+    }
+  }, []);
+
+  // Сохранение черновика в sessionStorage
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const draft = {
+      category,
+      providerId,
+      tariffId,
+      name,
+      regionId,
+      hasWi,
+      hasTv,
+      hasSim,
+      technology,
+      connectionPrice,
+      monthlyPrice,
+      payout,
+      serviceTechnology,
+    };
+    try {
+      window.sessionStorage.setItem(OFFER_DRAFT_STORAGE_KEY, JSON.stringify(draft));
+    } catch {
+      // если sessionStorage недоступен — просто ничего не делаем
+    }
+  }, [
+    category,
+    providerId,
+    tariffId,
+    name,
+    regionId,
+    hasWi,
+    hasTv,
+    hasSim,
+    technology,
+    connectionPrice,
+    monthlyPrice,
+    payout,
+    serviceTechnology,
+  ]);
+
   /** Опции для «Название тарифного плана» из БД */
   const tariffOptions = useMemo(
     () => tariffs.map((t) => ({ value: t.id, label: t.name })),
@@ -182,23 +267,37 @@ export default function NewTariffPage() {
   const connectionPriceOptions = useMemo(() => {
     const set = new Set<number>(tariffs.map((t) => t.connectionPrice).filter((n) => n != null));
     defaultPriceSteps.forEach((n) => set.add(n));
+    if (connectionPrice != null && connectionPrice !== "") {
+      const n = Number(connectionPrice);
+      if (!Number.isNaN(n)) set.add(n);
+    }
     return Array.from(set).sort((a, b) => a - b).map((n) => ({ value: n, label: String(n) }));
-  }, [tariffs, defaultPriceSteps]);
+  }, [tariffs, defaultPriceSteps, connectionPrice]);
 
   /** Уникальные значения «Плата мес.» из тарифов; если тарифов нет — базовый набор */
   const monthlyPriceOptions = useMemo(() => {
     const set = new Set<number>(tariffs.map((t) => t.price).filter((n) => n != null));
     defaultPriceSteps.forEach((n) => set.add(n));
+    if (monthlyPrice != null && monthlyPrice !== "") {
+      const n = Number(monthlyPrice);
+      if (!Number.isNaN(n)) set.add(n);
+    }
     return Array.from(set).sort((a, b) => a - b).map((n) => ({ value: n, label: String(n) }));
-  }, [tariffs, defaultPriceSteps]);
+  }, [tariffs, defaultPriceSteps, monthlyPrice]);
 
   /** Опции «Выплата»: из тарифов нет поля, используем типовой диапазон 0–5000 */
   const payoutOptions = useMemo(() => {
     const step = 100;
     const opts: { value: number; label: string }[] = [{ value: 0, label: "0" }];
     for (let i = step; i <= 5000; i += step) opts.push({ value: i, label: String(i) });
+    if (payout != null && payout !== "") {
+      const n = Number(payout);
+      if (!Number.isNaN(n) && !opts.some((o) => o.value === n)) {
+        opts.push({ value: n, label: String(n) });
+      }
+    }
     return opts;
-  }, []);
+  }, [payout]);
 
   /** При выборе тарифа подставляем данные из БД */
   const handleTariffSelect = (id: number | null) => {
@@ -369,7 +468,14 @@ export default function NewTariffPage() {
 
       <form className="address-form" onSubmit={handleSubmit}>
         {/* Строка 1: Категория (при открытии 155×170) | Название оператора | Название тарифного плана */}
-        <div style={{ display: "flex", gap, marginBottom: gap }}>
+        <div
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: 10,
+            marginBottom: 10,
+          }}
+        >
           <div style={{ ...FIELD_155, flexShrink: 0 }}>
             <Select
               value={category || null}
@@ -429,7 +535,14 @@ export default function NewTariffPage() {
         </div>
 
         {/* Строка 2: Название населённого пункта (регионы из БД) | WI | TV | SIM — ширина 320px как у оператора/тарифа */}
-        <div style={{ display: "flex", gap, marginBottom: gap }}>
+        <div
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: 10,
+            marginBottom: 15,
+          }}
+        >
           <div style={{ width: 320, flexShrink: 0 }}>
             <Select
               value={regionId}
@@ -439,6 +552,20 @@ export default function NewTariffPage() {
               placeholder="Название населённого пункта"
               frameStyle
               invalid={validationError}
+              searchable
+              showAddNew
+              onAddNew={() => {
+                if (typeof window === "undefined") return;
+                const v = window.prompt("Введите название населённого пункта");
+                if (!v || !v.trim()) return;
+                const name = v.trim();
+                const id = -(regions.length + 1);
+                // Локальный регион только в рамках формы
+                const next = { id, name };
+                setRegions((prev) => [...prev, next]);
+                setRegionId(id);
+                setValidationError(false);
+              }}
             />
           </div>
           {[
@@ -455,65 +582,74 @@ export default function NewTariffPage() {
               : "#101010";
 
             return (
-            <label
-              key={key}
-              style={{
-                ...blockStyle,
-                width: 155,
-                flexShrink: 0,
-                cursor: "pointer",
-                gap: 8,
-                border: validationError ? "1px solid #FF3030" : fieldBorder,
-              }}
-            >
-              <input
-                type="checkbox"
-                checked={checked}
-                onChange={(e) => {
-                  const next = e.target.checked;
-                  // Если уже есть привязка технологии, не даём "отжимать" чекбокс,
-                  // а просто считаем сервис активным для переназначения технологии.
-                  if (!next && mappedTech) {
-                    setActiveService(key as "wi" | "tv" | "sim");
-                    return;
-                  }
-
-                  onChange(next);
-                  if (next) {
-                    setActiveService(key as "wi" | "tv" | "sim");
-                  } else if (activeService === key) {
-                    setActiveService(null);
-                  }
-                }}
-                style={{ position: "absolute", opacity: 0, width: 0, height: 0, margin: 0 }}
-                aria-label={label}
-              />
-              <span
+              <label
+                key={key}
                 style={{
-                  boxSizing: "border-box",
-                  width: FIELD_CIRCLE_SIZE,
-                  height: FIELD_CIRCLE_SIZE,
-                  minWidth: FIELD_CIRCLE_SIZE,
-                  minHeight: FIELD_CIRCLE_SIZE,
-                  border: checked ? "none" : FIELD_CIRCLE_BORDER,
-                  borderRadius: "50%",
-                  display: "inline-flex",
-                  alignItems: "center",
-                  justifyContent: "center",
+                  ...blockStyle,
+                  width: 155,
                   flexShrink: 0,
-                  background: checked ? "#101010" : "transparent",
+                  cursor: "pointer",
+                  gap: 8,
+                  border: validationError ? "1px solid #FF3030" : fieldBorder,
                 }}
               >
-                {checked ? <WhiteCheckIcon /> : null}
-              </span>
-              <span style={{ color: textColor }}>{label}</span>
-            </label>
+                <input
+                  type="checkbox"
+                  checked={checked}
+                  onChange={(e) => {
+                    const next = e.target.checked;
+
+                    // Если чекбокс снимаем — очищаем и привязку технологии для этого сервиса
+                    if (!next) {
+                      setServiceTechnology((prev) => ({
+                        ...prev,
+                        [key]: null,
+                      }) as typeof prev);
+                      if (activeService === key) {
+                        setActiveService(null);
+                      }
+                    } else {
+                      setActiveService(key as "wi" | "tv" | "sim");
+                    }
+
+                    onChange(next);
+                  }}
+                  style={{ position: "absolute", opacity: 0, width: 0, height: 0, margin: 0 }}
+                  aria-label={label}
+                />
+                <span
+                  style={{
+                    boxSizing: "border-box",
+                    width: FIELD_CIRCLE_SIZE,
+                    height: FIELD_CIRCLE_SIZE,
+                    minWidth: FIELD_CIRCLE_SIZE,
+                    minHeight: FIELD_CIRCLE_SIZE,
+                    border: checked ? "none" : FIELD_CIRCLE_BORDER,
+                    borderRadius: "50%",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    flexShrink: 0,
+                    background: checked ? "#101010" : "transparent",
+                  }}
+                >
+                  {checked ? <WhiteCheckIcon /> : null}
+                </span>
+                <span style={{ color: textColor }}>{label}</span>
+              </label>
             );
           })}
         </div>
 
         {/* Строка 3: FTTX · 4 | FTTX · 8 | GPON | DOCSIS (привязка к выбранному WI/TV/SIM) */}
-        <div style={{ display: "flex", gap, marginBottom: gap }}>
+        <div
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: 10,
+            marginBottom: 10,
+          }}
+        >
           {TECH_OPTIONS.map((opt) => {
             const isAssigned =
               serviceTechnology.wi === opt.value ||
@@ -574,7 +710,14 @@ export default function NewTariffPage() {
         </div>
 
         {/* Строка 4: Плата, подк. | Плата, мес. | Выплата (при открытии каждый 155×170) */}
-        <div style={{ display: "flex", gap, marginBottom: 20 }}>
+        <div
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: 10,
+            marginBottom: 10,
+          }}
+        >
           <div style={{ ...FIELD_155, flexShrink: 0 }}>
             <Select
               value={connectionPrice}
@@ -585,6 +728,17 @@ export default function NewTariffPage() {
               frameStyle
               invalid={validationError}
               frameOpenHeight={DROPDOWN_OPEN_HEIGHT}
+              searchable
+              showAddNew
+              onAddNew={() => {
+                if (typeof window === "undefined") return;
+                const v = window.prompt("Введите плату за подключение");
+                if (!v || !v.trim()) return;
+                const n = Number(v.replace(",", "."));
+                if (Number.isNaN(n)) return;
+                setConnectionPrice(n);
+                setValidationError(false);
+              }}
             />
           </div>
           <div style={{ ...FIELD_155, flexShrink: 0 }}>
@@ -597,6 +751,17 @@ export default function NewTariffPage() {
               frameStyle
               invalid={validationError}
               frameOpenHeight={DROPDOWN_OPEN_HEIGHT}
+              searchable
+              showAddNew
+              onAddNew={() => {
+                if (typeof window === "undefined") return;
+                const v = window.prompt("Введите ежемесячную плату");
+                if (!v || !v.trim()) return;
+                const n = Number(v.replace(",", "."));
+                if (Number.isNaN(n)) return;
+                setMonthlyPrice(n);
+                setValidationError(false);
+              }}
             />
           </div>
           <div style={{ ...FIELD_155, flexShrink: 0 }}>
@@ -609,6 +774,17 @@ export default function NewTariffPage() {
               frameStyle
               invalid={validationError}
               frameOpenHeight={DROPDOWN_OPEN_HEIGHT}
+              searchable
+              showAddNew
+              onAddNew={() => {
+                if (typeof window === "undefined") return;
+                const v = window.prompt("Введите размер выплаты");
+                if (!v || !v.trim()) return;
+                const n = Number(v.replace(",", "."));
+                if (Number.isNaN(n)) return;
+                setPayout(n);
+                setValidationError(false);
+              }}
             />
           </div>
         </div>

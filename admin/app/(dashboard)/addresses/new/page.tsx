@@ -490,6 +490,7 @@ export default function NewAddressPage() {
               onFocus={() => setValidationError(false)}
               placeholder="Номеры"
               frameStyle
+              frameOpenHeight={170}
               invalid={validationError}
               showAddNew
               searchable
@@ -508,6 +509,7 @@ export default function NewAddressPage() {
               onFocus={() => setValidationError(false)}
               placeholder="Подъезды"
               frameStyle
+              frameOpenHeight={170}
               invalid={validationError}
               showAddNew
               searchable
@@ -526,6 +528,7 @@ export default function NewAddressPage() {
               onFocus={() => setValidationError(false)}
               placeholder="Полеты"
               frameStyle
+              frameOpenHeight={170}
               invalid={validationError}
               showAddNew
               searchable
@@ -544,6 +547,7 @@ export default function NewAddressPage() {
               onFocus={() => setValidationError(false)}
               placeholder="Квартиры"
               frameStyle
+              frameOpenHeight={170}
               invalid={validationError}
               showAddNew
               searchable

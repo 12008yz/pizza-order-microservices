@@ -322,7 +322,14 @@ export function Select({
       style={{
         ...labelStyle,
         boxSizing: "border-box",
-        ...(frameStyle ? { paddingTop: 15, paddingBottom: 15, paddingLeft: 15, paddingRight: 18 } : { paddingLeft: 10, paddingRight: 14.5 }),
+        ...(frameStyle
+          ? {
+              paddingTop: 15,
+              paddingBottom: 15,
+              paddingLeft: 15,
+              paddingRight: 18,
+            }
+          : { paddingLeft: 10, paddingRight: 14.5 }),
         border:
           invalid
             ? "1px solid #FF3030"
@@ -474,7 +481,7 @@ export function Select({
         cursor: "pointer",
         marginTop: 0,
         paddingTop: 0,
-        paddingBottom: 20,
+        paddingBottom: 30,
         paddingLeft: 15,
         paddingRight: 15,
       }}
@@ -527,8 +534,8 @@ export function Select({
               isFirstField ? "flex-1 min-h-0 overflow-hidden" : "overflow-y-auto scrollbar-hide"
             )}
             style={{
-              marginTop: searchable ? 0 : -15,
-              paddingTop: searchable ? 0 : 10,
+              marginTop: -5,
+              paddingTop: 0,
               paddingRight: 15,
               paddingBottom: showAddNew ? 0 : 15,
               paddingLeft: 15,

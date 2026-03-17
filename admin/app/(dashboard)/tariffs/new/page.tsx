@@ -123,6 +123,16 @@ export default function NewTariffPage() {
   const [hasTv, setHasTv] = useState(false);
   const [hasSim, setHasSim] = useState(false);
   const [technology, setTechnology] = useState<string>("");
+  const [activeService, setActiveService] = useState<"wi" | "tv" | "sim" | null>(null);
+  const [serviceTechnology, setServiceTechnology] = useState<{
+    wi: string | null;
+    tv: string | null;
+    sim: string | null;
+  }>({
+    wi: null,
+    tv: null,
+    sim: null,
+  });
   const [connectionPrice, setConnectionPrice] = useState<string | number | null>(null);
   const [monthlyPrice, setMonthlyPrice] = useState<string | number | null>(null);
   const [payout, setPayout] = useState<string | number | null>(null);
@@ -202,12 +212,6 @@ export default function NewTariffPage() {
     if (!t) return;
     setName(t.name);
     setProviderId(t.providerId ?? "");
-    setConnectionPrice(t.connectionPrice ?? null);
-    setMonthlyPrice(t.price ?? null);
-    setTechnology(t.technology === "cable" ? "DOCSIS" : "FTTX · 8");
-    setHasTv(t.hasTV);
-    setHasSim(t.hasMobile);
-    setHasWi(t.speed > 0);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -222,6 +226,13 @@ export default function NewTariffPage() {
     }
     setValidationError(false);
 
+    // Технологию для сохранения берём из привязок: сначала WI, потом TV, потом SIM
+    const primaryTechnology =
+      serviceTechnology.wi ??
+      serviceTechnology.tv ??
+      serviceTechnology.sim ??
+      technology;
+
     // Если отмечены WI, TV или SIM — сохраняем данные и открываем соответствующие шаги вместо создания тарифа
     if (hasWi || hasTv || hasSim) {
       const offer = {
@@ -233,7 +244,7 @@ export default function NewTariffPage() {
         connectionPrice: connPrice,
         monthlyPrice: monthPrice,
         payout: payout != null ? Number(payout) : null,
-        technology,
+        technology: primaryTechnology,
         hasWi,
         hasTv,
         hasSim,
@@ -264,7 +275,7 @@ export default function NewTariffPage() {
         speed: hasWi ? 100 : 0,
         price: monthPrice,
         connectionPrice: connPrice,
-        technology: technology === "DOCSIS" ? "cable" : "fiber",
+        technology: primaryTechnology === "DOCSIS" ? "cable" : "fiber",
         hasTV: hasTv,
         tvChannels: hasTv ? 55 : null,
         hasMobile: hasSim,
@@ -434,7 +445,16 @@ export default function NewTariffPage() {
             { key: "wi", checked: hasWi, onChange: setHasWi, label: "WI" },
             { key: "tv", checked: hasTv, onChange: setHasTv, label: "TV" },
             { key: "sim", checked: hasSim, onChange: setHasSim, label: "SIM" },
-          ].map(({ key, checked, onChange, label }) => (
+          ].map(({ key, checked, onChange, label }) => {
+            const mappedTech = serviceTechnology[key as "wi" | "tv" | "sim"];
+            const isFrozen = !!mappedTech;
+            const textColor = !checked
+              ? "rgba(16, 16, 16, 0.5)"
+              : isFrozen
+              ? "rgba(16, 16, 16, 0.5)"
+              : "#101010";
+
+            return (
             <label
               key={key}
               style={{
@@ -449,7 +469,22 @@ export default function NewTariffPage() {
               <input
                 type="checkbox"
                 checked={checked}
-                onChange={(e) => onChange(e.target.checked)}
+                onChange={(e) => {
+                  const next = e.target.checked;
+                  // Если уже есть привязка технологии, не даём "отжимать" чекбокс,
+                  // а просто считаем сервис активным для переназначения технологии.
+                  if (!next && mappedTech) {
+                    setActiveService(key as "wi" | "tv" | "sim");
+                    return;
+                  }
+
+                  onChange(next);
+                  if (next) {
+                    setActiveService(key as "wi" | "tv" | "sim");
+                  } else if (activeService === key) {
+                    setActiveService(null);
+                  }
+                }}
                 style={{ position: "absolute", opacity: 0, width: 0, height: 0, margin: 0 }}
                 aria-label={label}
               />
@@ -471,15 +506,27 @@ export default function NewTariffPage() {
               >
                 {checked ? <WhiteCheckIcon /> : null}
               </span>
-              <span style={{ color: "rgba(16, 16, 16, 0.5)" }}>{label}</span>
+              <span style={{ color: textColor }}>{label}</span>
             </label>
-          ))}
+            );
+          })}
         </div>
 
-        {/* Строка 3: FTTX · 4 | FTTX · 8 | GPON | DOCSIS (те же круги и галочка) */}
+        {/* Строка 3: FTTX · 4 | FTTX · 8 | GPON | DOCSIS (привязка к выбранному WI/TV/SIM) */}
         <div style={{ display: "flex", gap, marginBottom: gap }}>
           {TECH_OPTIONS.map((opt) => {
-            const checked = technology === opt.value;
+            const isAssigned =
+              serviceTechnology.wi === opt.value ||
+              serviceTechnology.tv === opt.value ||
+              serviceTechnology.sim === opt.value;
+
+            const checked = isAssigned;
+            const textColor = isAssigned
+              ? "rgba(16, 16, 16, 0.5)"
+              : checked
+              ? "#101010"
+              : "rgba(16, 16, 16, 0.5)";
+
             return (
               <label
                 key={opt.value}
@@ -487,19 +534,21 @@ export default function NewTariffPage() {
                   ...blockStyle,
                   width: 155,
                   flexShrink: 0,
-                  cursor: "pointer",
+                  cursor: activeService ? "pointer" : "default",
                   gap: 8,
                   border: validationError ? "1px solid #FF3030" : fieldBorder,
+                  opacity: activeService ? 1 : 0.5,
+                }}
+                onClick={() => {
+                  if (!activeService) return;
+                  setServiceTechnology((prev) => ({
+                    ...prev,
+                    [activeService]: prev[activeService] === opt.value ? null : opt.value,
+                  }));
+                  setTechnology(opt.value);
+                  setActiveService(null);
                 }}
               >
-                <input
-                  type="radio"
-                  name="tech"
-                  checked={checked}
-                  onChange={() => setTechnology(opt.value)}
-                  style={{ position: "absolute", opacity: 0, width: 0, height: 0, margin: 0 }}
-                  aria-label={opt.label}
-                />
                 <span
                   style={{
                     boxSizing: "border-box",
@@ -518,7 +567,7 @@ export default function NewTariffPage() {
                 >
                   {checked ? <WhiteCheckIcon /> : null}
                 </span>
-                <span style={{ color: "rgba(16, 16, 16, 0.5)" }}>{opt.label}</span>
+                <span style={{ color: textColor }}>{opt.label}</span>
               </label>
             );
           })}

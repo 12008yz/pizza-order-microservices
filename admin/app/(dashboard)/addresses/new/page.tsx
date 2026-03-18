@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Select } from "@/components/ui/Select";
 import { fetchRegions, fetchCities, fetchStreets, fetchProviders } from "@/lib/api";
-import { locationApi } from "@/lib/api";
+import { createBuilding } from "@/lib/api";
 
 const fontFamily = "'TT Firs Neue', sans-serif";
 const fieldBorder = "1px solid rgba(16, 16, 16, 0.5)";
@@ -200,10 +200,7 @@ export default function NewAddressPage() {
     setValidationError(false);
     setSaving(true);
     try {
-      await locationApi.post("/api/locations/buildings", {
-        streetId: Number(streetId),
-        number: houseNumber.trim(),
-      });
+      await createBuilding({ streetId: Number(streetId), number: houseNumber.trim() });
       setSuccess(true);
     } catch (err: unknown) {
       const msg =
@@ -623,14 +620,39 @@ export default function NewAddressPage() {
               flexShrink: 0,
             }}
           >
-            <svg width="10" height="10" viewBox="0 0 16 16" fill="none" aria-hidden style={{ display: "block" }}>
-              <path
-                d="M8 2v12M2 8h12"
-                stroke={validationError ? "rgba(16, 16, 16, 0.5)" : "#101010"}
-                strokeWidth="1.5"
-                strokeLinecap="round"
+            <span
+              style={{
+                position: "relative",
+                width: 8,
+                height: 8,
+                display: "inline-block",
+              }}
+            >
+              <span
+                style={{
+                  position: "absolute",
+                  top: "50%",
+                  left: 0,
+                  right: 0,
+                  height: 2,
+                  transform: "translateY(-50%)",
+                  backgroundColor: "#101010",
+                  borderRadius: 0.75,
+                }}
               />
-            </svg>
+              <span
+                style={{
+                  position: "absolute",
+                  left: "50%",
+                  top: 0,
+                  bottom: 0,
+                  width: 2,
+                  transform: "translateX(-50%)",
+                  backgroundColor: "#101010",
+                  borderRadius: 0.75,
+                }}
+              />
+            </span>
           </span>
           <span>Проникновение</span>
         </button>

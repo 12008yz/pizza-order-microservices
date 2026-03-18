@@ -28,6 +28,8 @@ interface SelectProps {
   showAddNew?: boolean;
   /** Вызов при клике на «Новое вкл...» */
   onAddNew?: () => void;
+  /** Текст для строки «Новое вкл...» */
+  addNewLabel?: string;
   /** Текст в триггере, когда value пустой (например, выбранный город при выборе улицы) */
   displayWhenEmpty?: string;
   /** Высота открытого выпадающего списка при frameStyle (по умолчанию 140 или 180) */
@@ -95,6 +97,7 @@ export function Select({
   invalid = false,
   showAddNew = false,
   onAddNew,
+  addNewLabel = "Новое вкл...",
   displayWhenEmpty,
   frameOpenHeight,
   onFocus,
@@ -481,7 +484,7 @@ export function Select({
         cursor: "pointer",
         marginTop: 0,
         paddingTop: 0,
-        paddingBottom: 30,
+        paddingBottom: 15,
         paddingLeft: 15,
         paddingRight: 15,
       }}
@@ -490,22 +493,52 @@ export function Select({
       onClick={(e) => { e.stopPropagation(); onAddNew?.(); }}
       onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onAddNew?.(); } }}
     >
-      <span className="flex-1 truncate">Новое вкл...</span>
+      <span className="flex-1 truncate">{addNewLabel}</span>
       <span
         style={{
           width: 16,
           height: 16,
           borderRadius: "50%",
-          background: "#3b82f6",
+          background: "#0075FF",
           display: "inline-flex",
           alignItems: "center",
           justifyContent: "center",
           flexShrink: 0,
         }}
       >
-        <svg width="10" height="10" viewBox="0 0 16 16" fill="none">
-          <path d="M8 2v12M2 8h12" stroke="#FFFFFF" strokeWidth="1.5" strokeLinecap="round" />
-        </svg>
+        <span
+          style={{
+            position: "relative",
+            width: 8,
+            height: 8,
+            display: "inline-block",
+          }}
+        >
+          <span
+            style={{
+              position: "absolute",
+              top: "50%",
+              left: 0,
+              right: 0,
+                height: 2,
+                transform: "translateY(-50%)",
+              backgroundColor: "#FFFFFF",
+                borderRadius: 0.75,
+            }}
+          />
+          <span
+            style={{
+              position: "absolute",
+              left: "50%",
+              top: 0,
+              bottom: 0,
+                width: 2,
+                transform: "translateX(-50%)",
+              backgroundColor: "#FFFFFF",
+                borderRadius: 0.75,
+            }}
+          />
+        </span>
       </span>
     </div>
   );

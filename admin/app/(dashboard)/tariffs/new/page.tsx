@@ -4,8 +4,7 @@ import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Select } from "@/components/ui/Select";
-import { fetchProviders, fetchTariffs, fetchRegions } from "@/lib/api";
-import { providerApi } from "@/lib/api";
+import { fetchProviders, fetchTariffs, fetchRegions, createProvider, createTariff } from "@/lib/api";
 import type { Tariff } from "@/types";
 
 const fontFamily = "'TT Firs Neue', sans-serif";
@@ -367,7 +366,7 @@ export default function NewTariffPage() {
 
     setSaving(true);
     try {
-      await providerApi.post("/api/tariffs", {
+      await createTariff({
         name: name.trim(),
         providerId: Number(providerId),
         description: regionName,
@@ -500,12 +499,15 @@ export default function NewTariffPage() {
               frameOpenHeight={DROPDOWN_OPEN_HEIGHT}
               searchable
               showAddNew
+              addNewLabel="Новое включить"
               onAddNew={async () => {
                 const v = typeof window !== "undefined" ? window.prompt("Введите название оператора") : null;
                 if (v == null || v.trim() === "") return;
                 try {
-                  const { data } = await providerApi.post<{ id?: number; data?: { id?: number } }>("/api/providers", { name: v.trim() });
-                  const id = (data as { id?: number })?.id ?? (data as { data?: { id?: number } })?.data?.id;
+                  const res = await createProvider({ name: v.trim() });
+                  const id =
+                    (res as { data?: { id?: number } })?.data?.id ??
+                    (res as { id?: number })?.id;
                   fetchProviders().then((res: { data?: Provider[] }) => setProviders(Array.isArray(res?.data) ? res.data : []));
                   if (typeof id === "number") setProviderId(id);
                 } catch {
@@ -526,6 +528,7 @@ export default function NewTariffPage() {
               frameOpenHeight={DROPDOWN_OPEN_HEIGHT}
               searchable
               showAddNew
+              addNewLabel="Новое включить"
               onAddNew={() => {
                 setTariffId(null);
                 setName("");
@@ -554,6 +557,8 @@ export default function NewTariffPage() {
               invalid={validationError}
               searchable
               showAddNew
+              frameOpenHeight={DROPDOWN_OPEN_HEIGHT}
+              addNewLabel="Новое включить"
               onAddNew={() => {
                 if (typeof window === "undefined") return;
                 const v = window.prompt("Введите название населённого пункта");
@@ -856,7 +861,7 @@ export default function NewTariffPage() {
               <svg width="10" height="10" viewBox="0 0 16 16" fill="none" aria-hidden style={{ display: "block" }}>
                 <path
                   d="M8 2v12M2 8h12"
-                  stroke={validationError ? "rgba(16, 16, 16, 0.5)" : "#101010"}
+                  stroke="#101010"
                   strokeWidth="1.5"
                   strokeLinecap="round"
                 />

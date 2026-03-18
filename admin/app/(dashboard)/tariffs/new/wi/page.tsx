@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Select } from "@/components/ui/Select";
-import { providerApi } from "@/lib/api";
+import { createTariff } from "@/lib/api";
 
 const OFFER_STORAGE_KEY = "tariffs_new_offer";
 
@@ -122,7 +122,7 @@ export default function WiPage() {
     }
     setSaving(true);
     try {
-      await providerApi.post("/api/tariffs", {
+      await createTariff({
         name: offer.name,
         providerId: offer.providerId,
         description: offer.regionName,

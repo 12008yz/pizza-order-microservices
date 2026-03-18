@@ -22,6 +22,154 @@ const WhiteCheckIcon = () => (
   </svg>
 );
 
+/**
+ * Анимированная “доп” окружность вокруг выбранной технологии.
+ * Ранее у вас были проблемы с расхождением/двойным рендером — тут рисуем ровно 2 круга:
+ * 1) r=17 (статичный)
+ * 2) r=18 (анимируем stroke-dashoffset 0..360)
+ */
+function AnimatedProgressRing() {
+  const cx = 18;
+  const cy = 18;
+  const rStatic = 9.5;
+  const rAnimated = 11;
+
+  const strokeWidth = 1;
+  const circumference = 2 * Math.PI * rAnimated;
+  const [dashOffset, setDashOffset] = useState(circumference);
+
+  useEffect(() => {
+    const id = requestAnimationFrame(() => setDashOffset(0));
+    return () => cancelAnimationFrame(id);
+  }, []);
+
+  return (
+    <svg
+      width={36}
+      height={36}
+      viewBox="0 0 36 36"
+      style={{
+        position: "absolute",
+        left: "50%",
+        top: "50%",
+        transform: "translate(-50%, -50%)",
+        pointerEvents: "none",
+        zIndex: 0,
+      }}
+      aria-hidden
+    >
+      {/* Круг 1: статичный */}
+      <circle
+        cx={cx}
+        cy={cy}
+        r={rStatic}
+        fill="none"
+        stroke="#101010"
+        strokeWidth={strokeWidth}
+        strokeLinecap="round"
+      />
+      {/* Круг 2: анимированный */}
+      <circle
+        cx={cx}
+        cy={cy}
+        r={rAnimated}
+        fill="none"
+        stroke="#101010"
+        strokeWidth={strokeWidth}
+        strokeDasharray={circumference}
+        strokeDashoffset={dashOffset}
+        strokeLinecap="round"
+        style={{
+          transition: "stroke-dashoffset 700ms ease-out",
+          transformOrigin: "50% 50%",
+          transform: "rotate(-90deg)",
+        }}
+      />
+    </svg>
+  );
+}
+
+function StaticProgressRing1() {
+  const cx = 18;
+  const cy = 18;
+  const rStatic = 9.5;
+  const strokeWidth = 1;
+  return (
+    <svg
+      width={36}
+      height={36}
+      viewBox="0 0 36 36"
+      style={{
+        position: "absolute",
+        left: "50%",
+        top: "50%",
+        transform: "translate(-50%, -50%)",
+        pointerEvents: "none",
+        zIndex: 0,
+      }}
+      aria-hidden
+    >
+      <circle
+        cx={cx}
+        cy={cy}
+        r={rStatic}
+        fill="none"
+        stroke="#101010"
+        strokeWidth={strokeWidth}
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+function AnimatedProgressRing1() {
+  const cx = 18;
+  const cy = 18;
+  const r = 9.5;
+  const strokeWidth = 1;
+  const circumference = 2 * Math.PI * r;
+  const [dashOffset, setDashOffset] = useState(circumference);
+
+  useEffect(() => {
+    const id = requestAnimationFrame(() => setDashOffset(0));
+    return () => cancelAnimationFrame(id);
+  }, []);
+
+  return (
+    <svg
+      width={36}
+      height={36}
+      viewBox="0 0 36 36"
+      style={{
+        position: "absolute",
+        left: "50%",
+        top: "50%",
+        transform: "translate(-50%, -50%)",
+        pointerEvents: "none",
+        zIndex: 0,
+      }}
+      aria-hidden
+    >
+      <circle
+        cx={cx}
+        cy={cy}
+        r={r}
+        fill="none"
+        stroke="#101010"
+        strokeWidth={strokeWidth}
+        strokeDasharray={circumference}
+        strokeDashoffset={dashOffset}
+        strokeLinecap="round"
+        style={{
+          transition: "stroke-dashoffset 700ms ease-out",
+          transformOrigin: "50% 50%",
+          transform: "rotate(-90deg)",
+        }}
+      />
+    </svg>
+  );
+}
+
 /** Ширина полей Категория, Плата подк., Плата мес., Выплата; при открытии высота выпадающего списка 170px */
 const FIELD_155 = { width: 155 };
 const DROPDOWN_OPEN_HEIGHT = 170;
@@ -29,7 +177,7 @@ const DROPDOWN_OPEN_HEIGHT = 170;
 const CATEGORY_OPTIONS = [
   { value: "sim", label: "SIM" },
   { value: "residential", label: "Жилое, кв." },
-  { value: "commercial", label: "Нежилое" },
+  { value: "commercial", label: "Офис" },
   { value: "private", label: "Жилое, час." },
 ];
 
@@ -656,12 +804,19 @@ export default function NewTariffPage() {
           }}
         >
           {TECH_OPTIONS.map((opt) => {
+            const assignedCount =
+              [serviceTechnology.wi, serviceTechnology.tv, serviceTechnology.sim].filter((v) => v === opt.value).length;
             const isAssigned =
               serviceTechnology.wi === opt.value ||
               serviceTechnology.tv === opt.value ||
               serviceTechnology.sim === opt.value;
 
             const checked = isAssigned;
+            // WI (1-е оборудование) -> только галочка
+            // TV (2-е) -> первый кружок (статичный)
+            // SIM (3-е) -> второй кружок (анимированный), при этом первый остаётся
+            const showRing1Only = checked && assignedCount === 2;
+            const showRing2 = checked && assignedCount >= 3;
             const textColor = isAssigned
               ? "rgba(16, 16, 16, 0.5)"
               : checked
@@ -692,6 +847,7 @@ export default function NewTariffPage() {
               >
                 <span
                   style={{
+                    position: "relative",
                     boxSizing: "border-box",
                     width: FIELD_CIRCLE_SIZE,
                     height: FIELD_CIRCLE_SIZE,
@@ -704,8 +860,13 @@ export default function NewTariffPage() {
                     justifyContent: "center",
                     flexShrink: 0,
                     background: checked ? "#101010" : "transparent",
+                    zIndex: 1,
                   }}
                 >
+                  {showRing1Only ? (
+                    <AnimatedProgressRing1 key={`${opt.value}-ring1-${assignedCount}`} />
+                  ) : null}
+                  {showRing2 ? <AnimatedProgressRing key={`${opt.value}-ring2-${assignedCount}`} /> : null}
                   {checked ? <WhiteCheckIcon /> : null}
                 </span>
                 <span style={{ color: textColor }}>{opt.label}</span>

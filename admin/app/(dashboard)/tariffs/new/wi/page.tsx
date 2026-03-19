@@ -292,52 +292,140 @@ export default function WiPage() {
         })}
       </div>
 
-      {/* Строка 3: 6 мес. | 12 мес. | 24 мес. | 36 мес. | 48 мес. — по 155×50 */}
+      {/* Строка 3: период по «Покупка/Рассрочка/Аренда» */}
       <div style={{ display: "flex", gap, marginBottom: gap }}>
-        {DURATION_OPTIONS.map((opt) => {
-          const checked = duration === opt.value;
-          return (
-            <label
-              key={opt.value}
+        {purchaseType === "purchase" ? (
+          <label
+            style={{
+              ...blockStyle,
+              width: 155,
+              flexShrink: 0,
+              cursor: "not-allowed",
+              pointerEvents: "none",
+              opacity: 0.55,
+              gap: 8,
+              border: fieldBorder,
+            }}
+          >
+            <input
+              type="radio"
+              name="duration"
+              checked
+              onChange={() => undefined}
+              style={{ position: "absolute", opacity: 0, width: 0, height: 0, margin: 0 }}
+              aria-label="навсегда"
+            />
+            <span
               style={{
-                ...blockStyle,
-                width: 155,
+                boxSizing: "border-box",
+                width: FIELD_CIRCLE_SIZE,
+                height: FIELD_CIRCLE_SIZE,
+                minWidth: FIELD_CIRCLE_SIZE,
+                minHeight: FIELD_CIRCLE_SIZE,
+                border: "none",
+                borderRadius: "50%",
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
                 flexShrink: 0,
-                cursor: "pointer",
-                gap: 8,
-                border: fieldBorder,
+                background: "#101010",
               }}
             >
-              <input
-                type="radio"
-                name="duration"
-                checked={checked}
-                onChange={() => setDuration(opt.value)}
-                style={{ position: "absolute", opacity: 0, width: 0, height: 0, margin: 0 }}
-                aria-label={opt.label}
-              />
-              <span
-                style={{
-                  boxSizing: "border-box",
-                  width: FIELD_CIRCLE_SIZE,
-                  height: FIELD_CIRCLE_SIZE,
-                  minWidth: FIELD_CIRCLE_SIZE,
-                  minHeight: FIELD_CIRCLE_SIZE,
-                  border: checked ? "none" : FIELD_CIRCLE_BORDER,
-                  borderRadius: "50%",
-                  display: "inline-flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  flexShrink: 0,
-                  background: checked ? "#101010" : "transparent",
-                }}
-              >
-                {checked ? <WhiteCheckIcon /> : null}
-              </span>
-              <span style={{ color: "rgba(16, 16, 16, 0.5)" }}>{opt.label}</span>
-            </label>
-          );
-        })}
+              <WhiteCheckIcon />
+            </span>
+            <span style={{ color: "rgba(16, 16, 16, 0.5)" }}>навсегда</span>
+          </label>
+        ) : null}
+
+        {purchaseType === "installment" ? (
+          <label
+            style={{
+              ...blockStyle,
+              width: 155,
+              flexShrink: 0,
+              cursor: "not-allowed",
+              pointerEvents: "none",
+              opacity: 0.55,
+              gap: 8,
+              border: fieldBorder,
+            }}
+          >
+            <input
+              type="radio"
+              name="duration"
+              checked
+              onChange={() => undefined}
+              style={{ position: "absolute", opacity: 0, width: 0, height: 0, margin: 0 }}
+              aria-label="на время"
+            />
+            <span
+              style={{
+                boxSizing: "border-box",
+                width: FIELD_CIRCLE_SIZE,
+                height: FIELD_CIRCLE_SIZE,
+                minWidth: FIELD_CIRCLE_SIZE,
+                minHeight: FIELD_CIRCLE_SIZE,
+                border: "none",
+                borderRadius: "50%",
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                flexShrink: 0,
+                background: "#101010",
+              }}
+            >
+              <WhiteCheckIcon />
+            </span>
+            <span style={{ color: "rgba(16, 16, 16, 0.5)" }}>на время</span>
+          </label>
+        ) : null}
+
+        {purchaseType === "rent"
+          ? DURATION_OPTIONS.map((opt) => {
+              const checked = duration === opt.value;
+              return (
+                <label
+                  key={opt.value}
+                  style={{
+                    ...blockStyle,
+                    width: 155,
+                    flexShrink: 0,
+                    cursor: "pointer",
+                    gap: 8,
+                    border: fieldBorder,
+                  }}
+                >
+                  <input
+                    type="radio"
+                    name="duration"
+                    checked={checked}
+                    onChange={() => setDuration(opt.value)}
+                    style={{ position: "absolute", opacity: 0, width: 0, height: 0, margin: 0 }}
+                    aria-label={opt.label}
+                  />
+                  <span
+                    style={{
+                      boxSizing: "border-box",
+                      width: FIELD_CIRCLE_SIZE,
+                      height: FIELD_CIRCLE_SIZE,
+                      minWidth: FIELD_CIRCLE_SIZE,
+                      minHeight: FIELD_CIRCLE_SIZE,
+                      border: checked ? "none" : FIELD_CIRCLE_BORDER,
+                      borderRadius: "50%",
+                      display: "inline-flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      flexShrink: 0,
+                      background: checked ? "#101010" : "transparent",
+                    }}
+                  >
+                    {checked ? <WhiteCheckIcon /> : null}
+                  </span>
+                  <span style={{ color: "rgba(16, 16, 16, 0.5)" }}>{opt.label}</span>
+                </label>
+              );
+            })
+          : null}
       </div>
 
       {/* Строка 4: Количество 155 | Плата, подк. 155 | 999 р./мес. 155 | 999 р. 155 — с «Новое включить» */}

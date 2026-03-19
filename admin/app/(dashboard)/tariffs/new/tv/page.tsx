@@ -43,6 +43,14 @@ const PURCHASE_TYPE_OPTIONS = [
   { value: "rent", label: "Аренда" },
 ];
 
+const DURATION_OPTIONS = [
+  { value: 6, label: "6 мес." },
+  { value: 12, label: "12 мес." },
+  { value: 24, label: "24 мес." },
+  { value: 36, label: "36 мес." },
+  { value: 48, label: "48 мес." },
+];
+
 const QUANTITY_OPTIONS = [
   { value: 1, label: "один экз." },
   { value: 2, label: "2 экз." },
@@ -78,7 +86,7 @@ export default function TvPage() {
   const [category, setCategory] = useState<string | number | null>("residential");
   const [performance, setPerformance] = useState<string | number | null>(null);
   const [purchaseType, setPurchaseType] = useState("installment");
-  const [forPeriod, setForPeriod] = useState(false);
+  const [duration, setDuration] = useState<number>(6);
   const [quantity, setQuantity] = useState<string | number | null>(null);
   const [connectionPrice, setConnectionPrice] = useState<string | number | null>(null);
   const [monthlyPrice, setMonthlyPrice] = useState<string | number | null>(null);
@@ -280,45 +288,140 @@ export default function TvPage() {
         })}
       </div>
 
-      {/* Строка 3: один чекбокс «На время» 155×50 */}
+      {/* Строка 3: период по «Покупка/Рассрочка/Аренда» */}
       <div style={{ display: "flex", gap, marginBottom: gap }}>
-        <label
-          style={{
-            ...blockStyle,
-            width: 155,
-            flexShrink: 0,
-            cursor: "pointer",
-            gap: 8,
-            border: fieldBorder,
-          }}
-        >
-          <input
-            type="checkbox"
-            checked={forPeriod}
-            onChange={(e) => setForPeriod(e.target.checked)}
-            style={{ position: "absolute", opacity: 0, width: 0, height: 0, margin: 0 }}
-            aria-label="На время"
-          />
-          <span
+        {purchaseType === "purchase" ? (
+          <label
             style={{
-              boxSizing: "border-box",
-              width: FIELD_CIRCLE_SIZE,
-              height: FIELD_CIRCLE_SIZE,
-              minWidth: FIELD_CIRCLE_SIZE,
-              minHeight: FIELD_CIRCLE_SIZE,
-              border: forPeriod ? "none" : FIELD_CIRCLE_BORDER,
-              borderRadius: "50%",
-              display: "inline-flex",
-              alignItems: "center",
-              justifyContent: "center",
+              ...blockStyle,
+              width: 155,
               flexShrink: 0,
-              background: forPeriod ? "#101010" : "transparent",
+              cursor: "not-allowed",
+              pointerEvents: "none",
+              opacity: 0.55,
+              gap: 8,
+              border: fieldBorder,
             }}
           >
-            {forPeriod ? <WhiteCheckIcon /> : null}
-          </span>
-          <span style={{ color: "rgba(16, 16, 16, 0.5)" }}>На время</span>
-        </label>
+            <input
+              type="radio"
+              name="duration"
+              checked
+              onChange={() => undefined}
+              style={{ position: "absolute", opacity: 0, width: 0, height: 0, margin: 0 }}
+              aria-label="навсегда"
+            />
+            <span
+              style={{
+                boxSizing: "border-box",
+                width: FIELD_CIRCLE_SIZE,
+                height: FIELD_CIRCLE_SIZE,
+                minWidth: FIELD_CIRCLE_SIZE,
+                minHeight: FIELD_CIRCLE_SIZE,
+                border: "none",
+                borderRadius: "50%",
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                flexShrink: 0,
+                background: "#101010",
+              }}
+            >
+              <WhiteCheckIcon />
+            </span>
+            <span style={{ color: "rgba(16, 16, 16, 0.5)" }}>навсегда</span>
+          </label>
+        ) : null}
+
+        {purchaseType === "installment" ? (
+          <label
+            style={{
+              ...blockStyle,
+              width: 155,
+              flexShrink: 0,
+              cursor: "not-allowed",
+              pointerEvents: "none",
+              opacity: 0.55,
+              gap: 8,
+              border: fieldBorder,
+            }}
+          >
+            <input
+              type="radio"
+              name="duration"
+              checked
+              onChange={() => undefined}
+              style={{ position: "absolute", opacity: 0, width: 0, height: 0, margin: 0 }}
+              aria-label="на время"
+            />
+            <span
+              style={{
+                boxSizing: "border-box",
+                width: FIELD_CIRCLE_SIZE,
+                height: FIELD_CIRCLE_SIZE,
+                minWidth: FIELD_CIRCLE_SIZE,
+                minHeight: FIELD_CIRCLE_SIZE,
+                border: "none",
+                borderRadius: "50%",
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                flexShrink: 0,
+                background: "#101010",
+              }}
+            >
+              <WhiteCheckIcon />
+            </span>
+            <span style={{ color: "rgba(16, 16, 16, 0.5)" }}>на время</span>
+          </label>
+        ) : null}
+
+        {purchaseType === "rent"
+          ? DURATION_OPTIONS.map((opt) => {
+              const checked = duration === opt.value;
+              return (
+                <label
+                  key={opt.value}
+                  style={{
+                    ...blockStyle,
+                    width: 155,
+                    flexShrink: 0,
+                    cursor: "pointer",
+                    gap: 8,
+                    border: fieldBorder,
+                  }}
+                >
+                  <input
+                    type="radio"
+                    name="duration"
+                    checked={checked}
+                    onChange={() => setDuration(opt.value)}
+                    style={{ position: "absolute", opacity: 0, width: 0, height: 0, margin: 0 }}
+                    aria-label={opt.label}
+                  />
+                  <span
+                    style={{
+                      boxSizing: "border-box",
+                      width: FIELD_CIRCLE_SIZE,
+                      height: FIELD_CIRCLE_SIZE,
+                      minWidth: FIELD_CIRCLE_SIZE,
+                      minHeight: FIELD_CIRCLE_SIZE,
+                      border: checked ? "none" : FIELD_CIRCLE_BORDER,
+                      borderRadius: "50%",
+                      display: "inline-flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      flexShrink: 0,
+                      background: checked ? "#101010" : "transparent",
+                    }}
+                  >
+                    {checked ? <WhiteCheckIcon /> : null}
+                  </span>
+                  <span style={{ color: "rgba(16, 16, 16, 0.5)" }}>{opt.label}</span>
+                </label>
+              );
+            })
+          : null}
       </div>
 
       {/* Строка 4: Количество 155 | Плата, подк. 155 | Плата, мес. 155 | Выплата 155 — с «Новое вкл...» */}

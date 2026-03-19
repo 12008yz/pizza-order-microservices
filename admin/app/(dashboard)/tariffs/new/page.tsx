@@ -89,39 +89,6 @@ function AnimatedProgressRing() {
   );
 }
 
-function StaticProgressRing1() {
-  const cx = 18;
-  const cy = 18;
-  const rStatic = 9.5;
-  const strokeWidth = 1;
-  return (
-    <svg
-      width={36}
-      height={36}
-      viewBox="0 0 36 36"
-      style={{
-        position: "absolute",
-        left: "50%",
-        top: "50%",
-        transform: "translate(-50%, -50%)",
-        pointerEvents: "none",
-        zIndex: 0,
-      }}
-      aria-hidden
-    >
-      <circle
-        cx={cx}
-        cy={cy}
-        r={rStatic}
-        fill="none"
-        stroke="#101010"
-        strokeWidth={strokeWidth}
-        strokeLinecap="round"
-      />
-    </svg>
-  );
-}
-
 function AnimatedProgressRing1() {
   const cx = 18;
   const cy = 18;

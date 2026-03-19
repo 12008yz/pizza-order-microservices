@@ -81,9 +81,9 @@ let orders: Order[] = MOCK_ORDERS.map((o) => ({
   tariff: tariffs.find((t) => t.id === o.tariffId) ?? o.tariff,
 }));
 
-let regions: Region[] = [...SEED_REGIONS];
-let cities: City[] = [...SEED_CITIES];
-let streets: Street[] = [...SEED_STREETS];
+const regions: Region[] = [...SEED_REGIONS];
+const cities: City[] = [...SEED_CITIES];
+const streets: Street[] = [...SEED_STREETS];
 let buildings: Building[] = [
   { id: 1, streetId: 101, number: "9 к 6", type: null, entrances: 6, floors: 9, apartments: 200 },
   { id: 2, streetId: 102, number: "12", type: null, entrances: 4, floors: 12, apartments: 240 },

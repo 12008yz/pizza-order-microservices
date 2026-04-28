@@ -4,9 +4,17 @@ import { useEffect } from 'react';
 
 declare global {
   interface Window {
-    FluidCursor?: new (options?: Record<string, unknown>) => { canvas?: HTMLCanvasElement };
+    FluidCursor?: new (options?: Record<string, unknown>) => {
+      canvas?: HTMLCanvasElement;
+      config?: Record<string, unknown>;
+      setPalette?: (palette: string[]) => void;
+    };
     __fluidCursorScriptPromise?: Promise<void>;
-    __fluidCursorInstance?: { canvas?: HTMLCanvasElement };
+    __fluidCursorInstance?: {
+      canvas?: HTMLCanvasElement;
+      config?: Record<string, unknown>;
+      setPalette?: (palette: string[]) => void;
+    };
   }
 }
 
@@ -33,7 +41,15 @@ const hidePackageCanvas = () => {
   if (existingCanvas) applyCanvasStyle(existingCanvas, false);
 };
 
-export default function CursorFluidEffect({ active, mode }: { active: boolean; mode: CursorEffectMode }) {
+export default function CursorFluidEffect({
+  active,
+  mode,
+  palette = [],
+}: {
+  active: boolean;
+  mode: CursorEffectMode;
+  palette?: string[];
+}) {
   useEffect(() => {
     if (!active || mode === 'off') {
       hidePackageCanvas();
@@ -97,6 +113,7 @@ export default function CursorFluidEffect({ active, mode }: { active: boolean; m
       COLOR_UPDATE_SPEED: isMobile ? 3.2 : 2.8,
       // Keep mobile fade-out smooth (no idle frame skipping).
       IDLE_FRAME_SKIP: isMobile ? 1 : 4,
+      COLOR_PALETTE: palette,
       TRANSPARENT: true,
       SHADING: false,
     };
@@ -109,6 +126,11 @@ export default function CursorFluidEffect({ active, mode }: { active: boolean; m
           const Ctor = resolveCtor();
           if (!Ctor) return;
           window.__fluidCursorInstance = new Ctor(options);
+        }
+        if (window.__fluidCursorInstance?.setPalette) {
+          window.__fluidCursorInstance.setPalette(palette);
+        } else if (window.__fluidCursorInstance?.config) {
+          window.__fluidCursorInstance.config.COLOR_PALETTE = palette;
         }
 
         const canvas = window.__fluidCursorInstance?.canvas;
@@ -126,7 +148,7 @@ export default function CursorFluidEffect({ active, mode }: { active: boolean; m
       cancelled = true;
       hidePackageCanvas();
     };
-  }, [active, mode]);
+  }, [active, mode, palette]);
 
   return null;
 }

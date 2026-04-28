@@ -50,6 +50,29 @@ function FieldArrowIcon({ active, error }: { active: boolean; error?: boolean })
 
 type FlowState = 'form' | 'loading' | 'consultation';
 type ContactMethod = 'max' | 'telegram' | 'phone';
+type CursorPaletteKey = 'cool-neon' | 'premium-calm' | 'pastel' | 'warm-modern';
+type CursorPaletteMap = Record<CursorPaletteKey, { label: string; colors: string[] }>;
+
+const CURSOR_PALETTE_PRESETS: CursorPaletteMap = {
+  'cool-neon': {
+    label: 'Cool Neon',
+    colors: ['#22D3EE', '#60A5FA', '#A78BFA'],
+  },
+  'premium-calm': {
+    label: 'Premium Calm',
+    colors: ['#2563EB', '#7C3AED', '#14B8A6'],
+  },
+  pastel: {
+    label: 'Pastel Soft',
+    colors: ['#93C5FD', '#C4B5FD', '#99F6E4'],
+  },
+  'warm-modern': {
+    label: 'Warm Modern',
+    colors: ['#FB7185', '#F59E0B', '#A78BFA'],
+  },
+};
+
+const CURSOR_PALETTE_ORDER = Object.keys(CURSOR_PALETTE_PRESETS) as CursorPaletteKey[];
 
 interface AddressFormContentProps {
   isAppLoading?: boolean;
@@ -67,6 +90,9 @@ function AddressFormContent({ isAppLoading = false, appLoadingProgress = 0 }: Ad
   const [showCookieBanner, setShowCookieBanner] = useState(true);
   const [cookieTimer, setCookieTimer] = useState(7);
   const [cardWarp, setCardWarp] = useState({ x: 0, y: 0, active: false });
+  const [cursorPalettes, setCursorPalettes] = useState<CursorPaletteMap>(CURSOR_PALETTE_PRESETS);
+  const [cursorPaletteKey, setCursorPaletteKey] = useState<CursorPaletteKey>('cool-neon');
+  const [showPaletteModal, setShowPaletteModal] = useState(false);
 
   const [flowState, setFlowState] = useState<FlowState>('form');
 
@@ -229,6 +255,27 @@ function AddressFormContent({ isAppLoading = false, appLoadingProgress = 0 }: Ad
     setFlowState('loading');
   };
 
+  const cycleCursorPalette = () => {
+    setCursorPaletteKey((prev) => {
+      const current = CURSOR_PALETTE_ORDER.indexOf(prev);
+      return CURSOR_PALETTE_ORDER[(current + 1) % CURSOR_PALETTE_ORDER.length];
+    });
+  };
+
+  const updatePaletteColor = (paletteKey: CursorPaletteKey, colorIndex: number, color: string) => {
+    setCursorPalettes((prev) => {
+      const nextColors = [...prev[paletteKey].colors];
+      nextColors[colorIndex] = color;
+      return {
+        ...prev,
+        [paletteKey]: {
+          ...prev[paletteKey],
+          colors: nextColors,
+        },
+      };
+    });
+  };
+
   const handleCardMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
     const x = (e.clientX - rect.left) / rect.width - 0.5;
@@ -375,7 +422,11 @@ function AddressFormContent({ isAppLoading = false, appLoadingProgress = 0 }: Ad
         background: '#F5F5F5',
       }}
     >
-      <CursorFluidEffect active={!isAppLoading && flowState === 'form'} mode="package" />
+      <CursorFluidEffect
+        active={!isAppLoading && flowState === 'form'}
+        mode="package"
+        palette={cursorPalettes[cursorPaletteKey].colors}
+      />
       {/* 400px ширина; отступ снизу 20px + safe-area */}
       <div
         className="relative z-10 bg-[#F5F5F5]"
@@ -820,6 +871,88 @@ function AddressFormContent({ isAppLoading = false, appLoadingProgress = 0 }: Ad
     <>
       {isAppLoading && <LoadingScreen progress={appLoadingProgress} />}
       {formContent}
+      {!isAppLoading && (
+        <>
+          <button
+            type="button"
+            onClick={cycleCursorPalette}
+            className="fixed right-3 top-3 z-[2147483647] rounded-md border border-black/20 bg-white px-3 py-2 text-[12px] font-semibold leading-none text-black shadow-sm"
+            style={{ fontFamily: "'TT Firs Neue', sans-serif" }}
+          >
+            Цвет: {cursorPalettes[cursorPaletteKey].label}
+          </button>
+          <button
+            type="button"
+            onClick={() => setShowPaletteModal(true)}
+            className="fixed right-3 top-[46px] z-[2147483647] rounded-md border border-black/20 bg-white px-3 py-2 text-[12px] font-semibold leading-none text-black shadow-sm"
+            style={{ fontFamily: "'TT Firs Neue', sans-serif" }}
+          >
+            Палитра
+          </button>
+        </>
+      )}
+      {showPaletteModal && !isAppLoading && (
+        <div
+          className="fixed inset-0 z-[2147483647] flex items-center justify-center bg-black/35 p-4"
+          onClick={() => setShowPaletteModal(false)}
+        >
+          <div
+            className="w-full max-w-[360px] rounded-2xl bg-white p-4 shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="mb-3 flex items-center justify-between">
+              <h3
+                className="m-0 text-[16px] font-medium text-[#101010]"
+                style={{ fontFamily: "'TT Firs Neue', sans-serif" }}
+              >
+                Выбор палитры
+              </h3>
+              <button
+                type="button"
+                onClick={() => setShowPaletteModal(false)}
+                className="rounded-md border border-black/15 bg-white px-2 py-1 text-[12px] leading-none"
+              >
+                Закрыть
+              </button>
+            </div>
+            <div className="mb-3 grid gap-2">
+              {CURSOR_PALETTE_ORDER.map((key) => (
+                <div
+                  key={key}
+                  className="flex items-center justify-between rounded-lg border border-black/15 bg-white px-3 py-2"
+                >
+                  <button
+                    type="button"
+                    onClick={() => setCursorPaletteKey(key)}
+                    className="text-[13px] text-[#101010]"
+                  >
+                    {cursorPalettes[key].label}
+                  </button>
+                  <span className="flex items-center gap-1">
+                    {cursorPalettes[key].colors.map((color, colorIndex) => (
+                      <label
+                        key={`${key}-${colorIndex}`}
+                        className="relative inline-flex h-5 w-5 cursor-pointer items-center justify-center overflow-hidden rounded-full border border-black/10"
+                        title="Выбрать цвет"
+                      >
+                        <span className="h-5 w-5 rounded-full" style={{ background: color }} />
+                        <input
+                          type="color"
+                          value={color}
+                          onChange={(e) => updatePaletteColor(key, colorIndex, e.target.value)}
+                          onClick={(e) => e.stopPropagation()}
+                          className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+                          aria-label={`Цвет ${colorIndex + 1} палитры ${cursorPalettes[key].label}`}
+                        />
+                      </label>
+                    ))}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

@@ -15,6 +15,7 @@ class FluidCursor {
         this.ext = null;
         this.pointers = [];
         this.splatStack = [];
+        this.paletteIndex = 0;
         
         // Bind methods
         this.updateFrame = this.updateFrame.bind(this);
@@ -35,7 +36,8 @@ class FluidCursor {
             COLOR_UPDATE_SPEED: options.COLOR_UPDATE_SPEED || 10,
             BACK_COLOR: options.BACK_COLOR || { r: 0, g: 0, b: 0 },
             TRANSPARENT: options.TRANSPARENT === undefined ? true : options.TRANSPARENT,
-            IDLE_FRAME_SKIP: options.IDLE_FRAME_SKIP || 4
+            IDLE_FRAME_SKIP: options.IDLE_FRAME_SKIP || 4,
+            COLOR_PALETTE: this.normalizePalette(options.COLOR_PALETTE || [])
         };
 
         this.pointerPrototype = function () {
@@ -867,7 +869,63 @@ class FluidCursor {
         this.splat(pointer.texcoordX, pointer.texcoordY, dx, dy, color);
     }
 
+    setPalette(palette) {
+        this.config.COLOR_PALETTE = this.normalizePalette(palette || []);
+        this.paletteIndex = 0;
+    }
+
+    normalizePalette(palette) {
+        if (!Array.isArray(palette)) return [];
+        const normalized = [];
+        for (let i = 0; i < palette.length; i++) {
+            const c = palette[i];
+            if (typeof c === 'string') {
+                const parsed = this.hexToRgb(c);
+                if (parsed) normalized.push(parsed);
+            } else if (c && typeof c === 'object') {
+                const r = typeof c.r === 'number' ? c.r : NaN;
+                const g = typeof c.g === 'number' ? c.g : NaN;
+                const b = typeof c.b === 'number' ? c.b : NaN;
+                if (Number.isFinite(r) && Number.isFinite(g) && Number.isFinite(b)) {
+                    const divisor = r > 1 || g > 1 || b > 1 ? 255 : 1;
+                    normalized.push({
+                        r: Math.min(1, Math.max(0, r / divisor)),
+                        g: Math.min(1, Math.max(0, g / divisor)),
+                        b: Math.min(1, Math.max(0, b / divisor))
+                    });
+                }
+            }
+        }
+        return normalized;
+    }
+
+    hexToRgb(hex) {
+        if (typeof hex !== 'string') return null;
+        const clean = hex.trim().replace(/^#/, '');
+        if (clean.length !== 6 && clean.length !== 3) return null;
+        const expanded = clean.length === 3
+            ? clean.split('').map(ch => ch + ch).join('')
+            : clean;
+        const value = parseInt(expanded, 16);
+        if (Number.isNaN(value)) return null;
+        return {
+            r: ((value >> 16) & 255) / 255,
+            g: ((value >> 8) & 255) / 255,
+            b: (value & 255) / 255
+        };
+    }
+
     generateColor() {
+        const palette = this.config.COLOR_PALETTE;
+        if (Array.isArray(palette) && palette.length > 0) {
+            const color = palette[this.paletteIndex % palette.length];
+            this.paletteIndex = (this.paletteIndex + 1) % palette.length;
+            return {
+                r: color.r * 0.15,
+                g: color.g * 0.15,
+                b: color.b * 0.15
+            };
+        }
         let c = this.HSVtoRGB(Math.random(), 1.0, 1.0);
         c.r *= 0.15;
         c.g *= 0.15;

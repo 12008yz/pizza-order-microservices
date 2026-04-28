@@ -95,9 +95,8 @@ export default function CursorFluidEffect({ active, mode }: { active: boolean; m
       VELOCITY_DISSIPATION: isMobile ? 2.6 : 2.4,
       // Slightly faster color updates reduce visual stepping on low FPS.
       COLOR_UPDATE_SPEED: isMobile ? 3.2 : 2.8,
-      // Mobile: aggressively reduce simulation work while the trail is fading.
-      IDLE_TIMEOUT_MS: isMobile ? 90 : 120,
-      IDLE_FRAME_SKIP: isMobile ? 10 : 4,
+      // Keep mobile fade-out smooth (no idle frame skipping).
+      IDLE_FRAME_SKIP: isMobile ? 1 : 4,
       TRANSPARENT: true,
       SHADING: false,
     };

@@ -35,7 +35,6 @@ class FluidCursor {
             COLOR_UPDATE_SPEED: options.COLOR_UPDATE_SPEED || 10,
             BACK_COLOR: options.BACK_COLOR || { r: 0, g: 0, b: 0 },
             TRANSPARENT: options.TRANSPARENT === undefined ? true : options.TRANSPARENT,
-            IDLE_TIMEOUT_MS: options.IDLE_TIMEOUT_MS || 120,
             IDLE_FRAME_SKIP: options.IDLE_FRAME_SKIP || 4
         };
 
@@ -588,13 +587,12 @@ class FluidCursor {
         const dt = this.calcDeltaTime();
         const resized = this.resizeCanvas();
         if (resized) this.initFramebuffers();
-        const idleTimeout = Math.max(60, this.config.IDLE_TIMEOUT_MS || 120);
-        const idleFrameSkip = Math.max(2, this.config.IDLE_FRAME_SKIP || 4);
-        const isIdle = Date.now() - this.lastPointerMoveTime > idleTimeout;
+        this.updateColors(dt);
+        this.applyInputs();
+        const isIdle = Date.now() - this.lastPointerMoveTime > 120;
+        const idleFrameSkip = Math.max(1, this.config.IDLE_FRAME_SKIP || 4);
         const shouldRenderThisFrame = !isIdle || this.idleFrameSkipCounter % idleFrameSkip === 0 || resized;
         if (shouldRenderThisFrame) {
-            this.updateColors(dt);
-            this.applyInputs();
             this.step(dt);
             this.render(null);
         }

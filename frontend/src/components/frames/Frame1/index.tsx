@@ -10,7 +10,7 @@ import PrivacyConsent from './PrivacyConsent';
 import Header from '../../layout/Header';
 import LoadingScreen from '../../LoadingScreen';
 import PageLoadingSkeleton from '../../PageLoadingSkeleton';
-import CursorFluidEffect, { type CursorEffectMode } from '../../common/CursorFluidEffect';
+import CursorFluidEffect from '../../common/CursorFluidEffect';
 import dynamic from 'next/dynamic';
 
 /** Фон кружка с галочкой, когда в поле что-то введено (из макета Vector) */
@@ -50,17 +50,6 @@ function FieldArrowIcon({ active, error }: { active: boolean; error?: boolean })
 
 type FlowState = 'form' | 'loading' | 'consultation';
 type ContactMethod = 'max' | 'telegram' | 'phone';
-const CURSOR_EFFECT_ORDER: CursorEffectMode[] = [
-  'package',
-  'ink-water',
-  'comet-engine',
-];
-const CURSOR_EFFECT_LABELS: Record<CursorEffectMode, string> = {
-  package: 'Package',
-  'ink-water': 'Ink Water',
-  'comet-engine': 'Comet Engine',
-  off: 'Off',
-};
 
 interface AddressFormContentProps {
   isAppLoading?: boolean;
@@ -77,7 +66,6 @@ function AddressFormContent({ isAppLoading = false, appLoadingProgress = 0 }: Ad
   const [_submitError, setSubmitError] = useState<string | null>(null);
   const [showCookieBanner, setShowCookieBanner] = useState(true);
   const [cookieTimer, setCookieTimer] = useState(7);
-  const [cursorEffectMode, setCursorEffectMode] = useState<CursorEffectMode>('package');
   const [cardWarp, setCardWarp] = useState({ x: 0, y: 0, active: false });
 
   const [flowState, setFlowState] = useState<FlowState>('form');
@@ -387,7 +375,7 @@ function AddressFormContent({ isAppLoading = false, appLoadingProgress = 0 }: Ad
         background: '#F5F5F5',
       }}
     >
-      <CursorFluidEffect active={!isAppLoading && flowState === 'form'} mode={cursorEffectMode} />
+      <CursorFluidEffect active={!isAppLoading && flowState === 'form'} mode="package" />
       {/* 400px ширина; отступ снизу 20px + safe-area */}
       <div
         className="relative z-10 bg-[#F5F5F5]"
@@ -832,21 +820,6 @@ function AddressFormContent({ isAppLoading = false, appLoadingProgress = 0 }: Ad
     <>
       {isAppLoading && <LoadingScreen progress={appLoadingProgress} />}
       {formContent}
-      {!isAppLoading && (
-        <button
-          type="button"
-          onClick={() =>
-            setCursorEffectMode((prev) => {
-              const current = CURSOR_EFFECT_ORDER.indexOf(prev);
-              return CURSOR_EFFECT_ORDER[(current + 1) % CURSOR_EFFECT_ORDER.length];
-            })
-          }
-          className="fixed right-3 top-3 z-[2147483647] rounded-md border border-black bg-yellow-300 px-3 py-2 text-[12px] font-semibold leading-none text-black"
-          style={{ fontFamily: "'TT Firs Neue', sans-serif" }}
-        >
-          FX: {CURSOR_EFFECT_LABELS[cursorEffectMode]}
-        </button>
-      )}
     </>
   );
 }

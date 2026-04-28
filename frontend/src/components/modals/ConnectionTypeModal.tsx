@@ -26,6 +26,7 @@ export default function ConnectionTypeModal({
   const [selectedType, setSelectedType] = useState<ConnectionType>(addressData.connectionType);
   const [isAnimating, setIsAnimating] = useState(false);
   const [shouldRender, setShouldRender] = useState(false);
+  const [distortion, setDistortion] = useState({ x: 50, y: 50, active: false });
   const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
@@ -86,6 +87,13 @@ export default function ConnectionTypeModal({
     }
   };
 
+  const handleCardMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    setDistortion({ x, y, active: true });
+  };
+
   return (
     <div
       className="fixed inset-0 z-[10000] flex flex-col items-center overflow-hidden"
@@ -129,7 +137,7 @@ export default function ConnectionTypeModal({
 
         {/* Карточка по макету: 20px отступы по бокам, 360px ширина, padding 20px, radius 20px */}
         <div
-          className="flex flex-col frame-card flex-shrink-0 rounded-[20px]"
+          className="relative flex flex-col frame-card flex-shrink-0 rounded-[20px]"
           style={{
             width: '360px',
             maxWidth: 'min(360px, calc(100vw - 40px))',
@@ -143,7 +151,20 @@ export default function ConnectionTypeModal({
             overflow: 'hidden',
           }}
           onClick={(e) => e.stopPropagation()}
+          onMouseMove={handleCardMouseMove}
+          onMouseLeave={() => setDistortion((prev) => ({ ...prev, active: false }))}
         >
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0 z-[2]"
+            style={{
+              opacity: distortion.active ? 1 : 0,
+              transition: 'opacity 120ms ease-out',
+              background: `radial-gradient(110px 110px at ${distortion.x}% ${distortion.y}%, rgba(255,255,255,0.24), rgba(255,255,255,0.06) 48%, rgba(255,255,255,0) 70%)`,
+              backdropFilter: distortion.active ? 'blur(2px) saturate(115%)' : 'none',
+              WebkitBackdropFilter: distortion.active ? 'blur(2px) saturate(115%)' : 'none',
+            }}
+          />
           <div className="flex-shrink-0">
             <div
               className="font-normal"

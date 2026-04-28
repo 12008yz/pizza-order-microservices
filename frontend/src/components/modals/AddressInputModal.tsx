@@ -56,6 +56,7 @@ export default function AddressInputModal({
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [scrollOffset, setScrollOffset] = useState(0); // Позиция скролла в подсказках
   const [loading, setLoading] = useState(false);
+  const [distortion, setDistortion] = useState({ x: 50, y: 50, active: false });
   const [buildingStructure, setBuildingStructure] = useState<{ entrances?: number; floors?: number; apartmentsPerFloor?: number } | null>(null);
   const [keyboardHeight, setKeyboardHeight] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -651,6 +652,13 @@ export default function AddressInputModal({
     }
   };
 
+  const handleCardMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    setDistortion({ x, y, active: true });
+  };
+
   if (!shouldRender) return null;
 
   const canProceed = selectedIndex !== null || query.trim().length > 0;
@@ -690,7 +698,7 @@ export default function AddressInputModal({
 
         {/* Карточка — компактная, прижата вниз, список подсказок прокручивается внутри */}
         <div
-          className="flex-shrink-0 flex flex-col rounded-[20px] bg-white overflow-hidden min-h-0"
+          className="relative flex-shrink-0 flex flex-col rounded-[20px] bg-white overflow-hidden min-h-0"
           style={{
             width: '360px',
             maxWidth: 'min(360px, calc(100vw - 40px))',
@@ -702,7 +710,20 @@ export default function AddressInputModal({
             maxHeight: 'min(480px, calc(100dvh - 145px))',
           }}
           onClick={(e) => e.stopPropagation()}
+          onMouseMove={handleCardMouseMove}
+          onMouseLeave={() => setDistortion((prev) => ({ ...prev, active: false }))}
         >
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0 z-[2]"
+            style={{
+              opacity: distortion.active ? 1 : 0,
+              transition: 'opacity 120ms ease-out',
+              background: `radial-gradient(120px 120px at ${distortion.x}% ${distortion.y}%, rgba(255,255,255,0.24), rgba(255,255,255,0.06) 50%, rgba(255,255,255,0) 72%)`,
+              backdropFilter: distortion.active ? 'blur(2px) saturate(115%)' : 'none',
+              WebkitBackdropFilter: distortion.active ? 'blur(2px) saturate(115%)' : 'none',
+            }}
+          />
           <div className="flex-shrink-0 px-[15px] pt-[15px]">
             <div
               className="font-normal"

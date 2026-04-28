@@ -10,7 +10,7 @@ import PrivacyConsent from './PrivacyConsent';
 import Header from '../../layout/Header';
 import LoadingScreen from '../../LoadingScreen';
 import PageLoadingSkeleton from '../../PageLoadingSkeleton';
-import CursorFluidEffect from '../../common/CursorFluidEffect';
+import CursorFluidEffect, { type CursorEffectMode } from '../../common/CursorFluidEffect';
 import dynamic from 'next/dynamic';
 
 /** Фон кружка с галочкой, когда в поле что-то введено (из макета Vector) */
@@ -50,6 +50,17 @@ function FieldArrowIcon({ active, error }: { active: boolean; error?: boolean })
 
 type FlowState = 'form' | 'loading' | 'consultation';
 type ContactMethod = 'max' | 'telegram' | 'phone';
+const CURSOR_EFFECT_ORDER: CursorEffectMode[] = [
+  'package',
+  'ink-water',
+  'comet-engine',
+];
+const CURSOR_EFFECT_LABELS: Record<CursorEffectMode, string> = {
+  package: 'Package',
+  'ink-water': 'Ink Water',
+  'comet-engine': 'Comet Engine',
+  off: 'Off',
+};
 
 interface AddressFormContentProps {
   isAppLoading?: boolean;
@@ -66,7 +77,8 @@ function AddressFormContent({ isAppLoading = false, appLoadingProgress = 0 }: Ad
   const [_submitError, setSubmitError] = useState<string | null>(null);
   const [showCookieBanner, setShowCookieBanner] = useState(true);
   const [cookieTimer, setCookieTimer] = useState(7);
-  const [isCursorEffectEnabled, setIsCursorEffectEnabled] = useState(true);
+  const [cursorEffectMode, setCursorEffectMode] = useState<CursorEffectMode>('package');
+  const [cardWarp, setCardWarp] = useState({ x: 0, y: 0, active: false });
 
   const [flowState, setFlowState] = useState<FlowState>('form');
 
@@ -229,6 +241,13 @@ function AddressFormContent({ isAppLoading = false, appLoadingProgress = 0 }: Ad
     setFlowState('loading');
   };
 
+  const handleCardMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width - 0.5;
+    const y = (e.clientY - rect.top) / rect.height - 0.5;
+    setCardWarp({ x, y, active: true });
+  };
+
   const sanitizeString = (str: string | undefined, maxLength: number = 200): string | undefined => {
     if (!str) return undefined;
     const sanitized = str
@@ -368,7 +387,7 @@ function AddressFormContent({ isAppLoading = false, appLoadingProgress = 0 }: Ad
         background: '#F5F5F5',
       }}
     >
-      <CursorFluidEffect active={!isAppLoading && flowState === 'form' && isCursorEffectEnabled} />
+      <CursorFluidEffect active={!isAppLoading && flowState === 'form'} mode={cursorEffectMode} />
       {/* 400px ширина; отступ снизу 20px + safe-area */}
       <div
         className="relative z-10 bg-[#F5F5F5]"
@@ -487,27 +506,42 @@ function AddressFormContent({ isAppLoading = false, appLoadingProgress = 0 }: Ad
             boxSizing: 'border-box',
             gap: 5,
           }}
+          onMouseMove={handleCardMouseMove}
+          onMouseLeave={() => setCardWarp({ x: 0, y: 0, active: false })}
         >
-          {/* Заголовок — отступ сверху 15px (задаётся paddingTop карточки), 20px, 125%, #101010 */}
-          <h1
-            className="mt-0 mb-0 flex-shrink-0"
+          <div
             style={{
-              fontFamily: "'TT Firs Neue', sans-serif",
-              fontStyle: 'normal',
-              fontWeight: 400,
-              fontSize: 20,
-              lineHeight: '125%',
-              color: '#101010',
-              margin: 0,
-              paddingTop: 0,
-              paddingBottom: 10,
+              transform: cardWarp.active
+                ? `translate(${cardWarp.x * 7}px, ${cardWarp.y * 7}px) skew(${cardWarp.x * 1.8}deg, ${-cardWarp.y * 1.8}deg)`
+                : 'translate(0px, 0px) skew(0deg, 0deg)',
+              transformOrigin: 'center center',
+              transition: cardWarp.active ? 'transform 70ms linear' : 'transform 220ms ease-out',
+              willChange: 'transform',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 5,
             }}
           >
-            Маркетплейс тарифных планов операторов на твоём адресе. Бесплатно и легко заказать
-          </h1>
+            {/* Заголовок — отступ сверху 15px (задаётся paddingTop карточки), 20px, 125%, #101010 */}
+            <h1
+              className="mt-0 mb-0 flex-shrink-0"
+              style={{
+                fontFamily: "'TT Firs Neue', sans-serif",
+                fontStyle: 'normal',
+                fontWeight: 400,
+                fontSize: 20,
+                lineHeight: '125%',
+                color: '#101010',
+                margin: 0,
+                paddingTop: 0,
+                paddingBottom: 10,
+              }}
+            >
+              Маркетплейс тарифных планов операторов на твоём адресе. Бесплатно и легко заказать
+            </h1>
 
-          {/* Поле Подключение — Group 7432: border 1px solid rgba(16,16,16,0.5), border-radius 10px */}
-          <div
+            {/* Поле Подключение — Group 7432: border 1px solid rgba(16,16,16,0.5), border-radius 10px */}
+            <div
             role="button"
             tabIndex={0}
             className="rounded-[10px] bg-white cursor-pointer flex items-center justify-between box-border"
@@ -557,10 +591,10 @@ function AddressFormContent({ isAppLoading = false, appLoadingProgress = 0 }: Ad
                 <FieldArrowIcon active={isFieldActive(0) || !!addressData.errors.connectionType} error={!!addressData.errors.connectionType} />
               )}
             </div>
-          </div>
+            </div>
 
-          {/* Поле Название населённого пункта — opacity 0.5 когда неактивно */}
-          <div
+            {/* Поле Название населённого пункта — opacity 0.5 когда неактивно */}
+            <div
             role="button"
             tabIndex={0}
             className={`rounded-[10px] bg-white flex items-center justify-between box-border ${!addressData.connectionType ? 'cursor-not-allowed' : 'cursor-pointer'}`}
@@ -615,10 +649,10 @@ function AddressFormContent({ isAppLoading = false, appLoadingProgress = 0 }: Ad
                 <FieldArrowIcon active={isFieldActive(1) || !!addressData.errors.city} error={!!addressData.errors.city} />
               )}
             </div>
-          </div>
+            </div>
 
-          {/* Поле Улица */}
-          <div
+            {/* Поле Улица */}
+            <div
             role="button"
             tabIndex={0}
             className={`rounded-[10px] bg-white flex items-center justify-between box-border ${!addressData.city ? 'cursor-not-allowed' : 'cursor-pointer'}`}
@@ -674,10 +708,10 @@ function AddressFormContent({ isAppLoading = false, appLoadingProgress = 0 }: Ad
                 <FieldArrowIcon active={isFieldActive(2) || !!addressData.errors.street} error={!!addressData.errors.street} />
               )}
             </div>
-          </div>
+            </div>
 
-          {/* Поле Номер дома */}
-          <div
+            {/* Поле Номер дома */}
+            <div
             role="button"
             tabIndex={0}
             className={`rounded-[10px] bg-white flex items-center justify-between box-border ${!addressData.street ? 'cursor-not-allowed' : 'cursor-pointer'}`}
@@ -739,15 +773,15 @@ function AddressFormContent({ isAppLoading = false, appLoadingProgress = 0 }: Ad
                 <FieldArrowIcon active={isFieldActive(3) || !!addressData.errors.houseNumber} error={!!addressData.errors.houseNumber} />
               )}
             </div>
-          </div>
+            </div>
 
-          {/* Чекбокс — border 1px solid rgba(16,16,16,0.25), border-radius 10px, 14px line-height 105% */}
-          <div style={{ flexShrink: 0 }}>
-            <PrivacyConsent />
-          </div>
+            {/* Чекбокс — border 1px solid rgba(16,16,16,0.25), border-radius 10px, 14px line-height 105% */}
+            <div style={{ flexShrink: 0 }}>
+              <PrivacyConsent />
+            </div>
 
-          {/* Кнопка — изначально активна; после нажатия при неполной форме становится неактивной (серая), пока не заполнят; 20px от соглашения (у контейнера gap: 5, поэтому marginTop: 15) */}
-          <button
+            {/* Кнопка — изначально активна; после нажатия при неполной форме становится неактивной (серая), пока не заполнят; 20px от соглашения (у контейнера gap: 5, поэтому marginTop: 15) */}
+            <button
             type="button"
             disabled={isButtonDisabled}
             onClick={isButtonDisabled ? undefined : handleSubmit}
@@ -772,9 +806,10 @@ function AddressFormContent({ isAppLoading = false, appLoadingProgress = 0 }: Ad
               transform: !isButtonDisabled && isSubmitPressed ? 'scale(0.97)' : 'scale(1)',
               transition: 'transform 0.15s ease-out, background 0.2s ease',
             }}
-          >
-            Показать всех операторов
-          </button>
+            >
+              Показать всех операторов
+            </button>
+          </div>
         </div>
 
         <ConnectionTypeModal
@@ -800,11 +835,16 @@ function AddressFormContent({ isAppLoading = false, appLoadingProgress = 0 }: Ad
       {!isAppLoading && (
         <button
           type="button"
-          onClick={() => setIsCursorEffectEnabled((prev) => !prev)}
+          onClick={() =>
+            setCursorEffectMode((prev) => {
+              const current = CURSOR_EFFECT_ORDER.indexOf(prev);
+              return CURSOR_EFFECT_ORDER[(current + 1) % CURSOR_EFFECT_ORDER.length];
+            })
+          }
           className="fixed right-3 top-3 z-[2147483647] rounded-md border border-black bg-yellow-300 px-3 py-2 text-[12px] font-semibold leading-none text-black"
           style={{ fontFamily: "'TT Firs Neue', sans-serif" }}
         >
-          FX: {isCursorEffectEnabled ? 'Package' : 'Off'}
+          FX: {CURSOR_EFFECT_LABELS[cursorEffectMode]}
         </button>
       )}
     </>

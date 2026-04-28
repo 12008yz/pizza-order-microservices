@@ -99,6 +99,8 @@ export default function CursorFluidEffect({ active, mode }: { active: boolean; m
         SPLAT_RADIUS: 0.16,
         DENSITY_DISSIPATION: 4.2,
         VELOCITY_DISSIPATION: 2.8,
+        // Lower color update speed to avoid visible flicker on slow cursor movement.
+        COLOR_UPDATE_SPEED: 2,
         TRANSPARENT: true,
         SHADING: false,
       };

@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@phosphor-icons/react": "^2.1.10",
+    "@scxr-dev/fluid-cursor": "^3.1.0",
     "axios": "^1.6.2",
     "html2canvas": "^1.4.1",
     "next": "14.0.4",

@@ -178,7 +178,14 @@ export default function Home() {
   const showAppLoading = !isConsultationEntry && isLoading;
 
   return (
-    <div ref={frameContainerRef}>
+    <div
+      ref={frameContainerRef}
+      style={{
+        minHeight: '100dvh',
+        width: '100vw',
+        background: '#F5F5F5',
+      }}
+    >
       <AddressFormPage isAppLoading={showAppLoading} appLoadingProgress={loadingProgress} />
     </div>
   );

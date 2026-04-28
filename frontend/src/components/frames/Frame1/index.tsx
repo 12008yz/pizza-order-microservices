@@ -10,6 +10,7 @@ import PrivacyConsent from './PrivacyConsent';
 import Header from '../../layout/Header';
 import LoadingScreen from '../../LoadingScreen';
 import PageLoadingSkeleton from '../../PageLoadingSkeleton';
+import CursorFluidEffect from '../../common/CursorFluidEffect';
 import dynamic from 'next/dynamic';
 
 /** Фон кружка с галочкой, когда в поле что-то введено (из макета Vector) */
@@ -65,6 +66,7 @@ function AddressFormContent({ isAppLoading = false, appLoadingProgress = 0 }: Ad
   const [_submitError, setSubmitError] = useState<string | null>(null);
   const [showCookieBanner, setShowCookieBanner] = useState(true);
   const [cookieTimer, setCookieTimer] = useState(7);
+  const [isCursorEffectEnabled, setIsCursorEffectEnabled] = useState(true);
 
   const [flowState, setFlowState] = useState<FlowState>('form');
 
@@ -355,7 +357,7 @@ function AddressFormContent({ isAppLoading = false, appLoadingProgress = 0 }: Ad
   // 1) Начальная загрузка: показываем LoadingScreen, форму держим в DOM скрыто (для подгрузки ресурсов)
   const formContent = (
     <div
-      className="fixed inset-0 z-[9999] flex flex-col items-center overflow-hidden"
+      className="fixed inset-0 z-[9999] flex flex-col items-center overflow-hidden bg-[#F5F5F5]"
       style={{
         visibility: isAppLoading ? 'hidden' : 'visible',
         position: isAppLoading ? 'absolute' : undefined,
@@ -366,9 +368,10 @@ function AddressFormContent({ isAppLoading = false, appLoadingProgress = 0 }: Ad
         background: '#F5F5F5',
       }}
     >
+      <CursorFluidEffect active={!isAppLoading && flowState === 'form' && isCursorEffectEnabled} />
       {/* 400px ширина; отступ снизу 20px + safe-area */}
       <div
-        className="relative bg-[#F5F5F5]"
+        className="relative z-10 bg-[#F5F5F5]"
         style={{
           width: 400,
           minWidth: 400,
@@ -794,6 +797,16 @@ function AddressFormContent({ isAppLoading = false, appLoadingProgress = 0 }: Ad
     <>
       {isAppLoading && <LoadingScreen progress={appLoadingProgress} />}
       {formContent}
+      {!isAppLoading && (
+        <button
+          type="button"
+          onClick={() => setIsCursorEffectEnabled((prev) => !prev)}
+          className="fixed right-3 top-3 z-[2147483647] rounded-md border border-black bg-yellow-300 px-3 py-2 text-[12px] font-semibold leading-none text-black"
+          style={{ fontFamily: "'TT Firs Neue', sans-serif" }}
+        >
+          FX: {isCursorEffectEnabled ? 'Package' : 'Off'}
+        </button>
+      )}
     </>
   );
 }

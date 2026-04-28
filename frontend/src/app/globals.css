@@ -81,6 +81,7 @@ html {
   height: 100%;
   height: 100dvh;
   overflow: hidden;
+  background: #F5F5F5;
 }
 
 body {
@@ -97,6 +98,12 @@ body {
   padding-bottom: var(--sab);
   padding-left: var(--sal);
   padding-right: var(--sar);
+}
+
+/* Гарантируем единый фон на весь viewport и корневые обертки Next.js */
+body > div,
+body > div > div {
+  background: #F5F5F5;
 }
 
 /* Общий контейнер для фреймов 1–4: 400px, отступ снизу 20px + safe-area */
